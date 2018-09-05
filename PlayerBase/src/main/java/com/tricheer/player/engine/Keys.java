@@ -11,7 +11,7 @@ public interface Keys {
         int KEYCODE_VOLUME_DOWN = 25;
         int KEYCODE_VOLUME_MUTE = 164;
 
-        int KEYCODE_RADIO = -1111;
+        int KEYCODE_RADIO = 284;
 
         int KEYCODE_PREV = 88;
         int KEYCODE_NEXT = 87;

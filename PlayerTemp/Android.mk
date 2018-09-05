@@ -19,45 +19,45 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
 LOCAL_MODULE := Player_SCL_LC2010_VDC_TEMP
-LOCAL_CLASS := APPS
+LOCAL_MODULE_CLASS := APPS
 
-## user: Ö¸¸ÃÄ£¿éÖ»ÔÚuser°æ±¾ÏÂ²Å±àÒë
-## eng: Ö¸¸ÃÄ£¿éÖ»ÔÚeng°æ±¾ÏÂ²Å±àÒë
-## tests: Ö¸¸ÃÄ£¿éÖ»ÔÚtests°æ±¾ÏÂ²Å±àÒë
-## optional:Ö¸¸ÃÄ£¿éÔÚËùÓĞ°æ±¾ÏÂ¶¼±àÒë
+## user: æŒ‡è¯¥æ¨¡å—åªåœ¨userç‰ˆæœ¬ä¸‹æ‰ç¼–è¯‘
+## eng: æŒ‡è¯¥æ¨¡å—åªåœ¨engç‰ˆæœ¬ä¸‹æ‰ç¼–è¯‘
+## tests: æŒ‡è¯¥æ¨¡å—åªåœ¨testsç‰ˆæœ¬ä¸‹æ‰ç¼–è¯‘
+## optional:æŒ‡è¯¥æ¨¡å—åœ¨æ‰€æœ‰ç‰ˆæœ¬ä¸‹éƒ½ç¼–è¯‘
 LOCAL_MODULE_TAGS := optional
 
 LOCAL_BUILT_MODULE_STEM := package.apk
 LOCAL_MODULE_SUFFIX := $(COMMON_ANDROID_PACKAGE_SUFFIX)
 
-#### Ç©Ãû ####
-## ^^ Ê¹ÓÃ³¡¾° ^^
-## (1)	ÏµÍ³ÖĞËùÓĞÊ¹ÓÃandroid.uid.system×÷Îª¹²ÏíUIDµÄAPK£¬
-##  	¶¼»áÊ×ÏÈÔÚmanifest½ÚµãÖĞÔö¼Óandroid:sharedUserId="android.uid.system"£¬
-##  	È»ºóÔÚAndroid.mkÖĞÔö¼ÓLOCAL_CERTIFICATE := platform
-## 		¿ÉÒÔ²Î¼ûSettingsµÈ
-## (2)	ÏµÍ³ÖĞËùÓĞÊ¹ÓÃandroid.uid.shared×÷Îª¹²ÏíUIDµÄAPK£¬
-## 		¶¼»áÔÚmanifest½ÚµãÖĞÔö¼Óandroid:sharedUserId="android.uid.shared"£¬
-## 		È»ºóÔÚAndroid.mkÖĞÔö¼ÓLOCAL_CERTIFICATE := shared¡£
-## 		¿ÉÒÔ²Î¼ûLauncherµÈ
-## (3)	ÏµÍ³ÖĞËùÓĞÊ¹ÓÃandroid.uid.shared×÷Îª¹²ÏíUIDµÄAPK£¬
-## 		¶¼»áÔÚmanifest½ÚµãÖĞÔö¼Óandroid:sharedUserId="android.uid.shared"£¬
-## 		È»ºóÔÚAndroid.mkÖĞÔö¼ÓLOCAL_CERTIFICATE := shared¡£
-## 		¿ÉÒÔ²Î¼ûLauncherµÈ
-## (4)	ÏµÍ³ÖĞËùÓĞÊ¹ÓÃandroid.media×÷Îª¹²ÏíUIDµÄAPK£¬
-## 		¶¼»áÔÚmanifest½ÚµãÖĞÔö¼Óandroid:sharedUserId="android.media"£¬
-## 		È»ºóÔÚAndroid.mkÖĞÔö¼ÓLOCAL_CERTIFICATE := media¡£
-## 		¿ÉÒÔ²Î¼ûGalleryµÈ¡£
-## ^^ È¡Öµ·¶Î§ ^^
-## (1)	testkey: ÆÕÍ¨APK£¬Ä¬ÈÏÇé¿öÏÂÊ¹ÓÃ
-## (2)	platform: ¸ÃAPKÍê³ÉÒ»Ğ©ÏµÍ³µÄºËĞÄ¹¦ÄÜ¡£¾­¹ı¶ÔÏµÍ³ÖĞ´æÔÚµÄÎÄ¼ş¼ĞµÄ·ÃÎÊ²âÊÔ£¬ÕâÖÖ·½Ê½±àÒë³öÀ´µÄAPKËùÔÚ½ø³ÌµÄUIDÎªsystem¡£
-## (3)	shared: ¸ÃAPKĞèÒªºÍhome/contacts½ø³Ì¹²ÏíÊı¾İ¡£
-## (4)	media: ¸ÃAPKÊÇmedia/downloadÏµÍ³ÖĞµÄÒ»»·¡£
-## (5)	presigned: ±íÊ¾APKÇ©ÃûÊ¹ÓÃÔ­À´Ç©Ãû
-LOCAL_CERTIFICATE := presigned
+#### ç­¾å ####
+## ^^ ä½¿ç”¨åœºæ™¯ ^^
+## (1)	ç³»ç»Ÿä¸­æ‰€æœ‰ä½¿ç”¨android.uid.systemä½œä¸ºå…±äº«UIDçš„APKï¼Œ
+##  	éƒ½ä¼šé¦–å…ˆåœ¨manifestèŠ‚ç‚¹ä¸­å¢åŠ android:sharedUserId="android.uid.system"ï¼Œ
+##  	ç„¶ååœ¨Android.mkä¸­å¢åŠ LOCAL_CERTIFICATE := platform
+## 		å¯ä»¥å‚è§Settingsç­‰
+## (2)	ç³»ç»Ÿä¸­æ‰€æœ‰ä½¿ç”¨android.uid.sharedä½œä¸ºå…±äº«UIDçš„APKï¼Œ
+## 		éƒ½ä¼šåœ¨manifestèŠ‚ç‚¹ä¸­å¢åŠ android:sharedUserId="android.uid.shared"ï¼Œ
+## 		ç„¶ååœ¨Android.mkä¸­å¢åŠ LOCAL_CERTIFICATE := sharedã€‚
+## 		å¯ä»¥å‚è§Launcherç­‰
+## (3)	ç³»ç»Ÿä¸­æ‰€æœ‰ä½¿ç”¨android.uid.sharedä½œä¸ºå…±äº«UIDçš„APKï¼Œ
+## 		éƒ½ä¼šåœ¨manifestèŠ‚ç‚¹ä¸­å¢åŠ android:sharedUserId="android.uid.shared"ï¼Œ
+## 		ç„¶ååœ¨Android.mkä¸­å¢åŠ LOCAL_CERTIFICATE := sharedã€‚
+## 		å¯ä»¥å‚è§Launcherç­‰
+## (4)	ç³»ç»Ÿä¸­æ‰€æœ‰ä½¿ç”¨android.mediaä½œä¸ºå…±äº«UIDçš„APKï¼Œ
+## 		éƒ½ä¼šåœ¨manifestèŠ‚ç‚¹ä¸­å¢åŠ android:sharedUserId="android.media"ï¼Œ
+## 		ç„¶ååœ¨Android.mkä¸­å¢åŠ LOCAL_CERTIFICATE := mediaã€‚
+## 		å¯ä»¥å‚è§Galleryç­‰ã€‚
+## ^^ å–å€¼èŒƒå›´ ^^
+## (1)	testkey: æ™®é€šAPKï¼Œé»˜è®¤æƒ…å†µä¸‹ä½¿ç”¨
+## (2)	platform: è¯¥APKå®Œæˆä¸€äº›ç³»ç»Ÿçš„æ ¸å¿ƒåŠŸèƒ½ã€‚ç»è¿‡å¯¹ç³»ç»Ÿä¸­å­˜åœ¨çš„æ–‡ä»¶å¤¹çš„è®¿é—®æµ‹è¯•ï¼Œè¿™ç§æ–¹å¼ç¼–è¯‘å‡ºæ¥çš„APKæ‰€åœ¨è¿›ç¨‹çš„UIDä¸ºsystemã€‚
+## (3)	shared: è¯¥APKéœ€è¦å’Œhome/contactsè¿›ç¨‹å…±äº«æ•°æ®ã€‚
+## (4)	media: è¯¥APKæ˜¯media/downloadç³»ç»Ÿä¸­çš„ä¸€ç¯ã€‚
+## (5)	presigned - Use apk`s origin signature.
+LOCAL_CERTIFICATE := PRESIGNED
 
 LOCAL_SRC_FILES := PlayerBase-release.apk
 LOCAL_MODULE_PATH := $(PRODUCT_OUT)/system/priv-app
 
 #use the folling include to make apk
-include $(call all-makefiles-under,$(LOCAL_PATH))
+include $(BUILD_PREBUILT)

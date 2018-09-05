@@ -351,25 +351,4 @@ public abstract class BaseMusicCommonActionsActivity extends BasePlayerActivity 
             e.printStackTrace();
         }
     }
-
-    /**
-     * 绑定服务
-     *
-     * @param isBind : true 创建并绑定MusicPlayService
-     *               <p>
-     *               false 取消绑定MusicPlayService
-     */
-    protected void bindPlayService(boolean isBind) {
-        try {
-            Intent musicPlayServiceIntent = new Intent(mContext, MusicPlayService.class);
-            if (isBind) {
-                startService(musicPlayServiceIntent);
-                bindService(musicPlayServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
-            } else if (mPlayService != null) {
-                unbindService(mServiceConnection);
-            }
-        } catch (Exception e) {
-            Logs.printStackTrace(TAG + "bindPlayService()", e);
-        }
-    }
 }

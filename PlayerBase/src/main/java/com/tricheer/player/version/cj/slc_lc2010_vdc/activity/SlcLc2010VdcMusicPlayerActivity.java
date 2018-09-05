@@ -226,6 +226,7 @@ public class SlcLc2010VdcMusicPlayerActivity extends BaseMusicPlayerActivity {
             seekBar.setMax(getDuration());
             seekBar.setProgress(0);
         } else {
+            seekBar.setMax(getDuration());
             seekBar.setProgress(getProgress());
         }
     }

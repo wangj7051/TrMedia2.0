@@ -102,12 +102,12 @@ public class MediaScanReceiver extends BroadcastReceiver {
      * Scan Active
      */
     public interface ScanActives {
-        public final int START = 1;
-        public final int END = 2;
-        public final int TASK_CANCEL = 4;
-        public final int REFRESH = 5;
-        public final int SYS_SCANED = 6;
-        public final int CLEAR = 7;
+        int START = 1;
+        int END = 2;
+        int TASK_CANCEL = 4;
+        int REFRESH = 5;
+        int SYS_SCANED = 6;
+        int CLEAR = 7;
     }
 
     /**
