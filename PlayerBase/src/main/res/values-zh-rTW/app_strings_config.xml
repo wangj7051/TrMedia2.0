@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- TAG ID -->
+    <string name="tag_is_show_lyric">tag_is_show_lyric</string>
+    
+    <!-- Application Name -->
+    <string name="app_name_music">音樂</string>
+    <string name="app_name_video">視頻</string>
+
+    <!-- Player -->
+    <string name="no_compare_musics">沒有匹配的音樂文件</string>
+    <string name="no_compare_videos">沒有匹配的視頻文件</string>
+    <string name="music_online">在線音樂</string>
+    <string name="music_local">本地音樂</string>
+    <string name="sure_1">確認</string>
+    <string name="playing_curr">正在播放</string>
+    <string name="my_category">我的分類</string>
+    <string name="recently_play">最近播放</string>
+    <string name="radio_category_null">未找到同名臺分類</string>
+    <string name="radio_init_failed">電臺初始化失敗!</string>
+    <string name="delete_select_music">刪除選定的音頻?</string>
+    <string name="delete_music_success_str">“%s” 已刪除!</string>
+    <string name="device_temp_high">設備溫度過高!</string>
+    <string name="music_online_error">目標音樂不可用或已刪除!</string>
+    <string name="plea_input_search_key">請輸入查詢關鍵字!</string>
+    <string name="hint_input_music_searchinfo">請輸入您想聽的歌名或者歌手名字</string>
+    <string name="video_has_resume">視頻恢復播放!</string>
+    <string name="dialing_toast">通話過程中不允許操作媒體!</string>
+    <string name="bt_connected">藍牙媒體通道已連接</string>
+    <string name="select_bt_media">打開藍牙媒體</string>
+    <string name="select_local_media">打開本地媒體</string>
+    <string name="select_timeout_on_bt_connected">長時間未選擇，播放本地媒體</string>
+    <string name="select_bt_toast">您選擇了藍牙媒體，本地媒體將關閉</string>
+    <string name="play_error">《%s》播放發生異常！</string>
+    <string name="media_deleted">媒體文件不存在</string>
+    <string name="music_search_none">未搜索到匹配的歌曲</string>
+    <string name="tcard_monted">T卡已掛載</string>
+    <string name="udisk_monted">U盤已掛載</string>
+    <string name="playing_1080p_on_record">為了保證視頻播放流暢，播放過程中建議關閉行車記錄功能</string>
+    <string name="my_favor">我的最愛</string>
+    <string name="local_music">本地歌曲</string>
+    <string name="i_want_find_musics">我要找歌</string>
+    <string name="video_catalog">視頻目錄</string>
+    <string name="hint_input_video_searchinfo">請輸入您想觀看的視頻</string>
+    <string name="no_videos">沒有視頻</string>
+    
+    <!-- Music -->
+    <string name="go_folder_parent">返回上壹級</string>
+    
+    <!-- Video -->
+    <string name="video_handbrake_prompt">行車過程中請勿觀看視頻</string>
+
+    <!-- Player Operates -->
+    <string name="play_pre">上壹個</string>
+    <string name="play_start">播放</string>
+    <string name="play_pause">暫停</string>
+    <string name="play_next">下壹個</string>
+    <string name="play_size_21_9">21:9</string>
+    <string name="play_size_16_9">16:9</string>
+    <string name="play_size_4_3">4:3</string>
+    <string name="play_size_full">全屏</string>
+    <string name="screen_switch">畫面切換</string>
+    <string name="play_vol">音量</string>
+
+    <!-- Request Loading Information -->
+    <string name="music_loading">音樂加載中&#8230;</string>
+    <string name="music_re_loading">目標音樂不可用，嘗試重新加載&#8230;</string>
+
+    <!-- Fill Strings -->
+    <string name="fillstr_time_1">00:00</string>
+    <string name="fillstr_selected_val">Selected Value</string>
+    <string name="fillstr_1">A Broken Spirit</string>
+    <string name="fillstr_2">Left Operate</string>
+    <string name="fillstr_3">Right Operate</string>
+    <string name="fillstr_4">連接類型: PPPOE\nIP地址: xxx.xxx.xxx.xxx\n子網掩碼: xxx.xxx.xxx.xxx\nDNS: xxx.xxx.xxx.xxx</string>
+    <string name="fillstr_5">系統音量：0</string>
+    <string name="fillstr_6">Singer</string>
+    <string name="fillstr_7">SongName</string>
+    <string name="fillstr_8">解決1300萬“黑狐” 知易行難</string>
+
+</resources>

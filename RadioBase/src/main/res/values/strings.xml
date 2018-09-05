@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">收音机</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- Fill String -->
+    <string name="fillstr_freq">FM101.7</string>
+
+    <!-- Application -->
+    <string name="band_fm">FM</string>
+    <string name="band_am">AM</string>
+    <string name="no_img">NO IMAGE</string>
+    <string name="click_collect">点按收藏</string>
+    <string name="radio_update">电台更新</string>
+    <string name="cancel_update">取消更新</string>
+
+</resources>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/PlayerBase/PlayerBase.iml" filepath="$PROJECT_DIR$/PlayerBase/PlayerBase.iml" />
+      <module fileurl="file://$PROJECT_DIR$/RadioBase/RadioBase.iml" filepath="$PROJECT_DIR$/RadioBase/RadioBase.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TrMedia2.0.iml" filepath="$PROJECT_DIR$/TrMedia2.0.iml" />
+      <module fileurl="file://$PROJECT_DIR$/libCommon/libCommon.iml" filepath="$PROJECT_DIR$/libCommon/libCommon.iml" />
+      <module fileurl="file://$PROJECT_DIR$/libTricheer/libTricheer.iml" filepath="$PROJECT_DIR$/libTricheer/libTricheer.iml" />
+    </modules>
+  </component>
+</project>

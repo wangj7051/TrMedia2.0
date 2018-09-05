@@ -1,0 +1,40 @@
+<resources>
+    
+    <!-- Left List -->
+    <dimen name="left_seperate_h">1dp</dimen>
+    
+    <!-- Player Button Default Size -->
+    <dimen name="player_operate_btn_size">75dp</dimen>
+    <dimen name="player_operate_btn_padding">6dp</dimen>
+
+    <!-- $$$$ LB8 $$$$ -->
+    <!--21:9 Video Panel-->
+    <item name="lb8_video_weight_left_seat" type="integer">16</item>
+    <item name="lb8_video_weight_middle_vv" type="integer">42</item>
+    <item name="lb8_video_weight_right_seat" type="integer">12</item>
+    
+    <!-- $$$$ Common 8.8-inch $$$$ -->
+    <item name="_8_video_weight_left_items" type="integer">20</item>
+    <item name="_8_video_weight_middle_seek" type="integer">34</item>
+    <item name="_8_video_weight_right_operates" type="integer">16</item>
+    <dimen name="_8_video_operate_txt_w">90dp</dimen>
+    <dimen name="_8_video_operate_txt_fsize">20sp</dimen>
+    <dimen name="_8_operate_icon_size">75dp</dimen>
+    <dimen name="_8_operate_icon_padding">6dp</dimen>
+    <dimen name="_8_bottom_seek_h">70dp</dimen>
+    
+    <!-- $$$$ Common 7-inch $$$$ -->
+    <dimen name="_7_music_list_left_w">160dp</dimen>
+    <dimen name="_7_font_size_small">20sp</dimen>
+    <dimen name="_7_font_size_middle">24sp</dimen>
+    <dimen name="_7_font_size_big">28sp</dimen>
+    
+    <!-- ZCK -->
+    <dimen name="curr_cover_w">240dp</dimen>
+    <dimen name="curr_cover_h">135dp</dimen>
+    <dimen name="curr_cover_play_len">120dp</dimen>
+    <dimen name="curr_radio_len">140dp</dimen>
+    <dimen name="op_icon_len_small">40dp</dimen>
+    <dimen name="op_icon_len_big">60dp</dimen>
+
+</resources>

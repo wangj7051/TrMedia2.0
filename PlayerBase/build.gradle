@@ -1,0 +1,42 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdkVersion 22
+    buildToolsVersion "27.0.3"
+
+    defaultConfig {
+        applicationId "com.tricheer.player"
+        minSdkVersion 17
+        targetSdkVersion 22
+        multiDexEnabled true
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard.flags'
+        }
+    }
+
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+        // Or, if you prefer, you can continue to check for errors in release builds,
+        // but continue the build even when errors are found:
+        abortOnError false
+    }
+}
+
+dependencies {
+    //api project(':libCommon')
+    api project(':libTricheer')
+    api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    //api files('libs/android-support-v4.jar')
+}
+repositories {
+    mavenCentral()
+}

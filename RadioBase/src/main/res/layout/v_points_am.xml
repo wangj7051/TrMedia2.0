@@ -1,0 +1,58 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" >
+
+    <ImageView
+        android:id="@+id/v_arrow_to_right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:contentDescription="@string/no_img"
+        android:src="@drawable/arrow" />
+
+    <LinearLayout
+        android:id="@+id/v_bg_points"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/v_arrow_to_right"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="5dp"
+        android:orientation="horizontal" >
+
+        <ImageView
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:contentDescription="@string/no_img"
+            android:scaleType="fitXY"
+            android:src="@drawable/tab_point_bg" />
+
+        <ImageView
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_marginLeft="10dp"
+            android:contentDescription="@string/no_img"
+            android:scaleType="fitXY"
+            android:src="@drawable/tab_point_bg" />
+
+        <ImageView
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_marginLeft="10dp"
+            android:contentDescription="@string/no_img"
+            android:scaleType="fitXY"
+            android:src="@drawable/tab_point_bg" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/v_select_point"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:layout_below="@id/v_arrow_to_right"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="5dp"
+        android:contentDescription="@string/no_img"
+        android:scaleType="fitXY"
+        android:src="@drawable/tab_point_current" />
+
+</RelativeLayout>

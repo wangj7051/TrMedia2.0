@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- TAG ID -->
+    <string name="tag_is_show_lyric">tag_is_show_lyric</string>
+
+    <!-- Application Name -->
+    <string name="app_name_music">Music</string>
+    <string name="app_name_video">Video</string>
+
+    <!-- Player -->
+    <string name="no_compare_musics">No matched music found</string>
+    <string name="no_compare_videos">No matched video found</string>
+    <string name="music_online">Online music</string>
+    <string name="music_local">Local music</string>
+    <string name="sure_1">confirm</string>
+    <string name="playing_curr">Playing</string>
+    <string name="my_category">My category</string>
+    <string name="recently_play">Play history</string>
+    <string name="radio_category_null">The radio category unfound</string>
+    <string name="radio_init_failed">Initialization failed!</string>
+    <string name="delete_select_music">Delete the seclected file?</string>
+    <string name="delete_music_success_str">“%s” deleted!</string>
+    <string name="device_temp_high">The over-temperature alarm!</string>
+    <string name="music_online_error">The target is un-available or deleted!</string>
+    <string name="plea_input_search_key">Please input the searching key word!</string>
+    <string name="hint_input_music_searchinfo">Please input the name of song or singer you want</string>
+    <string name="video_has_resume">Video playing resumes</string>
+    <string name="dialing_toast">Multimedia player is not allowed during phone call</string>
+    <string name="bt_connected">Bluetooth media has been connected</string>
+    <string name="select_bt_media">Bluetooh media selected</string>
+    <string name="select_local_media">Lock media selected</string>
+    <string name="select_timeout_on_bt_connected">Local media will be selected due to time out</string>
+    <string name="select_bt_toast">Local media is closed due to Bluetooth media selected</string>
+    <string name="play_error">《%s》 cause error</string>
+    <string name="media_deleted">The media file is not exist</string>
+    <string name="music_search_none">The matched song is not found</string>
+    <string name="tcard_monted">T-card Monted</string>
+    <string name="udisk_monted">Udisk Monted</string>
+    <string name="my_favor">我的最爱</string>
+    <string name="local_music">本地歌曲</string>
+    <string name="i_want_find_musics">我要找歌</string>
+    <string name="video_catalog">视频目录</string>
+    <string name="hint_input_video_searchinfo">请输入您想观看的视频</string>
+    <string name="no_videos">No video</string>
+    <string name="loading_medias_">Loading &#8230;</string>
+
+    <!-- Music -->
+    <string name="go_folder_parent">Back</string>
+
+    <!-- Video -->
+    <string name="video_handbrake_prompt">"Don't watch Video while Driving"</string>
+
+    <!-- Player Operates -->
+    <string name="play_pre">Last</string>
+    <string name="play_start">Play</string>
+    <string name="play_pause">Pause</string>
+    <string name="play_next">Next</string>
+    <string name="play_size_21_9">21:9</string>
+    <string name="play_size_16_9">16:9</string>
+    <string name="play_size_4_3">4:3</string>
+    <string name="play_size_full">Full screen</string>
+    <string name="screen_switch">Switch</string>
+    <string name="play_vol">Volume</string>
+
+    <!-- Request Loading Information -->
+    <string name="music_loading">Loading&#8230;</string>
+    <string name="music_re_loading">The music is not available now, please try again&#8230;</string>
+
+    <!-- Fill Strings -->
+    <string name="fillstr_time_1">00:00</string>
+    <string name="fillstr_selected_val">Selected Value</string>
+    <string name="fillstr_1">A Broken Spirit</string>
+    <string name="fillstr_2">Left Operate</string>
+    <string name="fillstr_3">Right Operate</string>
+    <string name="fillstr_4">Connection Type: PPPOE\nIP address: xxx.xxx.xxx.xxx\nSubnet mask: xxx.xxx.xxx.xxx\nDNS: xxx.xxx.xxx.xxx</string>
+    <string name="fillstr_5">Volume：0</string>
+    <string name="fillstr_6">Avril Ramona Lavigne</string>
+    <string name="fillstr_7">The Best Damn Thing</string>
+    <string name="fillstr_8">""</string>
+
+</resources>

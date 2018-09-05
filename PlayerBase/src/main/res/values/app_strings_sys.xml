@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- 一些系统定义，一旦定义，则不做改变，与GUI设计无关 -->
+<resources>
+    
+    <!-- 校验正则 -->
+    <string name="exp_chars_numbs">0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ</string>
+</resources>

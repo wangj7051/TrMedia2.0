@@ -1,0 +1,192 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_main"
+    tools:context="com.tricheer.radio.MainActivity">
+
+    <LinearLayout
+        android:id="@+id/layout_top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_title"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/vpager"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_weight="60" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/no_img"
+            android:src="@drawable/separate_line_v" />
+
+        <RelativeLayout
+            android:id="@+id/v_points_container"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="6"
+            android:gravity="center">
+
+            <include
+                android:id="@+id/layout_points"
+                layout="@layout/v_points_am"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/layout_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:paddingBottom="25dp"
+        android:paddingLeft="80dp"
+        android:paddingRight="80dp"
+        android:paddingTop="25dp">
+
+        <ImageView
+            android:id="@+id/iv_play_pre"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_centerVertical="true"
+            android:clickable="true"
+            android:contentDescription="@string/no_img"
+            android:focusable="true"
+            android:padding="6dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/btn_op_prev_selector" />
+
+        <ImageView
+            android:id="@+id/iv_exit"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="40dp"
+            android:layout_toRightOf="@id/iv_play_pre"
+            android:clickable="true"
+            android:contentDescription="@string/no_img"
+            android:focusable="true"
+            android:padding="6dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/btn_op_exit_selector" />
+
+        <ImageView
+            android:id="@+id/iv_play_next"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="40dp"
+            android:layout_toRightOf="@id/iv_exit"
+            android:clickable="true"
+            android:contentDescription="@string/no_img"
+            android:focusable="true"
+            android:padding="6dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/btn_op_next_selector" />
+
+        <TextView
+            android:id="@+id/v_update"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/bg_border_white"
+            android:paddingBottom="30dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingTop="30dp"
+            android:text="@string/radio_update"
+            android:textColor="@android:color/white"
+            android:textSize="45sp" />
+    </RelativeLayout>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/layout_bottom"
+        android:contentDescription="@string/no_img"
+        android:scaleType="fitXY"
+        android:src="@drawable/separate_line_h" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/layout_bottom"
+        android:layout_below="@id/layout_top"
+        android:paddingLeft="80dp"
+        android:paddingRight="80dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/v_freq"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/fillstr_freq"
+                android:textColor="@android:color/white"
+                android:textSize="80sp"
+                android:typeface="normal" />
+
+            <RelativeLayout
+                android:layout_width="440dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp">
+
+                <ImageView
+                    android:id="@+id/v_seek_bg"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:contentDescription="@string/no_img"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/seekbar_progress_bg_radio" />
+
+                <SeekBar
+                    android:id="@+id/seekbar_freqs"
+                    style="@style/Widget.SeekBar.SLC_LC2010_VDC.RADIO"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignLeft="@id/v_seek_bg"
+                    android:layout_alignRight="@id/v_seek_bg"
+                    android:layout_centerVertical="true"
+                    android:max="100" />
+            </RelativeLayout>
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true">
+
+            <ImageView
+                android:id="@+id/v_radio_tower"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:contentDescription="@string/no_img"
+                android:src="@drawable/radio_tower" />
+
+            <TextView
+                android:id="@+id/v_band"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/v_radio_tower"
+                android:layout_centerHorizontal="true"
+                android:text="@string/band_fm"
+                android:textColor="@android:color/white"
+                android:textSize="35sp" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+</RelativeLayout>

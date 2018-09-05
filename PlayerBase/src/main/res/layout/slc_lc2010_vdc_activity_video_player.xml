@@ -1,0 +1,202 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_main">
+
+    <js.lib.android.media.local.player.video.IVideoPlayer
+        android:id="@+id/vv_player"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true" />
+
+    <RelativeLayout
+        android:id="@+id/v_control_panel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/layout_top"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_title"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/udisk_video_"
+                android:textColor="@android:color/white"
+                android:textSize="25sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/layout_top">
+
+            <TextView
+                android:id="@+id/v_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="50dp"
+                android:text="@string/file_name"
+                android:textColor="@android:color/white"
+                android:textSize="25sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="@color/color_black_070"
+            android:baselineAligned="false"
+            android:orientation="horizontal">
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="10"
+                android:paddingBottom="3dp"
+                android:paddingTop="3dp"
+                tools:ignore="NestedWeights">
+
+                <ImageView
+                    android:id="@+id/iv_play_pre"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:clickable="true"
+                    android:contentDescription="@string/no_img"
+                    android:padding="6dp"
+                    android:src="@drawable/btn_op_prev_selector" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="10"
+                android:paddingBottom="3dp"
+                android:paddingTop="3dp">
+
+                <ImageView
+                    android:id="@+id/iv_play"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:clickable="true"
+                    android:contentDescription="@string/no_img"
+                    android:padding="6dp"
+                    android:src="@drawable/btn_op_play_selector" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="10"
+                android:paddingBottom="3dp"
+                android:paddingTop="3dp">
+
+                <ImageView
+                    android:id="@+id/iv_play_next"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:clickable="true"
+                    android:contentDescription="@string/no_img"
+                    android:padding="6dp"
+                    android:src="@drawable/btn_op_next_selector" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="15"
+                android:paddingBottom="3dp"
+                android:paddingTop="3dp" />
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="10"
+                android:paddingBottom="3dp"
+                android:paddingTop="3dp">
+
+                <ImageView
+                    android:id="@+id/iv_play_mode_set"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:clickable="true"
+                    android:contentDescription="@string/no_img"
+                    android:padding="6dp"
+                    android:src="@drawable/btn_op_mode_loop_selector" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="10"
+                android:paddingBottom="3dp"
+                android:paddingTop="3dp">
+
+                <ImageView
+                    android:id="@+id/v_list"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:clickable="true"
+                    android:contentDescription="@string/no_img"
+                    android:padding="6dp"
+                    android:src="@drawable/btn_op_list_selector" />
+            </RelativeLayout>
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/layout_bottom"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/tv_play_start_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="@string/fillstr_time_1"
+                android:textColor="@android:color/white"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tv_play_end_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:text="@string/fillstr_time_1"
+                android:textColor="@android:color/white"
+                android:textSize="16sp" />
+
+            <SeekBar
+                android:id="@+id/seekbar"
+                style="@style/Widget.SeekBar.SLC_LC2010_VDC"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_toEndOf="@id/tv_play_start_time"
+                android:layout_toLeftOf="@id/tv_play_end_time"
+                android:layout_toRightOf="@id/tv_play_start_time"
+                android:layout_toStartOf="@id/tv_play_end_time"
+                android:max="100" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+</RelativeLayout>
