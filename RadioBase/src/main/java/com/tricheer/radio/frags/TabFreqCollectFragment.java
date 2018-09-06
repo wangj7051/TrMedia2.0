@@ -43,6 +43,7 @@ public class TabFreqCollectFragment extends BaseAppV4Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         mAttachedActivity = (MainActivity) activity;
+        Log.i(TAG, "onAttach(Activity)");
     }
 
     @SuppressLint("InflateParams")
@@ -50,6 +51,12 @@ public class TabFreqCollectFragment extends BaseAppV4Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         contentV = inflater.inflate(R.layout.frag_collect, null);
         return contentV;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.i(TAG, "onResume()" + this.toString());
     }
 
     @Override
@@ -110,6 +117,37 @@ public class TabFreqCollectFragment extends BaseAppV4Fragment {
 //
 //        int faveFreq5 = PreferUtils.getCollect(false, band, pageIdx, 5, freq);
 //        tvItem5.setText(String.valueOf(faveFreq5 / 100d));
+    }
+
+    /**
+     * Refresh page style when page is scanning
+     *
+     * @param isScanning true-Scanning
+     */
+    public void refreshPageOnScanning(boolean isScanning) {
+        //Set text color
+        int txtColor;
+        if (isScanning) {
+            txtColor = getResources().getColor(R.color.txt_on_searching);
+        } else {
+            txtColor = getResources().getColor(android.R.color.white);
+        }
+
+        //Set enable
+        tvItem0.setEnabled(!isScanning);
+        tvItem1.setEnabled(!isScanning);
+        tvItem2.setEnabled(!isScanning);
+        tvItem3.setEnabled(!isScanning);
+        tvItem4.setEnabled(!isScanning);
+        tvItem5.setEnabled(!isScanning);
+
+        //Set text color
+        tvItem0.setTextColor(txtColor);
+        tvItem1.setTextColor(txtColor);
+        tvItem2.setTextColor(txtColor);
+        tvItem3.setTextColor(txtColor);
+        tvItem4.setTextColor(txtColor);
+        tvItem5.setTextColor(txtColor);
     }
 
     View.OnLongClickListener mOnLongClick = new View.OnLongClickListener() {

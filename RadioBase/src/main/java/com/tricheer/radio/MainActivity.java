@@ -2,12 +2,9 @@ package com.tricheer.radio;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
-import android.annotation.SuppressLint;
 import android.app.Service;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
@@ -25,8 +22,11 @@ import com.tricheer.radio.utils.SettingsSysUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
+import js.lib.android.adapter.VPFragStateAdapter;
 import js.lib.android.fragment.BaseAppV4Fragment;
+import js.lib.android.view.ViewPagerImpl;
 
 /**
  * FM Main Page
@@ -38,21 +38,29 @@ public class MainActivity extends BaseKeyEventActivity {
     private static final String TAG = "MainActivity";
 
     //==========Widgets in this Activity==========
+    //Top
+    private ViewPagerImpl viewPager;
+    private RelativeLayout vPointsContainer;
+    private ImageView ivArrow;
+    private LinearLayout vBgPoints;
+    private ImageView vSelectedPoint;
+
+    //Center
     private TextView tvFreq;
+    private ImageView ivSeekBarBg;
     private SeekBar seekBarFreq;
+
+    private View layoutTower;
     private ImageView ivTower;
     private TextView tvBand;
+
+    //Bottom
     private ImageView ivPrev, ivExit, ivNext;
     private TextView tvUpdate;
 
-    private RelativeLayout vPointsContainer;
-    private ViewPager viewPager;
-    private LinearLayout vPoints;
-    private View vSelectedPoint;
-
     //==========Variables in this Activity==========
     private TabFragOnPageChange mTabFragOnPageChange;
-    private VPFragPagerAdapter mFragAdapter;
+    private VPFragStateAdapter mFragAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,22 +71,28 @@ public class MainActivity extends BaseKeyEventActivity {
     }
 
     private void init() {
-        //
+        //---- Widgets ----
+        //Top
         vPointsContainer = (RelativeLayout) findViewById(R.id.v_points_container);
-        viewPager = (ViewPager) findViewById(R.id.vpager);
-        viewPager.setAdapter(mFragAdapter = new VPFragPagerAdapter(getSupportFragmentManager()));
+        viewPager = (ViewPagerImpl) findViewById(R.id.vpager);
+        viewPager.setAdapter(mFragAdapter = new VPFragStateAdapter(getSupportFragmentManager()));
         viewPager.setOnPageChangeListener((mTabFragOnPageChange = new TabFragOnPageChange()));
 
+        //Center
         tvFreq = (TextView) findViewById(R.id.v_freq);
         tvFreq.setText("");
 
+        ivSeekBarBg = (ImageView) findViewById(R.id.v_seek_bg);
         seekBarFreq = (SeekBar) findViewById(R.id.seekbar_freqs);
         seekBarFreq.setOnSeekBarChangeListener(new SeekBarOnChange());
 
+        layoutTower = findViewById(R.id.layout_tower);
         tvBand = (TextView) findViewById(R.id.v_band);
+        tvBand.setText("");
         ivTower = (ImageView) findViewById(R.id.v_radio_tower);
         ivTower.setOnClickListener(mViewOnClick);
 
+        //Bottom
         ivPrev = (ImageView) findViewById(R.id.iv_play_pre);
         ivPrev.setOnClickListener(mViewOnClick);
 
@@ -91,49 +105,31 @@ public class MainActivity extends BaseKeyEventActivity {
         tvUpdate = (TextView) findViewById(R.id.v_update);
         tvUpdate.setOnClickListener(mViewOnClick);
 
-        // Initialize page data
-        int lastBand = getLastBand();
-        setBandTxt(lastBand);
-        loadPointContainer(lastBand);
-        loadViewPager();
-
+        // Initialize views
+        refreshCollectViews();
         // Bind Service
         bindAndCreateControlService(1, 2);
     }
 
-    private void setBandTxt(int band) {
-        String bandTxt = "";
-        switch (band) {
-            case BandType.FM:
-                bandTxt = getString(R.string.band_fm);
-                break;
-            case BandType.AM:
-                bandTxt = getString(R.string.band_am);
-                break;
-        }
-        tvBand.setText(bandTxt);
-    }
-
-    @SuppressLint("InflateParams")
-    private void loadPointContainer(int band) {
+    private void refreshCollectViews() {
+        //Points view
         vPointsContainer.removeAllViews();
-        switch (band) {
+        switch (getLastBand()) {
             case BandType.FM:
-                View vPointsFM = getLayoutInflater().inflate(R.layout.v_points_fm, null);
-                vPoints = (LinearLayout) vPointsFM.findViewById(R.id.v_bg_points);
-                vSelectedPoint = vPointsFM.findViewById(R.id.v_select_point);
-                vPointsContainer.addView(vPointsFM);
+                View vFMRoot = getLayoutInflater().inflate(R.layout.v_points_fm, vPointsContainer);
+                ivArrow = (ImageView) vFMRoot.findViewById(R.id.v_arrow_to_right);
+                vBgPoints = (LinearLayout) vFMRoot.findViewById(R.id.v_bg_points);
+                vSelectedPoint = (ImageView) vFMRoot.findViewById(R.id.v_select_point);
                 break;
             case BandType.AM:
-                View vPointsAM = getLayoutInflater().inflate(R.layout.v_points_am, null);
-                vPoints = (LinearLayout) vPointsAM.findViewById(R.id.v_bg_points);
-                vSelectedPoint = vPointsAM.findViewById(R.id.v_select_point);
-                vPointsContainer.addView(vPointsAM);
+                View vAMRoot = getLayoutInflater().inflate(R.layout.v_points_am, vPointsContainer);
+                ivArrow = (ImageView) vAMRoot.findViewById(R.id.v_arrow_to_right);
+                vBgPoints = (LinearLayout) vAMRoot.findViewById(R.id.v_bg_points);
+                vSelectedPoint = (ImageView) vAMRoot.findViewById(R.id.v_select_point);
                 break;
         }
-    }
 
-    private void loadViewPager() {
+        //ViewPager
         List<BaseAppV4Fragment> mListPages = new ArrayList<BaseAppV4Fragment>();
         int loop = getPageSum();
         for (int idx = 0; idx < loop; idx++) {
@@ -151,12 +147,46 @@ public class MainActivity extends BaseKeyEventActivity {
         }
     }
 
+    private void initSeekBar() {
+        seekBarFreq.setMax(getSeekBarMax());
+        seekBarFreq.setProgress(0);
+    }
+
+    @Override
+    public void onFreqChanged(int freq, int band) {
+        super.onFreqChanged(freq, band);
+        seekBarFreq.setProgress(freq - getMinFreq());
+        setFreqInfo(freq, band);
+    }
+
+    private void setFreqInfo(int freq, int band) {
+        if (tvFreq == null || tvBand == null) {
+            return;
+        }
+
+        //Set Band/Frequency
+        String txtBand = "";
+        String txtFreq = "";
+        switch (band) {
+            case BandType.FM:
+                txtBand = getString(R.string.band_fm);
+                txtFreq = txtBand + String.format(Locale.getDefault(), "%1$.1f", (freq / 100d));
+                break;
+            case BandType.AM:
+                txtBand = getString(R.string.band_am);
+                txtFreq = txtBand + String.valueOf(freq);
+                break;
+        }
+        tvBand.setText(txtBand);
+        tvFreq.setText(txtFreq);
+    }
+
     private View.OnClickListener mViewOnClick = new View.OnClickListener() {
 
         @Override
         public void onClick(View v) {
             if (v == ivTower) {
-                switchBand();
+                execSwitchBand();
             } else if (v == ivPrev) {
                 scanAndPlayPrev();
             } else if (v == ivNext) {
@@ -165,67 +195,98 @@ public class MainActivity extends BaseKeyEventActivity {
                 closeFm();
                 finish();
             } else if (v == tvUpdate) {
-                scanAll();
+                searchAll();
             }
-        }
-
-        void switchBand() {
-            ivTower.setEnabled(false);
-            ObjectAnimator objAnim = ObjectAnimator.ofFloat(ivTower, "rotationY", 0, 180);
-            objAnim.setInterpolator(new LinearInterpolator());
-            objAnim.setDuration(300);
-            objAnim.addListener(new Animator.AnimatorListener() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    execSwitchBand();
-                }
-
-                @Override
-                public void onAnimationCancel(Animator animation) {
-                }
-
-                @Override
-                public void onAnimationRepeat(Animator animation) {
-                }
-            });
-            objAnim.start();
         }
     };
 
     @Override
     protected void execSwitchBand() {
-        super.execSwitchBand();
-        initSeekBar();
-        setBandTxt(getCurrBand());
-        ivTower.setEnabled(true);
+        ivTower.setEnabled(false);
+        ObjectAnimator objAnim = ObjectAnimator.ofFloat(ivTower, "rotationY", 0, 180);
+        objAnim.setInterpolator(new LinearInterpolator());
+        objAnim.setDuration(300);
+        objAnim.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                MainActivity.super.execSwitchBand();
+                refreshCollectViews();
+                initSeekBar();
+                ivTower.setEnabled(true);
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+            }
+        });
+        objAnim.start();
     }
 
     @Override
-    public void onFreqChanged(int freq, int band) {
-        super.onFreqChanged(freq, band);
-//        setBandTxt(band);
-        setFreqTxt(freq, band);
-        seekBarFreq.setProgress(freq - getMinFreq());
+    public void onSeachFreqStart(int type) {
+        super.onSeachFreqStart(type);
+        refreshPageOnScanning(true);
     }
 
-    private void setFreqTxt(int freq, int band) {
-        if (tvFreq == null || tvBand == null) {
-            return;
+    @Override
+    public void onSeachFreqEnd(int type) {
+        super.onSeachFreqEnd(type);
+        refreshPageOnScanning(false);
+    }
+
+    private void refreshPageOnScanning(boolean isScanning) {
+        Log.i(TAG, "refreshPageOnScanning(" + isScanning + ")");
+        //Refresh top
+        viewPager.setScrollEnable(!isScanning);
+        Fragment frag = mFragAdapter.getItem(mTabFragOnPageChange.getPageIdx());
+        if (frag != null) {
+            ((TabFreqCollectFragment) frag).refreshPageOnScanning(isScanning);
         }
-        switch (band) {
-            case BandType.FM:
-                String txt = tvBand.getText() + String.valueOf(freq / 100d);
-                tvFreq.setText(txt);
-                break;
-            case BandType.AM:
-                txt = tvBand.getText() + String.valueOf(freq);
-                tvFreq.setText(txt);
-                break;
+
+        if (ivArrow != null) {
+            ivArrow.setImageResource(isScanning ? R.drawable.arrow_disable : R.drawable.arrow);
         }
+        if (vSelectedPoint != null) {
+            vSelectedPoint.setImageResource(isScanning ? R.drawable.tab_point_current_disable : R.drawable.tab_point_current);
+        }
+        if (vBgPoints != null) {
+            int childCount = vBgPoints.getChildCount();
+            for (int idx = 0; idx < childCount; idx++) {
+                View childV = vBgPoints.getChildAt(idx);
+                if (childV != null && childV instanceof ImageView) {
+                    ((ImageView) childV).setImageResource(isScanning ? R.drawable.tab_point_current_disable : R.drawable.tab_point_current);
+                }
+            }
+        }
+
+        //Refresh SeekBar
+        seekBarFreq.setEnabled(!isScanning);
+        ivSeekBarBg.setImageResource(isScanning ? 0 : R.drawable.seekbar_progress_bg_radio);
+
+        //Refresh tower
+        layoutTower.setVisibility(isScanning ? View.INVISIBLE : View.VISIBLE);
+
+        //Refresh operate
+        ivPrev.setEnabled(!isScanning);
+        ivPrev.setImageResource(isScanning ? R.drawable.op_prev_disable : R.drawable.btn_op_prev_selector);
+
+        ivExit.setEnabled(!isScanning);
+        ivExit.setImageResource(isScanning ? R.drawable.op_power_disable : R.drawable.btn_op_exit_selector);
+
+        ivNext.setEnabled(!isScanning);
+        ivNext.setImageResource(isScanning ? R.drawable.op_next_disable : R.drawable.btn_op_next_selector);
+
+        tvUpdate.setText(isScanning ? R.string.cancel_update : R.string.radio_update);
+        tvUpdate.setTextColor(isScanning ? getResources().getColor(R.color.red) : getResources().getColor(R.color.white));
+        tvUpdate.setBackgroundResource(isScanning ? R.drawable.bg_border_red : R.drawable.bg_border_white);
     }
 
     @Override
@@ -235,43 +296,6 @@ public class MainActivity extends BaseKeyEventActivity {
         closeFm();
         bindAndCreateControlService(3, 4);
         super.onDestroy();
-    }
-
-    public class VPFragPagerAdapter extends FragmentPagerAdapter {
-
-        /**
-         * Fragment List
-         */
-        private List<BaseAppV4Fragment> mListFms;
-
-        VPFragPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        void setListFrags(List<BaseAppV4Fragment> listFms) {
-            this.mListFms = listFms;
-        }
-
-        void refresh(List<BaseAppV4Fragment> listFms) {
-            setListFrags(listFms);
-            notifyDataSetChanged();
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            if (mListFms == null || mListFms.size() == 0) {
-                return null;
-            }
-            return mListFms.get(position);
-        }
-
-        @Override
-        public int getCount() {
-            if (mListFms == null) {
-                return 0;
-            }
-            return mListFms.size();
-        }
     }
 
     private class TabFragOnPageChange implements ViewPager.OnPageChangeListener {
@@ -307,16 +331,16 @@ public class MainActivity extends BaseKeyEventActivity {
         public void onPageSelected(int pos) {
             Log.i(TAG, "TabFragOnPageChange> onPageSelected(" + pos + ")");
             // 如果圆点背景视图未加载
-            if (vPoints == null) {
+            if (vBgPoints == null) {
                 return;
             }
 
             // 多圆点背景宽
-            int layoutW = vPoints.getWidth();
+            int layoutW = vBgPoints.getWidth();
             // 单个圆点宽
             int pointW = vSelectedPoint.getWidth();
             // 背景有几个圆点
-            int pointSum = vPoints.getChildCount();
+            int pointSum = vBgPoints.getChildCount();
             // 背景圆点间距
             int distance = (layoutW - pointSum * pointW) / (pointSum - 1);
             // 每次圆点应该位移的距离
@@ -363,19 +387,13 @@ public class MainActivity extends BaseKeyEventActivity {
         public void onStopTrackingTouch(SeekBar seekBar) {
             Log.i(TAG, "onStopTrackingTouch");
             int targetFreq = getMinFreq() + seekBar.getProgress();
-            setFreqTxt(targetFreq, getCurrBand());
             play(targetFreq);
         }
 
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            setFreqTxt(getMinFreq() + progress, getCurrBand());
+            setFreqInfo(getMinFreq() + progress, getCurrBand());
         }
-    }
-
-    private void initSeekBar() {
-        seekBarFreq.setMax(getSeekBarMax());
-        seekBarFreq.setProgress(0);
     }
 
     /**
@@ -393,12 +411,4 @@ public class MainActivity extends BaseKeyEventActivity {
         }
         return 0;
     }
-
-//    public int getTabFragIdx() {
-//        return mTabFragOnPageChange.getPageIdx();
-//    }
-//
-//    public void playFavored(int freq) {
-//        Log.i(TAG, "playFavored(" + freq + ")");
-//    }
 }

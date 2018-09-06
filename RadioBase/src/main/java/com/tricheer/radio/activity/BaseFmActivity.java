@@ -126,8 +126,8 @@ public abstract class BaseFmActivity extends BaseFragActivity implements FmDeleg
     }
 
     @Override
-    public boolean scanAll() {
-        return mControlService != null && mControlService.scanAll();
+    public boolean searchAll() {
+        return mControlService != null && mControlService.searchAll();
     }
 
     @Override

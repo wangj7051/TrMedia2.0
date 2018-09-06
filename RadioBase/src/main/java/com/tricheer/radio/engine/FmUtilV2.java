@@ -175,7 +175,7 @@ public class FmUtilV2 implements FmDelegate {
     }
 
     @Override
-    public boolean scanAll() {
+    public boolean searchAll() {
         try {
             Log.i(TAG, "scanAll()");
             return mFmManager.startSearchAvailableFreq();

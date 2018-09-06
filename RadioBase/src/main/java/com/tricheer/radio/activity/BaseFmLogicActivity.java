@@ -49,7 +49,7 @@ public abstract class BaseFmLogicActivity extends BaseFmActivity {
             //
             setBand(lastBand);
             if (lastFreq == -1) {
-                scanAll();
+                searchAll();
             } else {
                 play(lastFreq);
             }

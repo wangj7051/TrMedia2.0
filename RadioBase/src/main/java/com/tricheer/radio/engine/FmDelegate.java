@@ -68,7 +68,7 @@ public interface FmDelegate {
      *
      * @return true - Successfully; false - Failed.
      */
-    boolean scanAll();
+    boolean searchAll();
 
     /**
      * Get all available frequencies
