@@ -163,7 +163,15 @@ public abstract class BaseFmActivity extends BaseFragActivity implements FmDeleg
         if (mControlService != null) {
             return mControlService.getMinFreq();
         }
-        return 9160;
+        return 0;
+    }
+
+    @Override
+    public int getMinFreq(int band) {
+        if (mControlService != null) {
+            return mControlService.getMinFreq(band);
+        }
+        return 0;
     }
 
     @Override
@@ -171,7 +179,15 @@ public abstract class BaseFmActivity extends BaseFragActivity implements FmDeleg
         if (mControlService != null) {
             return mControlService.getMaxFreq();
         }
-        return 10800;
+        return 0;
+    }
+
+    @Override
+    public int getMaxFreq(int band) {
+        if (mControlService != null) {
+            return mControlService.getMaxFreq(band);
+        }
+        return 0;
     }
 
     @Override

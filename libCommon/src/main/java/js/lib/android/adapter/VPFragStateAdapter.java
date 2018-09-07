@@ -47,6 +47,12 @@ public class VPFragStateAdapter extends FragmentStatePagerAdapter {
         notifyDataSetChanged();
     }
 
+    public void refresh(List<BaseAppV4Fragment> listFms, boolean isRefresh) {
+        setRfreshFlag(isRefresh);
+        setListFrags(listFms);
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getCount() {
         if (mListFms == null) {

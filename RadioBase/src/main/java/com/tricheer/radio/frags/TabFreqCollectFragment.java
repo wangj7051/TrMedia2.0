@@ -12,6 +12,8 @@ import android.widget.TextView;
 
 import com.tricheer.radio.MainActivity;
 import com.tricheer.radio.R;
+import com.tricheer.radio.utils.FreqFormatUtil;
+import com.tricheer.radio.utils.PreferUtils;
 
 import js.lib.android.fragment.BaseAppV4Fragment;
 
@@ -24,9 +26,6 @@ public class TabFreqCollectFragment extends BaseAppV4Fragment {
     //TAG
     private final String TAG = "FreqCollectFrag";
 
-    public TabFreqCollectFragment() {
-    }
-
     /**
      * ==========Variables in this Activity==========
      */
@@ -37,7 +36,12 @@ public class TabFreqCollectFragment extends BaseAppV4Fragment {
      * ==========Widgets in this Activity==========
      */
     private View contentV;
-    private TextView tvItem0, tvItem1, tvItem2, tvItem3, tvItem4, tvItem5;
+    private TextView tvItems[] = new TextView[6];
+    private int mPageIdx;
+
+    public void setPageIdx(int pageIdx) {
+        mPageIdx = pageIdx;
+    }
 
     @Override
     public void onAttach(Activity activity) {
@@ -67,56 +71,65 @@ public class TabFreqCollectFragment extends BaseAppV4Fragment {
 
     private void init() {
         // ---- Widgets ----
-        tvItem0 = (TextView) contentV.findViewById(R.id.tv_collect1);
-        tvItem0.setOnClickListener(mFilterViewOnClick);
-        tvItem0.setOnLongClickListener(mOnLongClick);
+        tvItems[0] = (TextView) contentV.findViewById(R.id.tv_collect1);
+        tvItems[0].setOnClickListener(mFilterViewOnClick);
+        tvItems[0].setOnLongClickListener(mOnLongClick);
 
-        tvItem1 = (TextView) contentV.findViewById(R.id.tv_collect2);
-        tvItem1.setOnClickListener(mFilterViewOnClick);
-        tvItem1.setOnLongClickListener(mOnLongClick);
+        tvItems[1] = (TextView) contentV.findViewById(R.id.tv_collect2);
+        tvItems[1].setOnClickListener(mFilterViewOnClick);
+        tvItems[1].setOnLongClickListener(mOnLongClick);
 
-        tvItem2 = (TextView) contentV.findViewById(R.id.tv_collect3);
-        tvItem2.setOnClickListener(mFilterViewOnClick);
-        tvItem2.setOnLongClickListener(mOnLongClick);
+        tvItems[2] = (TextView) contentV.findViewById(R.id.tv_collect3);
+        tvItems[2].setOnClickListener(mFilterViewOnClick);
+        tvItems[2].setOnLongClickListener(mOnLongClick);
 
-        tvItem3 = (TextView) contentV.findViewById(R.id.tv_collect4);
-        tvItem3.setOnClickListener(mFilterViewOnClick);
-        tvItem3.setOnLongClickListener(mOnLongClick);
+        tvItems[3] = (TextView) contentV.findViewById(R.id.tv_collect4);
+        tvItems[3].setOnClickListener(mFilterViewOnClick);
+        tvItems[3].setOnLongClickListener(mOnLongClick);
 
-        tvItem4 = (TextView) contentV.findViewById(R.id.tv_collect5);
-        tvItem4.setOnClickListener(mFilterViewOnClick);
-        tvItem4.setOnLongClickListener(mOnLongClick);
+        tvItems[4] = (TextView) contentV.findViewById(R.id.tv_collect5);
+        tvItems[4].setOnClickListener(mFilterViewOnClick);
+        tvItems[4].setOnLongClickListener(mOnLongClick);
 
-        tvItem5 = (TextView) contentV.findViewById(R.id.tv_collect6);
-        tvItem5.setOnClickListener(mFilterViewOnClick);
-        tvItem5.setOnLongClickListener(mOnLongClick);
+        tvItems[5] = (TextView) contentV.findViewById(R.id.tv_collect6);
+        tvItems[5].setOnClickListener(mFilterViewOnClick);
+        tvItems[5].setOnLongClickListener(mOnLongClick);
 
         //
-        loadFavored();
+        loadCollected();
     }
 
-    private void loadFavored() {
-//        int pageIdx = getFragIdx();
-//        int band = getCurrBand();
-//        int freq = getCurrFreq();
+    private void loadCollected() {
+        int band = getCurrBand();
+        int loop = tvItems.length;
+        for (int idx = 0; idx < loop; idx++) {
+            TextView tv = tvItems[idx];
+            int collectedFreq = PreferUtils.getCollect(false, band, mPageIdx, idx, 0);
+            if (collectedFreq != -1) {
+                tv.setTag(collectedFreq);
+                tv.setText(FreqFormatUtil.getFreqStr(band, collectedFreq));
+            }
+        }
+        refreshItemsBgByCurrFreq();
+    }
 
-//        int faveFreq0 = PreferUtils.getCollect(false, band, pageIdx, 0, freq);
-//        tvItem0.setText(String.valueOf(faveFreq0 / 100d));
-//
-//        int faveFreq1 = PreferUtils.getCollect(false, band, pageIdx, 1, freq);
-//        tvItem1.setText(String.valueOf(faveFreq1 / 100d));
-//
-//        int faveFreq2 = PreferUtils.getCollect(false, band, pageIdx, 2, freq);
-//        tvItem2.setText(String.valueOf(faveFreq2 / 100d));
-//
-//        int faveFreq3 = PreferUtils.getCollect(false, band, pageIdx, 3, freq);
-//        tvItem3.setText(String.valueOf(faveFreq3 / 100d));
-//
-//        int faveFreq4 = PreferUtils.getCollect(false, band, pageIdx, 4, freq);
-//        tvItem4.setText(String.valueOf(faveFreq4 / 100d));
-//
-//        int faveFreq5 = PreferUtils.getCollect(false, band, pageIdx, 5, freq);
-//        tvItem5.setText(String.valueOf(faveFreq5 / 100d));
+    public void refreshItemsBgByCurrFreq() {
+        //Flag first position that has the same frequency as current.
+        boolean isCollectedBgSelected = false;
+        int currFreq = getCurrFreq();
+        for (TextView tv : tvItems) {
+            if (isCollectedBgSelected) {
+                setBg(tv, false);
+            } else {
+                Object objTag = tv.getTag();
+                if (objTag != null) {
+                    isCollectedBgSelected = ((int) objTag == currFreq);
+                    setBg(tv, isCollectedBgSelected);
+                } else {
+                    setBg(tv, false);
+                }
+            }
+        }
     }
 
     /**
@@ -133,21 +146,10 @@ public class TabFreqCollectFragment extends BaseAppV4Fragment {
             txtColor = getResources().getColor(android.R.color.white);
         }
 
-        //Set enable
-        tvItem0.setEnabled(!isScanning);
-        tvItem1.setEnabled(!isScanning);
-        tvItem2.setEnabled(!isScanning);
-        tvItem3.setEnabled(!isScanning);
-        tvItem4.setEnabled(!isScanning);
-        tvItem5.setEnabled(!isScanning);
-
-        //Set text color
-        tvItem0.setTextColor(txtColor);
-        tvItem1.setTextColor(txtColor);
-        tvItem2.setTextColor(txtColor);
-        tvItem3.setTextColor(txtColor);
-        tvItem4.setTextColor(txtColor);
-        tvItem5.setTextColor(txtColor);
+        for (TextView tv : tvItems) {
+            tv.setEnabled(!isScanning);
+            tv.setTextColor(txtColor);
+        }
     }
 
     View.OnLongClickListener mOnLongClick = new View.OnLongClickListener() {
@@ -155,70 +157,66 @@ public class TabFreqCollectFragment extends BaseAppV4Fragment {
         @Override
         public boolean onLongClick(View v) {
             Log.i(TAG, "mOnLongClick> onLongClick");
-            if (v == tvItem0) {
-                favorCurr(tvItem0, 0);
-            } else if (v == tvItem1) {
-                favorCurr(tvItem1, 1);
-            } else if (v == tvItem2) {
-                favorCurr(tvItem2, 2);
-            } else if (v == tvItem3) {
-                favorCurr(tvItem3, 3);
-            } else if (v == tvItem4) {
-                favorCurr(tvItem4, 4);
-            } else if (v == tvItem5) {
-                favorCurr(tvItem5, 5);
+            int loop = tvItems.length;
+            for (int idx = 0; idx < loop; idx++) {
+                TextView tv = tvItems[idx];
+                if (tv == v) {
+                    collectFreq(tv, idx);
+                    break;
+                }
             }
             return true;
         }
 
-        private void favorCurr(TextView tv, int position) {
-//            int currFreq = getCurrFreq();
-//            PreferUtils.getCollect(true, getCurrBand(), getFragIdx(), position, currFreq);
-//            tv.setText(String.valueOf(currFreq / 100d));
+        private void collectFreq(TextView tv, int position) {
+            int currFreq = getCurrFreq();
+            int currBand = getCurrBand();
+            PreferUtils.getCollect(true, currBand, mPageIdx, position, currFreq);
+            tv.setText(FreqFormatUtil.getFreqStr(currBand, currFreq));
+            tv.setTag(currFreq);
         }
     };
+
+    private int getCurrBand() {
+        return mAttachedActivity.getCurrBand();
+    }
+
+    private int getCurrFreq() {
+        return mAttachedActivity.getCurrFreq();
+    }
 
     private View.OnClickListener mFilterViewOnClick = new View.OnClickListener() {
 
         @Override
         public void onClick(View v) {
             Log.i(TAG, "mFilterViewOnClick> onClick");
-            switchFilter(v);
-            if (v == tvItem0) {
-                playFavored(0);
-            } else if (v == tvItem1) {
-                playFavored(1);
-            } else if (v == tvItem2) {
-                playFavored(2);
-            } else if (v == tvItem3) {
-                playFavored(3);
-            } else if (v == tvItem4) {
-                playFavored(4);
-            } else if (v == tvItem5) {
-                playFavored(5);
+            for (TextView tv : tvItems) {
+                if (tv == v) {
+                    setBg(tv, true);
+                    playCollected(tv);
+                } else {
+                    setBg(tv, false);
+                }
             }
         }
 
-        private void switchFilter(View v) {
-            setBg(tvItem0, v == tvItem0);
-            setBg(tvItem1, v == tvItem1);
-            setBg(tvItem2, v == tvItem2);
-            setBg(tvItem3, v == tvItem3);
-            setBg(tvItem4, v == tvItem4);
-            setBg(tvItem5, v == tvItem5);
-        }
-
-        private void setBg(View v, boolean selected) {
-            if (selected) {
-                v.setBackgroundResource(R.drawable.bg_title_item_c);
-            } else {
-                v.setBackgroundResource(R.drawable.btn_collect_selector);
+        private void playCollected(View v) {
+            Log.i(TAG, "playCollected(View)");
+            Object objTag = v.getTag();
+            if (objTag != null && objTag instanceof Integer) {
+                int collectedFreq = (int) objTag;
+                if (collectedFreq != getCurrFreq()) {
+                    mAttachedActivity.playCollected((Integer) objTag);
+                }
             }
-        }
-
-        private void playFavored(int freq) {
-            Log.i(TAG, "playFavored(" + freq + ")");
-//            mAttachedActivity.playFavored(freq);
         }
     };
+
+    private void setBg(View v, boolean selected) {
+        if (selected) {
+            v.setBackgroundResource(R.drawable.bg_title_item_c);
+        } else {
+            v.setBackgroundResource(R.drawable.btn_collect_selector);
+        }
+    }
 }

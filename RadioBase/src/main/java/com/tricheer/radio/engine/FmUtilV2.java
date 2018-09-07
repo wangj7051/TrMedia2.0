@@ -240,6 +240,17 @@ public class FmUtilV2 implements FmDelegate {
     }
 
     @Override
+    public int getMinFreq(int band) {
+        switch (band) {
+            case BandType.FM:
+                return 7600;
+            case BandType.AM:
+                return 522;
+        }
+        return 0;
+    }
+
+    @Override
     public int getMaxFreq() {
         try {
             Log.i(TAG, "getMaxFreq()");
@@ -248,6 +259,17 @@ public class FmUtilV2 implements FmDelegate {
             Log.i(TAG, "getMaxFreq() > " + e.getMessage());
             return 10800;
         }
+    }
+
+    @Override
+    public int getMaxFreq(int band) {
+        switch (band) {
+            case BandType.FM:
+                return 10800;
+            case BandType.AM:
+                return 1620;
+        }
+        return 0;
     }
 
     @Override

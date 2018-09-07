@@ -18,14 +18,15 @@ import android.widget.TextView;
 import com.tricheer.radio.activity.BaseKeyEventActivity;
 import com.tricheer.radio.engine.BandInfos.BandType;
 import com.tricheer.radio.frags.TabFreqCollectFragment;
+import com.tricheer.radio.utils.FreqFormatUtil;
 import com.tricheer.radio.utils.SettingsSysUtil;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import js.lib.android.adapter.VPFragStateAdapter;
 import js.lib.android.fragment.BaseAppV4Fragment;
+import js.lib.android.view.SeekBarImpl;
 import js.lib.android.view.ViewPagerImpl;
 
 /**
@@ -47,8 +48,8 @@ public class MainActivity extends BaseKeyEventActivity {
 
     //Center
     private TextView tvFreq;
-    private ImageView ivSeekBarBg;
     private SeekBar seekBarFreq;
+    private SeekBarImpl seekBarSearchingAll;
 
     private View layoutTower;
     private ImageView ivTower;
@@ -61,6 +62,9 @@ public class MainActivity extends BaseKeyEventActivity {
     //==========Variables in this Activity==========
     private TabFragOnPageChange mTabFragOnPageChange;
     private VPFragStateAdapter mFragAdapter;
+
+    //Searching all bands
+    private List<SearchingAllItem> mListSearchingAllItems = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,7 +86,8 @@ public class MainActivity extends BaseKeyEventActivity {
         tvFreq = (TextView) findViewById(R.id.v_freq);
         tvFreq.setText("");
 
-        ivSeekBarBg = (ImageView) findViewById(R.id.v_seek_bg);
+        seekBarSearchingAll = (SeekBarImpl) findViewById(R.id.seekbar_freqs_searching_all);
+        seekBarSearchingAll.setCanSeek(false);
         seekBarFreq = (SeekBar) findViewById(R.id.seekbar_freqs);
         seekBarFreq.setOnSeekBarChangeListener(new SeekBarOnChange());
 
@@ -105,10 +110,18 @@ public class MainActivity extends BaseKeyEventActivity {
         tvUpdate = (TextView) findViewById(R.id.v_update);
         tvUpdate.setOnClickListener(mViewOnClick);
 
-        // Initialize views
-        refreshCollectViews();
         // Bind Service
         bindAndCreateControlService(1, 2);
+    }
+
+    @Override
+    protected void onServiceStatusChanged(Service service, boolean isConnected) {
+        if (isConnected) {
+            refreshCollectViews();
+            initSeekBar();
+            register(this);
+            execOpenRadio();
+        }
     }
 
     private void refreshCollectViews() {
@@ -130,21 +143,14 @@ public class MainActivity extends BaseKeyEventActivity {
         }
 
         //ViewPager
-        List<BaseAppV4Fragment> mListPages = new ArrayList<BaseAppV4Fragment>();
+        List<BaseAppV4Fragment> listFrags = new ArrayList<BaseAppV4Fragment>();
         int loop = getPageSum();
         for (int idx = 0; idx < loop; idx++) {
-            mListPages.add(new TabFreqCollectFragment());
+            TabFreqCollectFragment frag = new TabFreqCollectFragment();
+            frag.setPageIdx(idx);
+            listFrags.add(frag);
         }
-        mFragAdapter.refresh(mListPages);
-    }
-
-    @Override
-    protected void onServiceStatusChanged(Service service, boolean isConnected) {
-        if (isConnected) {
-            initSeekBar();
-            register(this);
-            execOpenRadio();
-        }
+        mFragAdapter.refresh(listFrags, true);
     }
 
     private void initSeekBar() {
@@ -155,8 +161,33 @@ public class MainActivity extends BaseKeyEventActivity {
     @Override
     public void onFreqChanged(int freq, int band) {
         super.onFreqChanged(freq, band);
-        seekBarFreq.setProgress(freq - getMinFreq());
+        int currProgress = freq - getMinFreq();
+        seekBarFreq.setProgress(currProgress);
         setFreqInfo(freq, band);
+
+        //
+        Fragment frag = mFragAdapter.getItem(mTabFragOnPageChange.getPageIdx());
+        if (frag != null) {
+            ((TabFreqCollectFragment) frag).refreshItemsBgByCurrFreq();
+        }
+
+        //Set searching all progress
+        if (seekBarSearchingAll.isEnabled()) {
+            int tempProgress = currProgress;
+            if (mListSearchingAllItems.size() == 1) {
+                SearchingAllItem item = mListSearchingAllItems.get(0);
+                if (item.max == 0) {
+                    item.max = getSeekBarMax(band);
+                }
+            }
+            if (mListSearchingAllItems.size() == 2) {
+                SearchingAllItem item = mListSearchingAllItems.get(0);
+                tempProgress += item.max;
+            }
+            if (tempProgress >= seekBarSearchingAll.getProgress()) {
+                seekBarSearchingAll.setProgress(tempProgress);
+            }
+        }
     }
 
     private void setFreqInfo(int freq, int band) {
@@ -170,11 +201,11 @@ public class MainActivity extends BaseKeyEventActivity {
         switch (band) {
             case BandType.FM:
                 txtBand = getString(R.string.band_fm);
-                txtFreq = txtBand + String.format(Locale.getDefault(), "%1$.1f", (freq / 100d));
+                txtFreq = txtBand + FreqFormatUtil.getFmFreqStr(freq);
                 break;
             case BandType.AM:
                 txtBand = getString(R.string.band_am);
-                txtFreq = txtBand + String.valueOf(freq);
+                txtFreq = txtBand + FreqFormatUtil.getAmFreqStr(freq);
                 break;
         }
         tvBand.setText(txtBand);
@@ -195,7 +226,7 @@ public class MainActivity extends BaseKeyEventActivity {
                 closeFm();
                 finish();
             } else if (v == tvUpdate) {
-                searchAll();
+                searchOrExitAllBands(true);
             }
         }
     };
@@ -209,11 +240,15 @@ public class MainActivity extends BaseKeyEventActivity {
         objAnim.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
+                mTabFragOnPageChange.reset();
+                viewPager.setCurrentItem(0, true);
             }
 
             @Override
             public void onAnimationEnd(Animator animation) {
+                //Switch
                 MainActivity.super.execSwitchBand();
+                //UI
                 refreshCollectViews();
                 initSeekBar();
                 ivTower.setEnabled(true);
@@ -230,16 +265,75 @@ public class MainActivity extends BaseKeyEventActivity {
         objAnim.start();
     }
 
+    private void searchOrExitAllBands(boolean isFromUser) {
+        //User cancel searching
+//        if (isFromUser && mSbaSearchedBands.size() > 0) {
+//            refreshPageOnScanning(false);
+//            openRadioByBand(mSbaSearchedBands.keyAt(0));
+//            mSbaSearchedBands.clear();
+//            return;
+//        }
+
+        //First time
+        if (mListSearchingAllItems.size() == 0) {
+            refreshPageOnScanning(true);
+            searchAll();
+            return;
+        }
+        //Second Time
+        if (mListSearchingAllItems.size() == 1) {
+            SearchingAllItem item = mListSearchingAllItems.get(0);
+            switch (item.band) {
+                case BandType.FM:
+                    setBand(BandType.AM);
+                    break;
+                case BandType.AM:
+                    setBand(BandType.FM);
+                    break;
+
+            }
+            initSeekBar();
+            searchAll();
+            return;
+        }
+        //End - Switch the original band
+        if (mListSearchingAllItems.size() == 2) {
+            refreshPageOnScanning(false);
+            openRadioByBand(mListSearchingAllItems.get(0).band);
+            mListSearchingAllItems.clear();
+        }
+    }
+
+    @Override
+    protected void openRadioByBand(int band) {
+        super.openRadioByBand(band);
+        //UI
+        refreshCollectViews();
+        initSeekBar();
+        ivTower.setEnabled(true);
+    }
+
     @Override
     public void onSeachFreqStart(int type) {
         super.onSeachFreqStart(type);
-        refreshPageOnScanning(true);
+        //Add item
+        SearchingAllItem item = new SearchingAllItem();
+        item.band = type;
+        mListSearchingAllItems.add(item);
     }
 
     @Override
     public void onSeachFreqEnd(int type) {
         super.onSeachFreqEnd(type);
-        refreshPageOnScanning(false);
+        //Update item
+        try {
+            int tailPos = mListSearchingAllItems.size() - 1;
+            SearchingAllItem item = mListSearchingAllItems.get(tailPos);
+            item.isSearched = true;
+            searchOrExitAllBands(false);
+        } catch (Exception e) {
+            Log.i(TAG, "");
+        }
     }
 
     private void refreshPageOnScanning(boolean isScanning) {
@@ -262,14 +356,21 @@ public class MainActivity extends BaseKeyEventActivity {
             for (int idx = 0; idx < childCount; idx++) {
                 View childV = vBgPoints.getChildAt(idx);
                 if (childV != null && childV instanceof ImageView) {
-                    ((ImageView) childV).setImageResource(isScanning ? R.drawable.tab_point_current_disable : R.drawable.tab_point_current);
+                    ((ImageView) childV).setImageResource(isScanning ? R.drawable.tab_point_bg_disable : R.drawable.tab_point_bg);
                 }
             }
         }
 
         //Refresh SeekBar
         seekBarFreq.setEnabled(!isScanning);
-        ivSeekBarBg.setImageResource(isScanning ? 0 : R.drawable.seekbar_progress_bg_radio);
+        seekBarSearchingAll.setEnabled(isScanning);
+        if (isScanning) {
+            seekBarSearchingAll.setMax(getSeekBarMax(BandType.FM) + getSeekBarMax(BandType.AM));
+            seekBarSearchingAll.setProgress(0);
+            seekBarSearchingAll.setVisibility(View.VISIBLE);
+        } else {
+            seekBarSearchingAll.setVisibility(View.GONE);
+        }
 
         //Refresh tower
         layoutTower.setVisibility(isScanning ? View.INVISIBLE : View.VISIBLE);
@@ -284,6 +385,7 @@ public class MainActivity extends BaseKeyEventActivity {
         ivNext.setEnabled(!isScanning);
         ivNext.setImageResource(isScanning ? R.drawable.op_next_disable : R.drawable.btn_op_next_selector);
 
+        tvUpdate.setEnabled(!isScanning);
         tvUpdate.setText(isScanning ? R.string.cancel_update : R.string.radio_update);
         tvUpdate.setTextColor(isScanning ? getResources().getColor(R.color.red) : getResources().getColor(R.color.white));
         tvUpdate.setBackgroundResource(isScanning ? R.drawable.bg_border_red : R.drawable.bg_border_white);
@@ -296,6 +398,15 @@ public class MainActivity extends BaseKeyEventActivity {
         closeFm();
         bindAndCreateControlService(3, 4);
         super.onDestroy();
+    }
+
+    /**
+     * Class for Searching all bands.
+     */
+    private final class SearchingAllItem {
+        int band;
+        boolean isSearched;
+        int max;
     }
 
     private class TabFragOnPageChange implements ViewPager.OnPageChangeListener {
@@ -320,8 +431,7 @@ public class MainActivity extends BaseKeyEventActivity {
          */
         @Override
         public void onPageScrolled(int pos, float posOffset, int posOffsetPixels) {
-            Log.i(TAG, "TabFragOnPageChange> onPageScrolled(" + pos + "," + posOffset + "," +
-                    posOffsetPixels + ")");
+            Log.i(TAG, "TabFragOnPageChange> onPageScrolled(" + pos + "," + posOffset + "," + posOffsetPixels + ")");
         }
 
         /**
@@ -374,6 +484,10 @@ public class MainActivity extends BaseKeyEventActivity {
         int getPageIdx() {
             return mmLastPageIdx;
         }
+
+        void reset() {
+            mmLastPageIdx = 0;
+        }
     }
 
     private class SeekBarOnChange implements SeekBar.OnSeekBarChangeListener {
@@ -410,5 +524,12 @@ public class MainActivity extends BaseKeyEventActivity {
                 return 3;
         }
         return 0;
+    }
+
+    /**
+     * Play collected frequency
+     */
+    public void playCollected(int freq) {
+        play(freq);
     }
 }

@@ -30,7 +30,7 @@ public abstract class BaseFmLogicActivity extends BaseFmActivity {
         PreferUtils.getLastFreq(true, band, freq);
     }
 
-    protected int getLastBand() {
+    public int getLastBand() {
         return PreferUtils.getLastBand(false, -1);
     }
 
@@ -66,26 +66,29 @@ public abstract class BaseFmLogicActivity extends BaseFmActivity {
                 band = BandType.FM;
                 break;
         }
+        openRadioByBand(band);
+    }
 
+    protected void openRadioByBand(int band) {
         //Will close radio after set successfully!!!
         setBand(band);
         PreferUtils.getLastBand(true, band);
 
         //
         if (closeFm()) {
-            mMsgHandler.removeCallbacksAndMessages(null);
-            mMsgHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    execOpenRadio();
-                }
-            }, 100);
+            execOpenRadio();
         }
     }
 
     protected int getSeekBarMax() {
         int maxFreq = getMaxFreq();
         int minFreq = getMinFreq();
+        return maxFreq - minFreq;
+    }
+
+    protected int getSeekBarMax(int band) {
+        int maxFreq = getMaxFreq(band);
+        int minFreq = getMinFreq(band);
         return maxFreq - minFreq;
     }
 

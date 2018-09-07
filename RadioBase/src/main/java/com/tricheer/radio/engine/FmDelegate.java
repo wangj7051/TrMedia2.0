@@ -113,6 +113,14 @@ public interface FmDelegate {
     int getMinFreq();
 
     /**
+     * Get minimum frequency of support area by band
+     *
+     * @param band {@link BandType}
+     * @return int
+     */
+    int getMinFreq(int band);
+
+    /**
      * Get maximum frequency of support area
      * <p>
      * e.g. If your country support [80~108], function will return 108;
@@ -121,6 +129,14 @@ public interface FmDelegate {
      * @return int
      */
     int getMaxFreq();
+
+    /**
+     * Get maximum frequency of support area by band
+     *
+     * @param band {@link BandType}
+     * @return int
+     */
+    int getMaxFreq(int band);
 
     /**
      * Get current frequency

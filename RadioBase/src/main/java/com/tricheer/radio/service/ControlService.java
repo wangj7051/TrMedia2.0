@@ -188,8 +188,18 @@ public class ControlService extends Service implements FmDelegate, FmListener {
     }
 
     @Override
+    public int getMinFreq(int band) {
+        return mFmUtil.getMinFreq(band);
+    }
+
+    @Override
     public int getMaxFreq() {
         return mFmUtil.getMaxFreq();
+    }
+
+    @Override
+    public int getMaxFreq(int band) {
+        return mFmUtil.getMaxFreq(band);
     }
 
     @Override

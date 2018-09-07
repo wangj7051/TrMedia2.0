@@ -188,7 +188,19 @@
                 android:text="@string/band_fm"
                 android:textColor="@android:color/white"
                 android:textSize="38sp" />
+
         </RelativeLayout>
+
+        <js.lib.android.view.SeekBarImpl
+            android:id="@+id/seekbar_freqs_searching_all"
+            style="@style/Widget.SeekBar.SLC_LC2010_VDC.RADIO.DISABLE"
+            android:layout_width="400dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:max="100"
+            android:progress="0"
+            android:visibility="gone" />
     </RelativeLayout>
 
 </RelativeLayout>
