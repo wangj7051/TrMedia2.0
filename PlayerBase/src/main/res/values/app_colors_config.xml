@@ -31,4 +31,6 @@
     <!-- SCL_LC2010_Music colors -->
     <color name="music_item_selected">#af1026</color>
     <color name="video_item_bg">#004B89</color>
+    <color name="video_warning_separate_line">#003E71</color>
+    #003E71
 </resources>

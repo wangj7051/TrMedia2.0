@@ -3,6 +3,7 @@ package com.tricheer.player.version.cj.slc_lc2010_vdc.activity;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
@@ -19,7 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import js.lib.android.utils.EmptyUtil;
+import js.lib.android.utils.KillTouch;
 import js.lib.android.utils.Logs;
+import js.lib.android.utils.gps.GpsImpl;
 import js.lib.utils.date.DateFormatUtil;
 
 /**
@@ -28,12 +31,16 @@ import js.lib.utils.date.DateFormatUtil;
  * @author Jun.Wang
  */
 public class SlcLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity {
+    //TAG
+    private static final String TAG = "VdcVideoPlayerActivity";
 
-    /**
-     * ==========Widget in this Activity==========
-     */
+    //==========Widget in this Activity==========
     private View vControlPanel;
     private TextView tvName;
+    private View layoutWarning;
+
+    //==========Variables in this Activity==========
+    private GpsImpl mGpsImpl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +89,25 @@ public class SlcLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity {
 
         ivPlayNext = findView(R.id.iv_play_next);
         ivPlayNext.setOnClickListener(mViewOnClick);
+
+        //Warning
+        layoutWarning = findViewById(R.id.layout_warning);
+        layoutWarning.setVisibility(View.GONE);
+        layoutWarning.setOnTouchListener(new KillTouch());
+
+        //Register GPS
+        mGpsImpl = new GpsImpl(this);
+        mGpsImpl.setGpsImplListener(new GpsImpl.GpsImplListener() {
+            @Override
+            public void onGotSpeed(double speed_mPerS, double speed_kmPerH) {
+                Log.i(TAG, "onGotSpeed(" + speed_mPerS + "," + speed_kmPerH + ")");
+                if (speed_kmPerH >= 10) {
+                    layoutWarning.setVisibility(View.VISIBLE);
+                } else {
+                    layoutWarning.setVisibility(View.GONE);
+                }
+            }
+        });
 
         // Load Data
         checkingData();
@@ -261,6 +287,10 @@ public class SlcLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity {
 
     @Override
     protected void onDestroy() {
+        if (mGpsImpl != null) {
+            mGpsImpl.destroy();
+            mGpsImpl = null;
+        }
         super.onDestroy();
         onIDestroy();
     }

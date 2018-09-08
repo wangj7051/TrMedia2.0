@@ -275,9 +275,14 @@ public class MediaScanReceiver extends BroadcastReceiver {
                 return;
             }
             Logs.debugI(TAG, "ListMediaTask-> listAllMedias(" + pf.getPath() + ")");
-            File[] fArrs = pf.listFiles();
-            Logs.debugI(TAG, "fArrs : " + ((fArrs == null) ? null : fArrs.length));
-            if (fArrs != null) {
+
+            //Loop list files or folders
+            try {
+                File[] fArrs = pf.listFiles();
+                if (fArrs == null) {
+                    return;
+                }
+
                 for (File cf : pf.listFiles()) {
                     if (isCancelled()) {
                         break;
@@ -290,6 +295,8 @@ public class MediaScanReceiver extends BroadcastReceiver {
                         parseFileToMedia(cf);
                     }
                 }
+            } catch (Exception e) {
+                Logs.debugI(TAG, "--pf.listFiles() exception--" + e.getMessage());
             }
         }
 

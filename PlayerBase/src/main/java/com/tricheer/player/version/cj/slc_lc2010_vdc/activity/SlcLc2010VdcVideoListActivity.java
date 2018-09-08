@@ -15,6 +15,7 @@ import com.tricheer.player.engine.Keys;
 import com.tricheer.player.engine.PlayerAppManager;
 import com.tricheer.player.engine.PlayerAppManager.PlayerCxtFlag;
 import com.tricheer.player.receiver.MediaScanReceiver;
+import com.tricheer.player.utils.PlayerPreferUtils;
 import com.tricheer.player.version.base.activity.video.BaseKeyEventActivity;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.adapter.SlcLc2010VdcVideoListAdapter;
 
@@ -58,7 +59,7 @@ public class SlcLc2010VdcVideoListActivity extends BaseKeyEventActivity {
     /**
      * Request Current Playing Media Url
      */
-    protected final int M_REQ_PLAYING_MEDIA_URL = 1;
+    protected final int M_REQ_PLAYING_MEDIA_URL = 1, M_REQ_WARNING = 2;
 
     @Override
     protected void onCreate(@Nullable Bundle bundle) {
@@ -85,7 +86,22 @@ public class SlcLc2010VdcVideoListActivity extends BaseKeyEventActivity {
         gvDatas.setOnItemClickListener(new GvItemClick());
 
         //
+        showWarning();
         loadLocalMedias();
+    }
+
+    private void showWarning() {
+        int flag = PlayerPreferUtils.getVideoWarningFlag(false, 0);
+        switch (flag) {
+            case 0:
+            case 1:
+            case 3:
+                Intent warningIntent = new Intent(this, SclLc2010VdcVideoWarningActivity.class);
+                startActivityForResult(warningIntent, M_REQ_WARNING);
+                break;
+            case 2:
+                break;
+        }
     }
 
     @Override
@@ -284,8 +300,12 @@ public class SlcLc2010VdcVideoListActivity extends BaseKeyEventActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == M_REQ_PLAYING_MEDIA_URL) {
-            mDataAdapter.refreshDatas(getLastPath());
+        switch (requestCode) {
+            case M_REQ_PLAYING_MEDIA_URL:
+                mDataAdapter.refreshDatas(getLastPath());
+                break;
+            case M_REQ_WARNING:
+                break;
         }
     }
 

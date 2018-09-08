@@ -13,6 +13,7 @@
     <string name="ais_device_temp_too_high">设备温度过高!</string>
 
     <!-- Player -->
+    <string name="toast_usb_not_exist">请注意，无可用USB设备，请检查&#8230;</string>
     <string name="no_compare_musics">没有匹配的音乐文件</string>
     <string name="no_compare_videos">没有匹配的视频文件</string>
     <string name="music_online">在线音乐</string>
@@ -66,6 +67,12 @@
     <string name="video_handbrake_prompt">行车过程中请勿观看视频</string>
     <string name="file_name">文件名</string>
     <string name="udisk_video_">U盘视频-L</string>
+    <string name="video_warning">警告</string>
+    <string name="video_warning_desc">为了您的安全，车辆行驶中请不要进行操作请务必参照实际的交通规则驾驶</string>
+    <string name="video_warning_desc2">为驾驶安全，车辆行驶中禁止观看视频</string>
+    <string name="video_warning_op1">本次同意</string>
+    <string name="video_warning_op2">本次不再提示</string>
+    <string name="video_warning_op3">退出</string>
 
     <!-- Player Operates -->
     <string name="play_pre">上一个</string>

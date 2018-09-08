@@ -119,6 +119,7 @@ public class AudioInfo extends BaseBean {
 			mSetSuffixs.add(".wav");
 			mSetSuffixs.add(".flac");
 			mSetSuffixs.add(".wma");
+			mSetSuffixs.add(".ape");
 		}
 	}
 }

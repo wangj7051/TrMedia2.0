@@ -12,6 +12,7 @@ import java.util.List;
 
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.JsFileUtils;
+import js.lib.android.utils.sdcard.PlayerMp3Utils;
 
 /**
  * Path delegate
@@ -24,6 +25,8 @@ interface CjPathDelegate {
     List<String> getBlacklistPaths();
 
     boolean isInBlacklist(String mediaUrl);
+
+    boolean isHasSupportStorage();
 }
 
 /**
@@ -115,6 +118,11 @@ public class PlayerFileUtils extends JsFileUtils {
                 return false;
             }
         }
+
+        @Override
+        public boolean isHasSupportStorage() {
+            return (PlayerMp3Utils.getAllExterSdcardPath().size() > 0);
+        }
     }
 
     /**
@@ -188,6 +196,11 @@ public class PlayerFileUtils extends JsFileUtils {
                 return false;
             }
         }
+
+        @Override
+        public boolean isHasSupportStorage() {
+            return true;
+        }
     }
 
     /**
@@ -250,5 +263,9 @@ public class PlayerFileUtils extends JsFileUtils {
      */
     public static boolean isInBlacklist(String mediaUrl) {
         return mDelegate != null && mDelegate.isInBlacklist(mediaUrl);
+    }
+
+    public static boolean isHasSupportStorage() {
+        return mDelegate != null && mDelegate.isHasSupportStorage();
     }
 }
