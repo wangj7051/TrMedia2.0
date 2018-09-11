@@ -1,0 +1,3 @@
+# Referenced at E:\WorkSpace\Code\Studio\TrMedia2.0\PlayerBase\build\intermediates\manifests\full\release\AndroidManifest.xml:44
+-keep class com.tricheer.player.App { <init>(...); }
+

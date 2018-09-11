@@ -27,7 +27,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	/**
 	 * 数据库名称
 	 */
-	private static final String DB_NAME = PlayerFileUtils.getDBPath() + "/TricheerMusicPlayer.sqlite";
+	private static final String DB_NAME = PlayerFileUtils.getDBPath() + "/TrMediaInfo.sqlite";
 
 	/**
 	 * @param context

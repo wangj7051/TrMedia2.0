@@ -82,6 +82,10 @@ public abstract class BaseFmActivity extends BaseFragActivity implements FmDeleg
     public void onSeachFreqStart(int type) {
     }
 
+    @Override
+    public void onSeachFreqFail(int type, int reason) {
+    }
+
     /**
      * Callback by {@link FmListener}
      */
@@ -94,6 +98,10 @@ public abstract class BaseFmActivity extends BaseFragActivity implements FmDeleg
      */
     @Override
     public void onScanFreqEnd(int type) {
+    }
+
+    @Override
+    public void onScanFreqFail(int type, int reason) {
     }
 
     @Override

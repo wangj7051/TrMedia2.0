@@ -129,7 +129,7 @@ LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES += JAR_image_loader:libs/universal-image-lo
 LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES += JAR_httpcore:libs/httpcore-4.4.10.jar
 LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES += JAR_httpclient:libs/httpclient-4.5.6.jar
 ## ^^ .aar 预编译 ^^
-LOCAL_PREBUILD_STATIC_JAVA_LIBRARIES += AAR_vlc:libs/libvlc-3.0.0.aar
+LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES += AAR_vlc:libs/libvlc-3.0.0.aar
 include $(BUILD_MULTI_PREBUILT)
 
 #use the folling include to make apk

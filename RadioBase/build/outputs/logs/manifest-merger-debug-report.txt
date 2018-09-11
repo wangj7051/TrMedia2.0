@@ -1,0 +1,106 @@
+-- Merging decision tree log ---
+manifest
+ADDED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml:2:1-39:12
+INJECTED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml:2:1-39:12
+INJECTED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml:2:1-39:12
+INJECTED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml:2:1-39:12
+MERGED from [:libCommon] E:\WorkSpace\Code\Studio\TrMedia2.0\libCommon\build\intermediates\manifests\full\debug\AndroidManifest.xml:2:1-19:12
+MERGED from [libvlc-3.0.0.aar] C:\Users\wangjun\.gradle\caches\transforms-1\files-1.1\libvlc-3.0.0.aar\68506609a59aa8e9c0b2b99662f743fe\AndroidManifest.xml:2:1-11:12
+MERGED from [com.android.support:multidex:1.0.2] C:\Users\wangjun\.gradle\caches\transforms-1\files-1.1\multidex-1.0.2.aar\693914787784d2bf782d72cfba261e5d\AndroidManifest.xml:17:1-22:12
+INJECTED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml:2:1-39:12
+INJECTED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml:2:1-39:12
+INJECTED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml:2:1-39:12
+	package
+		ADDED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml:4:5-33
+		INJECTED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml
+		INJECTED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml
+	android:versionName
+		ADDED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml:6:5-30
+		INJECTED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml
+		INJECTED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml
+	xmlns:tools
+		ADDED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml:3:5-51
+	xmlns:android
+		ADDED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml:2:11-69
+	android:versionCode
+		ADDED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml:5:5-28
+		INJECTED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml
+		INJECTED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml
+uses-sdk
+ADDED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml:8:5-10:41
+INJECTED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml:8:5-10:41
+INJECTED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml:8:5-10:41
+MERGED from [:libCommon] E:\WorkSpace\Code\Studio\TrMedia2.0\libCommon\build\intermediates\manifests\full\debug\AndroidManifest.xml:7:5-9:41
+MERGED from [:libCommon] E:\WorkSpace\Code\Studio\TrMedia2.0\libCommon\build\intermediates\manifests\full\debug\AndroidManifest.xml:7:5-9:41
+MERGED from [libvlc-3.0.0.aar] C:\Users\wangjun\.gradle\caches\transforms-1\files-1.1\libvlc-3.0.0.aar\68506609a59aa8e9c0b2b99662f743fe\AndroidManifest.xml:7:5-9:41
+MERGED from [libvlc-3.0.0.aar] C:\Users\wangjun\.gradle\caches\transforms-1\files-1.1\libvlc-3.0.0.aar\68506609a59aa8e9c0b2b99662f743fe\AndroidManifest.xml:7:5-9:41
+MERGED from [com.android.support:multidex:1.0.2] C:\Users\wangjun\.gradle\caches\transforms-1\files-1.1\multidex-1.0.2.aar\693914787784d2bf782d72cfba261e5d\AndroidManifest.xml:20:5-43
+MERGED from [com.android.support:multidex:1.0.2] C:\Users\wangjun\.gradle\caches\transforms-1\files-1.1\multidex-1.0.2.aar\693914787784d2bf782d72cfba261e5d\AndroidManifest.xml:20:5-43
+INJECTED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml:8:5-10:41
+INJECTED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml:8:5-10:41
+	android:targetSdkVersion
+		ADDED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml:10:9-38
+		INJECTED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml
+		INJECTED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml
+	android:minSdkVersion
+		ADDED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml:9:9-35
+		INJECTED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml
+		INJECTED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml
+uses-permission#android.permission.WRITE_SETTINGS
+ADDED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml:13:5-73
+	android:name
+		ADDED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml:13:22-70
+application
+ADDED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml:15:5-37:19
+MERGED from [:libCommon] E:\WorkSpace\Code\Studio\TrMedia2.0\libCommon\build\intermediates\manifests\full\debug\AndroidManifest.xml:17:5-20
+MERGED from [:libCommon] E:\WorkSpace\Code\Studio\TrMedia2.0\libCommon\build\intermediates\manifests\full\debug\AndroidManifest.xml:17:5-20
+	android:label
+		ADDED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml:19:9-41
+	android:icon
+		ADDED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml:18:9-53
+	android:allowBackup
+		ADDED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml:17:9-35
+	android:theme
+		ADDED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml:20:9-40
+	tools:replace
+		ADDED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml:21:9-37
+	android:name
+		ADDED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml:16:9-46
+activity#com.tricheer.radio.MainActivity
+ADDED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml:22:9-33:20
+	android:screenOrientation
+		ADDED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml:26:13-50
+	android:label
+		ADDED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml:24:13-45
+	android:launchMode
+		ADDED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml:25:13-48
+	android:theme
+		ADDED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml:27:13-66
+	android:name
+		ADDED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml:23:13-41
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
+ADDED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml:28:13-32:29
+action#android.intent.action.MAIN
+ADDED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml:29:17-69
+	android:name
+		ADDED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml:29:25-66
+category#android.intent.category.LAUNCHER
+ADDED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml:31:17-77
+	android:name
+		ADDED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml:31:27-74
+service#com.tricheer.radio.service.ControlService
+ADDED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml:35:9-36:19
+	android:name
+		ADDED from E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\src\main\AndroidManifest.xml:35:18-74
+uses-permission#android.permission.ACCESS_WIFI_STATE
+ADDED from [:libCommon] E:\WorkSpace\Code\Studio\TrMedia2.0\libCommon\build\intermediates\manifests\full\debug\AndroidManifest.xml:11:5-76
+	android:name
+		ADDED from [:libCommon] E:\WorkSpace\Code\Studio\TrMedia2.0\libCommon\build\intermediates\manifests\full\debug\AndroidManifest.xml:11:22-73
+uses-permission#android.permission.ACCESS_COARSE_LOCATION
+ADDED from [:libCommon] E:\WorkSpace\Code\Studio\TrMedia2.0\libCommon\build\intermediates\manifests\full\debug\AndroidManifest.xml:14:5-81
+	android:name
+		ADDED from [:libCommon] E:\WorkSpace\Code\Studio\TrMedia2.0\libCommon\build\intermediates\manifests\full\debug\AndroidManifest.xml:14:22-78
+uses-permission#android.permission.ACCESS_FINE_LOCATION
+ADDED from [:libCommon] E:\WorkSpace\Code\Studio\TrMedia2.0\libCommon\build\intermediates\manifests\full\debug\AndroidManifest.xml:15:5-79
+	android:name
+		ADDED from [:libCommon] E:\WorkSpace\Code\Studio\TrMedia2.0\libCommon\build\intermediates\manifests\full\debug\AndroidManifest.xml:15:22-76

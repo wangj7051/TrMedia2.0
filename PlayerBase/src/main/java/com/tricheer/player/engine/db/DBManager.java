@@ -1,5 +1,16 @@
 package com.tricheer.player.engine.db;
 
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.util.Log;
+
+import com.tricheer.player.bean.ProMusic;
+import com.tricheer.player.bean.ProVideo;
+import com.tricheer.player.engine.db.Tables.MusicCacheInfo;
+import com.tricheer.player.engine.db.Tables.VideoCacheInfo;
+import com.tricheer.player.utils.PlayerFileUtils;
+import com.tricheer.player.utils.PlayerLogicUtils;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,19 +23,6 @@ import js.lib.android.utils.DbUtil;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.JsFileUtils;
 import js.lib.android.utils.Logs;
-
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.util.Log;
-
-import com.tricheer.player.bean.OnlineMusicInfo;
-import com.tricheer.player.bean.ProMusic;
-import com.tricheer.player.bean.ProVideo;
-import com.tricheer.player.engine.db.Tables.MusicCacheInfo;
-import com.tricheer.player.engine.db.Tables.MusicOnlineSearchInfo;
-import com.tricheer.player.engine.db.Tables.VideoCacheInfo;
-import com.tricheer.player.utils.PlayerFileUtils;
-import com.tricheer.player.utils.PlayerLogicUtils;
 
 /**
  * 该类用来处理数据库操作
@@ -66,124 +64,6 @@ public class DBManager extends DbUtil {
         } catch (Exception e) {
             Logs.printStackTrace(TAG + "closeDBInfo()", e);
         }
-    }
-
-    // ================MusicOnline Search Methods Start================
-    public static long saveMusicSearchInfo(OnlineMusicInfo searchInfo) {
-        long count = 0;
-        if (openDB()) {
-            Throwable throwable = null;
-            Cursor cur = null;
-            try {
-                String table = MusicOnlineSearchInfo.T_NAME;
-                String[] columns = new String[]{"*"};
-                String selection = MusicOnlineSearchInfo.KEY + "=?";
-                String[] selectionArgs = new String[]{searchInfo.key};
-
-                cur = mDB.query(table, columns, selection, selectionArgs, null, null, null);
-                if (cur.getCount() > 0) {
-                    // Insert
-                } else {
-                    count = mDB.insert(table, null, getContentValues(searchInfo));
-                }
-            } catch (Exception e) {
-                throwable = e;
-                Logs.printStackTrace(TAG + "saveMusicSearchInfo()", e);
-            } finally {
-                closeDBInfo(cur, false, throwable != null);
-            }
-        }
-        return count;
-    }
-
-    /**
-     * Construct ContentValues By ProMusic Object
-     */
-    private static ContentValues getContentValues(OnlineMusicInfo searchInfo) {
-        ContentValues cvs = new ContentValues();
-        cvs.put(MusicOnlineSearchInfo.KEY, searchInfo.key);
-        cvs.put(MusicOnlineSearchInfo.KEY_PINYIN, searchInfo.keyPinyin);
-        cvs.put(MusicOnlineSearchInfo.VALUE, searchInfo.value);
-        cvs.put(MusicOnlineSearchInfo.CREATE_TIME, searchInfo.createTime);
-        cvs.put(MusicOnlineSearchInfo.UPDATE_TIME, searchInfo.updateTime);
-        return cvs;
-    }
-
-    /**
-     * Get MusicSearchInfo By "Search Key"
-     */
-    public static OnlineMusicInfo getSearchInfo(String searchKey) {
-        OnlineMusicInfo searchInfo = null;
-        if (openDB()) {
-            Throwable throwable = null;
-            Cursor cur = null;
-            try {
-                String table = MusicOnlineSearchInfo.T_NAME;
-                String[] columns = new String[]{"*"};
-                String where = MusicOnlineSearchInfo.KEY + "=?";
-                String[] whereArgs = new String[]{searchKey};
-                String orderBy = MusicOnlineSearchInfo.KEY_PINYIN + " desc";
-                // Query
-                cur = mDB.query(table, columns, where, whereArgs, null, null, orderBy);
-                if (cur != null && cur.getCount() > 0 && cur.moveToFirst()) {
-                    searchInfo = getMusicSearchInfo(cur);
-                }
-
-            } catch (Exception e) {
-                throwable = e;
-                Logs.printStackTrace(TAG + "getSearchInfo()", e);
-            } finally {
-                closeDBInfo(cur, false, throwable != null);
-            }
-        }
-        return searchInfo;
-    }
-
-    public static List<OnlineMusicInfo> getListSearchInfos() {
-        List<OnlineMusicInfo> listInfos = new ArrayList<OnlineMusicInfo>();
-        if (openDB()) {
-            Throwable throwable = null;
-            Cursor cur = null;
-            try {
-                String table = MusicOnlineSearchInfo.T_NAME;
-                String[] columns = new String[]{"*"};
-                String orderBy = MusicOnlineSearchInfo.KEY_PINYIN + " desc";
-
-                cur = mDB.query(table, columns, null, null, null, null, orderBy);
-                if (cur != null) {
-                    for (cur.moveToFirst(); !cur.isAfterLast(); cur.moveToNext()) {
-                        OnlineMusicInfo searchInfo = getMusicSearchInfo(cur);
-                        if (searchInfo != null) {
-                            listInfos.add(searchInfo);
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                throwable = e;
-                Logs.printStackTrace(TAG + "getListSearchInfos()", e);
-            } finally {
-                closeDBInfo(cur, false, throwable != null);
-            }
-        }
-        return listInfos;
-    }
-
-    /**
-     * Get Music Search Information From Cursor
-     */
-    private static OnlineMusicInfo getMusicSearchInfo(Cursor cur) {
-        OnlineMusicInfo searchInfo = new OnlineMusicInfo();
-        try {
-            searchInfo.key = cur.getString(cur.getColumnIndex(MusicOnlineSearchInfo.KEY));
-            searchInfo.keyPinyin = cur.getString(cur.getColumnIndex(MusicOnlineSearchInfo.KEY_PINYIN));
-            searchInfo.value = cur.getString(cur.getColumnIndex(MusicOnlineSearchInfo.VALUE));
-            searchInfo.createTime = cur.getLong(cur.getColumnIndex(MusicOnlineSearchInfo.CREATE_TIME));
-            searchInfo.updateTime = cur.getLong(cur.getColumnIndex(MusicOnlineSearchInfo.UPDATE_TIME));
-        } catch (Exception e) {
-            Logs.printStackTrace(TAG + "getMusicSearchInfo(Cursor)", e);
-            searchInfo = null;
-        }
-        return searchInfo;
     }
 
     // =======================Music Methods Start=======================
@@ -240,37 +120,6 @@ public class DBManager extends DbUtil {
                 Logs.printStackTrace(TAG + "insertNewMusics()", e);
             } finally {
                 closeDBInfo(null, true, throwable != null);
-            }
-        }
-        return count;
-    }
-
-    /**
-     * Save Search
-     */
-    public static long saveOnlineMusic(ProMusic program) {
-        long count = 0;
-        if (openDB()) {
-            Throwable throwable = null;
-            Cursor cur = null;
-            try {
-                String table = MusicCacheInfo.T_NAME;
-                String[] columns = new String[]{"*"};
-                String selection = MusicCacheInfo.ID + "=? or " + MusicCacheInfo.MEDIA_URL + "=?";
-                String[] selectionArgs = new String[]{String.valueOf(program.id), String.valueOf(program.mediaUrl)};
-                cur = mDB.query(table, columns, selection, selectionArgs, null, null, null);
-                if (cur.getCount() > 0) {
-                    count = mDB.update(table, getContentValues(program, System.currentTimeMillis()), selection, selectionArgs);
-                    // Insert
-                } else {
-                    count = mDB.insert(table, null, getContentValues(program, System.currentTimeMillis()));
-                }
-
-            } catch (Exception e) {
-                throwable = e;
-                Logs.printStackTrace(TAG + "saveOnlineMusic()", e);
-            } finally {
-                closeDBInfo(cur, false, throwable != null);
             }
         }
         return count;
@@ -338,7 +187,8 @@ public class DBManager extends DbUtil {
                 long currTime = System.currentTimeMillis();
                 for (ProMusic media : listMusics) {
                     selectionArgs = new String[]{media.mediaUrl};
-                    mDB.update(table, getContentValues(media, currTime), selection, selectionArgs);
+                    int rowsNum = mDB.update(table, getContentValues(media, currTime), selection, selectionArgs);
+                    Log.i(TAG, "updateListMusics - rowsNum: " + rowsNum);
                 }
                 mDB.setTransactionSuccessful();
             } catch (Exception e) {
@@ -364,7 +214,8 @@ public class DBManager extends DbUtil {
                 cvs.put(MusicCacheInfo.UPDATE_TIME, System.currentTimeMillis());
                 cvs.put(MusicCacheInfo.DURATION, music.duration);
 
-                mDB.update(MusicCacheInfo.T_NAME, cvs, selection, selectionArgs);
+                int rowsNum = mDB.update(MusicCacheInfo.T_NAME, cvs, selection, selectionArgs);
+                Log.i(TAG, "updateMusicInfo - rowsNum: " + rowsNum);
             } catch (Exception e) {
                 throwable = e;
                 Logs.printStackTrace(TAG + "updateMusicInfo()", e);
@@ -387,7 +238,8 @@ public class DBManager extends DbUtil {
                 ContentValues cvs = new ContentValues();
                 cvs.put(MusicCacheInfo.COVER_URL, media.coverUrl);
                 cvs.put(MusicCacheInfo.PARSE_INFO_FLAG, media.parseInfoFlag);
-                mDB.update(MusicCacheInfo.T_NAME, cvs, selection, selectionArgs);
+                int rowsNum = mDB.update(MusicCacheInfo.T_NAME, cvs, selection, selectionArgs);
+                Log.i(TAG, "updateMediaCoverUrl - rowsNum: " + rowsNum);
             } catch (Exception e) {
                 throwable = e;
                 Logs.printStackTrace(TAG + "updateMediaCoverUrl()", e);
@@ -409,7 +261,8 @@ public class DBManager extends DbUtil {
 
                 ContentValues cvs = new ContentValues();
                 cvs.put(MusicCacheInfo.IS_COLLECT, media.isCollected);
-                mDB.update(MusicCacheInfo.T_NAME, cvs, selection, selectionArgs);
+                int rowsNum = mDB.update(MusicCacheInfo.T_NAME, cvs, selection, selectionArgs);
+                Log.i(TAG, "updateMediaCollect - rowsNum: " + rowsNum);
             } catch (Exception e) {
                 throwable = e;
                 Logs.printStackTrace(TAG + "updateMediaCollect()", e);
@@ -417,38 +270,6 @@ public class DBManager extends DbUtil {
                 closeDBInfo(null, false, throwable != null);
             }
         }
-    }
-
-    /**
-     * Get Music List
-     */
-    public static ProMusic getOnlineMusicByID(int musicID) {
-        ProMusic music = null;
-        if (openDB()) {
-            Throwable throwable = null;
-            Cursor cur = null;
-            try {
-                String table = MusicCacheInfo.T_NAME;
-                String[] columns = new String[]{"*"};
-                String selection = MusicCacheInfo.IS_FROM_NET + "=? and " + MusicCacheInfo.ID + "=?";
-                String[] selectionArgs = new String[]{"1", String.valueOf(musicID)};
-                cur = mDB.query(table, columns, selection, selectionArgs, null, null, null, null);
-                if (cur != null) {
-                    for (cur.moveToFirst(); !cur.isAfterLast(); cur.moveToNext()) {
-                        music = getMusicByCursor(cur);
-                        if (music != null) {
-                            break;
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                throwable = e;
-                Logs.printStackTrace(TAG + "getOnlineMusicByID()", e);
-            } finally {
-                closeDBInfo(cur, false, throwable != null);
-            }
-        }
-        return music;
     }
 
     /**
@@ -566,41 +387,6 @@ public class DBManager extends DbUtil {
             }
         }
         return mapMusics;
-    }
-
-    /**
-     * Get Online Musics
-     *
-     * @return Map<program.name                                                                                                                                                                                                                                                               +                                                                                                                                                                                                                                                               "                                                                                                                               _                                                                                                                               "                                                                                                                                                                                                                                                               +                                                                                                                                                                                                                                                               program.singer                                                                                                                               ,                                                                                                                               ProMusic>
-     */
-    public static Map<String, ProMusic> getMapOnlineMusics() {
-        Map<String, ProMusic> mapPrograms = new HashMap<String, ProMusic>();
-        if (openDB()) {
-            Throwable throwable = null;
-            Cursor cur = null;
-            try {
-                String table = MusicCacheInfo.T_NAME;
-                String[] columns = new String[]{"*"};
-                String selection = MusicCacheInfo.IS_FROM_NET + "=? and " + MusicCacheInfo.IS_CAUSE_ERROR + "=?";
-                String[] selectionArgs = new String[]{"1", "0"};
-
-                cur = mDB.query(table, columns, selection, selectionArgs, null, null, null);
-                if (cur != null) {
-                    for (cur.moveToFirst(); !cur.isAfterLast(); cur.moveToNext()) {
-                        ProMusic program = getMusicByCursor(cur);
-                        if (program != null) {
-                            mapPrograms.put(program.title + "_" + program.artist, program);
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                throwable = e;
-                Logs.printStackTrace(TAG + "getMapOnlineMusics()", e);
-            } finally {
-                closeDBInfo(cur, false, throwable != null);
-            }
-        }
-        return mapPrograms;
     }
 
     /**
@@ -728,7 +514,8 @@ public class DBManager extends DbUtil {
                 String[] selectionArgs = null;
                 for (ProVideo program : listVideos) {
                     selectionArgs = new String[]{program.mediaUrl};
-                    mDB.update(table, getContentValues(program, -1), selection, selectionArgs);
+                    int rowsNum = mDB.update(table, getContentValues(program, -1), selection, selectionArgs);
+                    Log.i(TAG, "updateListVideos - rowsNum: " + rowsNum);
                 }
                 mDB.setTransactionSuccessful();
             } catch (Exception e) {
@@ -755,7 +542,8 @@ public class DBManager extends DbUtil {
                 cvs.put(VideoCacheInfo.IS_CAUSE_ERROR, program.isCauseError);
                 cvs.put(VideoCacheInfo.DURATION, program.duration);
 
-                mDB.update(VideoCacheInfo.T_NAME, cvs, selection, selectionArgs);
+                int rowsNum = mDB.update(VideoCacheInfo.T_NAME, cvs, selection, selectionArgs);
+                Log.i(TAG, "updateProgramInfo - rowsNum: " + rowsNum);
             } catch (Exception e) {
                 throwable = e;
                 Logs.printStackTrace(TAG + "updateProgramInfo()", e);
@@ -777,7 +565,8 @@ public class DBManager extends DbUtil {
 
                 ContentValues cvs = new ContentValues();
                 cvs.put(VideoCacheInfo.DURATION, media.duration);
-                mDB.update(VideoCacheInfo.T_NAME, cvs, selection, selectionArgs);
+                int rowsNum = mDB.update(VideoCacheInfo.T_NAME, cvs, selection, selectionArgs);
+                Log.i(TAG, "updateMediaDuration - rowsNum: " + rowsNum);
             } catch (Exception e) {
                 throwable = e;
                 Logs.printStackTrace(TAG + "updateMediaDuration()", e);

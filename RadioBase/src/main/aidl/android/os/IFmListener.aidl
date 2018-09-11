@@ -26,7 +26,9 @@ interface IFmListener {
         void onSeachAvailableFreq(int currentSeachFreq,int count,in int[] freqs,int tpye);
         void onSeachFreqStart(int type);
         void onSeachFreqEnd(int type);
+        void onSeachFreqFail(int type,int reason);
         void onStChange(boolean show);
         void onScanFreqStart(int type);
         void onScanFreqEnd(int type);
+        void onScanFreqFail(int type,int reason);
 }

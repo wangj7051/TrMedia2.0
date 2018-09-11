@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="3"><dataSet config="main"><source path="E:\WorkSpace\Code\Studio\TrMedia2.0\libTricheer\src\main\assets"/><source path="E:\WorkSpace\Code\Studio\TrMedia2.0\libTricheer\build\generated\assets\shaders\debug"/></dataSet><dataSet config="debug"><source path="E:\WorkSpace\Code\Studio\TrMedia2.0\libTricheer\src\debug\assets"/></dataSet></merger>

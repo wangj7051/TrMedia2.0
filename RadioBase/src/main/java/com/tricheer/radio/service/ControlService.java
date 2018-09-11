@@ -95,6 +95,18 @@ public class ControlService extends Service implements FmDelegate, FmListener {
     }
 
     @Override
+    public void onSeachFreqStart(final int type) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                for (FmListener l : mSetFmListeners) {
+                    l.onSeachFreqStart(type);
+                }
+            }
+        });
+    }
+
+    @Override
     public void onSeachFreqEnd(final int type) {
         mHandler.post(new Runnable() {
             @Override
@@ -106,16 +118,9 @@ public class ControlService extends Service implements FmDelegate, FmListener {
         });
     }
 
+
     @Override
-    public void onSeachFreqStart(final int type) {
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                for (FmListener l : mSetFmListeners) {
-                    l.onSeachFreqStart(type);
-                }
-            }
-        });
+    public void onSeachFreqFail(int type, int reason) {
     }
 
     // 预览
@@ -131,6 +136,10 @@ public class ControlService extends Service implements FmDelegate, FmListener {
         for (FmListener l : mSetFmListeners) {
             l.onScanFreqEnd(type);
         }
+    }
+
+    @Override
+    public void onScanFreqFail(int type, int reason) {
     }
 
     @Override

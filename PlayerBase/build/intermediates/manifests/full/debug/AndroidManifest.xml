@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.tricheer.player"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="17"
+        android:targetSdkVersion="22" />
+
+    <!-- Storage permission -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+
+    <!-- Bluetooth -->
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.BLUETOOTH_PRIVILEGED" />
+
+    <!-- Settings Provider -->
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
+    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
+    <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS" />
+    <uses-permission android:name="android.permission.HARDWARE_TEST" />
+
+    <!-- Screen ON/OFF -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+
+    <!-- ??? -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <!-- GPS -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <application
+        android:name="com.tricheer.player.App"
+        android:allowBackup="false"
+        android:debuggable="true"
+        android:hardwareAccelerated="true"
+        android:icon="@drawable/ic_launcher"
+        android:persistent="true"
+        android:testOnly="true" >
+
+        <!-- Music & Video & Radio Player Start Activity -->
+        <activity
+            android:name="com.tricheer.player.MusicPlayerActivity"
+            android:icon="@drawable/ic_launcher_music"
+            android:label="@string/app_name_music"
+            android:launchMode="singleInstance"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:windowSoftInputMode="stateHidden" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.tricheer.player.VideoPlayerActivity"
+            android:icon="@drawable/ic_launcher_video"
+            android:label="@string/app_name_video"
+            android:launchMode="singleInstance"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:windowSoftInputMode="stateHidden" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- SLC_LC2010_VDC -->
+        <activity
+            android:name="com.tricheer.player.version.cj.slc_lc2010_vdc.activity.SclLc2010VdcAudioListActivity"
+            android:icon="@drawable/ic_launcher_music"
+            android:label="@string/app_name_music"
+            android:launchMode="singleInstance"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.Black.NoTitleBar" />
+        <activity
+            android:name="com.tricheer.player.version.cj.slc_lc2010_vdc.activity.SclLc2010VdcAudioPlayerActivity"
+            android:icon="@drawable/ic_launcher_music"
+            android:label="@string/app_name_music"
+            android:launchMode="singleInstance"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.Black.NoTitleBar" />
+        <activity
+            android:name="com.tricheer.player.version.cj.slc_lc2010_vdc.activity.SclLc2010VdcVideoListActivity"
+            android:icon="@drawable/ic_launcher_music"
+            android:label="@string/app_name_music"
+            android:launchMode="singleInstance"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.Black.NoTitleBar" />
+        <activity
+            android:name="com.tricheer.player.version.cj.slc_lc2010_vdc.activity.SclLc2010VdcVideoPlayerActivity"
+            android:icon="@drawable/ic_launcher_music"
+            android:label="@string/app_name_music"
+            android:launchMode="singleInstance"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.Black.NoTitleBar" />
+        <activity
+            android:name="com.tricheer.player.version.cj.slc_lc2010_vdc.activity.SclLc2010VdcVideoWarningActivity"
+            android:icon="@drawable/ic_launcher_music"
+            android:label="@string/app_name_music"
+            android:launchMode="singleInstance"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.Black.NoTitleBar" />
+
+        <!-- Music Play Service -->
+        <service
+            android:name="com.tricheer.player.service.MusicPlayService"
+            android:enabled="true"
+            android:exported="true" />
+
+        <!-- Media Scanner Receiver -->
+        <receiver
+            android:name="com.tricheer.player.receiver.MediaScanReceiver"
+            android:exported="true" >
+            <intent-filter android:priority="1000" >
+                <action android:name="android.intent.action.ACTION_SHUTDOWN" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+            <intent-filter android:priority="1000" >
+                <action android:name="android.intent.action.MEDIA_UNMOUNTED" />
+                <action android:name="android.intent.action.MEDIA_MOUNTED" />
+                <action android:name="android.intent.action.MEDIA_CHECKING" />
+                <action android:name="android.intent.action.MEDIA_EJECT" />
+                <action android:name="android.intent.action.MEDIA_REMOVED" />
+
+                <data android:scheme="file" />
+            </intent-filter>
+            <intent-filter android:priority="1000" >
+                <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+            </intent-filter>
+            <!-- UDisk listener, From Android6.0 -->
+            <intent-filter android:priority="1000" >
+                <action android:name="android.os.storage.action.VOLUME_STATE_CHANGED" />
+
+                <data android:scheme="file" />
+            </intent-filter>
+            <intent-filter android:priority="1000" >
+                <action android:name="com.tricheer.player.START.LIST.ALL_MEDIAS" />
+                <action android:name="android.hardware.input.action.POWER_DISCONNECTED" />
+            </intent-filter>
+            <intent-filter android:priority="1000" >
+                <action android:name="com.tricheer.SYSTEM_DOWN" />
+                <action android:name="com.tricheer.SYSTEM_UP" />
+            </intent-filter>
+            <intent-filter android:priority="1000" >
+                <action android:name="android.hardware.input.action.POWER_DISCONNECTED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Player Receiver -->
+        <receiver
+            android:name="com.tricheer.player.receiver.PlayerReceiver"
+            android:exported="true" >
+
+            <!-- Test Broadcast -->
+            <intent-filter android:priority="1000" >
+                <action android:name="com.tri.test" />
+            </intent-filter>
+
+            <!-- Media Action -->
+            <intent-filter android:priority="1000" >
+                <action android:name="com.tricheer.media.action" />
+            </intent-filter>
+
+            <!-- Open Player Logs -->
+            <intent-filter android:priority="1000" >
+                <action android:name="com.tricheer.app.OPEN_LOGS" />
+            </intent-filter>
+
+            <!-- Play Music At Launcher -->
+            <intent-filter android:priority="1000" >
+                <action android:name="com.tricheer.music.PLAY_FROM_LAUNCHER" />
+                <action android:name="com.tricheer.player.OPEN_MUSIC_PLAYER" />
+                <action android:name="com.tricheer.player.OPEN_VIDEO_PLAYER" />
+            </intent-filter>
+
+            <!-- System Boot Completed -->
+            <intent-filter android:priority="1000" >
+                <action android:name="com.tricheer.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.ACTION_SHUTDOWN" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+            <intent-filter android:priority="1000" >
+                <action android:name="android.media.AUDIO_BECOMING_NOISY" />
+            </intent-filter>
+
+            <!-- Device Screen ON/OFF -->
+            <intent-filter android:priority="1000" >
+                <action android:name="com.tricheer.screen_on" />
+                <action android:name="com.tricheer.screen_off" />
+                <action android:name="com.tricheer.screen_sleep" />
+                <action android:name="action.maskapp.EXIT" />
+                <action android:name="action.maskapp.CLICK" />
+                <!-- <action android:name="android.intent.action.SCREEN_ON" /> -->
+                <!-- <action android:name="android.intent.action.SCREEN_OFF" /> -->
+            </intent-filter>
+
+            <!-- System Temperature -->
+            <intent-filter android:priority="1000" >
+                <action android:name="com.tricheer.hightemp1" />
+                <action android:name="com.tricheer.lowtemp1" />
+            </intent-filter>
+
+            <!-- Record State -->
+            <intent-filter android:priority="1000" >
+                <action android:name="action.camera.STATE_CHANGE" />
+            </intent-filter>
+
+            <!-- E-Dog -->
+            <intent-filter android:priority="1000" >
+                <action android:name="com.tricheer.detector.playsound.start" />
+                <action android:name="com.tricheer.detector.playsound.end" />
+            </intent-filter>
+
+            <!-- Cannot coexist -->
+            <intent-filter android:priority="1000" >
+                <action android:name="com.tricheer.bluetooth.music.open" />
+                <action android:name="com.tricheer.kuwo.music.open" />
+            </intent-filter>
+
+            <!-- BlueTooth -->
+            <intent-filter android:priority="1000" >
+                <action android:name="com.tricheer.bluetoothcarkit.a2dp_sink.CONNECTED" />
+                <action android:name="action.intent.TRICHEER_PHONE_DIAL" />
+                <action android:name="com.tricheer.bluetoothcarkit.INCOMING_RINGING_FOR_PLAYER" />
+                <action android:name="action.bluetooth.TRICHEER_INCOMING_RINGING" />
+                <action android:name="action.bluetooth.TRICHEER_OUTGOING_RINGING" />
+                <action android:name="action.bluetooth.TRICHEER_INCOMING_IDLE" />
+                <action android:name="action.bluetooth.TRICHEER_OUTGOING_IDLE" />
+                <action android:name="android.bluetooth.device.action.ACL_DISCONNECTED" />
+                <action android:name="android.bluetooth.headsetclient.profile.action.AG_CALL_CHANGED" />
+                <action android:name="android.bluetooth.headsetclient.profile.action.CONNECTION_STATE_CHANGED" />
+            </intent-filter>
+
+            <!-- AiSpeech Open Or Close -->
+            <intent-filter android:priority="1000" >
+                <action android:name="com.tricheer.AIOS_WINDOW" />
+            </intent-filter>
+
+            <!-- Music / Video / Radio -->
+            <intent-filter android:priority="1000" >
+
+                <!-- Music -->
+                <action android:name="com.tricheer.music.PLAY_FROM_FILEMANAGER" />
+                <action android:name="com.tricheer.video.PLAY_FROM_VIDEO_VIEW" />
+                <action android:name="com.tricheer.music.ACTION_MUSIC_EXIT" />
+                <!-- Music AiSpeech Actions -->
+                <action android:name="com.tricheer.MUSIC.MODE" />
+                <action android:name="com.aispeech.aios.music.ACTION_MUSIC_PAUSE" />
+                <action android:name="com.aispeech.aios.music.ACTION_MUSIC_RESUME" />
+                <action android:name="com.aispeech.aios.adapter.ACTION_RANDOM" />
+                <action android:name="com.aispeech.aios.music.ACTION_MUSIC_PREVIOUS" />
+                <action android:name="com.aispeech.aios.music.ACTION_MUSIC_NEXT" />
+                <action android:name="com.aispeech.aios.music.AICTION_SONG_SELECTED" />
+                <action android:name="com.aispeech.aios.music.AICTION_SEARCH_BY_TITLE" />
+
+                <!-- Video -->
+                <action android:name="com.tricheer.video.PLAY_FROM_FILEMANAGER" />
+                <!-- Video AiSpeech Actions -->
+                <action android:name="com.tricheer.video.close" />
+                <action android:name="com.tricheer.show.VIDEO_LIST" />
+                <action android:name="com.tricheer.close.VIDEO_LIST" />
+                <action android:name="com.tricheer.video.PLAY" />
+                <action android:name="com.tricheer.video.PAUSE" />
+                <action android:name="com.tricheer.VIDEO.PLAY_PRE" />
+                <action android:name="com.tricheer.VIDEO.PLAY_NEXT" />
+                <action android:name="com.tricheer.video.FAST_FORWARD" />
+                <action android:name="com.tricheer.video.FAST_REWIND" />
+                <action android:name="com.tricheer.video.PLAY_NORMAL" />
+                <action android:name="com.tricheer.video.VIEW_CHENGED" />
+                <action android:name="com.tricheer.video.FULL_SCREEN" />
+
+                <!-- Radio AiSpeech Actions -->
+                <action android:name="com.tricheer.QINGTING_FM.CLOSE" />
+            </intent-filter>
+            <intent-filter android:priority="1000" >
+                <action android:name="com.tricheer.bt.CALL_END" />
+            </intent-filter>
+        </receiver>
+    </application>
+
+</manifest>

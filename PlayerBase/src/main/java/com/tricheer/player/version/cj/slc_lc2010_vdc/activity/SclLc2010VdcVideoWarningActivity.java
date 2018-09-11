@@ -17,7 +17,7 @@ public class SclLc2010VdcVideoWarningActivity extends BaseFragActivity {
     @Override
     protected void onCreate(@Nullable Bundle bundle) {
         super.onCreate(bundle);
-        setContentView(R.layout.slc_lc2010_vdc_activity_video_warning);
+        setContentView(R.layout.scl_lc2010_vdc_activity_video_warning);
         init();
     }
 

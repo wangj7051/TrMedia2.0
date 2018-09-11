@@ -106,7 +106,11 @@ public class MediaScanReceiver extends BroadcastReceiver {
         int END = 2;
         int TASK_CANCEL = 4;
         int REFRESH = 5;
+
+        //Has new media that u need scan yourself.
         int SYS_SCANED = 6;
+
+        //
         int CLEAR = 7;
     }
 

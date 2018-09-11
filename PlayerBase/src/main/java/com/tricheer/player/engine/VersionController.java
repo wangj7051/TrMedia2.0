@@ -4,10 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.tricheer.player.version.cj.slc_lc2010_vdc.activity.SlcLc2010VdcMusicListActivity;
-import com.tricheer.player.version.cj.slc_lc2010_vdc.activity.SlcLc2010VdcMusicPlayerActivity;
-import com.tricheer.player.version.cj.slc_lc2010_vdc.activity.SlcLc2010VdcVideoListActivity;
-import com.tricheer.player.version.cj.slc_lc2010_vdc.activity.SlcLc2010VdcVideoPlayerActivity;
+import com.tricheer.player.version.cj.slc_lc2010_vdc.activity.SclLc2010VdcAudioListActivity;
+import com.tricheer.player.version.cj.slc_lc2010_vdc.activity.SclLc2010VdcAudioPlayerActivity;
+import com.tricheer.player.version.cj.slc_lc2010_vdc.activity.SclLc2010VdcVideoListActivity;
+import com.tricheer.player.version.cj.slc_lc2010_vdc.activity.SclLc2010VdcVideoPlayerActivity;
 
 import js.lib.android.utils.Logs;
 
@@ -114,10 +114,10 @@ public class VersionController {
                 mFlag$IsSupportOrderPlayMode = false;
                 mFlag$IsProcessVideoResolution = false;
                 // Class
-                mClsMusicList = SlcLc2010VdcMusicListActivity.class;
-                mClsMusicPlayer = SlcLc2010VdcMusicPlayerActivity.class;
-                mClsVideoList = SlcLc2010VdcVideoListActivity.class;
-                mClsVideoPlayer = SlcLc2010VdcVideoPlayerActivity.class;
+                mClsMusicList = SclLc2010VdcAudioListActivity.class;
+                mClsMusicPlayer = SclLc2010VdcAudioPlayerActivity.class;
+                mClsVideoList = SclLc2010VdcVideoListActivity.class;
+                mClsVideoPlayer = SclLc2010VdcVideoPlayerActivity.class;
                 break;
         }
     }

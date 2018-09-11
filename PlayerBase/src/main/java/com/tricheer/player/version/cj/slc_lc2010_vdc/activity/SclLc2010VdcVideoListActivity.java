@@ -1,0 +1,289 @@
+package com.tricheer.player.version.cj.slc_lc2010_vdc.activity;
+
+import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.util.Log;
+import android.view.View;
+
+import com.tricheer.player.R;
+import com.tricheer.player.bean.ProMusic;
+import com.tricheer.player.bean.ProVideo;
+import com.tricheer.player.engine.Keys;
+import com.tricheer.player.engine.PlayerAppManager;
+import com.tricheer.player.engine.PlayerAppManager.PlayerCxtFlag;
+import com.tricheer.player.receiver.MediaScanReceiver;
+import com.tricheer.player.utils.PlayerPreferUtils;
+import com.tricheer.player.version.base.activity.video.BaseKeyEventActivity;
+import com.tricheer.player.version.cj.slc_lc2010_vdc.frags.BaseVideoListFrag;
+import com.tricheer.player.version.cj.slc_lc2010_vdc.frags.SclLc2010VdcVideoFoldersFrag;
+import com.tricheer.player.version.cj.slc_lc2010_vdc.frags.SclLc2010VdcVideoNamesFrag;
+
+import java.util.List;
+import java.util.Set;
+
+import js.lib.android.utils.CommonUtil;
+import js.lib.android.utils.EmptyUtil;
+import js.lib.android.utils.FragUtil;
+import js.lib.android.utils.Logs;
+
+/**
+ * SLC_LC2010_VDC Video List Activity
+ *
+ * @author Jun.Wang
+ */
+public class SclLc2010VdcVideoListActivity extends BaseKeyEventActivity {
+    // TAG
+    private static final String TAG = "VideoListActivityImpl";
+
+    /**
+     * ==========Widgets in this Activity==========
+     */
+    private View[] vItems = new View[2];
+
+
+    //==========Variables in this Activity==========
+    // Request Current Playing Media Url
+    private BaseVideoListFrag mFragMedias;
+
+    /**
+     * Request Current Playing Media Url
+     */
+    protected final int M_REQ_WARNING = 2;
+
+    @Override
+    protected void onCreate(@Nullable Bundle bundle) {
+        super.onCreate(bundle);
+        setContentView(R.layout.scl_lc2010_vdc_activity_video_list);
+        PlayerAppManager.putCxt(PlayerCxtFlag.VIDEO_LIST, this);
+        init();
+    }
+
+    @Override
+    protected void init() {
+        super.init();
+        //
+        vItems[0] = findViewById(R.id.v_media_name);
+        vItems[0].setOnClickListener(mFilterViewOnClick);
+
+        vItems[1] = findViewById(R.id.v_folder);
+        vItems[1].setOnClickListener(mFilterViewOnClick);
+
+        //
+        showWarning();
+        loadFragment(0);
+        loadLocalMedias();
+    }
+
+    private void showWarning() {
+        int flag = PlayerPreferUtils.getVideoWarningFlag(false, 0);
+        switch (flag) {
+            case 0:
+            case 1:
+            case 3:
+                Intent warningIntent = new Intent(this, SclLc2010VdcVideoWarningActivity.class);
+                startActivityForResult(warningIntent, M_REQ_WARNING);
+                break;
+            case 2:
+                break;
+        }
+    }
+
+    private void loadFragment(int idx) {
+        //Remove Old
+        if (mFragMedias != null) {
+            FragUtil.removeV4Fragment(mFragMedias, getSupportFragmentManager());
+        }
+
+        //Load New
+        switch (idx) {
+            case 0:
+                mFragMedias = new SclLc2010VdcVideoNamesFrag();
+                break;
+            case 1:
+                mFragMedias = new SclLc2010VdcVideoFoldersFrag();
+                break;
+        }
+        if (mFragMedias != null) {
+            FragUtil.loadV4Fragment(R.id.layout_frag, mFragMedias, getSupportFragmentManager());
+        }
+    }
+
+    @Override
+    public void onPlayFromFolder(int playPos, List<String> listPlayPaths) {
+    }
+
+    @Override
+    public void onPlayFromFolder(Intent data) {
+    }
+
+    @Override
+    protected void loadLocalMedias() {
+        Log.i(TAG, "loadLocalMedias()");
+        CommonUtil.cancelTask(mLoadLocalMediasTask);
+        mLoadLocalMediasTask = new LoadLocalMediasTask();
+        mLoadLocalMediasTask.execute(new LoadMediaListener() {
+
+            @Override
+            public void afterLoad(String selectMediaUrl) {
+                Log.i(TAG, "loadLocalMedias() ->afterLoad(" + selectMediaUrl + ")");
+                if (EmptyUtil.isEmpty(mListPrograms)) {
+                    loadSDCardMedias();
+                } else {
+                    refreshDatas();
+                    loadMediaImage();
+                }
+            }
+
+            @Override
+            public void refreshUI() {
+            }
+        });
+    }
+
+    @Override
+    protected void loadSDCardMedias() {
+        Log.i(TAG, "loadSDCardMedias()");
+        CommonUtil.cancelTask(mLoadSDCardMediasTask);
+        mLoadSDCardMediasTask = new LoadSDCardMediasTask(null, new LoadMediaListener() {
+
+            @Override
+            public void afterLoad(String selectMediaUrl) {
+                Log.i(TAG, "loadSDCardMedias() ->afterLoad(" + selectMediaUrl + ")");
+                if (EmptyUtil.isEmpty(mListPrograms)) {
+                    notifyScanMedias(true);
+                } else {
+                    refreshDatas();
+                    loadMediaImage();
+                }
+            }
+
+            @Override
+            public void refreshUI() {
+            }
+        });
+        mLoadSDCardMediasTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    @Override
+    protected void loadMediaImage() {
+        CommonUtil.cancelTask(mLoadMediaImageTask);
+        mLoadMediaImageTask = new LoadMediaImageTask();
+        mLoadMediaImageTask.execute(mListPrograms, new LoadImgListner() {
+
+            @Override
+            public void afterLoad() {
+                if (mFragMedias != null) {
+                    mFragMedias.refreshDatas();
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void refreshOnNotifyLoading(int loadingFlag) {
+        super.refreshOnNotifyLoading(loadingFlag);
+        if (loadingFlag == MediaScanReceiver.ScanActives.START) {
+            //showLctLm8917Loading(true);
+        } else if (loadingFlag == MediaScanReceiver.ScanActives.END || loadingFlag == MediaScanReceiver.ScanActives.TASK_CANCEL) {
+            //showLctLm8917Loading(false);
+        }
+    }
+
+    @Override
+    protected void refreshPageOnScan(List<ProVideo> listScannedVideos, boolean isScaned) {
+        super.refreshPageOnScan(listScannedVideos, isScaned);
+        if (!EmptyUtil.isEmpty(listScannedVideos)) {
+            Logs.i(TAG, "refreshPageOnScan() -> [VideoSize:" + listScannedVideos.size() + " ; isScaned:" + isScaned);
+            if (isScaned) {
+                loadLocalMedias();
+            } else {
+                refreshDatas();
+            }
+        }
+    }
+
+    @Override
+    protected void refreshPageOnClear(Set<String> allSdMountedPaths) {
+        super.refreshPageOnClear(allSdMountedPaths);
+        if (EmptyUtil.isEmpty(mListPrograms)) {
+            clearPlayInfo();
+        } else {
+            refreshDatas();
+        }
+    }
+
+    public List<ProVideo> getListMedias() {
+        return mListPrograms;
+    }
+
+    private void refreshDatas() {
+        //sbLetters.refreshLetters(mListSortLetters.toArray());
+        if (mFragMedias != null) {
+            mFragMedias.refreshDatas(mListPrograms, getLastPath());
+        }
+    }
+
+    private View.OnClickListener mFilterViewOnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switchFilter(v);
+            notifyScanMedias(true);
+        }
+
+        private void switchFilter(View v) {
+            //Forbidden click the same item
+            //TODO
+
+            //
+            notifyScanMedias(true);
+            final int loop = vItems.length;
+            for (int idx = 0; idx < loop; idx++) {
+                View item = vItems[idx];
+                if (item == v) {
+                    setBg(item, true);
+                    loadFragment(idx);
+                } else {
+                    setBg(item, false);
+                }
+            }
+        }
+
+        private void setBg(View v, boolean selected) {
+            if (selected) {
+                v.setBackgroundResource(R.drawable.bg_title_item_c);
+            } else {
+                v.setBackgroundResource(R.drawable.btn_collect_selector);
+            }
+        }
+    };
+
+    @Override
+    public void onGetKeyCode(int keyCode) {
+        switch (keyCode) {
+            case Keys.KeyVals.KEYCODE_PREV:
+                if (mFragMedias != null) {
+                    mFragMedias.prev();
+                }
+                break;
+            case Keys.KeyVals.KEYCODE_NEXT:
+                if (mFragMedias != null) {
+                    mFragMedias.next();
+                }
+                break;
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        onIDestroy();
+    }
+
+    @Override
+    protected void onIDestroy() {
+        super.onIDestroy();
+        PlayerAppManager.removeCxt(PlayerCxtFlag.VIDEO_LIST);
+    }
+}

@@ -1,0 +1,3 @@
+# Referenced at E:\WorkSpace\Code\Studio\TrMedia2.0\RadioBase\build\intermediates\manifests\full\debug\AndroidManifest.xml:17
+-keep class com.tricheer.radio.App { <init>(...); }
+

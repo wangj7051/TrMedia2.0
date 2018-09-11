@@ -27,9 +27,13 @@ public interface FmDelegate {
 
         void onSeachFreqStart(int type);
 
+        void onSeachFreqFail(int type, int reason);
+
         void onScanFreqStart(int type);
 
         void onScanFreqEnd(int type);
+
+        void onScanFreqFail(int type, int reason);
     }
 
     /**

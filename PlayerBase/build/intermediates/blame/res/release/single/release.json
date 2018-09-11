@@ -1,0 +1,602 @@
+[
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_icon_folder_c.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\icon_folder_c.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_separate_line_v.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\separate_line_v.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_op_list_c.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\op_list_c.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_op_video_play.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\op_video_play.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable_bg_corners_gray_2.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable\\bg_corners_gray_2.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_icon_adjust_sunlight.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\icon_adjust_sunlight.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_line_x.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\line_x.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_icon_singer_c.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\icon_singer_c.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable_bg_progressbar_1.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable\\bg_progressbar_1.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\layout_scl_lc2010_vdc_activity_video_frag_names.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\layout\\scl_lc2010_vdc_activity_video_frag_names.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable_btn_op_mode_random_selector.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable\\btn_op_mode_random_selector.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_et_input_bg.9.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\et_input_bg.9.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\anim_plv_slide_in_from_bottom.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\anim\\plv_slide_in_from_bottom.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\layout_zpt_lv8918_rja_v_media_list_item.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\layout\\zpt_lv8918_rja_v_media_list_item.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\layout_scl_lc2010_vdc_activity_video_list.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\layout\\scl_lc2010_vdc_activity_video_list.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\layout_lib_v_vol_control.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\layout\\lib_v_vol_control.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_progress_07.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\progress_07.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_op_video_pause.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\op_video_pause.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable_btn_video_op_play_selector.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable\\btn_video_op_play_selector.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_vol_normal.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\vol_normal.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_vol_c.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\vol_c.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_icon_collection_n.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\icon_collection_n.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_ic_launcher_video.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\ic_launcher_video.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_bg_title.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\bg_title.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable_bg_corners_gray_3.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable\\bg_corners_gray_3.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\layout_scl_lc2010_vdc_activity_audio_list.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\layout\\scl_lc2010_vdc_activity_audio_list.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_seekbar_process_finished.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\seekbar_process_finished.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_separate_line_h.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\separate_line_h.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_vol_add_c.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\vol_add_c.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_line_blue.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\line_blue.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_op_play.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\op_play.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_vol_add.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\vol_add.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable_bg_progressbar_2.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable\\bg_progressbar_2.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable_btn_op_favored_selector.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable\\btn_op_favored_selector.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_op_video_pause_c.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\op_video_pause_c.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable_btn_op_mode_oneloop_selector.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable\\btn_op_mode_oneloop_selector.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_progress_02.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\progress_02.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_icon_adjust_vol.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\icon_adjust_vol.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_op_favor.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\op_favor.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_op_pause.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\op_pause.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_icon_album_c.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\icon_album_c.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_icon_singer.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\icon_singer.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_op_favored.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\op_favored.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable_btn_video_op_pause_selector.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable\\btn_video_op_pause_selector.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_op_next_c.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\op_next_c.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_op_favor_c.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\op_favor_c.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_progress_10.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\progress_10.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_vol_bg.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\vol_bg.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\anim_plv_slide_in_from_top.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\anim\\plv_slide_in_from_top.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_icon_album.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\icon_album.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_icon_folder.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\icon_folder.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\layout_lct_lm8917_zbk_v_video_handbrake_prompt.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\layout\\lct_lm8917_zbk_v_video_handbrake_prompt.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-mdpi_bg_title_item_c.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-mdpi\\bg_title_item_c.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\anim_plv_slide_out_to_top.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\anim\\plv_slide_out_to_top.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_op_mode_random.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\op_mode_random.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_op_list.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\op_list.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_bg_cover_video.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\bg_cover_video.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable_btn_op_pause_selector.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable\\btn_op_pause_selector.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_ic_launcher_qtfm.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\ic_launcher_qtfm.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable_bg_corners_usb_toast.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable\\bg_corners_usb_toast.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable_bg_corners_white_1.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable\\bg_corners_white_1.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable_btn_op_favor_selector.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable\\btn_op_favor_selector.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_progress_05.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\progress_05.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_op_prev_c.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\op_prev_c.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_op_mode_loop_c.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\op_mode_loop_c.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-mdpi_icon_item_selected.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-mdpi\\icon_item_selected.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\anim_lct_lm8917_zbk_rotate.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\anim\\lct_lm8917_zbk_rotate.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable_zpt_lv8918_slb_bg_blue_corners_c.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable\\zpt_lv8918_slb_bg_blue_corners_c.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\anim_player2_search_scale_in_1.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\anim\\player2_search_scale_in_1.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable_btn_op_prev_selector.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable\\btn_op_prev_selector.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_progress_08.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\progress_08.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_progress_12.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\progress_12.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\anim_plv_slide_out_to_bottom.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\anim\\plv_slide_out_to_bottom.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_loading.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\loading.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\layout_scl_lc2010_vdc_activity_audio_list_item.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\layout\\scl_lc2010_vdc_activity_audio_list_item.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\layout_scl_lc2010_vdc_activity_video_player.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\layout\\scl_lc2010_vdc_activity_video_player.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\layout_toast_usb.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\layout\\toast_usb.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_icon_adjust_arrow_right.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\icon_adjust_arrow_right.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable_btn_op_next_selector.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable\\btn_op_next_selector.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable_zpt_lv8918_slb_bg_blue_corners.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable\\zpt_lv8918_slb_bg_blue_corners.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_progress_04.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\progress_04.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_vol_refuce.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\vol_refuce.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\layout_zpt_lv8918_rja_v_media_list.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\layout\\zpt_lv8918_rja_v_media_list.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_left_sperate_h.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\left_sperate_h.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_etx_del_1.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\etx_del_1.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\anim_player2_search_scale_out_1.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\anim\\player2_search_scale_out_1.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_op_next.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\op_next.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\layout_scl_lc2010_vdc_activity_audio_list_frag_collects.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\layout\\scl_lc2010_vdc_activity_audio_list_frag_collects.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\layout_scl_lc2010_vdc_activity_audio_player.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\layout\\scl_lc2010_vdc_activity_audio_player.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable_btn_collect_selector.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable\\btn_collect_selector.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_ic_launcher_music.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\ic_launcher_music.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\layout_scl_lc2010_vdc_activity_audio_list_frag_names.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\layout\\scl_lc2010_vdc_activity_audio_list_frag_names.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable_bg_vol_control.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable\\bg_vol_control.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\layout_scl_lc2010_vdc_activity_video_warning.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\layout\\scl_lc2010_vdc_activity_video_warning.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\layout_zpt_lv8918_slb_v_dialog_operates.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\layout\\zpt_lv8918_slb_v_dialog_operates.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\layout_lib_v_request_progress.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\layout\\lib_v_request_progress.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_vol_mute.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\vol_mute.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_op_mode_order.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\op_mode_order.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_bg_main.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\bg_main.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_bg_media_list.9.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\bg_media_list.9.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_vol_refuce_c.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\vol_refuce_c.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_icon_movie_bg.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\icon_movie_bg.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_progress_03.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\progress_03.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable_bg_white_gray_selector_3.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable\\bg_white_gray_selector_3.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable_bg_corners_white_3.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable\\bg_corners_white_3.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_bg_lv_selected.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\bg_lv_selected.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_line_v_middle.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\line_v_middle.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_favor_c_n.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\favor_c_n.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable_btn_op_mode_loop_selector.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable\\btn_op_mode_loop_selector.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_progress_06.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\progress_06.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable_btn_op_play_selector.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable\\btn_op_play_selector.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_op_mode_oneloop_c.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\op_mode_oneloop_c.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable_bg_corners_white_2.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable\\bg_corners_white_2.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_line_h.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\line_h.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_op_play_c.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\op_play_c.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable_bg_corners_req_process.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable\\bg_corners_req_process.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_favor_c.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\favor_c.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_bg_cover_border.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\bg_cover_border.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_seekbar_point.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\seekbar_point.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable_bg_corners_black_red.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable\\bg_corners_black_red.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_seekbar_progress_bg.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\seekbar_progress_bg.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_op_mode_random_c.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\op_mode_random_c.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable_btn_op_list_selector.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable\\btn_op_list_selector.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_op_mode_order_c.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\op_mode_order_c.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\layout_scl_lc2010_vdc_activity_audio_list_frag_artists.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\layout\\scl_lc2010_vdc_activity_audio_list_frag_artists.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\layout_lib_v_ioperate_2btn_dialog.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\layout\\lib_v_ioperate_2btn_dialog.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_bg_lv_item_selected.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\bg_lv_item_selected.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_icon_collection_y.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\icon_collection_y.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable_btn_op_mode_order_selector.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable\\btn_op_mode_order_selector.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\layout_lib_v_tag_v.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\layout\\lib_v_tag_v.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\layout_scl_lc2010_vdc_activity_video_list_item.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\layout\\scl_lc2010_vdc_activity_video_list_item.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_progress_09.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\progress_09.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable_bg_white_gray_selector_2.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable\\bg_white_gray_selector_2.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable_lct_lm8917_zbk_seekbar_progressbar.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable\\lct_lm8917_zbk_seekbar_progressbar.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable_lib_sidebar_bg.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable\\lib_sidebar_bg.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_op_pause_c.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\op_pause_c.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable_zpt_lv8918_slb_bg_blue_corners_selector.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable\\zpt_lv8918_slb_bg_blue_corners_selector.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_op_video_play_c.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\op_video_play_c.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_progress_11.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\progress_11.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_line_bands.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\line_bands.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_ic_launcher.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\ic_launcher.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_op_favored_c.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\op_favored_c.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_icon_adjust_arrow_left.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\icon_adjust_arrow_left.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable_bg_corners_white.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable\\bg_corners_white.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_op_prev.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\op_prev.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_progress_01.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\progress_01.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_op_mode_oneloop.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\op_mode_oneloop.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\anim_lct_lm8917_zbk_progress_animation.xml.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\anim\\lct_lm8917_zbk_progress_animation.xml"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_op_mode_loop.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\op_mode_loop.png"
+    },
+    {
+        "merged": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\build\\intermediates\\res\\merged\\release\\drawable-hdpi_bg_cover_music.png.flat",
+        "source": "E:\\WorkSpace\\Code\\Studio\\TrMedia2.0\\PlayerBase\\src\\main\\res\\drawable-hdpi\\bg_cover_music.png"
+    }
+]

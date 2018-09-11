@@ -83,6 +83,18 @@ public class FmUtilV2 implements FmDelegate {
         }
 
         @Override
+        public void onSeachFreqStart(int type) {
+            try {
+                Log.i(TAG, "onSeachFreqStart(" + type + ")");
+                if (mFmListener != null) {
+                    mFmListener.onSeachFreqStart(type);
+                }
+            } catch (Exception e) {
+                Log.i(TAG, "onSeachFreqStart(type) > " + e.getMessage());
+            }
+        }
+
+        @Override
         public void onSeachFreqEnd(int type) {
             try {
                 Log.i(TAG, "onSeachFreqEnd(" + type + ")");
@@ -95,15 +107,7 @@ public class FmUtilV2 implements FmDelegate {
         }
 
         @Override
-        public void onSeachFreqStart(int type) {
-            try {
-                Log.i(TAG, "onSeachFreqStart(" + type + ")");
-                if (mFmListener != null) {
-                    mFmListener.onSeachFreqStart(type);
-                }
-            } catch (Exception e) {
-                Log.i(TAG, "onSeachFreqStart(type) > " + e.getMessage());
-            }
+        public void onSeachFreqFail(int type, int reason) {
         }
 
         @Override
@@ -128,6 +132,10 @@ public class FmUtilV2 implements FmDelegate {
             } catch (Exception e) {
                 Log.i(TAG, "onScanFreqEnd(type) > " + e.getMessage());
             }
+        }
+
+        @Override
+        public void onScanFreqFail(int type, int reason) {
         }
     };
 
