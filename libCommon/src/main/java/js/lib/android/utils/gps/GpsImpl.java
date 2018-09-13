@@ -11,7 +11,6 @@ import android.location.LocationProvider;
 import android.os.Bundle;
 import android.util.Log;
 
-import java.lang.ref.WeakReference;
 import java.util.Iterator;
 
 public class GpsImpl {
@@ -26,7 +25,7 @@ public class GpsImpl {
     /**
      * {@link GpsImplListener} object
      */
-    private WeakReference<GpsImplListener> mGpsImplListener;
+    private GpsImplListener mGpsImplListener;
 
     public interface GpsImplListener {
         void onGotSpeed(double speed_mPerS, double speed_kmPerH);
@@ -39,7 +38,7 @@ public class GpsImpl {
     }
 
     public void setGpsImplListener(GpsImplListener l) {
-        mGpsImplListener = new WeakReference<GpsImplListener>(l);
+        mGpsImplListener = l;
     }
 
     private void init() {
@@ -59,7 +58,7 @@ public class GpsImpl {
 
             // 1秒更新一次，或最小位移变化超过1米更新一次；
             // 注意：此处更新准确度非常低，推荐在service里面启动一个Thread，在run中sleep(10000);然后执行handler.sendMessage(),更新位置
-            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 0, new LocationOnChange());
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, new LocationOnChange());
         } else {
             GpsUtil.openGPSSet(mContext);
         }
@@ -165,7 +164,7 @@ public class GpsImpl {
             double speedMPerS = location.getSpeed();
             double speedKmPerH = speedMPerS * 3.6;
             if (mGpsImplListener != null) {
-                mGpsImplListener.get().onGotSpeed(speedMPerS, speedKmPerH);
+                mGpsImplListener.onGotSpeed(speedMPerS, speedKmPerH);
             }
         }
     }
@@ -173,7 +172,7 @@ public class GpsImpl {
     public void destroy() {
         if (mLocationManager != null) {
             mLocationManager.removeGpsStatusListener(mGpsStausListener);
-            mGpsImplListener.clear();
+            mGpsImplListener = null;
         }
     }
 }
