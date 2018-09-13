@@ -7,22 +7,16 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.widget.Toast;
 
-import com.lib.view.OperateDialog;
-import com.lib.view.RequestProcessDialog;
 import com.lib.view.contacts.CharacterParser;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.tricheer.player.R;
 import com.tricheer.player.utils.PlayerFileUtils;
 import com.tricheer.player.utils.PlayerLogicUtils;
 
-import js.lib.android.utils.AudioManagerUtil;
 import js.lib.android.utils.CommonUtil;
 import js.lib.android.utils.ImageLoaderUtils;
 import js.lib.android.utils.Logs;
@@ -36,9 +30,7 @@ public abstract class BaseFragActivity extends FragmentActivity {
     // TAG
     private final String TAG = "BaseFragActivity";
 
-    /**
-     * ==========Variable in this Activity==========
-     */
+    //==========Variable in this Activity==========
     /**
      * Context
      */
@@ -48,10 +40,6 @@ public abstract class BaseFragActivity extends FragmentActivity {
      * Thread handler
      */
     protected Handler mHandler = new Handler();
-    /**
-     * Handler Delay Time, 300MS
-     */
-    protected final int M_DEFAULT_DELAY_TIME = 300;
 
     /**
      * Activity UI Load End Flag
@@ -69,16 +57,6 @@ public abstract class BaseFragActivity extends FragmentActivity {
     protected CharacterParser mCharacterParser;
 
     /**
-     * Request Processing Dialog
-     */
-    protected RequestProcessDialog mProcessDialog;
-
-    /**
-     * Operate Dialog
-     */
-    protected OperateDialog mOperateDialog;
-
-    /**
      * Is Click Home Key , And Application is Running Background
      */
     private boolean mIsHomeClicked = false;
@@ -94,7 +72,7 @@ public abstract class BaseFragActivity extends FragmentActivity {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             Logs.i(TAG, "mHomeKeyEventReceiver -> [action : " + action);
-            if (action.equals(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)) {
+            if (Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equalsIgnoreCase(action)) {
                 String reason = intent.getStringExtra(SYSTEM_REASON);
                 if (TextUtils.equals(reason, SYSTEM_HOME_KEY)) {
                     Logs.i(TAG, "----Home Key Click----");
@@ -189,38 +167,6 @@ public abstract class BaseFragActivity extends FragmentActivity {
     }
 
     /**
-     * Show or Hide Progress Dialog
-     */
-    public void showProgress(boolean isShow, int msgResID) {
-        showProgress(isShow, mContext.getString(msgResID));
-    }
-
-    /**
-     * Show or Hide Progress Dialog
-     */
-    public void showProgress(boolean isShow, String msg) {
-        if (mProcessDialog == null) {
-            mProcessDialog = new RequestProcessDialog(mContext, getColorByResID(android.R.color.white));
-            mProcessDialog.setCancelable(false);
-            mProcessDialog.setCanceledOnTouchOutside(false);
-        }
-
-        //
-        if (isShow) {
-            if (!mProcessDialog.isShowing()) {
-                mProcessDialog.setMsgInfo(msg);
-                mProcessDialog.show();
-            }
-
-            //
-        } else {
-            if (mProcessDialog.isShowing()) {
-                mProcessDialog.dismiss();
-            }
-        }
-    }
-
-    /**
      * Get Color
      */
     protected int getColorByResID(int colorResID) {
@@ -306,41 +252,10 @@ public abstract class BaseFragActivity extends FragmentActivity {
     }
 
     /**
-     * Must Be used in onBackPressed()
-     */
-    protected void onIBackPressed() {
-    }
-
-    /**
      * Must Be used in onDestroy()
      */
     protected void onIDestroy() {
         mHandler.removeCallbacksAndMessages(null);
-        showProgress(false, "");
-    }
-
-    /**
-     * Replace Layout with Fragment
-     */
-    protected void replaceFragContainer(FragmentManager fragManager, int resID, Fragment frag) {
-        FragmentTransaction fragTrasAct = fragManager.beginTransaction();
-        fragTrasAct.replace(resID, frag);
-        fragTrasAct.commit();
-    }
-
-    /**
-     * (1)强迫退出其他媒体，这里采用了在列表中注册焦点的方式，强制其他注册了焦点时间的媒体退出<br/>
-     * (2)视频列表不需要进行声音焦点控制，所以在短暂的获取焦点后，要释放，否则会造成与视频播放器的争抢
-     */
-    protected void forceQuitOthers() {
-        AudioManagerUtil.requestMusicGain(mContext, null);
-        mHandler.postDelayed(new Runnable() {
-
-            @Override
-            public void run() {
-                AudioManagerUtil.abandon(mContext, null);
-            }
-        }, 50);
     }
 
     @SuppressWarnings("unchecked")

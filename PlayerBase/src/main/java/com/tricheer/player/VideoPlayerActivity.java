@@ -25,11 +25,11 @@ public class VideoPlayerActivity extends BaseUsbLogicActivity {
 
     private void init() {
         Logs.i(TAG, "^^ init() ^^");
-//        if (PlayerFileUtils.isHasSupportStorage()) {
-        checkAndOpenPlayer();
-//        } else {
-//            toastMsg();
-//        }
+        if (PlayerFileUtils.isHasSupportStorage()) {
+            checkAndOpenPlayer();
+        } else {
+            toastMsg();
+        }
     }
 
     private void checkAndOpenPlayer() {

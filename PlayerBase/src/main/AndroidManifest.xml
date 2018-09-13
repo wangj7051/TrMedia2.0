@@ -52,20 +52,6 @@
 
         <!-- Music & Video & Radio Player Start Activity -->
         <activity
-            android:name="com.tricheer.player.MusicPlayerActivity"
-            android:icon="@drawable/ic_launcher_music"
-            android:label="@string/app_name_music"
-            android:launchMode="singleInstance"
-            android:screenOrientation="landscape"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"
-            android:windowSoftInputMode="stateHidden">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
             android:name="com.tricheer.player.VideoPlayerActivity"
             android:icon="@drawable/ic_launcher_video"
             android:label="@string/app_name_video"
@@ -74,6 +60,20 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
             android:windowSoftInputMode="stateHidden">
 
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.tricheer.player.MusicPlayerActivity"
+            android:icon="@drawable/ic_launcher_music"
+            android:label="@string/app_name_music"
+            android:launchMode="singleInstance"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:windowSoftInputMode="stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

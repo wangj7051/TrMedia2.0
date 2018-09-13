@@ -552,11 +552,6 @@ public abstract class BaseVideoPlayerActivity extends BaseKeyEventActivity imple
     }
 
     @Override
-    protected void onIBackPressed() {
-        super.onIBackPressed();
-    }
-
-    @Override
     public void onLowMemory() {
         super.onLowMemory();
         if (!isPlaying() && CommonUtil.isRunningBackground(mContext, getPackageName())) {

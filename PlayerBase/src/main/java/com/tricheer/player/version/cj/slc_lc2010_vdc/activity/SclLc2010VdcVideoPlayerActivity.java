@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.tricheer.player.R;
@@ -37,6 +38,7 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity {
     //==========Widget in this Activity==========
     private View vControlPanel;
     private TextView tvName;
+    private View vList;
     private View layoutWarning;
 
     //==========Variables in this Activity==========
@@ -89,6 +91,9 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity {
 
         ivPlayNext = findView(R.id.iv_play_next);
         ivPlayNext.setOnClickListener(mViewOnClick);
+
+        vList = findViewById(R.id.v_list);
+        vList.setOnClickListener(mViewOnClick);
 
         //Warning
         layoutWarning = findViewById(R.id.layout_warning);
@@ -212,6 +217,8 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity {
                 doSecPlayPre();
             } else if (v == ivPlayNext) {
                 doSecPlayNext();
+            } else if (v == vList) {
+                finish();
             }
         }
     };

@@ -1,6 +1,7 @@
 package com.tricheer.player.version.cj.slc_lc2010_vdc.adapter;
 
 import android.content.Context;
+import android.net.Uri;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import com.tricheer.player.R;
 import com.tricheer.player.bean.ProVideo;
 import com.tricheer.player.utils.PlayerLogicUtils;
 
+import java.io.File;
 import java.util.List;
 
 import js.lib.android.adapter.BaseArrayAdapter;
@@ -101,14 +103,21 @@ public class SclLc2010VdcVideoNamesAdapter extends BaseArrayAdapter<ProVideo> im
         holder.vName.setText(item.title);
         PlayerLogicUtils.setMediaCover(holder.vCover, item, false);
 
+        //Set video image resource
+        File bmFile = new File(PlayerLogicUtils.getMediaPicPath(item.mediaUrl, 2));
+        if (bmFile.exists()) {
+            holder.vCover.setImageURI(Uri.parse(bmFile.getPath()));
+        } else {
+            holder.vCover.setImageResource(R.color.video_item_bg);
+        }
+
         //Selected
         if (TextUtils.equals(mSelectedMediaUrl, item.mediaUrl)) {
             mSelectedPos = position;
             holder.vCoverBg.setBackgroundResource(R.color.video_item_bg);
-
             //Not selected
         } else {
-            holder.vCoverBg.setBackgroundResource(android.R.color.transparent);
+            holder.vCoverBg.setBackgroundResource(0);
         }
 
         return convertView;
