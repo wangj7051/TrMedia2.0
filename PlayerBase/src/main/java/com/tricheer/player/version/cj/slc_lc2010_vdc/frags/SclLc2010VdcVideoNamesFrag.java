@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
+import com.js.sidebar.LetterSideBar;
 import com.tricheer.player.R;
 import com.tricheer.player.bean.ProVideo;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.activity.SclLc2010VdcVideoListActivity;
@@ -32,6 +33,7 @@ public class SclLc2010VdcVideoNamesFrag extends BaseVideoListFrag {
      * Grid view for list videos
      */
     private GridView gvDatas;
+    private LetterSideBar lsb;
 
     //==========Variables in this Fragment==========
     private SclLc2010VdcVideoListActivity mAttachedActivity;
@@ -74,6 +76,11 @@ public class SclLc2010VdcVideoNamesFrag extends BaseVideoListFrag {
     }
 
     private void init() {
+        //----Widgets----
+        //Side bar
+        lsb = (LetterSideBar) contentV.findViewById(R.id.lsb);
+        lsb.addCallback(new LetterSideBarCallback());
+
         // Data
         mDataAdapter = new SclLc2010VdcVideoNamesAdapter(mAttachedActivity, 0);
         gvDatas = (GridView) contentV.findViewById(R.id.v_datas);
@@ -102,6 +109,14 @@ public class SclLc2010VdcVideoNamesFrag extends BaseVideoListFrag {
         if (isAdded()) {
             mListMedias = listMedias;
             mDataAdapter.refreshDatas(mListMedias, targetMediaUrl);
+        }
+    }
+
+    private class LetterSideBarCallback implements LetterSideBar.LetterSideBarListener {
+        @Override
+        public void callback(int pos, String letter) {
+            Logs.i(TAG, "LetterSideBarCallback -> callback(" + pos + "," + letter + ")");
+            gvDatas.setSelection(pos);
         }
     }
 

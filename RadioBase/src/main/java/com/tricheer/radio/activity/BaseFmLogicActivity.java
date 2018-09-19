@@ -38,20 +38,36 @@ public abstract class BaseFmLogicActivity extends BaseFmActivity {
         return PreferUtils.getLastFreq(false, band, 0);
     }
 
+    protected void execOpenOrSwitchRadio(int band) {
+        if (isRadioOpened()) {
+            int currBand = getCurrBand();
+            if (band != currBand) {
+                execSwitchBand();
+                return;
+            }
+        }
+
+        execOpenRadio(band, getLastFreq(band));
+    }
+
     protected void execOpenRadio() {
+        int lastBand = getLastBand();
+        int lastFreq = getLastFreq(lastBand);
+        execOpenRadio(lastBand, lastFreq);
+    }
+
+    private void execOpenRadio(int band, int freq) {
         openFm();
         if (isRadioOpened()) {
             //setSt(true);
             //setLoc(true);
-            int lastBand = getLastBand();
-            int lastFreq = getLastFreq(lastBand);
 
             //
-            setBand(lastBand);
-            if (lastFreq == -1) {
+            setBand(band);
+            if (freq == -1) {
                 searchAll();
             } else {
-                play(lastFreq);
+                play(freq);
             }
         }
     }

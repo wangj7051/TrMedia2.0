@@ -43,7 +43,6 @@ public class SclLc2010VdcVideoWarningActivity extends BaseFragActivity {
                 PlayerPreferUtils.getVideoWarningFlag(true, 2);
                 finish();
             } else if (v == vExit) {
-                PlayerPreferUtils.getVideoWarningFlag(true, 3);
                 exitPlayer();
             }
         }

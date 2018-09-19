@@ -80,6 +80,20 @@ public class PlayerReceiver extends PlayerBaseReceiver {
             return;
         }
 
+        ActionEnum ae = ActionEnum.getByAction(action);
+        if (ae != null) {
+            switch (ae) {
+                case ACC_ON:
+                    break;
+                case ACC_OFF:
+                    break;
+                case ACC_OFF_TRUE:
+                    PlayerPreferUtils.getVideoWarningFlag(true, 1);
+                    break;
+            }
+            return;
+        }
+
         int actionType = PlayerReceiverActions.getActionIdx(action);
         switch (actionType) {
             // ### System Power Off/On ###

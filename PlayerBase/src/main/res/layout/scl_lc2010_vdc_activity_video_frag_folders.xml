@@ -1,0 +1,25 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_bottom"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <com.js.sidebar.LetterSideBar
+        android:id="@+id/lsb"
+        android:layout_width="180dp"
+        android:layout_height="match_parent"
+        android:visibility="invisible" />
+
+    <GridView
+        android:id="@+id/v_datas"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:cacheColorHint="@android:color/transparent"
+        android:horizontalSpacing="15dp"
+        android:listSelector="@android:color/transparent"
+        android:numColumns="4"
+        android:overScrollMode="never"
+        android:padding="10dp"
+        android:scrollbars="none"
+        android:verticalSpacing="10dp" />
+</LinearLayout>

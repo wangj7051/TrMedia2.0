@@ -120,7 +120,15 @@ public class ControlService extends Service implements FmDelegate, FmListener {
 
 
     @Override
-    public void onSeachFreqFail(int type, int reason) {
+    public void onSeachFreqFail(final int type, final int reason) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                for (FmListener l : mSetFmListeners) {
+                    l.onScanFreqFail(type, reason);
+                }
+            }
+        });
     }
 
     // 预览
@@ -262,6 +270,7 @@ public class ControlService extends Service implements FmDelegate, FmListener {
 
     @Override
     public void onDestroy() {
+        mHandler.removeCallbacksAndMessages(null);
         controlFm(false);
         super.onDestroy();
     }

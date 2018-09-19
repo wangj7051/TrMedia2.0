@@ -3,6 +3,7 @@ package com.tricheer.radio;
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.app.Service;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -19,6 +20,7 @@ import com.tricheer.radio.activity.BaseKeyEventActivity;
 import com.tricheer.radio.engine.BandInfos.BandType;
 import com.tricheer.radio.frags.TabFreqCollectFragment;
 import com.tricheer.radio.utils.FreqFormatUtil;
+import com.tricheer.radio.utils.PreferUtils;
 import com.tricheer.radio.utils.SettingsSysUtil;
 
 import java.util.ArrayList;
@@ -36,7 +38,7 @@ import js.lib.android.view.ViewPagerImpl;
  */
 public class MainActivity extends BaseKeyEventActivity {
     // TAG
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "RadioMain";
 
     //==========Widgets in this Activity==========
     //Top
@@ -115,12 +117,32 @@ public class MainActivity extends BaseKeyEventActivity {
     }
 
     @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        checkAndPlay();
+    }
+
+    @Override
     protected void onServiceStatusChanged(Service service, boolean isConnected) {
         if (isConnected) {
             refreshCollectViews();
             initSeekBar();
             register(this);
+            checkAndPlay();
+        }
+    }
+
+    private void checkAndPlay() {
+        //Get parameters
+        int band = getIntent().getIntExtra("TARGET_BAND", -1);
+        Log.i(TAG, "checkAndPlay() > band:" + band);
+        getIntent().removeExtra("TARGET_BAND");
+        //Check and Play
+        if (band == -1) {
             execOpenRadio();
+        } else {
+            execOpenOrSwitchRadio(band);
         }
     }
 
@@ -323,10 +345,21 @@ public class MainActivity extends BaseKeyEventActivity {
     }
 
     @Override
+    public void onScanFreqFail(int type, int reason) {
+        super.onScanFreqFail(type, reason);
+        Log.i(TAG, "onScanFreqFail(" + type + "," + reason + ")");
+    }
+
+    @Override
     public void onSeachFreqEnd(int type) {
         super.onSeachFreqEnd(type);
+        Log.i(TAG, "onSeachFreqEnd(" + type + ")");
         //Update item
         try {
+            //
+            PreferUtils.saveSearchedFreqs(type, getAllAvailableFreqs());
+
+            //
             int tailPos = mListSearchingAllItems.size() - 1;
             SearchingAllItem item = mListSearchingAllItems.get(tailPos);
             item.isSearched = true;
@@ -389,6 +422,12 @@ public class MainActivity extends BaseKeyEventActivity {
         tvUpdate.setText(isScanning ? R.string.cancel_update : R.string.radio_update);
         tvUpdate.setTextColor(isScanning ? getResources().getColor(R.color.red) : getResources().getColor(R.color.white));
         tvUpdate.setBackgroundResource(isScanning ? R.drawable.bg_border_red : R.drawable.bg_border_white);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+//        moveTaskToBack(true);
     }
 
     @Override

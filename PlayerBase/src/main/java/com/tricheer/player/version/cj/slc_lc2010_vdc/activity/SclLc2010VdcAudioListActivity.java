@@ -1,10 +1,13 @@
 package com.tricheer.player.version.cj.slc_lc2010_vdc.activity;
 
 import android.content.Intent;
+import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+import android.widget.ImageView;
 
 import com.tricheer.player.R;
 import com.tricheer.player.bean.ProMusic;
@@ -38,9 +41,10 @@ public class SclLc2010VdcAudioListActivity extends BaseKeyEventActivity {
     // TAG
     private static final String TAG = "MusicListActivity";
 
-    /**
-     * ==========Variable in this Activity==========
-     */
+    //==========Widgets in this Activity==========
+    private ImageView ivRhythmAnim;
+
+    //==========Variables in this Activity==========
     // -- Variables --
     private static Handler mHandler = new Handler();
 
@@ -79,6 +83,8 @@ public class SclLc2010VdcAudioListActivity extends BaseKeyEventActivity {
         vItems[4] = findViewById(R.id.v_album);
         vItems[4].setOnClickListener(mFilterViewOnClick);
 
+        ivRhythmAnim = (ImageView) findViewById(R.id.v_rate);
+
         //
         loadFragment(2);
         bindAndCreatePlayService(1, 2);
@@ -114,7 +120,8 @@ public class SclLc2010VdcAudioListActivity extends BaseKeyEventActivity {
     @Override
     protected void onResume() {
         super.onResume();
-//        if (isPlaying()) {
+        if (isPlaying()) {
+            activeAnimRhythm();
 //            Log.i(TAG, "----Delay reopen player----");
 //            mHandler.postDelayed(new Runnable() {
 //                @Override
@@ -123,7 +130,17 @@ public class SclLc2010VdcAudioListActivity extends BaseKeyEventActivity {
 //                    playSelectMedia(getLastPath(), false);
 //                }
 //            }, 5000);
-//        }
+        }
+    }
+
+    private void activeAnimRhythm() {
+        Drawable drawable = ivRhythmAnim.getDrawable();
+        if (drawable instanceof AnimationDrawable) {
+            AnimationDrawable animDrawable = (AnimationDrawable) drawable;
+            if (!animDrawable.isRunning()) {
+                animDrawable.start();
+            }
+        }
     }
 
     @Override

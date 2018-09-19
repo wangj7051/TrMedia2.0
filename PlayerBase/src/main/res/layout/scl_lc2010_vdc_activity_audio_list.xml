@@ -183,7 +183,9 @@
                 android:id="@+id/v_rate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:contentDescription="@string/no_img" />
+                android:layout_centerInParent="true"
+                android:contentDescription="@string/no_img"
+                android:src="@drawable/anim_audio_rhythm" />
         </RelativeLayout>
     </LinearLayout>
 

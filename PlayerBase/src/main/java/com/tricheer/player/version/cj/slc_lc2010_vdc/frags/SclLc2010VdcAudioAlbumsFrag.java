@@ -13,6 +13,7 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 
+import com.js.sidebar.LetterSideBar;
 import com.tricheer.player.R;
 import com.tricheer.player.bean.ProMusic;
 import com.tricheer.player.engine.db.DBManager;
@@ -44,6 +45,7 @@ public class SclLc2010VdcAudioAlbumsFrag extends BaseAudioListFrag {
     //==========Widgets in this Fragment==========
     private View contentV;
     private ListView lvDatas;
+    private LetterSideBar lsb;
 
     //==========Variables in this Fragment==========
     private SclLc2010VdcAudioListActivity mAttachedActivity;
@@ -84,6 +86,11 @@ public class SclLc2010VdcAudioAlbumsFrag extends BaseAudioListFrag {
 
     private void init() {
         //----Widgets----
+        //Side bar
+        lsb = (LetterSideBar) contentV.findViewById(R.id.lsb);
+        lsb.addCallback(new LetterSideBarCallback());
+
+        //ListView
         mDataAdapter = new SclLc2010VdcAudioAlbumsAdapter(mAttachedActivity, 0);
         mDataAdapter.setCollectListener(new CollectBtnCallback());
 
@@ -178,6 +185,14 @@ public class SclLc2010VdcAudioAlbumsFrag extends BaseAudioListFrag {
         }
     }
 
+    private class LetterSideBarCallback implements LetterSideBar.LetterSideBarListener {
+        @Override
+        public void callback(int pos, String letter) {
+            Logs.i(TAG, "LetterSideBarCallback -> callback(" + pos + "," + letter + ")");
+            lvDatas.setSelection(pos);
+        }
+    }
+
     /**
      * ListView Item Click Event
      */
@@ -200,6 +215,7 @@ public class SclLc2010VdcAudioAlbumsFrag extends BaseAudioListFrag {
                     AudioFilter item = (AudioFilter) objItem;
                     mListDatas = item.listMedias;
                     mDataAdapter.refreshDatas(mListDatas);
+                    lsb.setVisibility(View.VISIBLE);
                 } else if (objItem instanceof ProMusic) {
                     ProMusic program = (ProMusic) objItem;
                     openPlayerActivity(program.mediaUrl, mListDatas);

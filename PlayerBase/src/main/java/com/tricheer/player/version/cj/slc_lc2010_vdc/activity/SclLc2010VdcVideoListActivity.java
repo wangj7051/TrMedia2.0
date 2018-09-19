@@ -79,9 +79,7 @@ public class SclLc2010VdcVideoListActivity extends BaseKeyEventActivity {
     private void showWarning() {
         int flag = PlayerPreferUtils.getVideoWarningFlag(false, 0);
         switch (flag) {
-            case 0:
             case 1:
-            case 3:
                 Intent warningIntent = new Intent(this, SclLc2010VdcVideoWarningActivity.class);
                 startActivityForResult(warningIntent, M_REQ_WARNING);
                 break;

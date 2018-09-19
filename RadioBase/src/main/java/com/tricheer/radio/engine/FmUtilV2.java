@@ -108,6 +108,14 @@ public class FmUtilV2 implements FmDelegate {
 
         @Override
         public void onSeachFreqFail(int type, int reason) {
+            try {
+                Log.i(TAG, "onSeachFreqFail(" + type + "," + reason + ")");
+                if (mFmListener != null) {
+                    mFmListener.onSeachFreqFail(type, reason);
+                }
+            } catch (Exception e) {
+                Log.i(TAG, "onSeachFreqFail(type,reason) > " + e.getMessage());
+            }
         }
 
         @Override

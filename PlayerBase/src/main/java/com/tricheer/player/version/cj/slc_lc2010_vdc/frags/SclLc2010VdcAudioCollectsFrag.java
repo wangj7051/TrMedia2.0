@@ -12,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 
+import com.js.sidebar.LetterSideBar;
 import com.tricheer.player.R;
 import com.tricheer.player.bean.ProMusic;
 import com.tricheer.player.engine.db.DBManager;
@@ -41,6 +42,7 @@ public class SclLc2010VdcAudioCollectsFrag extends BaseAudioListFrag {
     private View contentV;
     private View layoutNoneToast;
     private ListView lvDatas;
+    private LetterSideBar lsb;
 
     //==========Variables in this Fragment==========
     private SclLc2010VdcAudioListActivity mAttachedActivity;
@@ -81,6 +83,10 @@ public class SclLc2010VdcAudioCollectsFrag extends BaseAudioListFrag {
 
     private void init() {
         //----Widgets----
+        //Side bar
+        lsb = (LetterSideBar) contentV.findViewById(R.id.lsb);
+        lsb.addCallback(new LetterSideBarCallback());
+
         layoutNoneToast = contentV.findViewById(R.id.layout_none_toast);
         layoutNoneToast.setVisibility(View.INVISIBLE);
 
@@ -98,7 +104,7 @@ public class SclLc2010VdcAudioCollectsFrag extends BaseAudioListFrag {
     public void refreshDatas(List<ProMusic> listMedias, String targetMediaUrl) {
         if (isAdded()) {
             //Check NULL
-            if (listMedias == null) {
+            if (EmptyUtil.isEmpty(listMedias)) {
                 return;
             }
 
@@ -134,6 +140,14 @@ public class SclLc2010VdcAudioCollectsFrag extends BaseAudioListFrag {
     public void prev() {
         if (isAdded()) {
             mDataAdapter.refreshDatas(mDataAdapter.getPrevPos());
+        }
+    }
+
+    private class LetterSideBarCallback implements LetterSideBar.LetterSideBarListener {
+        @Override
+        public void callback(int pos, String letter) {
+            Logs.i(TAG, "LetterSideBarCallback -> callback(" + pos + "," + letter + ")");
+            lvDatas.setSelection(pos);
         }
     }
 

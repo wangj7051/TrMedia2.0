@@ -4,11 +4,11 @@
     android:layout_height="match_parent"
     android:orientation="horizontal">
 
-    <RelativeLayout
-        android:id="@+id/v_letters"
-        android:layout_width="wrap_content"
+    <com.js.sidebar.LetterSideBar
+        android:id="@+id/lsb"
+        android:layout_width="180dp"
         android:layout_height="match_parent"
-        android:minWidth="180dp" />
+        android:visibility="invisible" />
 
     <ListView
         android:id="@+id/lv_datas"

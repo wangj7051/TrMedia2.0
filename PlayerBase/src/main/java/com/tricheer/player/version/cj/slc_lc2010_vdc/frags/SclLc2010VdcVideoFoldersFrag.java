@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
+import com.js.sidebar.LetterSideBar;
 import com.tricheer.player.R;
 import com.tricheer.player.bean.ProVideo;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.activity.SclLc2010VdcVideoListActivity;
@@ -26,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.Logs;
 
 public class SclLc2010VdcVideoFoldersFrag extends BaseVideoListFrag {
@@ -38,6 +40,7 @@ public class SclLc2010VdcVideoFoldersFrag extends BaseVideoListFrag {
      * Grid view for list videos
      */
     private GridView gvDatas;
+    private LetterSideBar lsb;
 
     //==========Variables in this Fragment==========
     private SclLc2010VdcVideoListActivity mAttachedActivity;
@@ -69,7 +72,7 @@ public class SclLc2010VdcVideoFoldersFrag extends BaseVideoListFrag {
     @SuppressLint("InflateParams")
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        contentV = inflater.inflate(R.layout.scl_lc2010_vdc_activity_video_frag_names, null);
+        contentV = inflater.inflate(R.layout.scl_lc2010_vdc_activity_video_frag_folders, null);
         return contentV;
     }
 
@@ -80,6 +83,11 @@ public class SclLc2010VdcVideoFoldersFrag extends BaseVideoListFrag {
     }
 
     private void init() {
+        //----Widgets----
+        //Side bar
+        lsb = (LetterSideBar) contentV.findViewById(R.id.lsb);
+        lsb.addCallback(new LetterSideBarCallback());
+
         // Data
         mDataAdapter = new SclLc2010VdcVideoFoldersAdapter(mAttachedActivity, 0);
         gvDatas = (GridView) contentV.findViewById(R.id.v_datas);
@@ -107,7 +115,7 @@ public class SclLc2010VdcVideoFoldersFrag extends BaseVideoListFrag {
     public void refreshDatas(List<ProVideo> listMedias, String targetMediaUrl) {
         if (isAdded()) {
             //Check NULL
-            if (listMedias == null) {
+            if (EmptyUtil.isEmpty(listMedias)) {
                 return;
             }
 
@@ -148,6 +156,14 @@ public class SclLc2010VdcVideoFoldersFrag extends BaseVideoListFrag {
         }
     }
 
+    private class LetterSideBarCallback implements LetterSideBar.LetterSideBarListener {
+        @Override
+        public void callback(int pos, String letter) {
+            Logs.i(TAG, "LetterSideBarCallback -> callback(" + pos + "," + letter + ")");
+            gvDatas.setSelection(pos);
+        }
+    }
+
     /**
      * GridView Item Click Event
      */
@@ -167,6 +183,7 @@ public class SclLc2010VdcVideoFoldersFrag extends BaseVideoListFrag {
                         VideoFilter item = (VideoFilter) objItem;
                         mListDatas = item.listMedias;
                         mDataAdapter.refreshDatas(mListDatas);
+                        lsb.setVisibility(View.VISIBLE);
                     } else if (objItem instanceof ProVideo) {
                         ProVideo item = (ProVideo) objItem;
                         Logs.i(TAG, "LvItemClick -> onItemClick ----Just Play----");

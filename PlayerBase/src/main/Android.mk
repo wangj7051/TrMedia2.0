@@ -100,10 +100,12 @@ LOCAL_PROGUARD_ENABLED := disabled
 LOCAL_STATIC_JAVA_LIBRARIES := android-support-v4
 LOCAL_STATIC_JAVA_LIBRARIES += LIB_COMMON
 LOCAL_STATIC_JAVA_LIBRARIES += LIB_TRICHEER
+LOCAL_STATIC_JAVA_LIBRARIES += LETTER_SIDE_BAR
 #LOCAL_STATIC_JAVA_LIBRARIES += JAR_jcifs
-#LOCAL_STATIC_JAVA_LIBRARIES += JAR_jsoup
-#LOCAL_STATIC_JAVA_LIBRARIES += JAR_qtsdk
-#LOCAL_STATIC_JAVA_LIBRARIES += JAR_image_loader
+#LOCAL_STATIC_JAVA_LIBRARIES +=
+## .aar
+#LOCAL_STATIC_JAVA_AAR_LIBRARIES := AAR_vlc
+#LOCAL_STATIC_JAVA_AAR_LIBRARIES +=
 
 #### 指定编译生成类型 ####
 ## 指定编译生成APK
@@ -122,11 +124,10 @@ include $(BUILD_PACKAGE)
 #LOCAL_PREBUILT_LIBS +=
 ## ^^ .jar 预编译 ^^
 #LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES := jcifs_ola_lc8939_inc:libs/jcifs-1.3.18.jar
-#LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES += image-loader_ola_lc8939_inc:libs/universal-image-loader-1.9.4-with-sources.jar
-#LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES += jsoup_ola_lc8939_inc:libs/jsoup-1.8.3.jar
-#LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES += qtsdk_ola_lc8939_inc:libs/qtsdk.jar
-#LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES += libcommon_tricheerplayer_ola_lc8939_inc:libs/lib-common.jar
-#LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES += libtricheer_tricheerplayer_ola_lc8939_inc:libs/lib-tricheer.jar
+#LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES +=
+## ^^ .aar 预编译 ^^
+#LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES += AAR_vlc:libs/libvlc-3.0.0.aar
+#LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES +=
 #include $(BUILD_MULTI_PREBUILT)
 
 #use the folling include to make apk

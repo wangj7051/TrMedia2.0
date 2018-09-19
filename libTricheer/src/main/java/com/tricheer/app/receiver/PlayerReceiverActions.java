@@ -1,20 +1,20 @@
 package com.tricheer.app.receiver;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import android.bluetooth.BluetoothHeadsetClient;
 import android.content.Intent;
 import android.media.AudioManager;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * 广播 Actions
- * 
+ *
  * @author Jun.Wang
  */
 public class PlayerReceiverActions implements BaseActions {
 	// ### System Power Off/On ###
-	public static final String SYS_AUDIO_NOISY = AudioManager.ACTION_AUDIO_BECOMING_NOISY;
+    public static final String SYS_AUDIO_NOISY = AudioManager.ACTION_AUDIO_BECOMING_NOISY;
 	public static final String SYS_BOOT_COMPLETED = Intent.ACTION_BOOT_COMPLETED;
 
 	// ### ACC OFF/ON ###
@@ -255,7 +255,7 @@ public class PlayerReceiverActions implements BaseActions {
 
 	/**
 	 * 获取Action索引
-	 * 
+	 *
 	 * @param action
 	 *            : Action字符串
 	 */

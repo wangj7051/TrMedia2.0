@@ -8,6 +8,7 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/LetterSideBar" />
             <option value="$PROJECT_DIR$/PlayerBase" />
             <option value="$PROJECT_DIR$/RadioBase" />
             <option value="$PROJECT_DIR$/libCommon" />

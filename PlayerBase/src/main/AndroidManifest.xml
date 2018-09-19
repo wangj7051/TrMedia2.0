@@ -6,7 +6,7 @@
     android:versionName="1.0">
 
     <uses-sdk
-        android:minSdkVersion="17"
+        android:minSdkVersion="21"
         android:targetSdkVersion="22" />
 
     <!--Storage permission-->
@@ -180,6 +180,13 @@
             <!-- Media Action -->
             <intent-filter android:priority="1000">
                 <action android:name="com.tricheer.media.action" />
+            </intent-filter>
+
+            <!--ACC Broadcast-->
+            <intent-filter android:priority="1000">
+                <action android:name="tricheer.intent.action.ACC_OFF" />
+                <action android:name="tricheer.intent.action.SLEEP" />
+                <action android:name="tricheer.intent.action.ACC_ON" />
             </intent-filter>
 
             <!-- Open Player Logs -->
