@@ -16,4 +16,6 @@ public abstract class BaseAudioListFrag extends BaseAppV4Fragment {
     public abstract void next();
 
     public abstract void prev();
+
+    public abstract void playSelectMedia(String mediaUrl);
 }

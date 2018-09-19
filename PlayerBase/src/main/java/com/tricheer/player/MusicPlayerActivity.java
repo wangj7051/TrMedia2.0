@@ -25,23 +25,28 @@ public class MusicPlayerActivity extends BaseUsbLogicActivity {
 
     private void init() {
         Logs.i(TAG, "^^ init() ^^");
-        if (PlayerFileUtils.isHasSupportStorage()) {
-            checkAndOpenPlayer();
+
+        if (isTest() || PlayerFileUtils.isHasSupportStorage()) {
+            openPlayer();
         } else {
             toastMsg();
         }
     }
 
-    private void checkAndOpenPlayer() {
-        if (isBtCalling(true)) {
-            finish();
-        } else {
-            if (PlayerAppManager.getCurrPlayerFlag() != PlayerAppManager.PlayerCxtFlag.MUSIC_PLAYER) {
-                Logs.i(TAG, "wxp -> :" + "exitCurrPlayer : " + PlayerAppManager.getCurrPlayerFlag());
+    private boolean isTest() {
+        boolean isTest = getIntent().getBooleanExtra("IS_TEST", false);
+        getIntent().removeExtra("IS_TEST");
+        return isTest;
+    }
+
+    private void openPlayer() {
+        switch (PlayerAppManager.getCurrPlayerFlag()) {
+            case PlayerAppManager.PlayerCxtFlag.VIDEO_LIST:
+            case PlayerAppManager.PlayerCxtFlag.VIDEO_PLAYER:
                 PlayerAppManager.exitCurrPlayer();
-            }
-            App.openMusicPlayer(this, "", getIntent());
-            finish();
+                break;
         }
+        App.openMusicPlayer(this, "", getIntent());
+        finish();
     }
 }

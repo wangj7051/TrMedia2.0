@@ -31,6 +31,7 @@ public class FmUtilV2 implements FmDelegate {
     private IFmManager mFmManager;
     private FmListener mFmListener;
     private boolean mLocOpen = false;
+    private boolean mIsRadioOpened = false;
 
     public FmUtilV2(Context context) {
         // mContext = context;
@@ -169,10 +170,15 @@ public class FmUtilV2 implements FmDelegate {
     }
 
     @Override
+    public boolean isRadioOpened() {
+        return mIsRadioOpened;
+    }
+
+    @Override
     public boolean openFm() {
         try {
             Log.i(TAG, "openFm()");
-            return mFmManager.OpenFm();
+            return (mIsRadioOpened = mFmManager.OpenFm());
         } catch (Exception e) {
             Log.i(TAG, "openFm() > " + e.getMessage());
             return false;
@@ -183,7 +189,7 @@ public class FmUtilV2 implements FmDelegate {
     public boolean closeFm() {
         try {
             Log.i(TAG, "closeFm()");
-            return mFmManager.closeFm();
+            return (mIsRadioOpened = !mFmManager.closeFm());
         } catch (Exception e) {
             Log.i(TAG, "closeFm() > " + e.getMessage());
             return false;

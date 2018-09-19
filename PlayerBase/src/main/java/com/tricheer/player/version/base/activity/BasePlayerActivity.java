@@ -4,15 +4,10 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.tricheer.app.controller.PlayerController;
-import com.tricheer.engine.mcu.MCUResUtil.ParseMcuRespListener;
-import com.tricheer.engine.utils.SysMediaControlUtil.SysMediaRespListener;
-import com.tricheer.engine.utils.SystemUtil.SystemRespListener;
 import com.tricheer.player.bean.ProMusic;
 import com.tricheer.player.bean.ProVideo;
 import com.tricheer.player.bean.Program;
@@ -31,7 +26,6 @@ import java.net.URLEncoder;
 import java.util.List;
 import java.util.Set;
 
-import js.lib.android.utils.AudioFocusUtil.AudioFocusListener;
 import js.lib.android.utils.Logs;
 
 /**
@@ -68,20 +62,6 @@ public abstract class BasePlayerActivity extends BaseFragActivity implements Pla
      * Pause Flag on AiSpeech Window On
      */
     protected boolean mIsPauseOnAisOpen = false;
-    /**
-     * Pause Flag on BlueTooth Dialing
-     */
-    protected boolean mIsPauseOnBtDialing = false;
-
-    /**
-     * Is System Down
-     */
-    private boolean mIsSystemDown = false;
-
-    /**
-     * Player Controller
-     */
-    protected PlayerController mController;
 
     @Override
     protected void onCreate(@Nullable Bundle bundle) {
@@ -94,122 +74,6 @@ public abstract class BasePlayerActivity extends BaseFragActivity implements Pla
     protected void init() {
         this.mComparator = new ProgramPinyinComparator();
         this.mPlayerPowerManager = new PlayerPowerManager(mContext);
-
-        // Active Controller
-        mController = new PlayerController(mContext);
-        mController.addMCUReqControl();
-        mController.addMCURespControl(new ParseMCUResp());
-        mController.addSysStatusControl(new SysResp());
-        mController.addSysMediaControl(new SysMediaControlResp());
-        mController.addAudioFocusControl(new AudioFocusResp());
-    }
-
-    /**
-     * Parse MCU Response
-     */
-    private class ParseMCUResp implements ParseMcuRespListener {
-
-        @Override
-        public void respParsedMappingKey(byte mappingKey, byte pressFlag) {
-            onGetDirection(mappingKey, pressFlag);
-        }
-
-        @Override
-        public void respParsedHandBrakeStatus(int status, int flag) {
-            onGetHandBrakeStatus(status);
-        }
-    }
-
-    protected void onGetDirection(byte mappingKey, byte pressFlag) {
-        Logs.i(TAG, "onGetDirection(" + mappingKey + "," + pressFlag + ")");
-    }
-
-    protected void onGetHandBrakeStatus(int status) {
-    }
-
-    /**
-     * System Response
-     */
-    private class SysResp implements SystemRespListener {
-
-        @Override
-        public void respSystemUp() {
-            mIsSystemDown = false;
-            onSystemUp();
-        }
-
-        @Override
-        public void respSystemDown() {
-            mIsSystemDown = true;
-            onSystemDown();
-        }
-    }
-
-    protected void onSystemUp() {
-    }
-
-    protected void onSystemDown() {
-    }
-
-    protected boolean isSystemDown() {
-        return mIsSystemDown;
-    }
-
-    /**
-     * Parse System Media Response
-     */
-    private class SysMediaControlResp implements SysMediaRespListener {
-        @Override
-        public void respMediaSessionChange() {
-        }
-
-        @Override
-        public void respStopMedia(String processname) {
-            Logs.i(TAG, "SysMediaControlResp -> notifyStopMedia(" + processname + ")");
-            if (TextUtils.equals(processname, getPackageName())) {
-                onStopAllMedia();
-            }
-        }
-    }
-
-    protected void onStopAllMedia() {
-    }
-
-    /**
-     * Audio Focus Response
-     */
-    private class AudioFocusResp implements AudioFocusListener {
-
-        @Override
-        public void respAudioFocusTransient() {
-            onAudioFocusTransient();
-        }
-
-        @Override
-        public void respAudioFocusDuck() {
-            onAudioFocusDuck();
-        }
-
-        @Override
-        public void respAudioFocusLoss() {
-            onAudioFocusLoss();
-        }
-
-        @Override
-        public void respAudioFocusGain() {
-            onAudioFocusGain();
-        }
-    }
-
-    /**
-     * Register Audio Focus
-     * <p>
-     * if==1 : Register audio focus
-     * <p>
-     * if==2 : Abandon audio focus
-     */
-    protected int registerAudioFocus(int flag) {
-        return mController.registerAudioFocus(flag);
     }
 
     /**

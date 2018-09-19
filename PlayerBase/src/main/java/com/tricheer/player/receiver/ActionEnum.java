@@ -7,7 +7,13 @@ public enum ActionEnum {
     // ENUM - ACC Actions
     ACC_OFF(0, "tricheer.intent.action.ACC_OFF"),
     ACC_OFF_TRUE(1, "tricheer.intent.action.SLEEP"),
-    ACC_ON(2, "tricheer.intent.action.ACC_ON");
+    ACC_ON(2, "tricheer.intent.action.ACC_ON"),
+
+    // ENUM - Test Actions
+    TEST_OPEN_VIDEO_LIST(100000, "com.tri.test.OPEN_AUDIO"),
+    TEST_OPEN_VIDEO(100002, "com.tri.test.OPEN_VIDEO"),
+    TEST_OPEN_AUDIO(200000, "com.tri.test.OPEN_AUDIO"),
+    TEST_EXIT_PLAYER(999999, "com.tri.test.EXIT_PLAYER");
 
     private int mIdx;
     private String mAction;
@@ -35,6 +41,11 @@ public enum ActionEnum {
             mMapEnums.put(ACC_OFF_TRUE.getAction(), ACC_OFF_TRUE);
             mMapEnums.put(ACC_ON.getAction(), ACC_ON);
 
+            // ENUM - Test Actions
+            mMapEnums.put(TEST_OPEN_VIDEO_LIST.getAction(), TEST_OPEN_VIDEO_LIST);
+            mMapEnums.put(TEST_OPEN_VIDEO.getAction(), TEST_OPEN_VIDEO);
+            mMapEnums.put(TEST_OPEN_AUDIO.getAction(), TEST_OPEN_AUDIO);
+            mMapEnums.put(TEST_EXIT_PLAYER.getAction(), TEST_EXIT_PLAYER);
         }
         return mMapEnums.get(action);
     }

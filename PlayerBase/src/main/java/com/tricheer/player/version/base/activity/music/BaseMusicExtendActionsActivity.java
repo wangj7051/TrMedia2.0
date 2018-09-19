@@ -2,6 +2,7 @@ package com.tricheer.player.version.base.activity.music;
 
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.os.Handler;
 
 import com.tricheer.player.bean.ProMusic;
 import com.tricheer.player.engine.VersionController;
@@ -37,6 +38,11 @@ public abstract class BaseMusicExtendActionsActivity extends BaseMusicCommonActi
     private final String TAG = "BaseMusicExtendActionsActivity";
 
     /**
+     * Thread handler
+     */
+    protected Handler mHandler = new Handler();
+
+    /**
      * 媒体列表集合对象
      */
     protected List<ProMusic> mListPrograms;
@@ -65,14 +71,14 @@ public abstract class BaseMusicExtendActionsActivity extends BaseMusicCommonActi
      * 媒体加载监听
      */
     protected interface LoadMediaListener {
-        public void afterLoaded();
+        void afterLoaded();
     }
 
     /**
      * 媒体封面加载监听器
      */
     protected interface LoadImgListener {
-        public void postRefresh(ProMusic program, boolean isLoadEnd);
+        void postRefresh(ProMusic program, boolean isLoadEnd);
     }
 
     @Override
@@ -108,7 +114,7 @@ public abstract class BaseMusicExtendActionsActivity extends BaseMusicCommonActi
     protected void refreshPageOnClear(Set<String> allSdMountedPaths) {
         if (VersionController.isCjVersion()) {
             try {
-                ArrayList<ProMusic> listMountedProgram = new ArrayList<ProMusic>();
+                ArrayList<ProMusic> listMountedProgram = new ArrayList<>();
                 for (ProMusic program : mListPrograms) {
                     boolean isProgramMounted = false;
                     for (String mountedPath : allSdMountedPaths) {
@@ -259,7 +265,7 @@ public abstract class BaseMusicExtendActionsActivity extends BaseMusicCommonActi
         private List<ProMusic> mmListExistPrograms = new ArrayList<ProMusic>();
 
         public LoadSDCardMediasTask(LoadMediaListener l) {
-            mmWeakReference = new WeakReference<LoadMediaListener>(l);
+            mmWeakReference = new WeakReference<>(l);
         }
 
         @Override
@@ -341,7 +347,7 @@ public abstract class BaseMusicExtendActionsActivity extends BaseMusicCommonActi
         private WeakReference<LoadImgListener> mmWeakReference;
 
         public LoadMediaImageTask(LoadImgListener l) {
-            mmWeakReference = new WeakReference<LoadImgListener>(l);
+            mmWeakReference = new WeakReference<>(l);
         }
 
         @Override
@@ -504,7 +510,7 @@ public abstract class BaseMusicExtendActionsActivity extends BaseMusicCommonActi
      * Release
      */
     protected void clearPlayInfo() {
-        mListPrograms = new ArrayList<ProMusic>();
+        mListPrograms = new ArrayList<>();
     }
 
     /**

@@ -10,6 +10,7 @@ import com.tricheer.player.engine.PlayerAppManager.PlayerCxtFlag;
 import com.tricheer.player.engine.PlayerConsts.PlayMode;
 import com.tricheer.player.engine.music.PlayerDelegate;
 import com.tricheer.player.receiver.ReceiverOperates;
+import com.tricheer.player.service.MusicPlayService;
 import com.tricheer.player.utils.PlayerLogicUtils;
 import com.tricheer.player.utils.PlayerPreferUtils;
 import com.tricheer.player.version.base.view.PopMediaListView.PlayMediaListListener;
@@ -27,15 +28,10 @@ import js.lib.http.IResponse;
  *
  * @author Jun.Wang
  */
-public abstract class BaseMusicPlayerActivity extends BaseKeyEventActivity implements PlayMediaListListener, PlayerDelegate {
+public abstract class BaseMusicPlayerActivity extends BaseAudioFocusActivity implements PlayMediaListListener, PlayerDelegate {
 
     // LOG TAG
     private final String TAG = "BaseMusicPlayerActivity";
-
-    /**
-     * Is seek by user
-     */
-    private boolean mIsSeekFromUser = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,8 +44,8 @@ public abstract class BaseMusicPlayerActivity extends BaseKeyEventActivity imple
     }
 
     @Override
-    protected void onPlayServiceConnected() {
-        super.onPlayServiceConnected();
+    protected void onPlayServiceConnected(MusicPlayService service) {
+        super.onPlayServiceConnected(service);
         setPlayerActionsListener(this);
     }
 
@@ -73,12 +69,6 @@ public abstract class BaseMusicPlayerActivity extends BaseKeyEventActivity imple
                 PlayerPreferUtils.getLastMusicPath(true, parentFolder.getPath());
             }
         }
-    }
-
-    @Override
-    protected void onStopAllMedia() {
-        super.onStopAllMedia();
-        PlayerAppManager.exitCurrPlayer();
     }
 
     @Override
@@ -116,26 +106,6 @@ public abstract class BaseMusicPlayerActivity extends BaseKeyEventActivity imple
             pauseByUser();
         } else {
             resumeByUser();
-        }
-    }
-
-    /**
-     * EXEC Play Music After Music List Scanned Or Loaded
-     */
-    protected void execPlayAfterLoad(final int playPos) {
-        try {
-            ProMusic toPlayProgram = mListPrograms.get(playPos);
-            if (isPlayingSameMedia(toPlayProgram.mediaUrl)) {
-                if (!isPlaying()) {
-                    play();
-                }
-            } else {
-                setPlayList(mListPrograms);
-                Logs.i("ERROR_LOG", "----execPlayAfterLoad----");
-                execPlay(toPlayProgram.mediaUrl);
-            }
-        } catch (Exception e) {
-            Logs.printStackTrace(TAG + "execPlayAfterLoad()", e);
         }
     }
 
@@ -251,12 +221,6 @@ public abstract class BaseMusicPlayerActivity extends BaseKeyEventActivity imple
     }
 
     /**
-     * Refresh Music List
-     */
-    protected void refreshOnDurationChange() {
-    }
-
-    /**
      * Notify Search Music
      */
     @Override
@@ -269,32 +233,6 @@ public abstract class BaseMusicPlayerActivity extends BaseKeyEventActivity imple
 
     @Override
     public void callback(IResponse response) {
-    }
-
-    /**
-     * Seek Bar Change Event
-     */
-    public final class SeekBarOnChange implements SeekBar.OnSeekBarChangeListener {
-
-        int mmProgress = 0;
-
-        @Override
-        public void onStartTrackingTouch(SeekBar seekBar) {
-        }
-
-        @Override
-        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            mIsSeekFromUser = fromUser;
-            mmProgress = progress;
-        }
-
-        @Override
-        public void onStopTrackingTouch(SeekBar seekBar) {
-            if (mIsSeekFromUser) {
-                mIsSeekFromUser = false;
-                seekTo(mmProgress);
-            }
-        }
     }
 
     /**

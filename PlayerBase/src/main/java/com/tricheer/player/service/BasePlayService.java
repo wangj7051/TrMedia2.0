@@ -1,15 +1,5 @@
 package com.tricheer.player.service;
 
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import js.lib.android.media.local.player.IPlayerListener;
-import js.lib.android.media.local.player.IPlayerState;
-import js.lib.android.utils.AudioManagerUtil;
-import js.lib.android.utils.Logs;
-
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -27,6 +17,16 @@ import com.tricheer.player.engine.VersionController;
 import com.tricheer.player.receiver.PlayerBaseReceiver.PlayerReceiverListener;
 import com.tricheer.player.utils.PlayerLogicUtils;
 import com.tricheer.player.utils.PlayerPreferUtils;
+
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import js.lib.android.media.local.player.IPlayerListener;
+import js.lib.android.media.local.player.IPlayerState;
+import js.lib.android.utils.AudioManagerUtil;
+import js.lib.android.utils.Logs;
 
 /**
  * Base Play Service
@@ -68,15 +68,6 @@ public abstract class BasePlayService extends Service implements PlayerReceiverL
      * Pause Flag on BlueTooth Dialing
      */
     protected boolean mIsPauseOnBtDialing = false;
-    /**
-     * Pause Flag on E-Dog Start
-     */
-    protected boolean mIsPauseOnEDogStart = false;
-
-    /**
-     * Is System Down
-     */
-    private boolean mIsSystemDown = false;
 
     /**
      * Listener Audio Focus
@@ -117,6 +108,7 @@ public abstract class BasePlayService extends Service implements PlayerReceiverL
     public void onCreate() {
         super.onCreate();
         this.mContext = this;
+        registerAudioFocus(1);
     }
 
     @Override
@@ -158,7 +150,7 @@ public abstract class BasePlayService extends Service implements PlayerReceiverL
      * <p>
      * if==2 : Abandon audio focus
      */
-    protected int registerAudioFocus(int flag) {
+    public int registerAudioFocus(int flag) {
         int result = -1;
         if (flag == 1) {
             result = AudioManagerUtil.requestMusicGain(mContext, mAfChangeListener);
@@ -168,27 +160,6 @@ public abstract class BasePlayService extends Service implements PlayerReceiverL
             Logs.i(TAG, "registerAudioFocus(" + flag + ") *abandon AudioFocus* >> [result:" + result);
         }
         return result;
-    }
-
-    /**
-     * System Down Status
-     */
-    public void setSystemDown() {
-        mIsSystemDown = true;
-    }
-
-    /**
-     * System Up Status
-     */
-    public void setSystemUp() {
-        mIsSystemDown = false;
-    }
-
-    /**
-     * Get System Down Status
-     */
-    protected boolean isSystemDown() {
-        return mIsSystemDown;
     }
 
     /**
@@ -514,6 +485,7 @@ public abstract class BasePlayService extends Service implements PlayerReceiverL
     @Override
     public void onDestroy() {
         super.onDestroy();
+        registerAudioFocus(2);
         mSetPlayerListeners.clear();
         mHandler.removeCallbacksAndMessages(null);
     }

@@ -143,6 +143,11 @@ public class SclLc2010VdcAudioCollectsFrag extends BaseAudioListFrag {
         }
     }
 
+    @Override
+    public void playSelectMedia(String mediaUrl) {
+        openPlayerActivity(mediaUrl, mListMedias);
+    }
+
     private class LetterSideBarCallback implements LetterSideBar.LetterSideBarListener {
         @Override
         public void callback(int pos, String letter) {
@@ -168,7 +173,7 @@ public class SclLc2010VdcAudioCollectsFrag extends BaseAudioListFrag {
                 final Object objItem = parent.getItemAtPosition(position);
                 if (objItem != null) {
                     ProMusic program = (ProMusic) objItem;
-                    playSelectMedia(program.mediaUrl, false);
+                    openPlayerActivity(program.mediaUrl, mListMedias);
                 }
             }
         }
@@ -180,22 +185,6 @@ public class SclLc2010VdcAudioCollectsFrag extends BaseAudioListFrag {
                 mIsLvItemClicking = false;
             }
         };
-    }
-
-    protected void playSelectMedia(final String mediaUrl, boolean isNeedDelay) {
-        if (!EmptyUtil.isEmpty(mediaUrl)) {
-            if (isNeedDelay) {
-                mHandler.postDelayed(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        openPlayerActivity(mediaUrl, mListMedias);
-                    }
-                }, 300);
-            } else {
-                openPlayerActivity(mediaUrl, mListMedias);
-            }
-        }
     }
 
     protected void openPlayerActivity(String mediaUrl, List<ProMusic> listPrograms) {

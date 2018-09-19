@@ -782,7 +782,7 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
      */
     protected void execPlayOrPause() {
         Logs.i(TAG, "----execPlayOrPause()----");
-        if (!EmptyUtil.isEmpty(mListPrograms) && !isBtCalling(true)) {
+        if (!EmptyUtil.isEmpty(mListPrograms)) {
             if (isPlaying()) {
                 pauseByUser();
             } else {

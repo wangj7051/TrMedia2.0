@@ -16,7 +16,7 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.tricheer.radio.activity.BaseKeyEventActivity;
+import com.tricheer.radio.activity.BaseAudioFocusActivity;
 import com.tricheer.radio.engine.BandInfos.BandType;
 import com.tricheer.radio.frags.TabFreqCollectFragment;
 import com.tricheer.radio.utils.FreqFormatUtil;
@@ -36,7 +36,7 @@ import js.lib.android.view.ViewPagerImpl;
  *
  * @author Jun.Wang
  */
-public class MainActivity extends BaseKeyEventActivity {
+public class MainActivity extends BaseAudioFocusActivity {
     // TAG
     private static final String TAG = "RadioMain";
 
@@ -117,6 +117,11 @@ public class MainActivity extends BaseKeyEventActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
@@ -125,6 +130,7 @@ public class MainActivity extends BaseKeyEventActivity {
 
     @Override
     protected void onServiceStatusChanged(Service service, boolean isConnected) {
+        super.onServiceStatusChanged(service, isConnected);
         if (isConnected) {
             refreshCollectViews();
             initSeekBar();
@@ -426,8 +432,8 @@ public class MainActivity extends BaseKeyEventActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-//        moveTaskToBack(true);
+//        super.onBackPressed();
+        moveTaskToBack(true);
     }
 
     @Override

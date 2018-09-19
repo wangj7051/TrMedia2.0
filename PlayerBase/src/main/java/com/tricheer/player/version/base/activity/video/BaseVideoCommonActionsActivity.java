@@ -5,8 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 
+import com.tricheer.app.controller.PlayerController;
 import com.tricheer.player.bean.ProVideo;
 import com.tricheer.player.engine.PlayEnableFlag;
 import com.tricheer.player.engine.PlayerAppManager.PlayerCxtFlag;
@@ -18,6 +20,7 @@ import com.tricheer.player.version.base.activity.BasePlayerActivity;
 import java.util.List;
 
 import js.lib.android.media.local.player.video.IVideoPlayer;
+import js.lib.android.utils.AudioFocusUtil;
 import js.lib.android.utils.Logs;
 
 /**
@@ -32,6 +35,11 @@ import js.lib.android.utils.Logs;
 public abstract class BaseVideoCommonActionsActivity extends BasePlayerActivity {
     // TAG
     private final String TAG = "BaseVideoCommonActionsActivity";
+
+    /**
+     * Thread handler
+     */
+    protected Handler mHandler = new Handler();
 
     /**
      * 视频播放器对象
@@ -87,9 +95,54 @@ public abstract class BaseVideoCommonActionsActivity extends BasePlayerActivity 
         }
     };
 
+    /**
+     * Player Controller
+     */
+    protected PlayerController mController;
+
     @Override
     protected void onCreate(@Nullable Bundle bundle) {
         super.onCreate(bundle);
+        // Active Controller
+        mController = new PlayerController(mContext);
+        mController.addAudioFocusControl(new AudioFocusResp());
+    }
+
+    /**
+     * Audio Focus Response
+     */
+    private class AudioFocusResp implements AudioFocusUtil.AudioFocusListener {
+
+        @Override
+        public void respAudioFocusTransient() {
+            onAudioFocusTransient();
+        }
+
+        @Override
+        public void respAudioFocusDuck() {
+            onAudioFocusDuck();
+        }
+
+        @Override
+        public void respAudioFocusLoss() {
+            onAudioFocusLoss();
+        }
+
+        @Override
+        public void respAudioFocusGain() {
+            onAudioFocusGain();
+        }
+    }
+
+    /**
+     * Register Audio Focus
+     * <p>
+     * if==1 : Register audio focus
+     * <p>
+     * if==2 : Abandon audio focus
+     */
+    protected int registerAudioFocus(int flag) {
+        return mController.registerAudioFocus(flag);
     }
 
     /**
@@ -103,9 +156,7 @@ public abstract class BaseVideoCommonActionsActivity extends BasePlayerActivity 
     public PlayEnableFlag getPlayEnableFlag() {
         PlayEnableFlag pef = new PlayEnableFlag();
         pef.pauseByUser(mIsPauseOnNotify);
-        pef.pauseByBtCalling(isBtCalling());
         pef.pauseByScreenOff(mIsPauseOnScreenOff);
-        pef.pauseBySystemDown(isSystemDown());
         pef.pauseByAiosOpen(mIsPauseOnAisOpen);
         pef.complete();
         return pef;
@@ -318,10 +369,7 @@ public abstract class BaseVideoCommonActionsActivity extends BasePlayerActivity 
 
     @Override
     public boolean isPlaying() {
-        if (vvPlayer != null) {
-            return vvPlayer.isMediaPlaying();
-        }
-        return false;
+        return vvPlayer != null && vvPlayer.isMediaPlaying();
     }
 
     @Override

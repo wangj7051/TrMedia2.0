@@ -106,35 +106,28 @@ public class MusicPlayService extends BasePlayService {
     public void onAudioFocusDuck() {
         super.onAudioFocusDuck();
         Logs.i(TAG, "----$$ onAudioFocusDuck() $$----");
-        // adjustVol(1);
     }
 
     @Override
     public void onAudioFocusTransient() {
         super.onAudioFocusTransient();
         Logs.i(TAG, "----$$ onAudioFocusTransient() $$----");
-        if (VersionController.isJzVersion()) {
-            adjustVol(1);
-        } else if (VersionController.isCjVersion()) {
-            removePlayRunnable();
-            pause();
-        }
+        removePlayRunnable();
+        pause();
     }
 
     @Override
     public void onAudioFocusLoss() {
         super.onAudioFocusLoss();
         Logs.i(TAG, "----$$ onAudioFocusLoss() $$----");
-        if (VersionController.isSupportAudioFocusLoss()) {
-            PlayerAppManager.exitCurrPlayer();
-        }
+        pauseByUser();
     }
 
     @Override
     public void onAudioFocusGain() {
         super.onAudioFocusGain();
         Logs.i(TAG, "----$$ onAudioFocusGain() $$----");
-        adjustVol(2);
+        resumeByUser();
     }
 
     @Override
@@ -189,10 +182,12 @@ public class MusicPlayService extends BasePlayService {
     public void resumeByUser() {
         mIsPauseOnNotify = false;
         removePlayRunnable();
-        if (mMusicPlayer == null) {
-            playFixedMedia(getLastPath());
-        } else {
-            resume();
+        if (!EmptyUtil.isEmpty(mListPrograms)) {
+            if (mMusicPlayer == null) {
+                playFixedMedia(getLastPath());
+            } else {
+                resume();
+            }
         }
     }
 
@@ -230,7 +225,7 @@ public class MusicPlayService extends BasePlayService {
             pause();
         } else if (ReceiverOperates.BTCALL_END.equals(opFlag)) {
             mIsPauseOnBtDialing = false;
-            if (!isPlaying() && !isSystemDown()) {
+            if (!isPlaying()) {
                 doResumePlay();
             }
 
@@ -309,6 +304,7 @@ public class MusicPlayService extends BasePlayService {
                 onNotifyPlayState$Prepared();
                 break;
             case IPlayerState.COMPLETE:
+                clearPlayedMediaInfos();
                 playAuto();
                 break;
             case IPlayerState.ERROR:
@@ -606,7 +602,6 @@ public class MusicPlayService extends BasePlayService {
         PlayEnableFlag pef = new PlayEnableFlag();
         pef.pauseByUser(mIsPauseOnNotify);
         pef.pauseByBtCalling((PlayerLogicUtils.getDialingStatus(mContext) == 1) || mIsPauseOnBtDialing || isBtCalling());
-        pef.pauseBySystemDown(isSystemDown());
         pef.pauseByAiosOpen(mIsPauseOnAisOpen);
         pef.complete();
         return pef;

@@ -1,18 +1,14 @@
 package com.tricheer.player.version.base.activity.video;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.SeekBar;
 
-import com.tricheer.engine.mcu.MCUConsts.HandBrakeStatus;
 import com.tricheer.player.R;
 import com.tricheer.player.bean.ProVideo;
 import com.tricheer.player.engine.PlayEnableFlag;
@@ -45,9 +41,7 @@ public abstract class BaseVideoPlayerActivity extends BaseKeyEventActivity imple
     // LOG TAG
     private final String TAG = "BaseVideoPlayerActivity";
 
-    /**
-     * ==========Widget in this Activity==========
-     */
+    //==========Widget in this Activity==========
     /**
      * ScreenSize Set
      */
@@ -57,9 +51,7 @@ public abstract class BaseVideoPlayerActivity extends BaseKeyEventActivity imple
      */
     private PopupWindow pwHandBrakePrompt;
 
-    /**
-     * ==========Variable in this Activity==========
-     */
+    //==========Variable in this Activity==========
     /**
      * Check is seek by user
      */
@@ -89,9 +81,9 @@ public abstract class BaseVideoPlayerActivity extends BaseKeyEventActivity imple
 
     protected interface VideoLightMode {
         // Means Light Mode Enable and Show Panel
-        public int ON = 1;
+        int ON = 1;
         // Means Light Mode Enable and Hide Panel
-        public int OFF = 2;
+        int OFF = 2;
     }
 
     @Override
@@ -137,9 +129,6 @@ public abstract class BaseVideoPlayerActivity extends BaseKeyEventActivity imple
             adjustVol(1);
         } else if (VersionController.isCjVersion()) {
             removePlayRunnable();
-            if (isBtCalling()) {
-                CommonUtil.cancelTimer(mRegAudioFocusTimer);
-            }
             pause();
         }
     }
@@ -168,12 +157,6 @@ public abstract class BaseVideoPlayerActivity extends BaseKeyEventActivity imple
 
     @Override
     public void onPlayFixedPos(int pos) {
-    }
-
-    @Override
-    protected void onStopAllMedia() {
-        super.onStopAllMedia();
-        PlayerAppManager.exitCurrPlayer();
     }
 
     @Override
@@ -588,9 +571,6 @@ public abstract class BaseVideoPlayerActivity extends BaseKeyEventActivity imple
                 vvPlayer.setPlayAtBgOnSufaceDestoryed(false);
             }
         }
-
-        // 关闭弹出框
-        dismissBrakePropmt();
     }
 
     @Override
@@ -602,7 +582,6 @@ public abstract class BaseVideoPlayerActivity extends BaseKeyEventActivity imple
         makeScreenOn(false);
 
         // 关闭弹出框
-        dismissBrakePropmt();
         showDialogOn1080P(false);
 
         // 更新分辨率，并恢复行车记录
@@ -659,13 +638,10 @@ public abstract class BaseVideoPlayerActivity extends BaseKeyEventActivity imple
         }, 1000, 1000);
     }
 
-    /**
-     * >>>---------------------------------<<<
-     * <p>
-     * >>>【开灯模式&&关灯模式设置=====Start】<<<
-     * <p>
-     * >>>---------------------------------<<<
-     */
+    //>>>---------------------------------<<<
+    // >>>【开灯模式&&关灯模式设置=====Start】<<<
+    //>>>---------------------------------<<<
+
     /**
      * Is Light Mode On
      */
@@ -719,65 +695,4 @@ public abstract class BaseVideoPlayerActivity extends BaseKeyEventActivity imple
             setLightMode(VideoLightMode.OFF);
         }
     };
-
-    /**
-     * >>>----------------------<<<
-     * <p>
-     * >>> 【手刹提示=====Start】 <<<
-     * <p>
-     * >>>----------------------<<<
-     */
-    /**
-     * Show HandBrake PopWindow by HandBrakeStatus
-     */
-    protected void showHandBrakePrompt(int brakeStatus, View v) {
-        if (PlayerLogicUtils.isHandBrakeEnable(getContentResolver())) {
-            if (brakeStatus == HandBrakeStatus.OFF) {
-                showHandBrakePrompt(v);
-            } else if (brakeStatus == HandBrakeStatus.ON) {
-                dismissBrakePropmt();
-            }
-        }
-    }
-
-    @SuppressLint("InflateParams")
-    private void showHandBrakePrompt(View v) {
-        try {
-            if (pwHandBrakePrompt == null) {
-                View vHandBrakePrompt = getLayoutInflater().inflate(R.layout.lct_lm8917_zbk_v_video_handbrake_prompt, null);
-                pwHandBrakePrompt = new PopupWindow(mContext);
-                pwHandBrakePrompt.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
-                pwHandBrakePrompt.setHeight(ViewGroup.LayoutParams.MATCH_PARENT);
-                pwHandBrakePrompt.setBackgroundDrawable(mContext.getDrawable(android.R.color.transparent));
-                pwHandBrakePrompt.setContentView(vHandBrakePrompt);
-                pwHandBrakePrompt.setOutsideTouchable(false);
-            }
-            if (!pwHandBrakePrompt.isShowing()) {
-                pwHandBrakePrompt.showAtLocation(v, Gravity.CENTER, 0, 0);
-            }
-        } catch (Exception e) {
-            Logs.printStackTrace(TAG + "showHandBrakePrompt()", e);
-        }
-    }
-
-    /**
-     * Dismiss HandBrake PopWindow
-     */
-    protected void dismissBrakePropmt() {
-        try {
-            if (pwHandBrakePrompt != null && pwHandBrakePrompt.isShowing()) {
-                pwHandBrakePrompt.dismiss();
-            }
-        } catch (Exception e) {
-            Logs.printStackTrace(TAG + "dismissBrakePropmt()", e);
-        }
-    }
-
-    /**
-     * Resume HandBrake PopWindown By HandBrakeStatus
-     */
-    protected void resumeHandBrakeStatus(View v) {
-        dismissBrakePropmt();
-        showHandBrakePrompt(mController.getHandBrakeOperateStatus(), v);
-    }
 }

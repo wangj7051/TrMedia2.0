@@ -10,8 +10,8 @@ import android.os.IBinder;
 import com.tricheer.radio.engine.BandInfos.BandType;
 import com.tricheer.radio.engine.FmDelegate;
 import com.tricheer.radio.engine.FmDelegate.FmListener;
-import com.tricheer.radio.service.ControlService;
-import com.tricheer.radio.service.ControlService.LocalBinder;
+import com.tricheer.radio.service.RadioPlayerService;
+import com.tricheer.radio.service.RadioPlayerService.LocalBinder;
 
 /**
  * Base FM Activity
@@ -23,8 +23,7 @@ import com.tricheer.radio.service.ControlService.LocalBinder;
  */
 public abstract class BaseFmActivity extends BaseFragActivity implements FmDelegate, FmListener {
 
-    private boolean mIsRadioOpened = false;
-    private ControlService mControlService;
+    private RadioPlayerService mControlService;
     private ServiceConnection mControlServiceConn = new ServiceConnection() {
 
         @Override
@@ -120,12 +119,12 @@ public abstract class BaseFmActivity extends BaseFragActivity implements FmDeleg
 
     @Override
     public boolean openFm() {
-        mIsRadioOpened = mControlService != null && mControlService.openFm();
-        return mIsRadioOpened;
+        return mControlService != null && mControlService.openFm();
     }
 
+    @Override
     public boolean isRadioOpened() {
-        return mIsRadioOpened;
+        return mControlService != null && mControlService.isRadioOpened();
     }
 
     @Override
@@ -259,7 +258,7 @@ public abstract class BaseFmActivity extends BaseFragActivity implements FmDeleg
     protected void bindAndCreateControlService(int... flags) {
         try {
             for (int flag : flags) {
-                Intent serviceIntent = new Intent(this, ControlService.class);
+                Intent serviceIntent = new Intent(this, RadioPlayerService.class);
                 switch (flag) {
                     case 1:
                         startService(serviceIntent);

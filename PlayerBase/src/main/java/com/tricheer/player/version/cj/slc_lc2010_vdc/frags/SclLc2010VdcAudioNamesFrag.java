@@ -122,6 +122,11 @@ public class SclLc2010VdcAudioNamesFrag extends BaseAudioListFrag {
         }
     }
 
+    @Override
+    public void playSelectMedia(String mediaUrl) {
+        openPlayerActivity(mediaUrl, mListMedias);
+    }
+
     private class LetterSideBarCallback implements LetterSideBar.LetterSideBarListener {
         @Override
         public void callback(int pos, String letter) {

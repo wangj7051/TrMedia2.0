@@ -54,6 +54,11 @@ public interface FmDelegate {
     void unregister(@Nullable FmListener l);
 
     /**
+     * Open Status
+     */
+    boolean isRadioOpened();
+
+    /**
      * Open FM
      *
      * @return true - Open successfully; false - Open failed.

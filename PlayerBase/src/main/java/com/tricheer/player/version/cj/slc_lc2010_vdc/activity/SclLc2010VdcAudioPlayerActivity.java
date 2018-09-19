@@ -14,6 +14,7 @@ import com.tricheer.player.bean.ProMusic;
 import com.tricheer.player.engine.Keys;
 import com.tricheer.player.engine.PlayerConsts.PlayMode;
 import com.tricheer.player.engine.db.DBManager;
+import com.tricheer.player.service.MusicPlayService;
 import com.tricheer.player.utils.PlayerLogicUtils;
 import com.tricheer.player.utils.PlayerPreferUtils;
 import com.tricheer.player.version.base.activity.music.BaseMusicPlayerActivity;
@@ -97,7 +98,6 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseMusicPlayerActivity {
         ivList.setOnClickListener(mViewOnClick);
 
         //
-        mController.setControlEnable(true);
         bindAndCreatePlayService(2);
     }
 
@@ -111,8 +111,8 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseMusicPlayerActivity {
     }
 
     @Override
-    protected void onPlayServiceConnected() {
-        super.onPlayServiceConnected();
+    protected void onPlayServiceConnected(MusicPlayService service) {
+        super.onPlayServiceConnected(service);
         loadLocalMedias();
     }
 
@@ -295,7 +295,6 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseMusicPlayerActivity {
 
     @Override
     protected void onDestroy() {
-        mController.setControlEnable(false);
         bindAndCreatePlayService(3);
         setCurrPlayer(false, this);
         super.onDestroy();

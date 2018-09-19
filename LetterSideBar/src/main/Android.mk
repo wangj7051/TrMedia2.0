@@ -31,7 +31,7 @@ LOCAL_MODULE_TAGS := optional
 LOCAL_MODULE = LETTER_SIDE_BAR
 
 ### 声明 资源文件 ###
-#LOCAL_RESOURCE_DIR := $(LOCAL_PATH)/res
+LOCAL_RESOURCE_DIR := $(LOCAL_PATH)/res
 ### 声明 JAVA文件 & AIDL文件 ###
 SRC_DIRS := java
 LOCAL_SRC_FILES := $(call all-java-files-under, $(SRC_DIRS))

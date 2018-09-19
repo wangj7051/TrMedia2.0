@@ -22,7 +22,7 @@ import js.lib.android.utils.Logs;
 /**
  * 播放器统一动作 - BASE
  * <p>
- * (1) 实现了"自定义统一行为{@link PlayerActions}"
+ * (1) 实现了"自定义统一行为"
  * <p>
  * (2) 实现了"注册的服务及广播"的统一行为
  *
@@ -42,7 +42,7 @@ public abstract class BaseMusicCommonActionsActivity extends BasePlayerActivity 
         public void onServiceConnected(ComponentName name, IBinder binder) {
             mPlayService = ((LocalBinder) binder).getService();
             if (mPlayService != null) {
-                onPlayServiceConnected();
+                onPlayServiceConnected(mPlayService);
             }
         }
 
@@ -61,24 +61,12 @@ public abstract class BaseMusicCommonActionsActivity extends BasePlayerActivity 
     /**
      * 当MusicPlayService绑定成功
      */
-    protected void onPlayServiceConnected() {
+    protected void onPlayServiceConnected(MusicPlayService service) {
     }
 
-    @Override
-    protected void onSystemDown() {
-        super.onSystemDown();
-        Logs.i(TAG, "^^ onSystemDown() ^^");
+    public void registerAudioFocus(int flag) {
         if (mPlayService != null) {
-            mPlayService.setSystemDown();
-        }
-    }
-
-    @Override
-    protected void onSystemUp() {
-        super.onSystemUp();
-        Logs.i(TAG, "^^ onSystemUp() ^^");
-        if (mPlayService != null) {
-            mPlayService.setSystemUp();
+            mPlayService.registerAudioFocus(flag);
         }
     }
 
@@ -100,10 +88,7 @@ public abstract class BaseMusicCommonActionsActivity extends BasePlayerActivity 
 
     @Override
     public boolean isCacheOnAccOff() {
-        if (mPlayService != null) {
-            return mPlayService.isCacheOnAccOff();
-        }
-        return false;
+        return mPlayService != null && mPlayService.isCacheOnAccOff();
     }
 
     @Override
@@ -148,10 +133,7 @@ public abstract class BaseMusicCommonActionsActivity extends BasePlayerActivity 
 
     @Override
     public boolean isPlayEnable() {
-        if (mPlayService != null) {
-            return mPlayService.isPlayEnable();
-        }
-        return false;
+        return mPlayService != null && mPlayService.isPlayEnable();
     }
 
     @Override
@@ -324,7 +306,7 @@ public abstract class BaseMusicCommonActionsActivity extends BasePlayerActivity 
     }
 
     /**
-     * @param flags
+     * Bind/Unbind Create/Destroy service
      */
     protected void bindAndCreatePlayService(int... flags) {
         try {

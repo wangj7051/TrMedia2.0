@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -14,9 +15,9 @@ import com.tricheer.player.bean.ProMusic;
 import com.tricheer.player.engine.Keys;
 import com.tricheer.player.engine.PlayerAppManager;
 import com.tricheer.player.engine.PlayerAppManager.PlayerCxtFlag;
-import com.tricheer.player.receiver.MediaScanReceiver;
+import com.tricheer.player.service.MusicPlayService;
 import com.tricheer.player.utils.SettingsSysUtil;
-import com.tricheer.player.version.base.activity.music.BaseKeyEventActivity;
+import com.tricheer.player.version.base.activity.music.BaseAudioFocusActivity;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.frags.BaseAudioListFrag;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.frags.SclLc2010VdcAudioAlbumsFrag;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.frags.SclLc2010VdcAudioArtistsFrag;
@@ -37,7 +38,7 @@ import js.lib.android.utils.Logs;
  *
  * @author Jun.Wang
  */
-public class SclLc2010VdcAudioListActivity extends BaseKeyEventActivity {
+public class SclLc2010VdcAudioListActivity extends BaseAudioFocusActivity {
     // TAG
     private static final String TAG = "MusicListActivity";
 
@@ -46,7 +47,7 @@ public class SclLc2010VdcAudioListActivity extends BaseKeyEventActivity {
 
     //==========Variables in this Activity==========
     // -- Variables --
-    private static Handler mHandler = new Handler();
+    private Handler mHandler = new Handler();
 
     // Request Current Playing Media Url
     private BaseAudioListFrag mFragMedias;
@@ -120,16 +121,12 @@ public class SclLc2010VdcAudioListActivity extends BaseKeyEventActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        //
+        registerAudioFocus(1);
+        autoOpenPlayer(true);
+        //
         if (isPlaying()) {
             activeAnimRhythm();
-//            Log.i(TAG, "----Delay reopen player----");
-//            mHandler.postDelayed(new Runnable() {
-//                @Override
-//                public void run() {
-//                    Log.i(TAG, "----Delay reopen player--EXEC--");
-//                    playSelectMedia(getLastPath(), false);
-//                }
-//            }, 5000);
         }
     }
 
@@ -144,8 +141,8 @@ public class SclLc2010VdcAudioListActivity extends BaseKeyEventActivity {
     }
 
     @Override
-    protected void onPlayServiceConnected() {
-        super.onPlayServiceConnected();
+    protected void onPlayServiceConnected(MusicPlayService service) {
+        super.onPlayServiceConnected(service);
         loadLocalMedias();
     }
 
@@ -211,24 +208,24 @@ public class SclLc2010VdcAudioListActivity extends BaseKeyEventActivity {
     @Override
     protected void refreshOnNotifyLoading(int loadingFlag) {
         super.refreshOnNotifyLoading(loadingFlag);
-        if (loadingFlag == MediaScanReceiver.ScanActives.START) {
+//        if (loadingFlag == MediaScanReceiver.ScanActives.START) {
 //			showLctLm8917Loading(true);
-        } else if (loadingFlag == MediaScanReceiver.ScanActives.TASK_CANCEL) {
+//        } else if (loadingFlag == MediaScanReceiver.ScanActives.TASK_CANCEL) {
 //			showLctLm8917Loading(false);
-        }
+//        }
     }
 
     @Override
     protected void refreshPageOnScan(List<ProMusic> listScannedAudios, boolean isScaned) {
         super.refreshPageOnScan(listScannedAudios, isScaned);
-        if (EmptyUtil.isEmpty(mListPrograms)) {
-            //showLctLm8917Loading(false);
-        } else {
-            Logs.i(TAG, "refreshPageOnScan() -> [Size:" + mListPrograms.size() + " ; isScanEnd:" + isScaned);
-            if (isScaned) {
-                loadLocalMedias();
-            }
+//        if (EmptyUtil.isEmpty(mListPrograms)) {
+        //showLctLm8917Loading(false);
+//        } else {
+        Logs.i(TAG, "refreshPageOnScan() -> [Size:" + mListPrograms.size() + " ; isScanEnd:" + isScaned);
+        if (isScaned) {
+            loadLocalMedias();
         }
+//        }
     }
 
     @Override
@@ -269,7 +266,12 @@ public class SclLc2010VdcAudioListActivity extends BaseKeyEventActivity {
         if (mFragMedias != null) {
             mFragMedias.refreshDatas(mListPrograms, getLastPath());
         }
-        //sbLetters.refreshLetters(mMediaListSortLetters.toArray());
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        autoOpenPlayer(false);
+        return super.dispatchTouchEvent(ev);
     }
 
     private View.OnClickListener mFilterViewOnClick = new View.OnClickListener() {
@@ -320,17 +322,39 @@ public class SclLc2010VdcAudioListActivity extends BaseKeyEventActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        onIDestroy();
+    public void onBackPressed() {
+//        super.onBackPressed();
+        autoOpenPlayer(false);
+        moveTaskToBack(true);
     }
 
     @Override
-    protected void onIDestroy() {
-        super.onIDestroy();
+    protected void onDestroy() {
+        cancelAllTasks();
         mHandler.removeCallbacksAndMessages(null);
         bindAndCreatePlayService(3, 4);
         SettingsSysUtil.setMusicState(this, 0);
         PlayerAppManager.removeCxt(PlayerCxtFlag.MUSIC_LIST);
+        super.onDestroy();
     }
+
+    /**
+     * Demand : Automatically open player after 5s.
+     */
+    private void autoOpenPlayer(boolean isExec) {
+        if (isExec && isPlaying()) {
+            mHandler.postDelayed(mmDelayOpenAudioRunnable, 5000);
+        } else {
+            mHandler.removeCallbacks(mmDelayOpenAudioRunnable);
+        }
+    }
+
+    private Runnable mmDelayOpenAudioRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (mFragMedias != null) {
+                mFragMedias.playSelectMedia(getLastPath());
+            }
+        }
+    };
 }

@@ -5,19 +5,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
-import android.widget.Toast;
 
 import com.lib.view.contacts.CharacterParser;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.tricheer.player.R;
 import com.tricheer.player.utils.PlayerFileUtils;
-import com.tricheer.player.utils.PlayerLogicUtils;
 
-import js.lib.android.utils.CommonUtil;
 import js.lib.android.utils.ImageLoaderUtils;
 import js.lib.android.utils.Logs;
 
@@ -35,11 +30,6 @@ public abstract class BaseFragActivity extends FragmentActivity {
      * Context
      */
     protected Context mContext;
-
-    /**
-     * Thread handler
-     */
-    protected Handler mHandler = new Handler();
 
     /**
      * Activity UI Load End Flag
@@ -145,52 +135,6 @@ public abstract class BaseFragActivity extends FragmentActivity {
     }
 
     /**
-     * 是否正在通话中
-     *
-     * @param isToast : 是否提示通话...
-     */
-    public boolean isBtCalling(boolean isToast) {
-        if (isBtCalling()) {
-            if (isToast) {
-                Toast.makeText(mContext, R.string.dialing_toast, Toast.LENGTH_SHORT).show();
-            }
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * 蓝牙通话是否正在进行中
-     */
-    public boolean isBtCalling() {
-        return PlayerLogicUtils.isBtCalling(mContext);
-    }
-
-    /**
-     * Get Color
-     */
-    protected int getColorByResID(int colorResID) {
-        return getResources().getColor(colorResID);
-    }
-
-    /**
-     * Hide SoftKeyBoard
-     */
-    protected void hideSoftKeyBoard(boolean isNeedWait) {
-        if (isNeedWait) {
-            mHandler.postDelayed(new Runnable() {
-
-                @Override
-                public void run() {
-                    hideSoftKeyBoard(false);
-                }
-            }, 100);
-        } else {
-            CommonUtil.hideSoftKeyBoard(mContext, getCurrentFocus());
-        }
-    }
-
-    /**
      * Register "HOME" key BroadReceiver
      */
     protected void registerHomeKeyReciver(boolean isReg) {
@@ -255,7 +199,6 @@ public abstract class BaseFragActivity extends FragmentActivity {
      * Must Be used in onDestroy()
      */
     protected void onIDestroy() {
-        mHandler.removeCallbacksAndMessages(null);
     }
 
     @SuppressWarnings("unchecked")

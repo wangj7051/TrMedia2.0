@@ -33,7 +33,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name="com.tricheer.radio.service.ControlService"></service>
+        <service android:name="com.tricheer.radio.service.RadioPlayerService"/>
     </application>
 
 </manifest>

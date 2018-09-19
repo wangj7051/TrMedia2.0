@@ -174,7 +174,10 @@
 
             <!--Test Broadcast-->
             <intent-filter android:priority="1000">
-                <action android:name="com.tri.test" />
+                <action android:name="com.tri.test.OPEN_SELECTED_VIDEOLIST" />
+                <action android:name="com.tri.test.OPEN_AUDIO" />
+                <action android:name="com.tri.test.OPEN_VIDEO" />
+                <action android:name="com.tri.test.EXIT_PLAYER" />
             </intent-filter>
 
             <!-- Media Action -->

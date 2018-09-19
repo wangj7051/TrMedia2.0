@@ -12,6 +12,8 @@ import android.util.Log;
 import com.tricheer.app.receiver.PlayerReceiverActionIdxs;
 import com.tricheer.app.receiver.PlayerReceiverActions;
 import com.tricheer.player.App;
+import com.tricheer.player.MusicPlayerActivity;
+import com.tricheer.player.VideoPlayerActivity;
 import com.tricheer.player.bean.ProMusic;
 import com.tricheer.player.engine.PlayerAppManager;
 import com.tricheer.player.engine.PlayerAppManager.PlayerCxtFlag;
@@ -71,24 +73,39 @@ public class PlayerReceiver extends PlayerBaseReceiver {
     @Override
     public void onReceive(final Context context, final Intent intent) {
         String action = intent.getAction();
-        Log.i(TAG, " ");
-        Log.i(TAG, "|<----Action: { " + action + " }---->|");
-
-        //Test broadcast
-        if ("com.tri.test".equalsIgnoreCase(action)) {
-            testSendVideoList();
-            return;
-        }
+        Log.i(TAG, "action: " + action);
 
         ActionEnum ae = ActionEnum.getByAction(action);
+        Log.i(TAG, "action-ae: " + ae);
         if (ae != null) {
             switch (ae) {
+                //ACC
                 case ACC_ON:
                     break;
                 case ACC_OFF:
                     break;
                 case ACC_OFF_TRUE:
                     PlayerPreferUtils.getVideoWarningFlag(true, 1);
+                    break;
+
+                //Test
+                case TEST_OPEN_VIDEO_LIST:
+                    testSendVideoList();
+                    break;
+                case TEST_OPEN_VIDEO:
+                    Intent videoI = new Intent(context, VideoPlayerActivity.class);
+                    videoI.putExtra("IS_TEST", true);
+                    videoI.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(videoI);
+                    break;
+                case TEST_OPEN_AUDIO:
+                    Intent audioI = new Intent(context, MusicPlayerActivity.class);
+                    audioI.putExtra("IS_TEST", true);
+                    audioI.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(audioI);
+                    break;
+                case TEST_EXIT_PLAYER:
+                    PlayerAppManager.exitCurrPlayer();
                     break;
             }
             return;
