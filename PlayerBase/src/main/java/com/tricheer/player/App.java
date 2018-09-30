@@ -15,10 +15,10 @@ import com.tricheer.player.utils.PlayerPreferUtils;
 
 import java.util.List;
 
-import js.lib.android.media.local.utils.AudioInfo;
-import js.lib.android.media.local.utils.AudioUtils;
-import js.lib.android.media.local.utils.VideoInfo;
-import js.lib.android.media.local.utils.VideoUtils;
+import js.lib.android.media.audio.bean.AudioInfo;
+import js.lib.android.media.audio.utils.AudioUtils;
+import js.lib.android.media.video.bean.VideoInfo;
+import js.lib.android.media.video.utils.VideoUtils;
 import js.lib.android.utils.AppCrashHandler;
 import js.lib.android.utils.AppUtil;
 import js.lib.android.utils.ImageLoaderUtils;

@@ -16,14 +16,20 @@ public abstract class BaseKeyEventActivity extends BaseFmLogicActivity {
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
+        int keyCode = event.getKeyCode();
         switch (event.getAction()) {
             case KeyEvent.ACTION_UP:
-                int keyCode = event.getKeyCode();
                 Log.i(TAG, "dispatchKeyEvent(" + keyCode + ")");
                 onGetKeyCode(keyCode);
                 break;
         }
-        return super.dispatchKeyEvent(event);
+
+        boolean isMenu = (keyCode == Keys.KeyVals.KEYCODE_DPAD_LEFT) || (keyCode == Keys.KeyVals.KEYCODE_DPAD_RIGHT);
+        if (isMenu) {
+            return true;
+        } else {
+            return super.dispatchKeyEvent(event);
+        }
     }
 
     protected void onGetKeyCode(int keyCode) {

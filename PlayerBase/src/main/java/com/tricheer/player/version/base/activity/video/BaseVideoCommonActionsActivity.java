@@ -8,19 +8,15 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 
-import com.tricheer.app.controller.PlayerController;
 import com.tricheer.player.bean.ProVideo;
 import com.tricheer.player.engine.PlayEnableFlag;
 import com.tricheer.player.engine.PlayerAppManager.PlayerCxtFlag;
-import com.tricheer.player.engine.VersionController;
-import com.tricheer.player.utils.PlayerLogicUtils;
 import com.tricheer.player.utils.PlayerPreferUtils;
 import com.tricheer.player.version.base.activity.BasePlayerActivity;
 
 import java.util.List;
 
-import js.lib.android.media.local.player.video.IVideoPlayer;
-import js.lib.android.utils.AudioFocusUtil;
+import js.lib.android.media.video.player_native.IVideoPlayer;
 import js.lib.android.utils.Logs;
 
 /**
@@ -81,68 +77,12 @@ public abstract class BaseVideoCommonActionsActivity extends BasePlayerActivity 
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (VersionController.isJzVersion()) {
-                String action = intent.getAction();
-                Logs.i(TAG, "mScreenStatusReceiver -> [action:" + action);
-                if (Intent.ACTION_SCREEN_ON.equals(action)) {
-                    mIsPauseOnScreenOff = false;
-                    play();
-                } else if (Intent.ACTION_SCREEN_OFF.equals(action)) {
-                    mIsPauseOnScreenOff = true;
-                    pause();
-                }
-            }
         }
     };
-
-    /**
-     * Player Controller
-     */
-    protected PlayerController mController;
 
     @Override
     protected void onCreate(@Nullable Bundle bundle) {
         super.onCreate(bundle);
-        // Active Controller
-        mController = new PlayerController(mContext);
-        mController.addAudioFocusControl(new AudioFocusResp());
-    }
-
-    /**
-     * Audio Focus Response
-     */
-    private class AudioFocusResp implements AudioFocusUtil.AudioFocusListener {
-
-        @Override
-        public void respAudioFocusTransient() {
-            onAudioFocusTransient();
-        }
-
-        @Override
-        public void respAudioFocusDuck() {
-            onAudioFocusDuck();
-        }
-
-        @Override
-        public void respAudioFocusLoss() {
-            onAudioFocusLoss();
-        }
-
-        @Override
-        public void respAudioFocusGain() {
-            onAudioFocusGain();
-        }
-    }
-
-    /**
-     * Register Audio Focus
-     * <p>
-     * if==1 : Register audio focus
-     * <p>
-     * if==2 : Abandon audio focus
-     */
-    protected int registerAudioFocus(int flag) {
-        return mController.registerAudioFocus(flag);
     }
 
     /**
@@ -185,7 +125,6 @@ public abstract class BaseVideoCommonActionsActivity extends BasePlayerActivity 
         Logs.i(TAG, "^^ play() ^^");
         mIsPlayerReleased = false;
         if (vvPlayer != null) {
-            adjustVol(2);
             vvPlayer.playMedia();
             vvPlayer.requestFocus();
         }
@@ -380,23 +319,6 @@ public abstract class BaseVideoCommonActionsActivity extends BasePlayerActivity 
     }
 
     @Override
-    public void adjustVol(int flag) {
-        Logs.i(TAG, "^^ adjustVol(" + flag + ") ^^");
-        if (vvPlayer != null) {
-            if (flag == 1) {
-                if (VersionController.isSupportVideoMix()) {
-                    float mixVal = PlayerLogicUtils.getSoundMixVal(mContext);
-                    vvPlayer.setVolume(mixVal, mixVal);
-                } else {
-                    vvPlayer.setVolume(0.1f, 0.1f);
-                }
-            } else if (flag == 2) {
-                vvPlayer.setVolume(1.0f, 1.0f);
-            }
-        }
-    }
-
-    @Override
     public String getLastTargetMediaUrl() {
         return PlayerPreferUtils.getLastTargetMediaUrl(false, PlayerCxtFlag.VIDEO_PLAYER, "");
     }
@@ -420,13 +342,6 @@ public abstract class BaseVideoCommonActionsActivity extends BasePlayerActivity 
     @Override
     public void clearPlayedMediaInfos() {
         PlayerPreferUtils.getLastPlayedMediaInfo(true, PlayerCxtFlag.VIDEO_PLAYER, "", 0);
-    }
-
-    @Override
-    public void onAudioFocusTransient() {
-        if (VersionController.isJzVersion()) {
-            adjustVol(1);
-        }
     }
 
     /**

@@ -83,8 +83,6 @@ public abstract class BasePlayerActivity extends BaseFragActivity implements Pla
         if (mPlayerPowerManager != null) {
             if (VersionController.isCjVersion()) {
                 mPlayerPowerManager.keepScreenOn(this, isMakeOn);
-            } else if (VersionController.isJzVersion()) {
-                mPlayerPowerManager.makeScreenOn(false);
             }
         }
     }
@@ -202,7 +200,7 @@ public abstract class BasePlayerActivity extends BaseFragActivity implements Pla
 
     // {@link IPlayerListener} Implements Method
     @Override
-    public void onProgressChange(String mediaUrl, int progress, int duration, boolean isPerSecond) {
+    public void onProgressChange(String mediaUrl, int progress, int duration) {
     }
 
     // {@link PlayerActionsListener} Implements Method
@@ -355,11 +353,6 @@ public abstract class BasePlayerActivity extends BaseFragActivity implements Pla
     // {@link PlayerActionsListener} Implements Method
     @Override
     public void seekTo(int time) {
-    }
-
-    // {@link PlayerActionsListener} Implements Method
-    @Override
-    public void adjustVol(int flag) {
     }
 
     // {@link PlayerActionsListener} Implements Method

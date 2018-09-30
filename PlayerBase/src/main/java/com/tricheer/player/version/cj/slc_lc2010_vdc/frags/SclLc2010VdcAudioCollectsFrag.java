@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,6 +47,7 @@ public class SclLc2010VdcAudioCollectsFrag extends BaseAudioListFrag {
 
     //==========Variables in this Fragment==========
     private SclLc2010VdcAudioListActivity mAttachedActivity;
+    private static Handler mHandler = new Handler();
 
     /**
      * Is ListView Item is Clicking
@@ -85,6 +87,7 @@ public class SclLc2010VdcAudioCollectsFrag extends BaseAudioListFrag {
         //----Widgets----
         //Side bar
         lsb = (LetterSideBar) contentV.findViewById(R.id.lsb);
+        lsb.refreshLetters(null);
         lsb.addCallback(new LetterSideBarCallback());
 
         layoutNoneToast = contentV.findViewById(R.id.layout_none_toast);
@@ -224,6 +227,7 @@ public class SclLc2010VdcAudioCollectsFrag extends BaseAudioListFrag {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        mAttachedActivity.onActivityResult(requestCode, resultCode, data);
         mDataAdapter.refreshDatas(mAttachedActivity.getLastPath());
     }
 }

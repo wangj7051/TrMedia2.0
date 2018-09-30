@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.tricheer.player.R;
 import com.tricheer.player.bean.ProMusic;
+import com.tricheer.player.utils.PlayerLogicUtils;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.bean.AudioFilter;
 
 import java.io.File;
@@ -124,7 +125,8 @@ public class SclLc2010VdcAudioArtistAdapter<T> extends BaseArrayAdapter<T> imple
             //ProMusic
             if (tItem instanceof ProMusic) {
                 ProMusic item = (ProMusic) tItem;
-                holder.tvItem.setText((position + 1) + "    " + item.title);
+                String showName = PlayerLogicUtils.getMediaTitle(mContext, -1, item, true);
+                holder.tvItem.setText((position + 1) + "    " + showName);
                 if (TextUtils.equals(mSelectedMediaUrl, item.mediaUrl)) {
                     mSelectedPos = position;
                     holder.tvItem.setTextColor(mSelectFontColor);

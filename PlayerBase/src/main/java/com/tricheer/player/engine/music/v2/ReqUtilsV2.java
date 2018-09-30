@@ -1,6 +1,6 @@
 package com.tricheer.player.engine.music.v2;
 
-import js.lib.android.media.bd.BaiduMusicAPI_V2;
+import js.lib.android.media.audio.online.BaiduMusicAPI_V2;
 import js.lib.http.HttpUtils;
 import js.lib.http.IRequest;
 import js.lib.http.IRequest.ReqLevel;

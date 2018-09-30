@@ -54,10 +54,6 @@ public class VersionController {
      */
     private static boolean mFlag$IsAutoResumeAfterBoot = false;
     /**
-     * 是否支持声音响应焦点LOSS事件
-     */
-    private static boolean mFlag$IsSupportAudioFocusLoss = false;
-    /**
      * 是否支持仪表盘信息
      */
     private static boolean mFlag$IsSupportDashboard = false;
@@ -109,7 +105,6 @@ public class VersionController {
                 mFlag$IsSupportVideoTurnOffLight = true;
                 mFlag$IsSupportListAllMedias = true;
                 mFlag$IsAutoResumeAfterBoot = false;
-                mFlag$IsSupportAudioFocusLoss = true;
                 mFlag$IsSupportDashboard = false;
                 mFlag$IsSupportOrderPlayMode = false;
                 mFlag$IsProcessVideoResolution = false;
@@ -178,13 +173,6 @@ public class VersionController {
     }
 
     /**
-     * 是否是后视镜版本
-     */
-    public static boolean isJzVersion() {
-        return false;
-    }
-
-    /**
      * 是否使用本地音乐播放器
      */
     public static boolean isUseLocalMusicPlayer() {
@@ -221,13 +209,6 @@ public class VersionController {
      */
     public static boolean isCanAutoResume() {
         return mFlag$IsAutoResumeAfterBoot;
-    }
-
-    /**
-     * 是否支持声音响应焦点LOSS事件
-     */
-    public static boolean isSupportAudioFocusLoss() {
-        return mFlag$IsSupportAudioFocusLoss;
     }
 
     /**

@@ -8,14 +8,12 @@ import android.util.Log;
 import android.view.View;
 
 import com.tricheer.player.R;
-import com.tricheer.player.bean.ProMusic;
 import com.tricheer.player.bean.ProVideo;
 import com.tricheer.player.engine.Keys;
 import com.tricheer.player.engine.PlayerAppManager;
 import com.tricheer.player.engine.PlayerAppManager.PlayerCxtFlag;
-import com.tricheer.player.receiver.MediaScanReceiver;
 import com.tricheer.player.utils.PlayerPreferUtils;
-import com.tricheer.player.version.base.activity.video.BaseKeyEventActivity;
+import com.tricheer.player.version.base.activity.video.BaseVideoKeyEventActivity;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.frags.BaseVideoListFrag;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.frags.SclLc2010VdcVideoFoldersFrag;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.frags.SclLc2010VdcVideoNamesFrag;
@@ -33,7 +31,7 @@ import js.lib.android.utils.Logs;
  *
  * @author Jun.Wang
  */
-public class SclLc2010VdcVideoListActivity extends BaseKeyEventActivity {
+public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
     // TAG
     private static final String TAG = "VideoListActivityImpl";
 
@@ -168,7 +166,7 @@ public class SclLc2010VdcVideoListActivity extends BaseKeyEventActivity {
     protected void loadMediaImage() {
         CommonUtil.cancelTask(mLoadMediaImageTask);
         mLoadMediaImageTask = new LoadMediaImageTask();
-        mLoadMediaImageTask.execute(mListPrograms, new LoadImgListner() {
+        mLoadMediaImageTask.execute(mListPrograms, new LoadImgListener() {
 
             @Override
             public void afterLoad() {
@@ -182,11 +180,11 @@ public class SclLc2010VdcVideoListActivity extends BaseKeyEventActivity {
     @Override
     protected void refreshOnNotifyLoading(int loadingFlag) {
         super.refreshOnNotifyLoading(loadingFlag);
-        if (loadingFlag == MediaScanReceiver.ScanActives.START) {
-            //showLctLm8917Loading(true);
-        } else if (loadingFlag == MediaScanReceiver.ScanActives.END || loadingFlag == MediaScanReceiver.ScanActives.TASK_CANCEL) {
-            //showLctLm8917Loading(false);
-        }
+//        if (loadingFlag == MediaScanReceiver.ScanActives.START) {
+        //showLctLm8917Loading(true);
+//        } else if (loadingFlag == MediaScanReceiver.ScanActives.END || loadingFlag == MediaScanReceiver.ScanActives.TASK_CANCEL) {
+        //showLctLm8917Loading(false);
+//        }
     }
 
     @Override
@@ -226,36 +224,38 @@ public class SclLc2010VdcVideoListActivity extends BaseKeyEventActivity {
     private View.OnClickListener mFilterViewOnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            switchFilter(v);
-            notifyScanMedias(true);
-        }
-
-        private void switchFilter(View v) {
-            //Forbidden click the same item
-            //TODO
-
-            //
-            notifyScanMedias(true);
-            final int loop = vItems.length;
-            for (int idx = 0; idx < loop; idx++) {
-                View item = vItems[idx];
-                if (item == v) {
-                    setBg(item, true);
-                    loadFragment(idx);
-                } else {
-                    setBg(item, false);
-                }
-            }
-        }
-
-        private void setBg(View v, boolean selected) {
-            if (selected) {
-                v.setBackgroundResource(R.drawable.bg_title_item_c);
-            } else {
-                v.setBackgroundResource(R.drawable.btn_collect_selector);
-            }
+            switchTab(v, true);
         }
     };
+
+    private void switchTab(View v, boolean isFromUser) {
+        //Load new data
+        if (isFromUser) {
+            notifyScanMedias(true);
+        }
+
+        //Switch TAB
+        final int loop = vItems.length;
+        for (int idx = 0; idx < loop; idx++) {
+            View item = vItems[idx];
+            if (item == v) {
+                item.requestFocus();
+                setBg(item, true);
+                loadFragment(idx);
+            } else {
+                item.clearFocus();
+                setBg(item, false);
+            }
+        }
+    }
+
+    private void setBg(View v, boolean selected) {
+        if (selected) {
+            v.setBackgroundResource(R.drawable.bg_title_item_c);
+        } else {
+            v.setBackgroundResource(R.drawable.btn_collect_selector);
+        }
+    }
 
     @Override
     public void onGetKeyCode(int keyCode) {
@@ -268,6 +268,16 @@ public class SclLc2010VdcVideoListActivity extends BaseKeyEventActivity {
             case Keys.KeyVals.KEYCODE_NEXT:
                 if (mFragMedias != null) {
                     mFragMedias.next();
+                }
+                break;
+            case Keys.KeyVals.KEYCODE_DPAD_LEFT:
+            case Keys.KeyVals.KEYCODE_DPAD_RIGHT:
+                if (mFragMedias != null) {
+                    if (mFragMedias instanceof SclLc2010VdcVideoFoldersFrag) {
+                        switchTab(vItems[0], false);
+                    } else if (mFragMedias instanceof SclLc2010VdcVideoNamesFrag) {
+                        switchTab(vItems[1], false);
+                    }
                 }
                 break;
         }

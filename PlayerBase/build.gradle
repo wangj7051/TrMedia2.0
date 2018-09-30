@@ -3,11 +3,11 @@ apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 22
-    buildToolsVersion "27.0.3"
+    buildToolsVersion "28.0.3"
 
     defaultConfig {
         applicationId "com.tricheer.player"
-        minSdkVersion 17
+        minSdkVersion 21
         targetSdkVersion 22
         multiDexEnabled true
     }
@@ -32,7 +32,7 @@ android {
 }
 
 dependencies {
-    //api project(':libCommon')
+    api project(':LibTri')
     api project(':libTricheer')
     api project(':LetterSideBar')
     api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"

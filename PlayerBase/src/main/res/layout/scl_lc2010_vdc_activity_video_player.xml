@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/bg_main">
 
-    <js.lib.android.media.local.player.video.IVideoPlayer
+    <js.lib.android.media.video.player_native.IVideoPlayer
         android:id="@+id/vv_player"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -28,7 +28,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/udisk_video_"
+                android:text="@string/video_local"
                 android:textColor="@android:color/white"
                 android:textSize="25sp" />
         </LinearLayout>
@@ -36,14 +36,37 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/layout_top">
+            android:layout_below="@id/layout_top"
+            android:orientation="vertical">
 
             <TextView
+                android:id="@+id/v_folder_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="50dp"
+                android:layout_marginTop="50dp"
+                android:text="@string/file_name"
+                android:textColor="@android:color/white"
+                android:textSize="25sp" />
+
+            <TextView
+                android:id="@+id/v_sort"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="50dp"
+                android:layout_marginTop="50dp"
+                android:text="@string/file_name"
+                android:textColor="@android:color/white"
+                android:textSize="25sp" />
+
+            <js.lib.android.view.AlwaysMarqueeTextView
                 android:id="@+id/v_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
+                android:layout_marginStart="50dp"
                 android:layout_marginTop="50dp"
+                android:ellipsize="marquee"
+                android:singleLine="true"
                 android:text="@string/file_name"
                 android:textColor="@android:color/white"
                 android:textSize="25sp" />
@@ -63,8 +86,8 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="10"
-                android:paddingBottom="3dp"
                 android:paddingTop="3dp"
+                android:paddingBottom="3dp"
                 tools:ignore="NestedWeights">
 
                 <ImageView
@@ -82,8 +105,8 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="10"
-                android:paddingBottom="3dp"
-                android:paddingTop="3dp">
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp">
 
                 <ImageView
                     android:id="@+id/iv_play"
@@ -100,8 +123,8 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="10"
-                android:paddingBottom="3dp"
-                android:paddingTop="3dp">
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp">
 
                 <ImageView
                     android:id="@+id/iv_play_next"
@@ -118,15 +141,15 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="15"
-                android:paddingBottom="3dp"
-                android:paddingTop="3dp" />
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp" />
 
             <RelativeLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="10"
-                android:paddingBottom="3dp"
-                android:paddingTop="3dp">
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp">
 
                 <ImageView
                     android:id="@+id/iv_play_mode_set"
@@ -143,8 +166,8 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="10"
-                android:paddingBottom="3dp"
-                android:paddingTop="3dp">
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp">
 
                 <ImageView
                     android:id="@+id/v_list"
@@ -191,10 +214,10 @@
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
-                android:layout_toEndOf="@id/tv_play_start_time"
-                android:layout_toLeftOf="@id/tv_play_end_time"
-                android:layout_toRightOf="@id/tv_play_start_time"
                 android:layout_toStartOf="@id/tv_play_end_time"
+                android:layout_toLeftOf="@id/tv_play_end_time"
+                android:layout_toEndOf="@id/tv_play_start_time"
+                android:layout_toRightOf="@id/tv_play_start_time"
                 android:max="100" />
         </RelativeLayout>
     </RelativeLayout>
@@ -205,7 +228,8 @@
         android:layout_height="match_parent"
         android:background="@color/color_black_090"
         android:gravity="center"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:visibility="gone">
 
         <TextView
             android:layout_width="wrap_content"

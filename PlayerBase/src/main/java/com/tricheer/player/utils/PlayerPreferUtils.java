@@ -1,19 +1,19 @@
 package com.tricheer.player.utils;
 
+import com.tri.lib.utils.PreferUtils;
 import com.tricheer.player.engine.PlayerConsts.PlayMode;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import js.lib.android.utils.Logs;
-import js.lib.android.utils.PreferenceHelper;
 
 /**
  * Player Preference Helper
  *
  * @author Jun.Wang
  */
-public class PlayerPreferUtils extends PreferenceHelper {
+public class PlayerPreferUtils extends PreferUtils {
     // TAG
     private static final String TAG = "PlayerPreferUtils -> ";
 

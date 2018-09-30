@@ -15,6 +15,15 @@ public class PreferUtils extends PreferenceHelper {
     //TAG
     private static final String TAG = "PreferUtils";
 
+    public static boolean isFirstOpen() {
+        final String PREFER_KEY = "com.tricheer.radio.FIST_OPEN_FLAG";
+        boolean isOpened = getBoolean(PREFER_KEY, false);
+        if (!isOpened) {
+            saveBoolean(PREFER_KEY, true);
+        }
+        return !isOpened;
+    }
+
     /**
      * Get last band.
      *

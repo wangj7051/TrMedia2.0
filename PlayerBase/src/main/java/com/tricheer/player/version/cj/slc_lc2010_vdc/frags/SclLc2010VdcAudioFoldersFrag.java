@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
@@ -50,6 +51,7 @@ public class SclLc2010VdcAudioFoldersFrag extends BaseAudioListFrag {
 
     //==========Variables in this Fragment==========
     private SclLc2010VdcAudioListActivity mAttachedActivity;
+    private static Handler mHandler = new Handler();
 
     /**
      * Is ListView Item is Clicking
@@ -89,6 +91,7 @@ public class SclLc2010VdcAudioFoldersFrag extends BaseAudioListFrag {
         //----Widgets----
         //Side bar
         lsb = (LetterSideBar) contentV.findViewById(R.id.lsb);
+        lsb.refreshLetters(null);
         lsb.addCallback(new LetterSideBarCallback());
 
         //ListView
@@ -280,6 +283,7 @@ public class SclLc2010VdcAudioFoldersFrag extends BaseAudioListFrag {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        mAttachedActivity.onActivityResult(requestCode, resultCode, data);
         mDataAdapter.refreshDatas(mAttachedActivity.getLastPath());
     }
 }

@@ -4,7 +4,7 @@ import android.os.Bundle;
 
 import com.tricheer.player.service.MusicPlayService;
 
-public abstract class BaseAudioFocusActivity extends BaseKeyEventActivity {
+public abstract class BaseAudioFocusActivity extends BaseAudioKeyEventActivity {
 
     private MusicPlayService mService;
 
@@ -17,12 +17,7 @@ public abstract class BaseAudioFocusActivity extends BaseKeyEventActivity {
     protected void onResume() {
         super.onResume();
         if (mService != null) {
-            int result = mService.registerAudioFocus(1);
-            switch (result) {
-                case 1:
-                    mService.onAudioFocusGain();
-                    break;
-            }
+            mService.resumeByUser();
         }
     }
 
@@ -32,26 +27,5 @@ public abstract class BaseAudioFocusActivity extends BaseKeyEventActivity {
         if (service != null) {
             mService = service;
         }
-    }
-
-    @Override
-    public void onAudioFocusGain() {
-    }
-
-    @Override
-    public void onAudioFocusTransient() {
-    }
-
-    @Override
-    public void onAudioFocusDuck() {
-    }
-
-    @Override
-    public void onAudioFocusLoss() {
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
     }
 }

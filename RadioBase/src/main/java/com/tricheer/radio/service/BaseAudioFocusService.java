@@ -127,6 +127,7 @@ public abstract class BaseAudioFocusService extends Service {
     }
 
     public void onAudioFocusLoss() {
+        registerAudioFocus(2);
         for (AudioFocusListener l : mSetPlayerListeners) {
             if (l != null) {
                 l.onAudioFocusLoss();

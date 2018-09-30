@@ -21,9 +21,9 @@ import com.tricheer.player.utils.PlayerPreferUtils;
 import java.io.Serializable;
 import java.util.List;
 
-import js.lib.android.media.local.player.IPlayerState;
-import js.lib.android.media.local.player.music.IMusicPlayer;
-import js.lib.android.media.local.player.music.MusicPlayerFactory;
+import js.lib.android.media.IPlayerState;
+import js.lib.android.media.audio.IAudioPlayer;
+import js.lib.android.media.audio.MusicPlayerFactory;
 import js.lib.android.utils.CommonUtil;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.JsFileUtils;
@@ -74,7 +74,7 @@ public class MusicPlayService extends BasePlayService {
     /**
      * Music Player Object
      */
-    private IMusicPlayer mMusicPlayer;
+    private IAudioPlayer mAudioPlayer;
 
     /**
      * Play Previous/Next Security Runnable
@@ -100,12 +100,6 @@ public class MusicPlayService extends BasePlayService {
     @Override
     public IBinder onBind(Intent arg0) {
         return new LocalBinder();
-    }
-
-    @Override
-    public void onAudioFocusDuck() {
-        super.onAudioFocusDuck();
-        Logs.i(TAG, "----$$ onAudioFocusDuck() $$----");
     }
 
     @Override
@@ -183,7 +177,7 @@ public class MusicPlayService extends BasePlayService {
         mIsPauseOnNotify = false;
         removePlayRunnable();
         if (!EmptyUtil.isEmpty(mListPrograms)) {
-            if (mMusicPlayer == null) {
+            if (mAudioPlayer == null) {
                 playFixedMedia(getLastPath());
             } else {
                 resume();
@@ -232,9 +226,6 @@ public class MusicPlayService extends BasePlayService {
             // AiSpeech
         } else if (ReceiverOperates.AIS_OPEN.equals(opFlag)) {
             mIsPauseOnAisOpen = true;
-            if (VersionController.isJzVersion()) {
-                pause();
-            }
         } else if (ReceiverOperates.AIS_EXIT.equals(opFlag)) {
             if (VersionController.isCjVersion()) {
                 mIsPauseOnAisOpen = false;
@@ -244,20 +235,11 @@ public class MusicPlayService extends BasePlayService {
                     play(mPendingMediaPath);
                     mPendingMediaPath = "";
                 }
-            } else if (VersionController.isJzVersion()) {
-                if (mIsPauseOnAisOpen) {
-                    mIsPauseOnAisOpen = false;
-                    doResumePlay();
-                }
             }
 
             // E-Dog
         } else if (ReceiverOperates.PAUSE_ON_E_DOG_START.equals(opFlag)) {
-            Logs.i(TAG, "----<< Minus Volume to [0.1f,0.1f] On E-DOG Start----");
-            adjustVol(1);
         } else if (ReceiverOperates.RESUME_ON_E_DOG_END.equals(opFlag)) {
-            Logs.i(TAG, "---->> Resume Volume to [1.0f,1.0f] On E-DOG END----");
-            adjustVol(2);
 
             // PLAY MODE
         } else if (ReceiverOperates.MUSIC_MODE_SIGLE.equals(opFlag)) {
@@ -325,7 +307,6 @@ public class MusicPlayService extends BasePlayService {
             mIsPauseOnFirstLoaded = false;
             release();
         } else {
-            registerAudioFocus(1);
             int lastProgress = getLastProgress();
             if (lastProgress > 0) {
                 seekTo(lastProgress);
@@ -385,8 +366,8 @@ public class MusicPlayService extends BasePlayService {
     }
 
     public void clear() {
-        if (mMusicPlayer != null) {
-            mMusicPlayer.setMediaUrl("");
+        if (mAudioPlayer != null) {
+            mAudioPlayer.setMediaPath("");
         }
     }
 
@@ -414,9 +395,9 @@ public class MusicPlayService extends BasePlayService {
     private void playFixedMedia(String mediaUrl) {
         if (JsFileUtils.isFileExist(mediaUrl)) {
             saveTargetMediaUrl(mediaUrl);
-            if (mMusicPlayer == null || mIsPlayerInitError) {
+            if (mAudioPlayer == null || mIsPlayerInitError) {
                 release();
-                mMusicPlayer = MusicPlayerFactory.instance().create(this, mediaUrl, this);
+                mAudioPlayer = MusicPlayerFactory.instance().create(this, mediaUrl, this);
                 onNotifyPlayState(IPlayerState.REFRESH_UI);
                 startPlay("");
             } else {
@@ -432,10 +413,11 @@ public class MusicPlayService extends BasePlayService {
      */
     private void startPlay(String mediaUrl) {
         if (isPlayEnable()) {
+            registerAudioFocus(1);
             if (EmptyUtil.isEmpty(mediaUrl)) {
-                mMusicPlayer.play();
+                mAudioPlayer.playMedia();
             } else {
-                mMusicPlayer.play(mediaUrl);
+                mAudioPlayer.playMedia(mediaUrl);
             }
         } else {
             mPendingMediaPath = mediaUrl;
@@ -696,16 +678,16 @@ public class MusicPlayService extends BasePlayService {
     @Override
     public void pause() {
         Logs.i(TAG, "^^ pause() ^^");
-        if (mMusicPlayer != null) {
+        if (mAudioPlayer != null) {
             savePlayInfo();
-            mMusicPlayer.pause();
+            mAudioPlayer.pauseMedia();
         }
     }
 
     @Override
     public void resume() {
         Logs.i(TAG, "^^ resume() ^^");
-        if (mMusicPlayer != null) {
+        if (mAudioPlayer != null) {
             startPlay("");
         }
     }
@@ -713,10 +695,10 @@ public class MusicPlayService extends BasePlayService {
     @Override
     public void release() {
         Logs.i(TAG, "^^ release() ^^");
-        if (mMusicPlayer != null) {
+        if (mAudioPlayer != null) {
             savePlayInfo();
             MusicPlayerFactory.instance().destroy();
-            mMusicPlayer = null;
+            mAudioPlayer = null;
         }
     }
 
@@ -749,8 +731,8 @@ public class MusicPlayService extends BasePlayService {
 
     @Override
     public String getPath() {
-        if (mMusicPlayer != null) {
-            return mMusicPlayer.getMediaUrl();
+        if (mAudioPlayer != null) {
+            return mAudioPlayer.getMediaPath();
         }
         return "";
     }
@@ -770,23 +752,23 @@ public class MusicPlayService extends BasePlayService {
 
     @Override
     public int getProgress() {
-        if (mMusicPlayer != null) {
-            return mMusicPlayer.getCurrentPos();
+        if (mAudioPlayer != null) {
+            return mAudioPlayer.getMediaTime();
         }
         return 0;
     }
 
     @Override
     public int getDuration() {
-        if (mMusicPlayer != null) {
-            return mMusicPlayer.getDuration();
+        if (mAudioPlayer != null) {
+            return mAudioPlayer.getMediaDuration();
         }
         return 0;
     }
 
     @Override
     public boolean isPlaying() {
-        return mMusicPlayer != null && mMusicPlayer.isPlaying();
+        return mAudioPlayer != null && mAudioPlayer.isMediaPlaying();
     }
 
     @Override
@@ -797,25 +779,8 @@ public class MusicPlayService extends BasePlayService {
     @Override
     public void seekTo(int msec) {
         Logs.i(TAG, "^^ seekTo(" + msec + ") ^^");
-        if (mMusicPlayer != null) {
-            mMusicPlayer.seekTo(msec);
-        }
-    }
-
-    @Override
-    public void adjustVol(int flag) {
-        Logs.i(TAG, "^^ adjustVol(" + flag + ") ^^");
-        if (mMusicPlayer != null) {
-            if (flag == 1) {
-                if (VersionController.isSupportVideoMix()) {
-                    float mixVal = PlayerLogicUtils.getSoundMixVal(mContext);
-                    mMusicPlayer.setVolume(mixVal, mixVal);
-                } else {
-                    mMusicPlayer.setVolume(0.1f, 0.1f);
-                }
-            } else if (flag == 2) {
-                mMusicPlayer.setVolume(1.0f, 1.0f);
-            }
+        if (mAudioPlayer != null) {
+            mAudioPlayer.seekMediaTo(msec);
         }
     }
 

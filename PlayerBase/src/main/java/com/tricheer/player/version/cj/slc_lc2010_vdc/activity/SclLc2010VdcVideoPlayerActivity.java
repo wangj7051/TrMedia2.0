@@ -6,9 +6,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.tri.lib.receiver.AccReceiver;
+import com.tri.lib.receiver.ReverseReceiver;
 import com.tricheer.player.R;
 import com.tricheer.player.bean.ProVideo;
 import com.tricheer.player.engine.Keys;
@@ -31,13 +32,15 @@ import js.lib.utils.date.DateFormatUtil;
  *
  * @author Jun.Wang
  */
-public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity {
+public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
+        implements AccReceiver.AccDelegate, ReverseReceiver.ReverseDelegate {
+
     //TAG
     private static final String TAG = "VdcVideoPlayerActivity";
 
     //==========Widget in this Activity==========
     private View vControlPanel;
-    private TextView tvName;
+    private TextView tvFolder, tvPosition, tvName;
     private View vList;
     private View layoutWarning;
 
@@ -48,6 +51,8 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.scl_lc2010_vdc_activity_video_player);
+        ReverseReceiver.register(this);
+        AccReceiver.register(this);
         setCurrPlayer(true, this);
         init();
     }
@@ -59,6 +64,12 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity {
 
         // ----Widgets----
         vControlPanel = findView(R.id.v_control_panel);
+
+        tvFolder = (TextView) findViewById(R.id.v_folder_name);
+        tvFolder.setText("");
+
+        tvPosition = (TextView) findViewById(R.id.v_sort);
+        tvPosition.setText("");
 
         tvName = findView(R.id.v_name);
         tvName.setText("");
@@ -276,7 +287,16 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity {
 //        super.onNotifyPlayState$Play();
         ProVideo program = getCurrProgram();
         if (program != null) {
-            tvName.setText(program.title);
+            File file = new File(program.mediaUrl);
+            if (file.exists()) {
+                File folder = file.getParentFile();
+                if (folder != null) {
+                    tvFolder.setText(folder.getName());
+                }
+                tvName.setText(program.title);
+
+                tvPosition.setText((getPosition() + 1) + "/" + getTotalCount());
+            }
         }
     }
 
@@ -284,16 +304,49 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity {
     public void onGetKeyCode(int keyCode) {
         switch (keyCode) {
             case Keys.KeyVals.KEYCODE_PREV:
+                mIsPauseOnNotify = false;
                 playPrevBySecurity();
                 break;
             case Keys.KeyVals.KEYCODE_NEXT:
+                mIsPauseOnNotify = false;
                 playNextBySecurity();
                 break;
         }
     }
 
     @Override
+    public void onAudioFocusLoss() {
+        super.onAudioFocusLoss();
+    }
+
+    @Override
+    public void onAccOn() {
+        resume();
+    }
+
+    @Override
+    public void onAccOff() {
+        pause();
+    }
+
+    @Override
+    public void onAccOffTrue() {
+    }
+
+    @Override
+    public void onReverseOn() {
+        pause();
+    }
+
+    @Override
+    public void onReverseOff() {
+        resume();
+    }
+
+    @Override
     protected void onDestroy() {
+        ReverseReceiver.unregister(this);
+        AccReceiver.unregister(this);
         if (mGpsImpl != null) {
             mGpsImpl.destroy();
             mGpsImpl = null;

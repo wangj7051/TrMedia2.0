@@ -17,7 +17,7 @@ import com.tricheer.player.engine.db.DBManager;
 import com.tricheer.player.service.MusicPlayService;
 import com.tricheer.player.utils.PlayerLogicUtils;
 import com.tricheer.player.utils.PlayerPreferUtils;
-import com.tricheer.player.version.base.activity.music.BaseMusicPlayerActivity;
+import com.tricheer.player.version.base.activity.music.BaseAudioPlayerActivity;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ import js.lib.utils.date.DateFormatUtil;
  *
  * @author Jun.Wang
  */
-public class SclLc2010VdcAudioPlayerActivity extends BaseMusicPlayerActivity {
+public class SclLc2010VdcAudioPlayerActivity extends BaseAudioPlayerActivity {
     // TAG
     private static final String TAG = "MusicPlayerActivityImpl";
 
@@ -41,7 +41,7 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseMusicPlayerActivity {
     private ImageView ivMusicCover;
     private TextView tvStartTime, tvEndTime;
     private SeekBar seekBar;
-    private ImageView ivPlayPre, ivPlay, ivPlayNext, ivFavor, ivPlayModeSet, ivList;
+    private ImageView ivPlayPre, ivPlay, ivPlayNext, ivCollect, ivPlayModeSet, ivList;
 
     /**
      * ==========Variables in this Activity==========
@@ -88,10 +88,11 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseMusicPlayerActivity {
         ivPlayNext = findView(R.id.iv_play_next);
         ivPlayNext.setOnClickListener(mViewOnClick);
 
-        ivFavor = findView(R.id.v_favor);
-        ivFavor.setOnClickListener(mViewOnClick);
+        ivCollect = findView(R.id.v_favor);
+        ivCollect.setOnClickListener(mViewOnClick);
 
         ivPlayModeSet = findView(R.id.iv_play_mode_set);
+        onPlayModeChange();
         ivPlayModeSet.setOnClickListener(mViewOnClick);
 
         ivList = findView(R.id.v_list);
@@ -170,16 +171,41 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseMusicPlayerActivity {
                 execPlayOrPause();
             } else if (v == ivPlayNext) {
                 playNextBySecurity();
+            } else if (v == ivCollect) {
+                collect();
             } else if (v == ivList) {
-                finish();
+                finishByOperate("PLAYER_FINISH_ON_CLICK_LIST");
+            }
+        }
+
+        void collect() {
+            ProMusic media = getCurrProgram();
+            if (media != null) {
+                switch (media.isCollected) {
+                    case 1:
+                        media.isCollected = 0;
+                        ivCollect.setImageResource(R.drawable.btn_op_favor_selector);
+                        break;
+                    case 0:
+                        media.isCollected = 1;
+                        ivCollect.setImageResource(R.drawable.btn_op_favored_selector);
+                        break;
+                }
+                DBManager.updateMediaCollect(media);
             }
         }
     };
 
+    private void finishByOperate(String flag) {
+        Intent data = new Intent();
+        data.putExtra("flag", flag);
+        setResult(0, data);
+        finish();
+    }
 
     @Override
-    public void onProgressChange(String mediaUrl, int progress, int duration, boolean isPerSecond) {
-        super.onProgressChange(mediaUrl, progress, duration, isPerSecond);
+    public void onProgressChange(String mediaUrl, int progress, int duration) {
+        super.onProgressChange(mediaUrl, progress, duration);
         //Update current media duration
         ProMusic program = getCurrProgram();
         if (program != null && program.duration <= 0) {
@@ -196,14 +222,24 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseMusicPlayerActivity {
 
     @Override
     protected void refreshCurrMediaInfo() {
-        final ProMusic program = getCurrProgram();
-        if (program != null) {
+        final ProMusic media = getCurrProgram();
+        if (media != null) {
             // Media Cover
-            PlayerLogicUtils.setMediaCover(ivMusicCover, program, getImageLoader());
-            // Artist
-            tvArtist.setText(PlayerLogicUtils.getUnKnowOnNull(mContext, program.artist));
-            // Title
-            tvName.setText(PlayerLogicUtils.getMediaTitle(mContext, -1, program, true));
+            PlayerLogicUtils.setMediaCover(ivMusicCover, media, getImageLoader());
+            // Title / Artist/ Album
+            tvName.setText(PlayerLogicUtils.getMediaTitle(mContext, -1, media, true));
+            tvArtist.setText(PlayerLogicUtils.getUnKnowOnNull(mContext, media.artist));
+            tvAlbum.setText(media.albumName);
+
+            //Collect status
+            switch (media.isCollected) {
+                case 0:
+                    ivCollect.setImageResource(R.drawable.btn_op_favor_selector);
+                    break;
+                case 1:
+                    ivCollect.setImageResource(R.drawable.btn_op_favored_selector);
+                    break;
+            }
         }
     }
 
@@ -288,7 +324,7 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseMusicPlayerActivity {
                 break;
             case Keys.KeyVals.KEYCODE_DPAD_LEFT:
             case Keys.KeyVals.KEYCODE_DPAD_RIGHT:
-                finish();
+                finishByOperate("PLAYER_FINISH_ON_GET_KEY");
                 break;
         }
     }

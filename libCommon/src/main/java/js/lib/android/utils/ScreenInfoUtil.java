@@ -45,23 +45,23 @@ public class ScreenInfoUtil {
         /**
          * drawable-ldpi (dpi=120, density=0.75)
          */
-        public String LDPI = "ldpi";
+        String LDPI = "ldpi";
         /**
          * drawable-mdpi (dpi=160, density=1)
          */
-        public String MDPI = "mdpi";
+        String MDPI = "mdpi";
         /**
          * drawable-hdpi (dpi=240, density=1.5)
          */
-        public String HDPI = "hdpi";
+        String HDPI = "hdpi";
         /**
          * drawable-xhdpi (dpi=320, density=2)
          */
-        public String XHDPI = "xhdpi";
+        String XHDPI = "xhdpi";
         /**
          * drawable-xxhdpi (dpi=480, density=3)
          */
-        public String XXHDPI = "xxhdpi";
+        String XXHDPI = "xxhdpi";
     }
 
     /**
@@ -96,19 +96,19 @@ public class ScreenInfoUtil {
         String strDpi = "";
 
         if (densityDPI <= 120) {
-            strDpi = "LDPI";
+            strDpi = DensityStr.LDPI;
 
         } else if (densityDPI <= 160) {
-            strDpi = "MDPI";
+            strDpi = DensityStr.MDPI;
 
         } else if (densityDPI <= 240) {
-            strDpi = "HDPI";
+            strDpi = DensityStr.HDPI;
 
         } else if (densityDPI <= 320) {
-            strDpi = "XHDPI";
+            strDpi = DensityStr.XHDPI;
 
         } else if (densityDPI <= 480) {
-            strDpi = "XXHDPI";
+            strDpi = DensityStr.XXHDPI;
         }
 
         return strDpi;

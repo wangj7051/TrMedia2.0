@@ -38,26 +38,16 @@ public abstract class BaseFmLogicActivity extends BaseFmActivity {
         return PreferUtils.getLastFreq(false, band, 0);
     }
 
-    protected void execOpenOrSwitchRadio(int band) {
-        if (isRadioOpened()) {
-            int currBand = getCurrBand();
-            if (band != currBand) {
-                execSwitchBand();
-                return;
-            }
-        }
-
-        execOpenRadio(band, getLastFreq(band));
-    }
-
     protected void execOpenRadio() {
         int lastBand = getLastBand();
         int lastFreq = getLastFreq(lastBand);
         execOpenRadio(lastBand, lastFreq);
     }
 
-    private void execOpenRadio(int band, int freq) {
-        openFm();
+    protected void execOpenRadio(int band, int freq) {
+        if (!isRadioOpened()) {
+            openFm();
+        }
         if (isRadioOpened()) {
             //setSt(true);
             //setLoc(true);
@@ -73,7 +63,11 @@ public abstract class BaseFmLogicActivity extends BaseFmActivity {
     }
 
     protected void execSwitchBand() {
+        //Save History
         int band = getCurrBand();
+        PreferUtils.getLastFreq(true, band, getCurrFreq());
+
+        //Switch
         switch (band) {
             case BandType.FM:
                 band = BandType.AM;
@@ -82,10 +76,7 @@ public abstract class BaseFmLogicActivity extends BaseFmActivity {
                 band = BandType.FM;
                 break;
         }
-        openRadioByBand(band);
-    }
 
-    protected void openRadioByBand(int band) {
         //Will close radio after set successfully!!!
         setBand(band);
         PreferUtils.getLastBand(true, band);
@@ -93,6 +84,22 @@ public abstract class BaseFmLogicActivity extends BaseFmActivity {
         //
         if (closeFm()) {
             execOpenRadio();
+        }
+    }
+
+    protected void openRadioAfterSearchedAll(int band, int freq) {
+        //Will close radio after set successfully!!!
+        setBand(band);
+        PreferUtils.getLastBand(true, band);
+
+        //
+        if (closeFm()) {
+            if (freq >= getMinFreq() && freq <= getMaxFreq()) {
+                execOpenRadio(band, freq);
+                PreferUtils.getLastFreq(true, band, freq);
+            } else {
+                execOpenRadio();
+            }
         }
     }
 

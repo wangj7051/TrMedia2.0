@@ -60,10 +60,6 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center"
-                android:paddingBottom="10dp"
-                android:paddingLeft="15dp"
-                android:paddingRight="15dp"
-                android:paddingTop="10dp"
                 android:text="@string/folder"
                 android:textColor="@android:color/white"
                 android:textSize="25sp" />
@@ -93,10 +89,6 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center"
-                android:paddingBottom="10dp"
-                android:paddingLeft="15dp"
-                android:paddingRight="15dp"
-                android:paddingTop="10dp"
                 android:text="@string/music_name"
                 android:textColor="@android:color/white"
                 android:textSize="25sp" />
@@ -126,10 +118,6 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center"
-                android:paddingBottom="10dp"
-                android:paddingLeft="15dp"
-                android:paddingRight="15dp"
-                android:paddingTop="10dp"
                 android:text="@string/artist"
                 android:textColor="@android:color/white"
                 android:textSize="25sp" />
@@ -159,10 +147,6 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center"
-                android:paddingBottom="10dp"
-                android:paddingLeft="15dp"
-                android:paddingRight="15dp"
-                android:paddingTop="10dp"
                 android:text="@string/album"
                 android:textColor="@android:color/white"
                 android:textSize="25sp" />

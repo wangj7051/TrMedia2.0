@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -44,6 +45,7 @@ public class SclLc2010VdcVideoFoldersFrag extends BaseVideoListFrag {
 
     //==========Variables in this Fragment==========
     private SclLc2010VdcVideoListActivity mAttachedActivity;
+    private static Handler mHandler = new Handler();
 
     // Data Adapter
     private SclLc2010VdcVideoFoldersAdapter mDataAdapter;
@@ -86,6 +88,7 @@ public class SclLc2010VdcVideoFoldersFrag extends BaseVideoListFrag {
         //----Widgets----
         //Side bar
         lsb = (LetterSideBar) contentV.findViewById(R.id.lsb);
+        lsb.refreshLetters(null);
         lsb.addCallback(new LetterSideBarCallback());
 
         // Data

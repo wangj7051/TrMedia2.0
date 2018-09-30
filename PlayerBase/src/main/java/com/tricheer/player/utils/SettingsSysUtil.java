@@ -11,8 +11,8 @@ public class SettingsSysUtil {
     /**
      * Set music state
      * <p>0-未打开</p>
-     * <p>0-打开</p>
-     * <p>0-播放</p>
+     * <p>1-打开</p>
+     * <p>2-播放</p>
      */
     public static void setMusicState(Context context, int state) {
         try {
@@ -26,8 +26,8 @@ public class SettingsSysUtil {
     /**
      * Set Radio state
      * <p>0-未打开</p>
-     * <p>0-打开</p>
-     * <p>0-播放</p>
+     * <p>1-打开</p>
+     * <p>2-播放</p>
      */
     public static void setFmState(Context context, int state) {
         try {

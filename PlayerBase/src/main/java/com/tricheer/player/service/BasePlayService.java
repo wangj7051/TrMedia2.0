@@ -23,8 +23,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import js.lib.android.media.local.player.IPlayerListener;
-import js.lib.android.media.local.player.IPlayerState;
+import js.lib.android.media.IPlayerListener;
+import js.lib.android.media.IPlayerState;
 import js.lib.android.utils.AudioManagerUtil;
 import js.lib.android.utils.Logs;
 
@@ -108,7 +108,6 @@ public abstract class BasePlayService extends Service implements PlayerReceiverL
     public void onCreate() {
         super.onCreate();
         this.mContext = this;
-        registerAudioFocus(1);
     }
 
     @Override
@@ -150,16 +149,14 @@ public abstract class BasePlayService extends Service implements PlayerReceiverL
      * <p>
      * if==2 : Abandon audio focus
      */
-    public int registerAudioFocus(int flag) {
-        int result = -1;
+    public void registerAudioFocus(int flag) {
         if (flag == 1) {
-            result = AudioManagerUtil.requestMusicGain(mContext, mAfChangeListener);
+            int result = AudioManagerUtil.requestMusicGain(mContext, mAfChangeListener);
             Logs.i(TAG, "registerAudioFocus(" + flag + ") *request AUDIOFOCUS_GAIN* >> [result:" + result);
         } else if (flag == 2) {
-            result = AudioManagerUtil.abandon(mContext, mAfChangeListener);
+            int result = AudioManagerUtil.abandon(mContext, mAfChangeListener);
             Logs.i(TAG, "registerAudioFocus(" + flag + ") *abandon AudioFocus* >> [result:" + result);
         }
-        return result;
     }
 
     /**
@@ -226,14 +223,12 @@ public abstract class BasePlayService extends Service implements PlayerReceiverL
 
     // {@link IPlayerListener} Implements Method
     @Override
-    public void onProgressChange(String mediaUrl, int progress, int duration, boolean isPerSecond) {
+    public void onProgressChange(String mediaUrl, int progress, int duration) {
         // 通知仪表盘信息
-        if (isPerSecond) {
-            notifyDashboard(IPlayerState.PLAY);
-        }
+        notifyDashboard(IPlayerState.PLAY);
         for (PlayerActionsListener l : mSetPlayerListeners) {
             if (l != null) {
-                l.onProgressChange(mediaUrl, progress, duration, isPerSecond);
+                l.onProgressChange(mediaUrl, progress, duration);
             }
         }
     }
@@ -396,11 +391,6 @@ public abstract class BasePlayService extends Service implements PlayerReceiverL
 
     // {@link PlayerActionsListener} Implements Method
     @Override
-    public void adjustVol(int flag) {
-    }
-
-    // {@link PlayerActionsListener} Implements Method
-    @Override
     public String getLastTargetMediaUrl() {
         return null;
     }
@@ -465,6 +455,7 @@ public abstract class BasePlayService extends Service implements PlayerReceiverL
     // {@link PlayerActionsListener} Implements Method
     @Override
     public void onAudioFocusLoss() {
+        registerAudioFocus(2);
         for (PlayerActionsListener l : mSetPlayerListeners) {
             if (l != null) {
                 l.onAudioFocusLoss();

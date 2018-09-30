@@ -6,10 +6,13 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.tri.lib.receiver.AccReceiver;
+import com.tri.lib.receiver.ReverseReceiver;
 import com.tricheer.player.R;
 import com.tricheer.player.bean.ProMusic;
 import com.tricheer.player.engine.Keys;
@@ -17,7 +20,7 @@ import com.tricheer.player.engine.PlayerAppManager;
 import com.tricheer.player.engine.PlayerAppManager.PlayerCxtFlag;
 import com.tricheer.player.service.MusicPlayService;
 import com.tricheer.player.utils.SettingsSysUtil;
-import com.tricheer.player.version.base.activity.music.BaseAudioFocusActivity;
+import com.tricheer.player.version.base.activity.music.BaseAudioKeyEventActivity;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.frags.BaseAudioListFrag;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.frags.SclLc2010VdcAudioAlbumsFrag;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.frags.SclLc2010VdcAudioArtistsFrag;
@@ -38,7 +41,9 @@ import js.lib.android.utils.Logs;
  *
  * @author Jun.Wang
  */
-public class SclLc2010VdcAudioListActivity extends BaseAudioFocusActivity {
+public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
+        implements AccReceiver.AccDelegate, ReverseReceiver.ReverseDelegate {
+
     // TAG
     private static final String TAG = "MusicListActivity";
 
@@ -52,12 +57,17 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioFocusActivity {
     // Request Current Playing Media Url
     private BaseAudioListFrag mFragMedias;
 
+    // If true, MENU keyevent should not get response.
+    private boolean mIsMenuFrozenTime = false;
+
     // -- Widgets --
     private View[] vItems = new View[5];
 
     @Override
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
+        ReverseReceiver.register(this);
+        AccReceiver.register(this);
         SettingsSysUtil.setMusicState(this, 1);
         setContentView(R.layout.scl_lc2010_vdc_activity_audio_list);
         PlayerAppManager.putCxt(PlayerCxtFlag.MUSIC_LIST, this);
@@ -87,7 +97,7 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioFocusActivity {
         ivRhythmAnim = (ImageView) findViewById(R.id.v_rate);
 
         //
-        loadFragment(2);
+        switchTab(vItems[2], true);
         bindAndCreatePlayService(1, 2);
     }
 
@@ -123,7 +133,6 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioFocusActivity {
         super.onResume();
         //
         registerAudioFocus(1);
-        autoOpenPlayer(true);
         //
         if (isPlaying()) {
             activeAnimRhythm();
@@ -270,7 +279,7 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioFocusActivity {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        autoOpenPlayer(false);
+        cancelOpenPlayer();
         return super.dispatchTouchEvent(ev);
     }
 
@@ -279,29 +288,39 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioFocusActivity {
         public void onClick(View v) {
             //Forbidden click the same item
             //TODO
-
             //
-            notifyScanMedias(true);
-            final int loop = vItems.length;
-            for (int idx = 0; idx < loop; idx++) {
-                View item = vItems[idx];
-                if (item == v) {
-                    setBg(item, true);
-                    loadFragment(idx);
-                } else {
-                    setBg(item, false);
-                }
-            }
-        }
-
-        private void setBg(View v, boolean selected) {
-            if (selected) {
-                v.setBackgroundResource(R.drawable.bg_title_item_c);
-            } else {
-                v.setBackgroundResource(R.drawable.btn_collect_selector);
-            }
+            switchTab(v, true);
         }
     };
+
+    private void switchTab(View v, boolean isFromUser) {
+        //Load new data
+        if (isFromUser) {
+            notifyScanMedias(true);
+        }
+
+        //Switch
+        final int loop = vItems.length;
+        for (int idx = 0; idx < loop; idx++) {
+            View item = vItems[idx];
+            if (item == v) {
+                item.requestFocus();
+                setBg(item, true);
+                loadFragment(idx);
+            } else {
+                item.clearFocus();
+                setBg(item, false);
+            }
+        }
+    }
+
+    private void setBg(View v, boolean selected) {
+        if (selected) {
+            v.setBackgroundResource(R.drawable.bg_title_item_c);
+        } else {
+            v.setBackgroundResource(R.drawable.btn_collect_selector);
+        }
+    }
 
     @Override
     public void onGetKeyCode(int keyCode) {
@@ -318,18 +337,88 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioFocusActivity {
                     mFragMedias.next();
                 }
                 break;
+
+            case Keys.KeyVals.KEYCODE_DPAD_LEFT:
+                if (!mIsMenuFrozenTime && mFragMedias != null) {
+                    if (mFragMedias instanceof SclLc2010VdcAudioCollectsFrag) {
+                        switchTab(vItems[4], false);
+                    } else if (mFragMedias instanceof SclLc2010VdcAudioFoldersFrag) {
+                        switchTab(vItems[0], false);
+                    } else if (mFragMedias instanceof SclLc2010VdcAudioNamesFrag) {
+                        switchTab(vItems[1], false);
+                    } else if (mFragMedias instanceof SclLc2010VdcAudioArtistsFrag) {
+                        switchTab(vItems[2], false);
+                    } else if (mFragMedias instanceof SclLc2010VdcAudioAlbumsFrag) {
+                        switchTab(vItems[3], false);
+                    }
+                }
+                break;
+            case Keys.KeyVals.KEYCODE_DPAD_RIGHT:
+                if (!mIsMenuFrozenTime && mFragMedias != null) {
+                    if (mFragMedias instanceof SclLc2010VdcAudioCollectsFrag) {
+                        switchTab(vItems[1], false);
+                    } else if (mFragMedias instanceof SclLc2010VdcAudioFoldersFrag) {
+                        switchTab(vItems[2], false);
+                    } else if (mFragMedias instanceof SclLc2010VdcAudioNamesFrag) {
+                        switchTab(vItems[3], false);
+                    } else if (mFragMedias instanceof SclLc2010VdcAudioArtistsFrag) {
+                        switchTab(vItems[4], false);
+                    } else if (mFragMedias instanceof SclLc2010VdcAudioAlbumsFrag) {
+                        switchTab(vItems[0], false);
+                    }
+                }
+                break;
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (data != null) {
+            String flag = data.getStringExtra("flag");
+            if ("PLAYER_FINISH_ON_CLICK_LIST".equals(flag)) {
+                switchTab(vItems[2], false);
+            } else if ("PLAYER_FINISH_ON_GET_KEY".equals(flag)) {
+                autoOpenPlayer();
+            }
+        }
+    }
+
+    @Override
+    public void onAccOn() {
+        resume();
+    }
+
+    @Override
+    public void onAccOff() {
+        pause();
+    }
+
+    @Override
+    public void onAccOffTrue() {
+    }
+
+    @Override
+    public void onReverseOn() {
+        pause();
+    }
+
+    @Override
+    public void onReverseOff() {
+        resume();
     }
 
     @Override
     public void onBackPressed() {
 //        super.onBackPressed();
-        autoOpenPlayer(false);
+        cancelOpenPlayer();
         moveTaskToBack(true);
     }
 
     @Override
     protected void onDestroy() {
+        AccReceiver.unregister(this);
+        ReverseReceiver.unregister(this);
         cancelAllTasks();
         mHandler.removeCallbacksAndMessages(null);
         bindAndCreatePlayService(3, 4);
@@ -341,13 +430,27 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioFocusActivity {
     /**
      * Demand : Automatically open player after 5s.
      */
-    private void autoOpenPlayer(boolean isExec) {
-        if (isExec && isPlaying()) {
+    private void autoOpenPlayer() {
+        if (isPlaying()) {
+            cancelOpenPlayer();
+            Log.i(TAG, "autoOpenPlayer() -EXEC-");
+            mIsMenuFrozenTime = true;
+            mHandler.postDelayed(mmMenuFrozenRunnable, 3000);
             mHandler.postDelayed(mmDelayOpenAudioRunnable, 5000);
-        } else {
-            mHandler.removeCallbacks(mmDelayOpenAudioRunnable);
         }
     }
+
+    private void cancelOpenPlayer() {
+        Log.i(TAG, "autoOpenPlayer() -CANCEL-");
+        mHandler.removeCallbacks(mmDelayOpenAudioRunnable);
+    }
+
+    private Runnable mmMenuFrozenRunnable = new Runnable() {
+        @Override
+        public void run() {
+            mIsMenuFrozenTime = false;
+        }
+    };
 
     private Runnable mmDelayOpenAudioRunnable = new Runnable() {
         @Override

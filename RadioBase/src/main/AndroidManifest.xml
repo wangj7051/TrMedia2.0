@@ -5,10 +5,6 @@
     android:versionCode="1"
     android:versionName="1.0">
 
-    <uses-sdk
-        android:minSdkVersion="21"
-        android:targetSdkVersion="22" />
-
     <!-- Settings Provider -->
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
 
@@ -33,7 +29,23 @@
             </intent-filter>
         </activity>
 
-        <service android:name="com.tricheer.radio.service.RadioPlayerService"/>
+        <service android:name="com.tricheer.radio.service.RadioPlayerService" />
+
+        <!-- ACC -->
+        <receiver android:name="com.tri.lib.receiver.AccReceiver">
+            <intent-filter>
+                <action android:name="tricheer.intent.action.ACC_OFF" />
+                <action android:name="tricheer.intent.action.SLEEP" />
+                <action android:name="tricheer.intent.action.ACC_ON" />
+            </intent-filter>
+        </receiver>
+        <!-- Reverse -->
+        <receiver android:name="com.tri.lib.receiver.ReverseReceiver">
+            <intent-filter>
+                <action android:name="com.tricheer.carback.on" />
+                <action android:name="com.tricheer.carback.off" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

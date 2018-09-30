@@ -18,6 +18,8 @@
 LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
+TARGET_PLATFORM=android-25
+
 ## user: 指该模块只在user版本下才编译
 ## eng: 指该模块只在eng版本下才编译
 ## tests: 指该模块只在tests版本下才编译

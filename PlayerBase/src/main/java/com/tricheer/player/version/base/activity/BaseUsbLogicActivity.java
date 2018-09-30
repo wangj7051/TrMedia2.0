@@ -5,7 +5,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 
-import com.tricheer.player.view.ToastUsb;
+import com.tricheer.player.R;
+import com.tricheer.player.view.ToastView;
 
 public abstract class BaseUsbLogicActivity extends BaseFragActivity {
     private Context mContext;
@@ -21,7 +22,7 @@ public abstract class BaseUsbLogicActivity extends BaseFragActivity {
         mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                ToastUsb.show(mContext);
+                ToastView.show(mContext, R.string.toast_usb_not_exist);
             }
         }, 300);
         mHandler.postDelayed(new Runnable() {

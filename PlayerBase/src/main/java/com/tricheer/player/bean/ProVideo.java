@@ -1,6 +1,6 @@
 package com.tricheer.player.bean;
 
-import js.lib.android.media.local.utils.VideoInfo;
+import js.lib.android.media.video.bean.VideoInfo;
 import js.lib.android.utils.Logs;
 
 /**

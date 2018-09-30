@@ -18,13 +18,8 @@ public abstract class BaseAudioFocusActivity extends BaseKeyEventActivity implem
     @Override
     protected void onResume() {
         super.onResume();
-        if (mService != null) {
-            int result = mService.registerAudioFocus(1);
-            switch (result) {
-                case 1:
-                    mService.onAudioFocusGain();
-                    break;
-            }
+        if (mService != null && !isRadioOpened()) {
+            execOpenRadio();
         }
     }
 

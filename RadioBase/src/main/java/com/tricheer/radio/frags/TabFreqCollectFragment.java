@@ -178,11 +178,17 @@ public class TabFreqCollectFragment extends BaseAppV4Fragment {
     };
 
     private int getCurrBand() {
-        return mAttachedActivity.getCurrBand();
+        if (isAdded()) {
+            return mAttachedActivity.getCurrBand();
+        }
+        return -1;
     }
 
     private int getCurrFreq() {
-        return mAttachedActivity.getCurrFreq();
+        if (isAdded()) {
+            return mAttachedActivity.getCurrFreq();
+        }
+        return -1;
     }
 
     private View.OnClickListener mFilterViewOnClick = new View.OnClickListener() {
@@ -206,7 +212,9 @@ public class TabFreqCollectFragment extends BaseAppV4Fragment {
             if (objTag != null && objTag instanceof Integer) {
                 int collectedFreq = (int) objTag;
                 if (collectedFreq != getCurrFreq()) {
-                    mAttachedActivity.playCollected((Integer) objTag);
+                    if (isAdded()) {
+                        mAttachedActivity.playCollected((Integer) objTag);
+                    }
                 }
             }
         }

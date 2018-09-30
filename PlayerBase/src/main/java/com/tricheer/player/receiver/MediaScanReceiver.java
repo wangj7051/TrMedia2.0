@@ -31,10 +31,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import js.lib.android.media.local.utils.AudioInfo;
-import js.lib.android.media.local.utils.AudioUtils;
-import js.lib.android.media.local.utils.VideoInfo;
-import js.lib.android.media.local.utils.VideoUtils;
+import js.lib.android.media.audio.bean.AudioInfo;
+import js.lib.android.media.audio.utils.AudioUtils;
+import js.lib.android.media.video.bean.VideoInfo;
+import js.lib.android.media.video.utils.VideoUtils;
 import js.lib.android.utils.CommonUtil;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.Logs;
@@ -147,6 +147,7 @@ public class MediaScanReceiver extends BroadcastReceiver {
 
         } else if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action)) {
         } else if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
+            PlayerAppManager.exitCurrPlayer();
 
             // SDCard Mounted
         } else if (Intent.ACTION_MEDIA_MOUNTED.equals(action)) {

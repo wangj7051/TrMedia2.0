@@ -5,6 +5,7 @@ import android.animation.ObjectAnimator;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -16,15 +17,20 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.tri.lib.receiver.AccReceiver;
+import com.tri.lib.receiver.ReverseReceiver;
 import com.tricheer.radio.activity.BaseAudioFocusActivity;
 import com.tricheer.radio.engine.BandInfos.BandType;
 import com.tricheer.radio.frags.TabFreqCollectFragment;
 import com.tricheer.radio.utils.FreqFormatUtil;
 import com.tricheer.radio.utils.PreferUtils;
 import com.tricheer.radio.utils.SettingsSysUtil;
+import com.tricheer.radio.view.ToastView;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import js.lib.android.adapter.VPFragStateAdapter;
 import js.lib.android.fragment.BaseAppV4Fragment;
@@ -36,7 +42,8 @@ import js.lib.android.view.ViewPagerImpl;
  *
  * @author Jun.Wang
  */
-public class MainActivity extends BaseAudioFocusActivity {
+public class MainActivity extends BaseAudioFocusActivity
+        implements AccReceiver.AccDelegate, ReverseReceiver.ReverseDelegate {
     // TAG
     private static final String TAG = "RadioMain";
 
@@ -62,16 +69,18 @@ public class MainActivity extends BaseAudioFocusActivity {
     private TextView tvUpdate;
 
     //==========Variables in this Activity==========
-    private TabFragOnPageChange mTabFragOnPageChange;
+    private ViewPagerOnChange mViewPageOnChange;
     private VPFragStateAdapter mFragAdapter;
 
-    //Searching all bands
-    private List<SearchingAllItem> mListSearchingAllItems = new ArrayList<>();
+    private static Handler mHandler = new Handler();
+    private SearchingController mSearchingController;
+    private ScanningController mScanningController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        AccReceiver.register(this);
         SettingsSysUtil.setFmState(this, 1);
         init();
     }
@@ -80,9 +89,11 @@ public class MainActivity extends BaseAudioFocusActivity {
         //---- Widgets ----
         //Top
         vPointsContainer = (RelativeLayout) findViewById(R.id.v_points_container);
+        vPointsContainer.setOnClickListener(mViewOnClick);
+
         viewPager = (ViewPagerImpl) findViewById(R.id.vpager);
         viewPager.setAdapter(mFragAdapter = new VPFragStateAdapter(getSupportFragmentManager()));
-        viewPager.setOnPageChangeListener((mTabFragOnPageChange = new TabFragOnPageChange()));
+        viewPager.setOnPageChangeListener((mViewPageOnChange = new ViewPagerOnChange()));
 
         //Center
         tvFreq = (TextView) findViewById(R.id.v_freq);
@@ -112,6 +123,10 @@ public class MainActivity extends BaseAudioFocusActivity {
         tvUpdate = (TextView) findViewById(R.id.v_update);
         tvUpdate.setOnClickListener(mViewOnClick);
 
+        //---- Variables ----
+        mSearchingController = new SearchingController();
+        mScanningController = new ScanningController();
+
         // Bind Service
         bindAndCreateControlService(1, 2);
     }
@@ -125,7 +140,35 @@ public class MainActivity extends BaseAudioFocusActivity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
-        checkAndPlay();
+        openRadioOnNewIntent();
+    }
+
+    private void openRadioOnNewIntent() {
+        if (mSearchingController.isSearching()) {
+            return;
+        }
+
+        //Get parameters
+        int paramBand = getIntent().getIntExtra("TARGET_BAND", -1);
+        getIntent().removeExtra("TARGET_BAND");
+        Log.i(TAG, "openRadioOnNewIntent() > paramBand:" + paramBand);
+
+
+        //Check and Play
+        if (paramBand == -1) {
+            if (!isRadioOpened()) {
+                execOpenRadio();
+            }
+        } else {
+            if (isRadioOpened()) {
+                int currBand = getCurrBand();
+                if (paramBand != currBand) {
+                    execSwitchBand();
+                    return;
+                }
+            }
+            execOpenRadio(paramBand, getLastFreq(paramBand));
+        }
     }
 
     @Override
@@ -133,23 +176,39 @@ public class MainActivity extends BaseAudioFocusActivity {
         super.onServiceStatusChanged(service, isConnected);
         if (isConnected) {
             refreshCollectViews();
-            initSeekBar();
             register(this);
-            checkAndPlay();
+            openRadioOnInit();
         }
     }
 
-    private void checkAndPlay() {
-        //Get parameters
-        int band = getIntent().getIntExtra("TARGET_BAND", -1);
-        Log.i(TAG, "checkAndPlay() > band:" + band);
-        getIntent().removeExtra("TARGET_BAND");
-        //Check and Play
-        if (band == -1) {
-            execOpenRadio();
+    private void openRadioOnInit() {
+        final boolean isFirstTimeOpen = PreferUtils.isFirstOpen();
+        if (isFirstTimeOpen) {
+            ToastView.show(this, R.string.first_time_searching_toast);
+            initSeekBar(true);
         } else {
-            execOpenOrSwitchRadio(band);
+            initSeekBar(false);
         }
+
+        //Get parameters
+        final int paramBand = getIntent().getIntExtra("TARGET_BAND", -1);
+        getIntent().removeExtra("TARGET_BAND");
+        Log.i(TAG, "openRadioOnInit() > paramBand:" + paramBand);
+
+        //Check and Play
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (paramBand == -1) {
+                    execOpenRadio();
+                    if (isFirstTimeOpen) {
+                        mSearchingController.prepare();
+                    }
+                } else {
+                    execOpenRadio(paramBand, getLastFreq(paramBand));
+                }
+            }
+        }, 1000);
     }
 
     private void refreshCollectViews() {
@@ -181,8 +240,8 @@ public class MainActivity extends BaseAudioFocusActivity {
         mFragAdapter.refresh(listFrags, true);
     }
 
-    private void initSeekBar() {
-        seekBarFreq.setMax(getSeekBarMax());
+    private void initSeekBar(boolean isFirstTime) {
+        seekBarFreq.setMax(isFirstTime ? getSeekBarMax(BandType.FM) : getSeekBarMax());
         seekBarFreq.setProgress(0);
     }
 
@@ -194,24 +253,14 @@ public class MainActivity extends BaseAudioFocusActivity {
         setFreqInfo(freq, band);
 
         //
-        Fragment frag = mFragAdapter.getItem(mTabFragOnPageChange.getPageIdx());
+        Fragment frag = mFragAdapter.getItem(mViewPageOnChange.getPageIdx());
         if (frag != null) {
             ((TabFreqCollectFragment) frag).refreshItemsBgByCurrFreq();
         }
 
         //Set searching all progress
         if (seekBarSearchingAll.isEnabled()) {
-            int tempProgress = currProgress;
-            if (mListSearchingAllItems.size() == 1) {
-                SearchingAllItem item = mListSearchingAllItems.get(0);
-                if (item.max == 0) {
-                    item.max = getSeekBarMax(band);
-                }
-            }
-            if (mListSearchingAllItems.size() == 2) {
-                SearchingAllItem item = mListSearchingAllItems.get(0);
-                tempProgress += item.max;
-            }
+            int tempProgress = currProgress + mSearchingController.getBaseProgress();
             if (tempProgress >= seekBarSearchingAll.getProgress()) {
                 seekBarSearchingAll.setProgress(tempProgress);
             }
@@ -244,17 +293,21 @@ public class MainActivity extends BaseAudioFocusActivity {
 
         @Override
         public void onClick(View v) {
-            if (v == ivTower) {
+            if (v == vPointsContainer) {
+                showCollectsNextPage();
+            } else if (v == ivTower) {
                 execSwitchBand();
             } else if (v == ivPrev) {
                 scanAndPlayPrev();
             } else if (v == ivNext) {
                 scanAndPlayNext();
             } else if (v == ivExit) {
-                closeFm();
-                finish();
+                if (!mScanningController.isScanning() && !mSearchingController.isSearching()) {
+                    closeFm();
+                    finish();
+                }
             } else if (v == tvUpdate) {
-                searchOrExitAllBands(true);
+                mSearchingController.start();
             }
         }
     };
@@ -268,7 +321,7 @@ public class MainActivity extends BaseAudioFocusActivity {
         objAnim.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
-                mTabFragOnPageChange.reset();
+                mViewPageOnChange.reset();
                 viewPager.setCurrentItem(0, true);
             }
 
@@ -278,7 +331,7 @@ public class MainActivity extends BaseAudioFocusActivity {
                 MainActivity.super.execSwitchBand();
                 //UI
                 refreshCollectViews();
-                initSeekBar();
+                initSeekBar(false);
                 ivTower.setEnabled(true);
             }
 
@@ -293,93 +346,53 @@ public class MainActivity extends BaseAudioFocusActivity {
         objAnim.start();
     }
 
-    private void searchOrExitAllBands(boolean isFromUser) {
-        //User cancel searching
-//        if (isFromUser && mSbaSearchedBands.size() > 0) {
-//            refreshPageOnScanning(false);
-//            openRadioByBand(mSbaSearchedBands.keyAt(0));
-//            mSbaSearchedBands.clear();
-//            return;
-//        }
-
-        //First time
-        if (mListSearchingAllItems.size() == 0) {
-            refreshPageOnScanning(true);
-            searchAll();
-            return;
-        }
-        //Second Time
-        if (mListSearchingAllItems.size() == 1) {
-            SearchingAllItem item = mListSearchingAllItems.get(0);
-            switch (item.band) {
-                case BandType.FM:
-                    setBand(BandType.AM);
-                    break;
-                case BandType.AM:
-                    setBand(BandType.FM);
-                    break;
-
-            }
-            initSeekBar();
-            searchAll();
-            return;
-        }
-        //End - Switch the original band
-        if (mListSearchingAllItems.size() == 2) {
-            refreshPageOnScanning(false);
-            openRadioByBand(mListSearchingAllItems.get(0).band);
-            mListSearchingAllItems.clear();
-        }
+    @Override
+    public void onScanFreqStart(int type) {
+        super.onScanFreqStart(type);
+        Log.i(TAG, "onScanFreqStart(" + type + ")");
+        mScanningController.start();
     }
 
     @Override
-    protected void openRadioByBand(int band) {
-        super.openRadioByBand(band);
-        //UI
-        refreshCollectViews();
-        initSeekBar();
-        ivTower.setEnabled(true);
-    }
-
-    @Override
-    public void onSeachFreqStart(int type) {
-        super.onSeachFreqStart(type);
-        //Add item
-        SearchingAllItem item = new SearchingAllItem();
-        item.band = type;
-        mListSearchingAllItems.add(item);
+    public void onScanFreqEnd(int type) {
+        super.onScanFreqEnd(type);
+        Log.i(TAG, "onScanFreqEnd(" + type + ")");
+        mScanningController.end();
     }
 
     @Override
     public void onScanFreqFail(int type, int reason) {
         super.onScanFreqFail(type, reason);
         Log.i(TAG, "onScanFreqFail(" + type + "," + reason + ")");
+        mScanningController.fail();
+    }
+
+    @Override
+    public void onSeachFreqStart(int type) {
+        super.onSeachFreqStart(type);
+        Log.i(TAG, "onSeachFreqStart(" + type + ")");
     }
 
     @Override
     public void onSeachFreqEnd(int type) {
         super.onSeachFreqEnd(type);
         Log.i(TAG, "onSeachFreqEnd(" + type + ")");
-        //Update item
-        try {
-            //
-            PreferUtils.saveSearchedFreqs(type, getAllAvailableFreqs());
+        PreferUtils.saveSearchedFreqs(type, getAllAvailableFreqs());
+        mSearchingController.onLastSearched(type);
+    }
 
-            //
-            int tailPos = mListSearchingAllItems.size() - 1;
-            SearchingAllItem item = mListSearchingAllItems.get(tailPos);
-            item.isSearched = true;
-            searchOrExitAllBands(false);
-        } catch (Exception e) {
-            Log.i(TAG, "");
-        }
+    @Override
+    public void onSeachFreqFail(int type, int reason) {
+        super.onSeachFreqFail(type, reason);
+        Log.i(TAG, "onSeachFreqFail(" + type + "," + reason + ")");
+        mSearchingController.onSearchFailed();
     }
 
     private void refreshPageOnScanning(boolean isScanning) {
         Log.i(TAG, "refreshPageOnScanning(" + isScanning + ")");
         //Refresh top
         viewPager.setScrollEnable(!isScanning);
-        Fragment frag = mFragAdapter.getItem(mTabFragOnPageChange.getPageIdx());
+        Fragment frag = mFragAdapter.getItem(mViewPageOnChange.getPageIdx());
         if (frag != null) {
             ((TabFreqCollectFragment) frag).refreshPageOnScanning(isScanning);
         }
@@ -403,9 +416,11 @@ public class MainActivity extends BaseAudioFocusActivity {
         //Refresh SeekBar
         seekBarFreq.setEnabled(!isScanning);
         seekBarSearchingAll.setEnabled(isScanning);
+        seekBarSearchingAll.setProgress(0);
         if (isScanning) {
-            seekBarSearchingAll.setMax(getSeekBarMax(BandType.FM) + getSeekBarMax(BandType.AM));
-            seekBarSearchingAll.setProgress(0);
+            int fmMax = getSeekBarMax(BandType.FM);
+            int amMax = getSeekBarMax(BandType.AM);
+            seekBarSearchingAll.setMax(fmMax + amMax);
             seekBarSearchingAll.setVisibility(View.VISIBLE);
         } else {
             seekBarSearchingAll.setVisibility(View.GONE);
@@ -431,6 +446,35 @@ public class MainActivity extends BaseAudioFocusActivity {
     }
 
     @Override
+    public void onAccOn() {
+        if (!isRadioOpened()) {
+            execOpenRadio();
+        }
+    }
+
+    @Override
+    public void onAccOff() {
+        closeFm();
+    }
+
+    @Override
+    public void onAccOffTrue() {
+        closeFm();
+    }
+
+    @Override
+    public void onReverseOn() {
+        closeFm();
+    }
+
+    @Override
+    public void onReverseOff() {
+        if (!isRadioOpened()) {
+            execOpenRadio();
+        }
+    }
+
+    @Override
     public void onBackPressed() {
 //        super.onBackPressed();
         moveTaskToBack(true);
@@ -438,6 +482,7 @@ public class MainActivity extends BaseAudioFocusActivity {
 
     @Override
     protected void onDestroy() {
+        AccReceiver.unregister(this);
         SettingsSysUtil.setFmState(this, 0);
         unregister(this);
         closeFm();
@@ -445,16 +490,142 @@ public class MainActivity extends BaseAudioFocusActivity {
         super.onDestroy();
     }
 
+    private final class ScanningController {
+        boolean mmIsScanning = false;
+
+        void start() {
+            mmIsScanning = true;
+        }
+
+        void end() {
+            mmIsScanning = false;
+        }
+
+        void fail() {
+            mmIsScanning = false;
+        }
+
+        boolean isScanning() {
+            return mmIsScanning;
+        }
+    }
+
     /**
      * Class for Searching all bands.
      */
-    private final class SearchingAllItem {
-        int band;
-        boolean isSearched;
-        int max;
+    private class SearchingController {
+        //
+        int mmOriginBand = BandType.NONE;
+        int mmOriginFreq = 0;
+
+        //
+        int mmBaseProgress = 0;
+        boolean mmIsSearching = false;
+        int mmLastSearchedBand = BandType.NONE;
+        Set<Integer> mmSetSearchedBand = new HashSet<>();
+
+        void prepare() {
+            //
+            mmOriginBand = getCurrBand();
+            mmOriginFreq = getCurrFreq();
+
+            //
+            mmIsSearching = true;
+            refreshPageOnScanning(true);
+        }
+
+        void start() {
+            prepare();
+            searchAll();
+        }
+
+        void onLastSearched(int lastBand) {
+            //Record searched.
+            mmBaseProgress += getSeekBarMax(lastBand);
+            mmLastSearchedBand = lastBand;
+            mmSetSearchedBand.add(lastBand);
+
+            //Execute next search
+            int nextBand = nextBand();
+            if (nextBand != BandType.NONE) {
+                setBand(nextBand);
+                initSeekBar(false);
+                searchAll();
+                //Search ended
+            } else {
+                resumeOrigin();
+            }
+        }
+
+        void onSearchFailed() {
+            resumeOrigin();
+        }
+
+        int nextBand() {
+            int next = BandType.NONE;
+            switch (mmLastSearchedBand) {
+                case BandType.FM:
+                    next = BandType.AM;
+                    break;
+                case BandType.AM:
+                    next = BandType.FM;
+                    break;
+            }
+
+            if (mmSetSearchedBand.contains(next)) {
+                next = BandType.NONE;
+            }
+            return next;
+        }
+
+        boolean isSearching() {
+            return mmIsSearching;
+        }
+
+        int getBaseProgress() {
+            return mmBaseProgress;
+        }
+
+        void resumeOrigin() {
+            refreshPageOnScanning(false);
+            openRadioAfterSearchedAll(mmOriginBand, mmOriginFreq);
+
+            //Reset origin
+            mmOriginBand = BandType.NONE;
+            mmOriginFreq = 0;
+
+            mmBaseProgress = 0;
+            mmIsSearching = false;
+            mmLastSearchedBand = BandType.NONE;
+            mmSetSearchedBand.clear();
+        }
     }
 
-    private class TabFragOnPageChange implements ViewPager.OnPageChangeListener {
+    @Override
+    protected void openRadioAfterSearchedAll(int band, int freq) {
+        super.openRadioAfterSearchedAll(band, freq);
+        //UI
+        refreshCollectViews();
+        initSeekBar(false);
+        ivTower.setEnabled(true);
+    }
+
+    /**
+     * Show next page
+     */
+    private void showCollectsNextPage() {
+        int pageIdx = mViewPageOnChange.getPageIdx();
+        pageIdx++;
+        if (pageIdx >= getPageSum()) {
+            pageIdx = 0;
+        }
+        viewPager.setCurrentItem(pageIdx);
+    }
+
+    /**
+     * View Pager adapter
+     */
+    private class ViewPagerOnChange implements ViewPager.OnPageChangeListener {
 
         /**
          * 记录上一次页面索引
@@ -497,20 +668,21 @@ public class MainActivity extends BaseAudioFocusActivity {
             // 背景有几个圆点
             int pointSum = vBgPoints.getChildCount();
             // 背景圆点间距
-            int distance = (layoutW - pointSum * pointW) / (pointSum - 1);
-            // 每次圆点应该位移的距离
-            int delta = distance + pointW;
+            int spaceOfTwoPoints = (layoutW - pointSum * pointW) / (pointSum - 1);
+
+            // 旧位置
+            int lastSeat = mmLastPageIdx * (pointW + spaceOfTwoPoints);
+            // 新位置
+            int newSeat = pos * (pointW + spaceOfTwoPoints);
 
             // 实心圆点起始位置
-            float fromXDelta = mmLastPageIdx * delta;
             // 向右
+            transPoint(lastSeat, newSeat);
             if (pos > mmLastPageIdx) {
                 Log.i(TAG, ">>>>>>>>>>>>");
-                transPoint(fromXDelta, fromXDelta + delta);
                 // 向左
             } else if (pos < mmLastPageIdx) {
                 Log.i(TAG, "<<<<<<<<<<<<");
-                transPoint(fromXDelta, fromXDelta - delta);
             }
 
             // 记录上一次页面索引
@@ -535,6 +707,25 @@ public class MainActivity extends BaseAudioFocusActivity {
         }
     }
 
+    /**
+     * FM has 6 pages. AM has 3 pages.
+     *
+     * @return int
+     */
+    private int getPageSum() {
+        final int lastBand = getLastBand();
+        switch (lastBand) {
+            case BandType.FM:
+                return 6;
+            case BandType.AM:
+                return 2;
+        }
+        return 0;
+    }
+
+    /**
+     * {@link SeekBar} listener
+     */
     private class SeekBarOnChange implements SeekBar.OnSeekBarChangeListener {
 
         @Override
@@ -553,22 +744,7 @@ public class MainActivity extends BaseAudioFocusActivity {
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             setFreqInfo(getMinFreq() + progress, getCurrBand());
         }
-    }
 
-    /**
-     * FM has 6 pages. AM has 3 pages.
-     *
-     * @return int
-     */
-    private int getPageSum() {
-        final int lastBand = getLastBand();
-        switch (lastBand) {
-            case BandType.FM:
-                return 6;
-            case BandType.AM:
-                return 3;
-        }
-        return 0;
     }
 
     /**

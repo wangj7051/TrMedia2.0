@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.tri.lib.receiver.ActionEnum;
 import com.tricheer.app.receiver.PlayerReceiverActionIdxs;
 import com.tricheer.app.receiver.PlayerReceiverActions;
 import com.tricheer.player.App;
@@ -24,8 +25,8 @@ import com.tricheer.player.engine.VersionController;
 import com.tricheer.player.service.MusicPlayService;
 import com.tricheer.player.utils.PlayerLogicUtils;
 import com.tricheer.player.utils.PlayerPreferUtils;
-import com.tricheer.player.version.base.activity.music.BaseMusicExtendActionsActivity;
-import com.tricheer.player.version.base.activity.music.BaseMusicPlayerActivity;
+import com.tricheer.player.version.base.activity.music.BaseAudioExtendActionsActivity;
+import com.tricheer.player.version.base.activity.music.BaseAudioPlayerActivity;
 import com.tricheer.player.version.base.activity.video.BaseVideoExtendActionsActivity;
 
 import org.json.JSONArray;
@@ -79,15 +80,6 @@ public class PlayerReceiver extends PlayerBaseReceiver {
         Log.i(TAG, "action-ae: " + ae);
         if (ae != null) {
             switch (ae) {
-                //ACC
-                case ACC_ON:
-                    break;
-                case ACC_OFF:
-                    break;
-                case ACC_OFF_TRUE:
-                    PlayerPreferUtils.getVideoWarningFlag(true, 1);
-                    break;
-
                 //Test
                 case TEST_OPEN_VIDEO_LIST:
                     testSendVideoList();
@@ -515,8 +507,8 @@ public class PlayerReceiver extends PlayerBaseReceiver {
         // 音频列表页面
         Context cxtMusicList = PlayerAppManager.getCxt(PlayerCxtFlag.MUSIC_LIST);
         if (cxtMusicList != null) {
-            if (cxtMusicList instanceof BaseMusicExtendActionsActivity) {
-                ((BaseMusicExtendActionsActivity) cxtMusicList).onNotifyOperate(opFlag);
+            if (cxtMusicList instanceof BaseAudioExtendActionsActivity) {
+                ((BaseAudioExtendActionsActivity) cxtMusicList).onNotifyOperate(opFlag);
             }
         }
     }
@@ -612,7 +604,7 @@ public class PlayerReceiver extends PlayerBaseReceiver {
             if (active == 0) {
                 startMusicPlayService(context, false);
             }
-        } else if (currPlayer instanceof BaseMusicPlayerActivity) {
+        } else if (currPlayer instanceof BaseAudioPlayerActivity) {
             if (active == 1) {
                 doOperatePlayer(intent, ReceiverOperates.RESUME);
             } else if (active == 0) {

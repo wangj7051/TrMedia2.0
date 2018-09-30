@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.tricheer.player.R;
 import com.tricheer.player.bean.ProMusic;
+import com.tricheer.player.utils.PlayerLogicUtils;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.bean.AudioFilter;
 
 import java.io.File;
@@ -124,7 +125,8 @@ public class SclLc2010VdcAudioFoldersAdapter<T> extends BaseArrayAdapter<T> impl
             //ProMusic
             if (tItem instanceof ProMusic) {
                 ProMusic item = (ProMusic) tItem;
-                holder.tvItem.setText((position + 1) + "    " + item.title);
+                String showName = PlayerLogicUtils.getMediaTitle(mContext, -1, item, true);
+                holder.tvItem.setText((position + 1) + "    " + showName);
                 if (TextUtils.equals(mSelectedMediaUrl, item.mediaUrl)) {
                     mSelectedPos = position;
                     holder.tvItem.setTextColor(mSelectFontColor);
@@ -157,7 +159,8 @@ public class SclLc2010VdcAudioFoldersAdapter<T> extends BaseArrayAdapter<T> impl
                 //MediaArtist
             } else if (tItem instanceof AudioFilter) {
                 AudioFilter item = (AudioFilter) tItem;
-                holder.tvItem.setText((position + 1) + "    " + item.folderPath);
+                File folder = new File(item.folderPath);
+                holder.tvItem.setText((position + 1) + "    " + folder.getName());
                 holder.ivEnd.setVisibility(View.INVISIBLE);
 
                 File file = new File(mSelectedMediaUrl);

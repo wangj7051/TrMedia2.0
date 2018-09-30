@@ -189,7 +189,11 @@ public class FmUtilV2 implements FmDelegate {
     public boolean closeFm() {
         try {
             Log.i(TAG, "closeFm()");
-            return (mIsRadioOpened = !mFmManager.closeFm());
+            boolean isClosed = mFmManager.closeFm();
+            if (isClosed) {
+                mIsRadioOpened = false;
+            }
+            return isClosed;
         } catch (Exception e) {
             Log.i(TAG, "closeFm() > " + e.getMessage());
             return false;

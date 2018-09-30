@@ -5,7 +5,7 @@ import com.tricheer.player.engine.PlayerConsts.PlayMode;
 import java.io.Serializable;
 import java.util.List;
 
-import js.lib.android.media.local.player.IPlayerListener;
+import js.lib.android.media.IPlayerListener;
 
 /**
  * 播放器统一行为
@@ -181,15 +181,6 @@ public interface PlayerActionsListener extends IPlayerListener {
      * @param time : 单位 "毫秒" 或 "秒"
      */
     void seekTo(int time);
-
-    /**
-     * 调节音量
-     * <p>
-     * If flag==1, 减小音量
-     * <p>
-     * If flag==2, 恢复音量
-     */
-    void adjustVol(int flag);
 
     /**
      * 上一次指定要播放的媒体路径

@@ -2,6 +2,7 @@ package com.js.sidebar;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -15,6 +16,9 @@ import java.util.List;
 public class LetterSideBar extends View {
     //TAG
     private static final String TAG = "LetterSideBar";
+
+    //
+    private int mFontColor, mHlFontColor;
 
     // 按压时选中的字母位置
     private int mLastTouchPos = -1;
@@ -56,43 +60,56 @@ public class LetterSideBar extends View {
     }
 
     private void init(Context context) {
-        //
-        List<String> listLetters = new ArrayList<>();
-        listLetters.add("A");
-        listLetters.add("B");
-        listLetters.add("C");
-        listLetters.add("D");
-        listLetters.add("E");
-        listLetters.add("F");
-        listLetters.add("G");
-        listLetters.add("H");
-        listLetters.add("I");
-        listLetters.add("J");
-        listLetters.add("K");
-        listLetters.add("L");
-        listLetters.add("M");
-        listLetters.add("N");
-        listLetters.add("O");
-        listLetters.add("P");
-        listLetters.add("Q");
-        listLetters.add("R");
-        listLetters.add("S");
-        listLetters.add("T");
-        listLetters.add("U");
-        listLetters.add("V");
-        listLetters.add("W");
-        listLetters.add("X");
-        listLetters.add("Y");
-        listLetters.add("Z");
-        listLetters.add("#");
-        refreshLetters(listLetters);
+        mFontColor = getResources().getColor(android.R.color.white);
+        mHlFontColor = Color.parseColor("#FF0000");
+    }
+
+    public void setColor(int fontColor, int hlFontColor) {
+        if (fontColor != -1) {
+            mFontColor = fontColor;
+        }
+        if (hlFontColor != -1) {
+            mHlFontColor = hlFontColor;
+        }
     }
 
     public void refreshLetters(List<String> listLetters) {
-        mListLetters.clear();
-        if (listLetters != null && listLetters.size() > 0) {
-            mListLetters.addAll(listLetters);
+        if (listLetters == null || listLetters.size() == 0) {
+            listLetters = new ArrayList<>();
+            listLetters.add("A");
+            listLetters.add("B");
+            listLetters.add("C");
+            listLetters.add("D");
+            listLetters.add("E");
+            listLetters.add("F");
+            listLetters.add("G");
+            listLetters.add("H");
+            listLetters.add("I");
+            listLetters.add("J");
+            listLetters.add("K");
+            listLetters.add("L");
+            listLetters.add("M");
+            listLetters.add("N");
+            listLetters.add("O");
+            listLetters.add("P");
+            listLetters.add("Q");
+            listLetters.add("R");
+            listLetters.add("S");
+            listLetters.add("T");
+            listLetters.add("U");
+            listLetters.add("V");
+            listLetters.add("W");
+            listLetters.add("X");
+            listLetters.add("Y");
+            listLetters.add("Z");
+            listLetters.add("#");
         }
+
+        //
+        mListLetters.clear();
+        mListLetters.addAll(listLetters);
+
+        //
         invalidate();
     }
 
@@ -127,13 +144,13 @@ public class LetterSideBar extends View {
 
         //
         Paint paintCom = new Paint();
-        paintCom.setColor(getResources().getColor(android.R.color.white));
+        paintCom.setColor(mFontColor);
         paintCom.setTextAlign(Paint.Align.RIGHT);
         paintCom.setTextSize(fontSize);
         paintCom.setStyle(Paint.Style.FILL_AND_STROKE);
 
         Paint paintTouch = new Paint();
-        paintTouch.setColor(getResources().getColor(R.color.red));
+        paintTouch.setColor(mHlFontColor);
         paintTouch.setTextAlign(Paint.Align.RIGHT);
         paintTouch.setTextSize(fontSizeTouch);
         paintTouch.setStrokeWidth(3f);

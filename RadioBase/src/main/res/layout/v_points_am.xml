@@ -34,14 +34,6 @@
             android:contentDescription="@string/no_img"
             android:scaleType="fitXY"
             android:src="@drawable/tab_point_bg" />
-
-        <ImageView
-            android:layout_width="10dp"
-            android:layout_height="10dp"
-            android:layout_marginStart="10dp"
-            android:contentDescription="@string/no_img"
-            android:scaleType="fitXY"
-            android:src="@drawable/tab_point_bg" />
     </LinearLayout>
 
     <ImageView

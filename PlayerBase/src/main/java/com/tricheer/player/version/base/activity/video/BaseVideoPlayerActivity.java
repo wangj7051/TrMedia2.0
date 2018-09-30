@@ -5,11 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.PopupWindow;
 import android.widget.SeekBar;
 
-import com.tricheer.player.R;
 import com.tricheer.player.bean.ProVideo;
 import com.tricheer.player.engine.PlayEnableFlag;
 import com.tricheer.player.engine.PlayerAppManager;
@@ -18,15 +15,8 @@ import com.tricheer.player.engine.VersionController;
 import com.tricheer.player.engine.db.DBManager;
 import com.tricheer.player.receiver.ReceiverOperates;
 import com.tricheer.player.utils.PlayerLogicUtils;
-import com.tricheer.player.version.base.view.PopMediaListView.PlayMediaListListener;
-import com.tricheer.player.version.base.view.PromptDialog;
-import com.tricheer.player.version.base.view.PromptDialog.PromptListener;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
-import js.lib.android.media.local.player.IPlayerState;
-import js.lib.android.utils.AudioManagerUtil;
+import js.lib.android.media.IPlayerState;
 import js.lib.android.utils.CommonUtil;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.Logs;
@@ -37,20 +27,11 @@ import js.lib.utils.date.DateFormatUtil;
  *
  * @author Jun.Wang
  */
-public abstract class BaseVideoPlayerActivity extends BaseKeyEventActivity implements PlayMediaListListener {
+public abstract class BaseVideoPlayerActivity extends BaseVideoFocusActivity {
     // LOG TAG
     private final String TAG = "BaseVideoPlayerActivity";
 
     //==========Widget in this Activity==========
-    /**
-     * ScreenSize Set
-     */
-    protected ImageView ivScreenSize;
-    /**
-     * Brake PopWindow
-     */
-    private PopupWindow pwHandBrakePrompt;
-
     //==========Variable in this Activity==========
     /**
      * Check is seek by user
@@ -58,15 +39,10 @@ public abstract class BaseVideoPlayerActivity extends BaseKeyEventActivity imple
     private boolean mIsSeekFromUser = false;
 
     /**
-     * Register Audio Focus Timer
-     */
-    private Timer mRegAudioFocusTimer;
-
-    /**
      * Video Play Speed Control
      */
     private String mPlaySpeedFlag = ReceiverOperates.VIDEO_NORMAL;
-    private final int PLAY_STEP_PEROID = 5 * 1000;
+    private static final int PLAY_STEP_PEROID = 5 * 1000;
 
     /**
      * Video Screen 4:3 / 16:9 / 21:9
@@ -111,35 +87,6 @@ public abstract class BaseVideoPlayerActivity extends BaseKeyEventActivity imple
     protected void onHomeKeyClick() {
         super.onHomeKeyClick();
         Logs.i(TAG, "^^ onHomeKeyClick() ^^");
-        if (VersionController.isJzVersion()) {
-            resumeRecord();
-        }
-    }
-
-    @Override
-    public void onAudioFocusDuck() {
-        Logs.i(TAG, "^^ onAudioFocusDuck() ^^");
-        // execAdjustVol(1);
-    }
-
-    @Override
-    public void onAudioFocusTransient() {
-        Logs.i(TAG, "^^ onAudioFocusTransient() ^^");
-        if (VersionController.isJzVersion()) {
-            adjustVol(1);
-        } else if (VersionController.isCjVersion()) {
-            removePlayRunnable();
-            pause();
-        }
-    }
-
-    @Override
-    public void onAudioFocusLoss() {
-        Logs.i(TAG, "^^ onAudioFocusLoss() ^^");
-        Logs.i(TAG, "thisObj: " + this.toString());
-        finish();
-        Logs.i(TAG, "----$$ Exit on Audio Focus Loss $$----");
-        PlayerAppManager.exitCurrPlayer();
     }
 
     @Override
@@ -150,13 +97,9 @@ public abstract class BaseVideoPlayerActivity extends BaseKeyEventActivity imple
 
     @Override
     public void onAudioFocusGain() {
+        super.onAudioFocusGain();
         Logs.i(TAG, "^^ onAudioFocusGain() ^^");
-        adjustVol(2);
         resume();
-    }
-
-    @Override
-    public void onPlayFixedPos(int pos) {
     }
 
     @Override
@@ -178,20 +121,11 @@ public abstract class BaseVideoPlayerActivity extends BaseKeyEventActivity imple
 
             // AIOS
         } else if (ReceiverOperates.AIS_OPEN.equals(opFlag)) {
-            if (VersionController.isJzVersion()) {
-                mIsPauseOnAisOpen = true;
-                pause();
-            }
         } else if (ReceiverOperates.AIS_EXIT.equals(opFlag)) {
-            if (VersionController.isJzVersion()) {
-                mIsPauseOnAisOpen = false;
-                resume();
-            }
 
             // BlueTooth Call
         } else if (ReceiverOperates.BTCALL_RUNING.equals(opFlag)) {
             removePlayRunnable();
-            CommonUtil.cancelTimer(mRegAudioFocusTimer);
             pause();
         } else if (ReceiverOperates.BTCALL_END.equals(opFlag)) {
             resume();
@@ -207,9 +141,7 @@ public abstract class BaseVideoPlayerActivity extends BaseKeyEventActivity imple
 
             // E-Dog
         } else if (ReceiverOperates.PAUSE_ON_E_DOG_START.equals(opFlag)) {
-            adjustVol(1);
         } else if (ReceiverOperates.RESUME_ON_E_DOG_END.equals(opFlag)) {
-            adjustVol(2);
 
             // Video Screen Resize
         } else if (ReceiverOperates.VIDEO_SCREEN_21_9.equals(opFlag) || ReceiverOperates.VIDEO_SCREEN_FULL.equals(opFlag)
@@ -223,53 +155,11 @@ public abstract class BaseVideoPlayerActivity extends BaseKeyEventActivity imple
 
             // System High Temperature
         } else if (ReceiverOperates.RESUME_ON_E_DOG_END.equals(opFlag)) {
-            showHignTemperatureDialog(1);
+//            showHignTemperatureDialog(1);
 
             // Record
         } else if (ReceiverOperates.RECORD_STATE_START.equals(opFlag)) {
-            showDialogRecordStart();
         } else if (ReceiverOperates.RECORD_STATE_END.equals(opFlag)) {
-            // showDialogOn1080P(false);
-        }
-    }
-
-    /**
-     * 高温报警Dialog
-     * <p>
-     * 1 高温模式, 0 低温模式
-     */
-    protected void showHignTemperatureDialog(int tempMode) {
-        if (tempMode == 1) {
-            registerAudioFocus(2);
-            execRelease();
-
-            // Show Dialog
-            final int msgResID = R.string.ais_device_temp_too_high;
-            PromptDialog highTempDialog = new PromptDialog(mContext, new PromptListener() {
-
-                @Override
-                public void afterPromptDialogOpened() {
-                    PlayerLogicUtils.notifyAisPlayStr(mContext, mContext.getString(msgResID));
-                }
-
-                @Override
-                public void afterPrompDialogSureDismissed() {
-                    PlayerAppManager.exitCurrPlayer();
-                }
-            });
-            highTempDialog.showDialog(msgResID);
-        }
-    }
-
-    /**
-     * Is Playing Media
-     */
-    protected boolean isPlayingSameMedia(String mediaUrl) {
-        try {
-            return mediaUrl.equals(getPath());
-        } catch (Exception e) {
-            Logs.printStackTrace(TAG + "isPlayingSameMedia()", e);
-            return false;
         }
     }
 
@@ -280,7 +170,7 @@ public abstract class BaseVideoPlayerActivity extends BaseKeyEventActivity imple
     }
 
     @Override
-    public void onProgressChange(String mediaUrl, int progress, int duration, boolean isPerSecond) {
+    public void onProgressChange(String mediaUrl, int progress, int duration) {
         // 如下2种情况，不执行任何操作
         // (1) 未处于正在播放中
         // (2) SeekBar 正在进行手动拖动进度条
@@ -292,9 +182,6 @@ public abstract class BaseVideoPlayerActivity extends BaseKeyEventActivity imple
         PlayEnableFlag pef = getPlayEnableFlag();
         if (!pef.isPlayEnable()) {
             removePlayRunnable();
-            if (pef.isBtCalling()) {
-                CommonUtil.cancelTimer(mRegAudioFocusTimer);
-            }
             pause();
             return;
         }
@@ -413,7 +300,6 @@ public abstract class BaseVideoPlayerActivity extends BaseKeyEventActivity imple
     }
 
     protected void onNotifyPlayState$Play() {
-        startRegisterAudioFocusTimer();
     }
 
     protected void onNotifyPlayState$Prepared() {
@@ -426,7 +312,6 @@ public abstract class BaseVideoPlayerActivity extends BaseKeyEventActivity imple
             ProVideo video = (ProVideo) objParam;
             if (video.duration == 0) {
                 video.duration = getDuration();
-                refreshMediaList(true);
                 DBManager.updateMediaDuration(video);
             }
         }
@@ -466,12 +351,6 @@ public abstract class BaseVideoPlayerActivity extends BaseKeyEventActivity imple
             seekTo(mTargetAutoSeekProgress);
             mTargetAutoSeekProgress = -1;
         }
-    }
-
-    /**
-     * Refresh Media List
-     */
-    protected void refreshMediaList(boolean isJustRefresh) {
     }
 
     /**
@@ -581,18 +460,9 @@ public abstract class BaseVideoPlayerActivity extends BaseKeyEventActivity imple
         // 取消屏常亮
         makeScreenOn(false);
 
-        // 关闭弹出框
-        showDialogOn1080P(false);
-
         // 更新分辨率，并恢复行车记录
         doBroadCastVideoResolution(0, true);
         resumeRecord();
-
-        // 取消计时器
-        CommonUtil.cancelTimer(mRegAudioFocusTimer);
-
-        // 取消 注册的声音焦点
-        registerAudioFocus(2);
     }
 
     /**
@@ -604,38 +474,6 @@ public abstract class BaseVideoPlayerActivity extends BaseKeyEventActivity imple
         } else {
             PlayerAppManager.removeCxt(PlayerCxtFlag.VIDEO_PLAYER);
         }
-    }
-
-    /**
-     * 开始启动注册声音焦点线程
-     * <p>
-     * 为了保证与其他音频操作的互斥操作，必须要不停的注册声音焦点，直到成功为止
-     */
-    private void startRegisterAudioFocusTimer() {
-        CommonUtil.cancelTimer(mRegAudioFocusTimer);
-        mRegAudioFocusTimer = new Timer();
-        mRegAudioFocusTimer.schedule(new TimerTask() {
-
-            @Override
-            public void run() {
-                if (isPlaying()) {
-                    if (AudioManagerUtil.isAudioFocusRegistered(registerAudioFocus(1))) {
-                        Logs.i(TAG, "----^^ On Audio Focus Register Successfully ^^----");
-                        runOnUiThread(mmCancelAudioFocusTimer);
-                    } else {
-                        Logs.i(TAG, "----^^ On Audio Focus Register Failure ^^----");
-                    }
-                }
-            }
-
-            private Runnable mmCancelAudioFocusTimer = new Runnable() {
-
-                @Override
-                public void run() {
-                    CommonUtil.cancelTimer(mRegAudioFocusTimer);
-                }
-            };
-        }, 1000, 1000);
     }
 
     //>>>---------------------------------<<<

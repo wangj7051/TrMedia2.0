@@ -4,7 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.List;
 
-import js.lib.android.media.bd.BaiduMusicAPI;
+import js.lib.android.media.audio.online.BaiduMusicAPI;
 import js.lib.android.utils.Logs;
 
 import org.json.JSONArray;

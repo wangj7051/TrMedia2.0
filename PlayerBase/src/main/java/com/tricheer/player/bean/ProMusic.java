@@ -1,6 +1,6 @@
 package com.tricheer.player.bean;
 
-import js.lib.android.media.local.utils.AudioInfo;
+import js.lib.android.media.audio.bean.AudioInfo;
 
 /**
  * Music Program

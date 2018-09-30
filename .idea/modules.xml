@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/LetterSideBar/LetterSideBar.iml" filepath="$PROJECT_DIR$/LetterSideBar/LetterSideBar.iml" />
+      <module fileurl="file://$PROJECT_DIR$/LibTri/LibTri.iml" filepath="$PROJECT_DIR$/LibTri/LibTri.iml" />
       <module fileurl="file://$PROJECT_DIR$/PlayerBase/PlayerBase.iml" filepath="$PROJECT_DIR$/PlayerBase/PlayerBase.iml" />
       <module fileurl="file://$PROJECT_DIR$/RadioBase/RadioBase.iml" filepath="$PROJECT_DIR$/RadioBase/RadioBase.iml" />
       <module fileurl="file://$PROJECT_DIR$/TrMedia2.0.iml" filepath="$PROJECT_DIR$/TrMedia2.0.iml" />

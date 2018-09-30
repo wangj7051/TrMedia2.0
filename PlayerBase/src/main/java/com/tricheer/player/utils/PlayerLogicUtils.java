@@ -8,9 +8,7 @@ import android.provider.Settings;
 import android.provider.Settings.SettingNotFoundException;
 import android.text.TextUtils;
 import android.widget.ImageView;
-import android.widget.Toast;
 
-import com.lib.view.OperateDialog;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.tricheer.app.receiver.PlayerReceiverActions;
 import com.tricheer.player.R;
@@ -29,7 +27,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import js.lib.android.media.local.utils.MediaUtils;
+import js.lib.android.media.audio.utils.MediaUtils;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.ImageLoaderUtils;
 import js.lib.android.utils.Logs;
@@ -186,16 +184,6 @@ public class PlayerLogicUtils {
         Intent mediaPlayerOpenIntent = new Intent(PlayerReceiverActions.MEDIA_PLAYER_OPEN);
         mediaPlayerOpenIntent.putExtra("PLAYER_FLAG", player);
         cxt.sendBroadcast(mediaPlayerOpenIntent);
-    }
-
-    /**
-     * New Operate Dialog
-     */
-    public static OperateDialog newOperateDialog(Context cxt) {
-        OperateDialog operateDialog = new OperateDialog(cxt, R.layout.zpt_lv8918_slb_v_dialog_operates);
-        operateDialog.setCancelable(false);
-        operateDialog.setCanceledOnTouchOutside(false);
-        return operateDialog;
     }
 
     /**
@@ -388,7 +376,7 @@ public class PlayerLogicUtils {
     public static void toastPlayError(Context cxt, String mediaTitle) {
         String errorMsg = String.format(cxt.getString(R.string.play_error), mediaTitle);
         Logs.i(TAG, errorMsg);
-        Toast.makeText(cxt, errorMsg, Toast.LENGTH_LONG).show();
+//        Toast.makeText(cxt, errorMsg, Toast.LENGTH_LONG).show();
     }
 
     /**

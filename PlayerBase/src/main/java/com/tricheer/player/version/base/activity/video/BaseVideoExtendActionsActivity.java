@@ -10,15 +10,12 @@ import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.lib.view.OperateDialog;
 import com.tricheer.app.receiver.PlayerReceiverActions;
-import com.tricheer.player.R;
 import com.tricheer.player.bean.ProVideo;
 import com.tricheer.player.bean.VideoRecordControl;
 import com.tricheer.player.engine.VersionController;
 import com.tricheer.player.engine.db.DBManager;
 import com.tricheer.player.receiver.MediaScanReceiver.ScanActives;
-import com.tricheer.player.receiver.PlayerReceiver;
 import com.tricheer.player.utils.PlayerFileUtils;
 import com.tricheer.player.utils.PlayerLogicUtils;
 
@@ -32,9 +29,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import js.lib.android.media.local.player.IPlayerListener;
-import js.lib.android.media.local.utils.VideoInfo;
-import js.lib.android.media.local.utils.VideoUtils;
+import js.lib.android.media.IPlayerListener;
+import js.lib.android.media.video.bean.VideoInfo;
+import js.lib.android.media.video.utils.VideoUtils;
 import js.lib.android.utils.CommonUtil;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.Logs;
@@ -49,11 +46,6 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
     private final String TAG = "BaseVideoExtendActionsActivity";
 
     //==========Widget in this Activity==========
-    /**
-     * 选择关闭或继续行车记录Dialog
-     */
-    private OperateDialog dialogOpRecord;
-
     //==========Variable in this Activity==========
     /**
      * Must Be Values Below:
@@ -113,23 +105,16 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
      * 媒体加载监听器
      */
     protected interface LoadMediaListener {
-        public void afterLoad(String selectMediaUrl);
+        void afterLoad(String selectMediaUrl);
 
-        public void refreshUI();
-    }
-
-    /**
-     * 行车记录加载监听器
-     */
-    protected interface LoadRecordListener {
-        public void afterLoad(List<ProVideo> listPrograms);
+        void refreshUI();
     }
 
     /**
      * 媒体封面图片加载监听器
      */
-    protected interface LoadImgListner {
-        public void afterLoad();
+    protected interface LoadImgListener {
+        void afterLoad();
     }
 
     @Override
@@ -394,7 +379,7 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
     }
 
     public class LoadMediaImageTask extends AsyncTask<Object, Integer, Void> {
-        private WeakReference<LoadImgListner> mmWeakReference;
+        private WeakReference<LoadImgListener> mmWeakReference;
 
         @SuppressWarnings("unchecked")
         @Override
@@ -406,7 +391,7 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
             }
 
             if (params[1] != null) {
-                mmWeakReference = new WeakReference<LoadImgListner>((LoadImgListner) params[1]);
+                mmWeakReference = new WeakReference<LoadImgListener>((LoadImgListener) params[1]);
             }
 
             //
@@ -734,11 +719,6 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
 
         // 设置相关信息
         resetSeekBar();
-
-        // 是否处理视频分辨率
-        if (VersionController.isProcessVideoResolution()) {
-            doProcessResolutionOnPlay(mContext, toPlayProgram.mediaUrl, false);
-        }
     }
 
     @Override
@@ -871,7 +851,6 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
                 mIsCurrVideo1080P = (videoH == 1080);
                 if (mRecordControlFlag == VideoRecordControl.RESET) {
                     Logs.i(TAG, "doProcessResolutionOnPlay ----Reset---");
-                    showDialogOn1080P();
                 } else if (mRecordControlFlag == VideoRecordControl.CLOSE_ON_1080P_PLAYING) {
                     doBroadcastStartRecord(!mIsCurrVideo1080P);
                 }
@@ -899,68 +878,6 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
         closeRecordIntent.putExtra("start", isStart);
         sendBroadcast(closeRecordIntent);
         Logs.i(TAG, "doBroadcastCloseRecord -> action.camera.ACTION_CONFIG_RECORD[start:" + isStart + "]");
-    }
-
-    /**
-     * Show Dialog when Receiver Notify [Record Start]
-     */
-    protected void showDialogRecordStart() {
-        Logs.i(TAG, "showDialogRecordStart() ----Start----");
-        if (mRecordControlFlag == VideoRecordControl.RESET && isPlaying()) {
-            showDialogOn1080P();
-        }
-    }
-
-    /**
-     * Show Dialog On 1080P Video Playing
-     */
-    private void showDialogOn1080P() {
-        Logs.i(TAG, "showDialogOn1080P() -> [mIsCurrVideo1080P:" + mIsCurrVideo1080P);
-        showDialogOn1080P(mIsCurrVideo1080P);
-    }
-
-    /**
-     * Open Dialog
-     */
-    protected void showDialogOn1080P(boolean isShow) {
-        if (dialogOpRecord == null) {
-            dialogOpRecord = new OperateDialog(mContext, R.layout.zpt_lv8918_slb_v_dialog_operates);
-            dialogOpRecord.setJustToast(false);
-            dialogOpRecord.setCancelable(false);
-            dialogOpRecord.setCanceledOnTouchOutside(false);
-            dialogOpRecord.setMessage(R.string.playing_1080p_on_record);
-            dialogOpRecord.setOperate1OnClick(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    dialogOpRecord.dismiss();
-                    mRecordControlFlag = VideoRecordControl.CLOSE_ON_1080P_PLAYING;
-                    doBroadcastStartRecord(!mIsCurrVideo1080P);
-                }
-            });
-            dialogOpRecord.setOperate2OnClick(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    dialogOpRecord.dismiss();
-                    mRecordControlFlag = VideoRecordControl.CONTINUE_ON_1080P_PLAYING;
-                }
-            });
-        }
-
-        // Show
-        if (isShow) {
-            Logs.i(TAG, "showDialogOn1080P(true) -> [isRecordStart:" + PlayerReceiver.isRecordStart + "; mIs1080PVideo:"
-                    + mIsCurrVideo1080P);
-            if (PlayerReceiver.isRecordStart && !dialogOpRecord.isShowing()) {
-                dialogOpRecord.show(false);
-            }
-            // Dismiss
-        } else {
-            if (dialogOpRecord.isShowing()) {
-                dialogOpRecord.dismiss();
-            }
-        }
     }
 
     /**

@@ -18,6 +18,7 @@
     <string name="no_compare_videos">没有匹配的视频文件</string>
     <string name="music_online">在线音乐</string>
     <string name="music_local">本地音乐</string>
+    <string name="video_local">本地视频</string>
     <string name="sure_1">确认</string>
     <string name="playing_curr">正在播放</string>
     <string name="my_category">我的分类</string>

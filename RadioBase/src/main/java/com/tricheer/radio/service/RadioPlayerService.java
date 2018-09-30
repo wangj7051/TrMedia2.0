@@ -54,19 +54,18 @@ public class RadioPlayerService extends BaseAudioFocusService implements FmDeleg
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        registerAudioFocus(1);
         return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
-    public void onAudioFocusGain() {
-        super.onAudioFocusGain();
+    public void onAudioFocusTransient() {
+        super.onAudioFocusTransient();
+        closeFm();
     }
 
     @Override
     public void onAudioFocusLoss() {
         super.onAudioFocusLoss();
-        registerAudioFocus(2);
         closeFm();
     }
 
@@ -183,7 +182,14 @@ public class RadioPlayerService extends BaseAudioFocusService implements FmDeleg
 
     @Override
     public boolean openFm() {
-        return mFmUtil.openFm();
+        if (!isRadioOpened()) {
+            mFmUtil.openFm();
+        }
+        boolean isOpened = isRadioOpened();
+        if (isOpened) {
+            registerAudioFocus(1);
+        }
+        return isOpened;
     }
 
     @Override

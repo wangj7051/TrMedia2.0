@@ -6,19 +6,17 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 
 import java.util.List;
 
-import js.lib.android.fragment.BaseAppV4Fragment;
-
 /**
- * 页卡适配器
+ * {@link android.support.v4.view.ViewPager} adapter - {@link FragmentStatePagerAdapter}
  *
  * @author Jun.Wang
  */
-public class VPFragStateAdapter extends FragmentStatePagerAdapter {
+public class VPFragStateAdapter<T extends Fragment> extends FragmentStatePagerAdapter {
 
     /**
      * Fragment List
      */
-    private List<BaseAppV4Fragment> mListFms;
+    private List<T> mListFms;
 
     /**
      * Refresh Flag
@@ -29,7 +27,7 @@ public class VPFragStateAdapter extends FragmentStatePagerAdapter {
         super(fm);
     }
 
-    public void setListFrags(List<BaseAppV4Fragment> listFms) {
+    public void setListFrags(List<T> listFms) {
         this.mListFms = listFms;
     }
 
@@ -42,12 +40,12 @@ public class VPFragStateAdapter extends FragmentStatePagerAdapter {
         notifyDataSetChanged();
     }
 
-    public void refresh(List<BaseAppV4Fragment> listFms) {
+    public void refresh(List<T> listFms) {
         setListFrags(listFms);
         notifyDataSetChanged();
     }
 
-    public void refresh(List<BaseAppV4Fragment> listFms, boolean isRefresh) {
+    public void refresh(List<T> listFms, boolean isRefresh) {
         setRfreshFlag(isRefresh);
         setListFrags(listFms);
         notifyDataSetChanged();
@@ -58,7 +56,6 @@ public class VPFragStateAdapter extends FragmentStatePagerAdapter {
         if (mListFms == null) {
             return 0;
         }
-
         return mListFms.size();
     }
 
@@ -67,7 +64,6 @@ public class VPFragStateAdapter extends FragmentStatePagerAdapter {
         if (mListFms == null || mListFms.size() == 0) {
             return null;
         }
-
         return mListFms.get(position);
     }
 
@@ -76,7 +72,6 @@ public class VPFragStateAdapter extends FragmentStatePagerAdapter {
         if (mIsRefreshFlag) {
             return POSITION_NONE;
         }
-
         return super.getItemPosition(object);
     }
 }
