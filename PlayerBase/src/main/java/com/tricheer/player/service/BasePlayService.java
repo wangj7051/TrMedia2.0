@@ -8,23 +8,20 @@ import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.os.Handler;
 import android.os.IBinder;
 
-import com.tricheer.player.bean.ProMusic;
-import com.tricheer.player.bean.ProVideo;
-import com.tricheer.player.engine.PlayEnableFlag;
-import com.tricheer.player.engine.PlayerActionsListener;
-import com.tricheer.player.engine.PlayerConsts.PlayMode;
 import com.tricheer.player.engine.VersionController;
-import com.tricheer.player.receiver.PlayerBaseReceiver.PlayerReceiverListener;
-import com.tricheer.player.utils.PlayerLogicUtils;
+import com.tricheer.player.receiver.PlayerReceiver.PlayerReceiverListener;
 import com.tricheer.player.utils.PlayerPreferUtils;
 
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import js.lib.android.media.IPlayerListener;
-import js.lib.android.media.IPlayerState;
+import js.lib.android.media.PlayMode;
+import js.lib.android.media.PlayState;
+import js.lib.android.media.bean.ProAudio;
+import js.lib.android.media.bean.ProVideo;
+import js.lib.android.media.bean.Program;
+import js.lib.android.media.engine.PlayListener;
 import js.lib.android.utils.AudioManagerUtil;
 import js.lib.android.utils.Logs;
 
@@ -33,7 +30,7 @@ import js.lib.android.utils.Logs;
  *
  * @author Jun.Wang
  */
-public abstract class BasePlayService extends Service implements PlayerReceiverListener, PlayerActionsListener {
+public abstract class BasePlayService extends Service implements PlayerReceiverListener, PlayListener {
     private final String TAG = "BasePlayerService";
 
     /**
@@ -49,17 +46,13 @@ public abstract class BasePlayService extends Service implements PlayerReceiverL
     /**
      * Player State Listener out of service
      */
-    private Set<PlayerActionsListener> mSetPlayerListeners = new HashSet<PlayerActionsListener>();
+    private Set<PlayListener> mSetPlayerListeners = new HashSet<>();
 
     /**
      * Service 是否销毁了
      */
     protected boolean mIsDestoryed = false;
 
-    /**
-     * Pause Flag on Notify
-     */
-    protected boolean mIsPauseOnNotify = false;
     /**
      * Pause Flag on AiSpeech Window On
      */
@@ -118,10 +111,10 @@ public abstract class BasePlayService extends Service implements PlayerReceiverL
     /**
      * 通知播放器状态
      */
-    protected void notifyPlayState(int playState) {
-        for (IPlayerListener l : mSetPlayerListeners) {
+    protected void notifyPlayState(PlayState playState) {
+        for (PlayListener l : mSetPlayerListeners) {
             if (l != null) {
-                l.onNotifyPlayState(playState);
+                l.onPlayStateChanged(playState);
             }
         }
     }
@@ -129,15 +122,15 @@ public abstract class BasePlayService extends Service implements PlayerReceiverL
     /**
      * 通知仪表盘
      */
-    private void notifyDashboard(int status) {
+    private void notifyDashboard(PlayState status) {
         if (VersionController.isSupportDashboard()) {
             Intent dashboardIntent = new Intent("com.tricheer.player.music_info");
-            dashboardIntent.putExtra("path", getPath());
+            dashboardIntent.putExtra("path", getCurrMediaPath());
             dashboardIntent.putExtra("status", status);
             dashboardIntent.putExtra("progress", getProgress());
-            dashboardIntent.putExtra("position", getPosition());
+            dashboardIntent.putExtra("position", getCurrIdx());
             dashboardIntent.putExtra("total", getTotalCount());
-            dashboardIntent.putExtra("playMode", PlayerPreferUtils.getMusicPlayMode(false, PlayMode.LOOP));
+            dashboardIntent.putExtra("playMode", PlayerPreferUtils.getAudioPlayMode(false, PlayMode.LOOP));
             sendBroadcast(dashboardIntent);
         }
     }
@@ -159,13 +152,6 @@ public abstract class BasePlayService extends Service implements PlayerReceiverL
         }
     }
 
-    /**
-     * 蓝牙通话是否正在进行中
-     */
-    public boolean isBtCalling() {
-        return PlayerLogicUtils.isBtCalling(mContext);
-    }
-
     // {@link PlayerReceiverListener} Implements Method
     @Override
     public void onPlayFromFolder(int playPos, List<String> listPlayPaths) {
@@ -178,33 +164,7 @@ public abstract class BasePlayService extends Service implements PlayerReceiverL
 
     // {@link PlayerReceiverListener} Implements Method
     @Override
-    public void onNotifyOperate(String opFlag) {
-    }
-
-    // {@link PlayerReceiverListener} Implements Method
-    @Override
-    public boolean isCacheOnAccOff() {
-        return false;
-    }
-
-    // {@link PlayerReceiverListener} Implements Method
-    @Override
-    public void onNotifySearchMediaList(String title, String artist) {
-    }
-
-    // {@link PlayerReceiverListener} Implements Method
-    @Override
-    public void onNotifyPlaySearchedMusic(ProMusic program) {
-    }
-
-    // {@link PlayerReceiverListener} Implements Method
-    @Override
-    public void onNotifyPlayMedia(String path) {
-    }
-
-    // {@link PlayerReceiverListener} Implements Method
-    @Override
-    public void onNotifyScanAudios(int flag, List<ProMusic> listPrgrams, Set<String> allSdMountedPaths) {
+    public void onNotifyScanAudios(int flag, List<ProAudio> listPrgrams, Set<String> allSdMountedPaths) {
     }
 
     // {@link PlayerReceiverListener} Implements Method
@@ -214,7 +174,7 @@ public abstract class BasePlayService extends Service implements PlayerReceiverL
 
     // {@link IPlayerListener} Implements Method
     @Override
-    public void onNotifyPlayState(int playState) {
+    public void onPlayStateChanged(PlayState playState) {
         // 通知仪表盘信息
         notifyDashboard(playState);
         // Notify Play State
@@ -223,24 +183,24 @@ public abstract class BasePlayService extends Service implements PlayerReceiverL
 
     // {@link IPlayerListener} Implements Method
     @Override
-    public void onProgressChange(String mediaUrl, int progress, int duration) {
+    public void onProgressChanged(String mediaUrl, int progress, int duration) {
         // 通知仪表盘信息
-        notifyDashboard(IPlayerState.PLAY);
-        for (PlayerActionsListener l : mSetPlayerListeners) {
+        notifyDashboard(PlayState.PLAY);
+        for (PlayListener l : mSetPlayerListeners) {
             if (l != null) {
-                l.onProgressChange(mediaUrl, progress, duration);
+                l.onProgressChanged(mediaUrl, progress, duration);
             }
         }
     }
 
     // {@link PlayerActionsListener} Implements Method
     @Override
-    public void setPlayMode(int mode) {
+    public void setPlayMode(PlayMode mode) {
     }
 
     @Override
     public void onPlayModeChange() {
-        for (PlayerActionsListener l : mSetPlayerListeners) {
+        for (PlayListener l : mSetPlayerListeners) {
             if (l != null) {
                 l.onPlayModeChange();
             }
@@ -249,35 +209,18 @@ public abstract class BasePlayService extends Service implements PlayerReceiverL
 
     // {@link PlayerActionsListener} Implements Method
     @Override
-    public Serializable getCurrMedia() {
+    public Program getCurrMedia() {
         return null;
     }
 
     // {@link PlayerActionsListener} Implements Method
     @Override
-    public PlayEnableFlag getPlayEnableFlag() {
-        return null;
-    }
-
-    // {@link PlayerActionsListener} Implements Method
-    @Override
-    public void setPlayList(List<?> listMedias) {
+    public void setPlayList(List<? extends Program> listMedias) {
     }
 
     // {@link PlayerActionsListener} Implements Method
     @Override
     public void setPlayPosition(int position) {
-    }
-
-    // {@link PlayerActionsListener} Implements Method
-    @Override
-    public boolean isPlayEnable() {
-        return false;
-    }
-
-    // {@link PlayerActionsListener} Implements Method
-    @Override
-    public void removePlayRunnable() {
     }
 
     // {@link PlayerActionsListener} Implements Method
@@ -332,25 +275,25 @@ public abstract class BasePlayService extends Service implements PlayerReceiverL
 
     // {@link PlayerActionsListener} Implements Method
     @Override
-    public String getLastPath() {
+    public String getLastMediaPath() {
         return null;
     }
 
     // {@link PlayerActionsListener} Implements Method
     @Override
-    public int getLastProgress() {
+    public long getLastProgress() {
         return 0;
     }
 
     // {@link PlayerActionsListener} Implements Method
     @Override
-    public String getPath() {
+    public String getCurrMediaPath() {
         return null;
     }
 
     // {@link PlayerActionsListener} Implements Method
     @Override
-    public int getPosition() {
+    public int getCurrIdx() {
         return 0;
     }
 
@@ -391,13 +334,13 @@ public abstract class BasePlayService extends Service implements PlayerReceiverL
 
     // {@link PlayerActionsListener} Implements Method
     @Override
-    public String getLastTargetMediaUrl() {
+    public String getLastTargetMediaPath() {
         return null;
     }
 
     // {@link PlayerActionsListener} Implements Method
     @Override
-    public void saveTargetMediaUrl(String mediaUrl) {
+    public void saveTargetMediaPath(String mediaPath) {
     }
 
     // {@link PlayerActionsListener} Implements Method
@@ -418,7 +361,7 @@ public abstract class BasePlayService extends Service implements PlayerReceiverL
 
     // {@link PlayerActionsListener} Implements Method
     @Override
-    public void setPlayerActionsListener(PlayerActionsListener l) {
+    public void setPlayListener(PlayListener l) {
         if (l != null) {
             mSetPlayerListeners.add(l);
         }
@@ -426,7 +369,7 @@ public abstract class BasePlayService extends Service implements PlayerReceiverL
 
     // {@link PlayerActionsListener} Implements Method
     @Override
-    public void removePlayerActionsListener(PlayerActionsListener l) {
+    public void removePlayListener(PlayListener l) {
         if (l != null) {
             mSetPlayerListeners.remove(l);
         }
@@ -435,7 +378,7 @@ public abstract class BasePlayService extends Service implements PlayerReceiverL
     // {@link PlayerActionsListener} Implements Method
     @Override
     public void onAudioFocusDuck() {
-        for (PlayerActionsListener l : mSetPlayerListeners) {
+        for (PlayListener l : mSetPlayerListeners) {
             if (l != null) {
                 l.onAudioFocusDuck();
             }
@@ -445,7 +388,7 @@ public abstract class BasePlayService extends Service implements PlayerReceiverL
     // {@link PlayerActionsListener} Implements Method
     @Override
     public void onAudioFocusTransient() {
-        for (PlayerActionsListener l : mSetPlayerListeners) {
+        for (PlayListener l : mSetPlayerListeners) {
             if (l != null) {
                 l.onAudioFocusTransient();
             }
@@ -456,7 +399,7 @@ public abstract class BasePlayService extends Service implements PlayerReceiverL
     @Override
     public void onAudioFocusLoss() {
         registerAudioFocus(2);
-        for (PlayerActionsListener l : mSetPlayerListeners) {
+        for (PlayListener l : mSetPlayerListeners) {
             if (l != null) {
                 l.onAudioFocusLoss();
             }
@@ -466,7 +409,7 @@ public abstract class BasePlayService extends Service implements PlayerReceiverL
     // {@link PlayerActionsListener} Implements Method
     @Override
     public void onAudioFocusGain() {
-        for (PlayerActionsListener l : mSetPlayerListeners) {
+        for (PlayListener l : mSetPlayerListeners) {
             if (l != null) {
                 l.onAudioFocusGain();
             }

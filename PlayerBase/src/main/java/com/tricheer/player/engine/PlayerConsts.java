@@ -73,34 +73,4 @@ public class PlayerConsts {
          */
         String VAL_ONLINE_MEDIA = "ONLINE_MEDIA";
     }
-
-    /**
-     * 播放模式
-     * <p>
-     * 音乐播放器播放模式，如"单曲循环/随机模式/循环模式/顺序模式"
-     *
-     * @author Jun.Wang
-     */
-    public interface PlayMode {
-        /**
-         * 未设置播放模式
-         */
-        int NONE = -1;
-        /**
-         * 单曲循环
-         */
-        int SINGLE = 1;
-        /**
-         * 随机模式
-         */
-        int RANDOM = 2;
-        /**
-         * 循环模式
-         */
-        int LOOP = 3;
-        /**
-         * 顺序模式
-         */
-        int ORDER = 4;
-    }
 }

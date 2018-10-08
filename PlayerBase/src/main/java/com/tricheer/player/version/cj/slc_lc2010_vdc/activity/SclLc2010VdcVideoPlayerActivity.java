@@ -8,11 +8,10 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
+import com.tri.lib.engine.KeyEnum;
 import com.tri.lib.receiver.AccReceiver;
 import com.tri.lib.receiver.ReverseReceiver;
 import com.tricheer.player.R;
-import com.tricheer.player.bean.ProVideo;
-import com.tricheer.player.engine.Keys;
 import com.tricheer.player.engine.PlayerConsts;
 import com.tricheer.player.version.base.activity.video.BaseVideoPlayerActivity;
 
@@ -21,6 +20,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import js.lib.android.media.bean.ProVideo;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.KillTouch;
 import js.lib.android.utils.Logs;
@@ -295,23 +295,32 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
                 }
                 tvName.setText(program.title);
 
-                tvPosition.setText((getPosition() + 1) + "/" + getTotalCount());
+                tvPosition.setText((getCurrIdx() + 1) + "/" + getTotalCount());
             }
         }
     }
 
     @Override
-    public void onGetKeyCode(int keyCode) {
-        switch (keyCode) {
-            case Keys.KeyVals.KEYCODE_PREV:
+    public void onGetKeyCode(KeyEnum key) {
+        switch (key) {
+            case KEYCODE_PREV:
                 mIsPauseOnNotify = false;
                 playPrevBySecurity();
                 break;
-            case Keys.KeyVals.KEYCODE_NEXT:
+            case KEYCODE_NEXT:
                 mIsPauseOnNotify = false;
                 playNextBySecurity();
                 break;
         }
+    }
+
+    @Override
+    public void switchPlayMode(int supportFlag) {
+    }
+
+    @Override
+    public boolean isPlayEnable() {
+        return false;
     }
 
     @Override

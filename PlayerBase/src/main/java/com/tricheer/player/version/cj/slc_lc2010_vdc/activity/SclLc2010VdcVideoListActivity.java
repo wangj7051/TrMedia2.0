@@ -7,9 +7,8 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 
+import com.tri.lib.engine.KeyEnum;
 import com.tricheer.player.R;
-import com.tricheer.player.bean.ProVideo;
-import com.tricheer.player.engine.Keys;
 import com.tricheer.player.engine.PlayerAppManager;
 import com.tricheer.player.engine.PlayerAppManager.PlayerCxtFlag;
 import com.tricheer.player.utils.PlayerPreferUtils;
@@ -21,6 +20,7 @@ import com.tricheer.player.version.cj.slc_lc2010_vdc.frags.SclLc2010VdcVideoName
 import java.util.List;
 import java.util.Set;
 
+import js.lib.android.media.bean.ProVideo;
 import js.lib.android.utils.CommonUtil;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.FragUtil;
@@ -217,7 +217,7 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
     private void refreshDatas() {
         //sbLetters.refreshLetters(mListSortLetters.toArray());
         if (mFragMedias != null) {
-            mFragMedias.refreshDatas(mListPrograms, getLastPath());
+            mFragMedias.refreshDatas(mListPrograms, getLastMediaPath());
         }
     }
 
@@ -258,20 +258,20 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
     }
 
     @Override
-    public void onGetKeyCode(int keyCode) {
-        switch (keyCode) {
-            case Keys.KeyVals.KEYCODE_PREV:
+    public void onGetKeyCode(KeyEnum key) {
+        switch (key) {
+            case KEYCODE_PREV:
                 if (mFragMedias != null) {
                     mFragMedias.prev();
                 }
                 break;
-            case Keys.KeyVals.KEYCODE_NEXT:
+            case KEYCODE_NEXT:
                 if (mFragMedias != null) {
                     mFragMedias.next();
                 }
                 break;
-            case Keys.KeyVals.KEYCODE_DPAD_LEFT:
-            case Keys.KeyVals.KEYCODE_DPAD_RIGHT:
+            case KEYCODE_DPAD_LEFT:
+            case KEYCODE_DPAD_RIGHT:
                 if (mFragMedias != null) {
                     if (mFragMedias instanceof SclLc2010VdcVideoFoldersFrag) {
                         switchTab(vItems[0], false);
@@ -293,5 +293,34 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
     protected void onIDestroy() {
         super.onIDestroy();
         PlayerAppManager.removeCxt(PlayerCxtFlag.VIDEO_LIST);
+    }
+
+    @Override
+    public void switchPlayMode(int supportFlag) {
+    }
+
+    @Override
+    public boolean isPlayEnable() {
+        return false;
+    }
+
+    @Override
+    public void onAudioFocusDuck() {
+
+    }
+
+    @Override
+    public void onAudioFocusTransient() {
+
+    }
+
+    @Override
+    public void onAudioFocusGain() {
+
+    }
+
+    @Override
+    public void onAudioFocusLoss() {
+
     }
 }

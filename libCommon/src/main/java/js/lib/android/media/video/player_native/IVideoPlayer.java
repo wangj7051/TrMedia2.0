@@ -16,9 +16,9 @@ import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import js.lib.android.media.IPlayerListener;
-import js.lib.android.media.IPlayerState;
+import js.lib.android.media.PlayState;
 import js.lib.android.media.audio.utils.MediaUtils;
+import js.lib.android.media.engine.PlayListener;
 import js.lib.android.utils.Logs;
 import js.lib.utils.date.DateFormatUtil;
 
@@ -65,7 +65,7 @@ public class IVideoPlayer extends SurfaceView {
     private MediaPlayer.OnErrorListener mErrorListener;
     private MediaPlayer.OnSeekCompleteListener mSeekCompleteListener;
 
-    private IPlayerListener mPlayerListener;
+    private PlayListener mPlayerListener;
 
     /**
      * 超时保护时间
@@ -509,12 +509,12 @@ public class IVideoPlayer extends SurfaceView {
 
     public void playMedia() {
         play();
-        notifyPlayState(IPlayerState.PLAY);
+        notifyPlayState(PlayState.PLAY);
     }
 
     public void pauseMedia() {
         pause();
-        notifyPlayState(IPlayerState.PAUSE);
+        notifyPlayState(PlayState.PAUSE);
     }
 
     public void resumeMedia() {
@@ -523,7 +523,7 @@ public class IVideoPlayer extends SurfaceView {
 
     public void releaseMedia() {
         release();
-        notifyPlayState(IPlayerState.RELEASE);
+        notifyPlayState(PlayState.RELEASE);
     }
 
     public int getMediaDuration() {
@@ -550,14 +550,14 @@ public class IVideoPlayer extends SurfaceView {
         }
     }
 
-    public void setPlayStateListener(IPlayerListener l) {
+    public void setPlayStateListener(PlayListener l) {
         this.mPlayerListener = l;
         setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
 
             @Override
             public void onPrepared(MediaPlayer mp) {
                 mMediaPlayer = mp;
-                notifyPlayState(IPlayerState.PREPARED);
+                notifyPlayState(PlayState.PREPARED);
             }
         });
         setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -566,7 +566,7 @@ public class IVideoPlayer extends SurfaceView {
             public void onCompletion(MediaPlayer mp) {
                 if (mMediaPlayer != null) {
                     mMediaPlayer = null;
-                    notifyPlayState(IPlayerState.COMPLETE);
+                    notifyPlayState(PlayState.COMPLETE);
                 }
             }
         });
@@ -574,7 +574,7 @@ public class IVideoPlayer extends SurfaceView {
 
             @Override
             public boolean onError(MediaPlayer mp, int what, int extra) {
-                notifyPlayState(IPlayerState.ERROR);
+                notifyPlayState(PlayState.ERROR);
                 return true;
             }
         });
@@ -582,7 +582,7 @@ public class IVideoPlayer extends SurfaceView {
 
             @Override
             public void onSeekComplete(MediaPlayer mp) {
-                notifyPlayState(IPlayerState.SEEK_COMPLETED);
+                notifyPlayState(PlayState.SEEK_COMPLETED);
             }
         });
         setOnProgressChangeListener(new OnProgressChangeListener() {
@@ -590,7 +590,7 @@ public class IVideoPlayer extends SurfaceView {
             @Override
             public void onProgressChange(String mediaUrl, int progress, int duration) {
                 if (mPlayerListener != null) {
-                    mPlayerListener.onProgressChange(mediaUrl, progress, duration);
+                    mPlayerListener.onProgressChanged(mediaUrl, progress, duration);
                 }
             }
         });
@@ -599,9 +599,9 @@ public class IVideoPlayer extends SurfaceView {
     /**
      * 通知播放器状态
      */
-    private void notifyPlayState(int playState) {
+    private void notifyPlayState(PlayState playState) {
         if (mPlayerListener != null) {
-            mPlayerListener.onNotifyPlayState(playState);
+            mPlayerListener.onPlayStateChanged(playState);
         }
     }
 }

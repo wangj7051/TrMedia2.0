@@ -21,7 +21,7 @@ public interface VideoTables {
         String TITLE_PINYIN = "titlePinYin";
 
         // Media URL
-        String MEDIA_URL = "videoMeidaUrl";
+        String MEDIA_URL = "mediaUrl";
         String MEDIA_DIRECTORY = "mediaDirectory";
         String MEDIA_DIRECTORY_PINYIN = "mediaDirectoryPinYin";
 

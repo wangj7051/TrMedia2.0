@@ -14,7 +14,6 @@ import android.widget.GridView;
 
 import com.js.sidebar.LetterSideBar;
 import com.tricheer.player.R;
-import com.tricheer.player.bean.ProVideo;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.activity.SclLc2010VdcVideoListActivity;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.activity.SclLc2010VdcVideoPlayerActivity;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.adapter.SclLc2010VdcVideoNamesAdapter;
@@ -22,6 +21,7 @@ import com.tricheer.player.version.cj.slc_lc2010_vdc.adapter.SclLc2010VdcVideoNa
 import java.io.Serializable;
 import java.util.List;
 
+import js.lib.android.media.bean.ProVideo;
 import js.lib.android.utils.Logs;
 
 public class SclLc2010VdcVideoNamesFrag extends BaseVideoListFrag {
@@ -89,7 +89,7 @@ public class SclLc2010VdcVideoNamesFrag extends BaseVideoListFrag {
         gvDatas = (GridView) contentV.findViewById(R.id.v_datas);
         gvDatas.setAdapter(mDataAdapter);
         gvDatas.setOnItemClickListener(new GvItemClick());
-        refreshDatas(mAttachedActivity.getListMedias(), mAttachedActivity.getLastPath());
+        refreshDatas(mAttachedActivity.getListMedias(), mAttachedActivity.getLastMediaPath());
     }
 
     @Override

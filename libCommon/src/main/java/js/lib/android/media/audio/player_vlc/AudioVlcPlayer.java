@@ -7,9 +7,9 @@ import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
 
-import js.lib.android.media.IPlayerListener;
-import js.lib.android.media.IPlayerState;
+import js.lib.android.media.PlayState;
 import js.lib.android.media.audio.IAudioPlayer;
+import js.lib.android.media.engine.PlayListener;
 import js.lib.android.utils.Logs;
 
 /**
@@ -39,12 +39,12 @@ public class AudioVlcPlayer implements IAudioPlayer {
     /**
      * Player Listener
      */
-    private IPlayerListener mPlayerListener;
+    private PlayListener mPlayerListener;
 
     /**
      * Create Music Player - MediaPlayer
      */
-    public AudioVlcPlayer(Context cxt, String mediaPath, IPlayerListener l) {
+    public AudioVlcPlayer(Context cxt, String mediaPath, PlayListener l) {
         this.mContext = cxt;
         this.mMediaPath = mediaPath;
         this.mPlayerListener = l;
@@ -72,11 +72,11 @@ public class AudioVlcPlayer implements IAudioPlayer {
             switch (event.type) {
                 case MediaPlayer.Event.MediaChanged:
                     Logs.debugI(TAG, "MediaPlayerEvent :: MediaChanged");
-                    notifyPlayState(IPlayerState.REFRESH_UI);
+                    notifyPlayState(PlayState.REFRESH_UI);
                     break;
                 case MediaPlayer.Event.Opening:
-                    notifyPlayState(IPlayerState.PLAY);
-                    notifyPlayState(IPlayerState.PREPARED);
+                    notifyPlayState(PlayState.PLAY);
+                    notifyPlayState(PlayState.PREPARED);
                     Logs.debugI(TAG, "MediaPlayerEvent :: Opening");
                     break;
                 case MediaPlayer.Event.Buffering:
@@ -86,30 +86,30 @@ public class AudioVlcPlayer implements IAudioPlayer {
                 //Media is playing
                 case MediaPlayer.Event.Playing:
                     Logs.debugI(TAG, "MediaPlayerEvent :: Playing");
-                    notifyPlayState(IPlayerState.PLAY);
+                    notifyPlayState(PlayState.PLAY);
                     break;
 
                 //Media is paused
                 case MediaPlayer.Event.Paused:
                     Logs.debugI(TAG, "MediaPlayerEvent :: Paused");
-                    notifyPlayState(IPlayerState.PAUSE);
+                    notifyPlayState(PlayState.PAUSE);
                     break;
 
                 case MediaPlayer.Event.Stopped:
                     Logs.debugI(TAG, "MediaPlayerEvent :: Stopped");
-                    notifyPlayState(IPlayerState.STOP);
+                    notifyPlayState(PlayState.STOP);
                     break;
 
                 //Media completed
                 case MediaPlayer.Event.EndReached:
                     Logs.debugI(TAG, "MediaPlayerEvent :: EndReached");
-                    notifyPlayState(IPlayerState.COMPLETE);
+                    notifyPlayState(PlayState.COMPLETE);
                     break;
 
                 //Media error on playing
                 case MediaPlayer.Event.EncounteredError:
                     Logs.debugI(TAG, "MediaPlayerEvent :: EncounteredError");
-                    notifyPlayState(IPlayerState.ERROR);
+                    notifyPlayState(PlayState.ERROR);
                     break;
 
                 //Media current time changed
@@ -229,7 +229,7 @@ public class AudioVlcPlayer implements IAudioPlayer {
     public void seekMediaTo(int msec) {
         if (mMediaPlayer != null && mMediaPlayer.isSeekable()) {
             mMediaPlayer.setTime(msec);
-            notifyPlayState(IPlayerState.SEEK_COMPLETED);
+            notifyPlayState(PlayState.SEEK_COMPLETED);
         }
     }
 
@@ -244,16 +244,16 @@ public class AudioVlcPlayer implements IAudioPlayer {
     }
 
     @Override
-    public void setPlayerListener(IPlayerListener l) {
+    public void setPlayerListener(PlayListener l) {
         this.mPlayerListener = l;
     }
 
     /**
      * Notify Play state
      */
-    private void notifyPlayState(int playState) {
+    private void notifyPlayState(PlayState playState) {
         if (mPlayerListener != null) {
-            mPlayerListener.onNotifyPlayState(playState);
+            mPlayerListener.onPlayStateChanged(playState);
         }
     }
 
@@ -266,7 +266,7 @@ public class AudioVlcPlayer implements IAudioPlayer {
      */
     private void notifyProgress(String path, int time, int duration) {
         if (mPlayerListener != null) {
-            mPlayerListener.onProgressChange(path, time, duration);
+            mPlayerListener.onProgressChanged(path, time, duration);
         }
     }
 }

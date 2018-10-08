@@ -8,15 +8,15 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.tricheer.player.engine.PlayEnableFlag;
-import com.tricheer.player.engine.PlayerActionsListener;
 import com.tricheer.player.service.MusicPlayService;
 import com.tricheer.player.service.MusicPlayService.LocalBinder;
 import com.tricheer.player.version.base.activity.BasePlayerActivity;
 
-import java.io.Serializable;
 import java.util.List;
 
+import js.lib.android.media.PlayMode;
+import js.lib.android.media.bean.Program;
+import js.lib.android.media.engine.PlayListener;
 import js.lib.android.utils.Logs;
 
 /**
@@ -71,28 +71,7 @@ public abstract class BaseAudioCommonActionsActivity extends BasePlayerActivity 
     }
 
     @Override
-    public void onNotifyPlayMedia(String path) {
-        Logs.i(TAG, "^^ onNotifyPlayMedia(" + path + ") ^^");
-        if (mPlayService != null) {
-            mPlayService.onNotifyPlayMedia(path);
-        }
-    }
-
-    @Override
-    public void onNotifyOperate(String opFlag) {
-        Logs.i(TAG, "^^ onNotifyOperate(" + opFlag + ") ^^");
-        if (mPlayService != null) {
-            mPlayService.onNotifyOperate(opFlag);
-        }
-    }
-
-    @Override
-    public boolean isCacheOnAccOff() {
-        return mPlayService != null && mPlayService.isCacheOnAccOff();
-    }
-
-    @Override
-    public void setPlayMode(int mode) {
+    public void setPlayMode(PlayMode mode) {
         Logs.i(TAG, "^^ setPlayMode(" + mode + ") ^^");
         if (mPlayService != null) {
             mPlayService.setPlayMode(mode);
@@ -100,7 +79,7 @@ public abstract class BaseAudioCommonActionsActivity extends BasePlayerActivity 
     }
 
     @Override
-    public void setPlayList(List<?> listPros) {
+    public void setPlayList(List<? extends Program> listPros) {
         Logs.i(TAG, "^^ setPlayList() ^^");
         if (mPlayService != null) {
             mPlayService.setPlayList(listPros);
@@ -116,24 +95,11 @@ public abstract class BaseAudioCommonActionsActivity extends BasePlayerActivity 
     }
 
     @Override
-    public Serializable getCurrMedia() {
+    public Program getCurrMedia() {
         if (mPlayService != null) {
             return mPlayService.getCurrMedia();
         }
         return null;
-    }
-
-    @Override
-    public PlayEnableFlag getPlayEnableFlag() {
-        if (mPlayService != null) {
-            return mPlayService.getPlayEnableFlag();
-        }
-        return null;
-    }
-
-    @Override
-    public boolean isPlayEnable() {
-        return mPlayService != null && mPlayService.isPlayEnable();
     }
 
     @Override
@@ -218,15 +184,15 @@ public abstract class BaseAudioCommonActionsActivity extends BasePlayerActivity 
     }
 
     @Override
-    public String getLastPath() {
+    public String getLastMediaPath() {
         if (mPlayService != null) {
-            return mPlayService.getLastPath();
+            return mPlayService.getLastMediaPath();
         }
         return "";
     }
 
     @Override
-    public int getLastProgress() {
+    public long getLastProgress() {
         if (mPlayService != null) {
             return mPlayService.getLastProgress();
         }
@@ -234,17 +200,17 @@ public abstract class BaseAudioCommonActionsActivity extends BasePlayerActivity 
     }
 
     @Override
-    public String getPath() {
+    public String getCurrMediaPath() {
         if (mPlayService != null) {
-            return mPlayService.getPath();
+            return mPlayService.getCurrMediaPath();
         }
         return "";
     }
 
     @Override
-    public int getPosition() {
+    public int getCurrIdx() {
         if (mPlayService != null) {
-            return mPlayService.getPosition();
+            return mPlayService.getCurrIdx();
         }
         return 0;
     }
@@ -292,16 +258,16 @@ public abstract class BaseAudioCommonActionsActivity extends BasePlayerActivity 
     }
 
     @Override
-    public void setPlayerActionsListener(PlayerActionsListener l) {
+    public void setPlayListener(PlayListener l) {
         if (mPlayService != null) {
-            mPlayService.setPlayerActionsListener(l);
+            mPlayService.setPlayListener(l);
         }
     }
 
     @Override
-    public void removePlayerActionsListener(PlayerActionsListener l) {
+    public void removePlayListener(PlayListener l) {
         if (mPlayService != null) {
-            mPlayService.removePlayerActionsListener(l);
+            mPlayService.removePlayListener(l);
         }
     }
 

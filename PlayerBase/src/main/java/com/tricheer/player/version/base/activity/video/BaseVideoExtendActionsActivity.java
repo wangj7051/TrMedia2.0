@@ -1,7 +1,5 @@
 package com.tricheer.player.version.base.activity.video;
 
-import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -10,11 +8,8 @@ import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.tricheer.app.receiver.PlayerReceiverActions;
-import com.tricheer.player.bean.ProVideo;
 import com.tricheer.player.bean.VideoRecordControl;
 import com.tricheer.player.engine.VersionController;
-import com.tricheer.player.engine.db.DBManager;
 import com.tricheer.player.receiver.MediaScanReceiver.ScanActives;
 import com.tricheer.player.utils.PlayerFileUtils;
 import com.tricheer.player.utils.PlayerLogicUtils;
@@ -29,8 +24,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import js.lib.android.media.IPlayerListener;
-import js.lib.android.media.video.bean.VideoInfo;
+import js.lib.android.media.bean.ProVideo;
+import js.lib.android.media.engine.PlayListener;
+import js.lib.android.media.video.db.VideoDBManager;
+import js.lib.android.media.video.utils.VideoInfo;
 import js.lib.android.media.video.utils.VideoUtils;
 import js.lib.android.utils.CommonUtil;
 import js.lib.android.utils.EmptyUtil;
@@ -41,7 +38,7 @@ import js.lib.android.utils.Logs;
  *
  * @author Jun.Wang
  */
-public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActionsActivity implements IPlayerListener {
+public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActionsActivity implements PlayListener {
     // TAG
     private final String TAG = "BaseVideoExtendActionsActivity";
 
@@ -82,7 +79,7 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
     /**
      * 目标自动Seek进度，当视频加载完成后，可以据此跳转进度
      */
-    protected int mTargetAutoSeekProgress = -1;
+    protected long mTargetAutoSeekProgress = -1;
 
     /**
      * Load Local Medias Task
@@ -254,7 +251,7 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
                 mmWeakReference = new WeakReference<LoadMediaListener>((LoadMediaListener) params[0]);
 
                 // Get List Medias
-                Map<String, ProVideo> mapPrograms = DBManager.getMapVideos(true, false);
+                Map<String, ProVideo> mapPrograms = VideoDBManager.instance().getMapVideos(true, false);
                 mListPrograms = new ArrayList<ProVideo>();
                 if (mapPrograms != null) {
                     mListPrograms.addAll(mapPrograms.values());
@@ -320,8 +317,8 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
         protected Void doInBackground(Void... params) {
             // Refresh & Save Medias
             parseMediaInfos(VideoUtils.queryMapVideoInfos(mmListSelectPaths));
-            DBManager.insertListVideos(mmListNewPrograms);
-            DBManager.updateListVideos(mmListExistPrograms);
+            VideoDBManager.instance().insertListVideos(mmListNewPrograms);
+            VideoDBManager.instance().updateListVideos(mmListExistPrograms);
             // Sort & Notify load end
             sortMediaList(mListPrograms);
             mHandler.postDelayed(mmLoadSDCardMediasRunnable, 1000);
@@ -331,7 +328,7 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
         private void parseMediaInfos(Map<String, VideoInfo> mapMediaInfos) {
             if (!EmptyUtil.isEmpty(mapMediaInfos)) {
                 if (EmptyUtil.isEmpty(mListPrograms)) {
-                    mListPrograms = DBManager.getListVideos(true, false);
+                    mListPrograms = VideoDBManager.instance().getListVideos(true, false);
                 }
                 // Remove Multiple
                 for (ProVideo program : mListPrograms) {
@@ -485,7 +482,7 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
         private void postVideos(List<String> listSelectPaths) {
             ArrayList<ProVideo> listPrograms = new ArrayList<ProVideo>();
             if (!EmptyUtil.isEmpty(listSelectPaths)) {
-                Map<String, ProVideo> mapVideos = DBManager.getMapVideos(true, false);
+                Map<String, ProVideo> mapVideos = VideoDBManager.instance().getMapVideos(true, false);
                 List<String> listToParsePaths = new ArrayList<String>();
 
                 // Parse and Filter
@@ -507,7 +504,7 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
                     List<VideoInfo> listVideoInfos = VideoUtils.queryListVideoInfos(listSelectPaths);
                     Map<String, ProVideo> mapPrograms = parseMediaInfos(listVideoInfos, null);
                     listPrograms.addAll(mapPrograms.values());
-                    DBManager.insertListVideos(new ArrayList<ProVideo>(mapPrograms.values()));
+                    VideoDBManager.instance().insertListVideos(new ArrayList<ProVideo>(mapPrograms.values()));
                 }
             }
             postResults(listPrograms);
@@ -617,7 +614,7 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
      */
     protected void parseProgramInfos() {
         mListPrograms = new ArrayList<ProVideo>();
-        Map<String, ProVideo> mapStoredVideos = DBManager.getMapVideos(true, false);
+        Map<String, ProVideo> mapStoredVideos = VideoDBManager.instance().getMapVideos(true, false);
         List<VideoInfo> listInfos = VideoUtils.queryListVideoInfos(null);
         for (VideoInfo info : listInfos) {
             try {
@@ -661,19 +658,6 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
     }
 
     /**
-     * AccOff 时，是否记录缓存播放信息
-     */
-    @Override
-    public boolean isCacheOnAccOff() {
-        Logs.i(TAG, " ");
-        Logs.i(TAG, "isCacheOnAccOff() -> [isBgOnHomeKeyClick():" + isHomeClicked());
-        Logs.i(TAG, "isCacheOnAccOff() -> [mIsPauseOnNotify:" + mIsPauseOnNotify);
-        Logs.i(TAG, "isCacheOnAccOff() -> [mIsShowingBlacklistMedias:" + mIsShowingBlacklistMedias);
-        Logs.i(TAG, " ");
-        return !(mIsPauseOnNotify || mIsShowingBlacklistMedias || isHomeClicked());
-    }
-
-    /**
      * 启动播放视频
      */
     private void startPlay(boolean isMakeScreeenOn) {
@@ -710,7 +694,7 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
 
         // 执行播放
         vvPlayer.setVisibility(View.INVISIBLE);
-        saveTargetMediaUrl(toPlayProgram.mediaUrl);
+        saveTargetMediaPath(toPlayProgram.mediaUrl);
         mTargetAutoSeekProgress = getLastProgress();
         vvPlayer.setTag(toPlayProgram);
         vvPlayer.setMediaPath(toPlayProgram.mediaUrl);
@@ -808,7 +792,7 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
 
     protected ProVideo getCurrProgram() {
         try {
-            String currMediaUrl = getPath();
+            String currMediaUrl = getCurrMediaPath();
             for (ProVideo program : mListPrograms) {
                 if (program.mediaUrl.equals(currMediaUrl)) {
                     return program;
@@ -830,63 +814,6 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
     protected void setLPs(ViewGroup.LayoutParams lps) {
         if (vvPlayer != null) {
             vvPlayer.setLayoutParams(lps);
-        }
-    }
-
-    /**
-     * Broadcast Media Resolution
-     */
-    protected void doProcessResolutionOnPlay(final Context cxt, final String mediaUrl, final boolean isOnDestroy) {
-        try {
-            // onDestroy
-            if (isOnDestroy) {
-                mIsCurrVideo1080P = false;
-                doBroadCastVideoResolution(0, isOnDestroy);
-                // Playing
-            } else {
-                int[] videoLens = CommonUtil.getVideoResolutions(cxt, mediaUrl);
-                int videoH = (videoLens[1] == 0) ? 1080 : videoLens[1];
-                doBroadCastVideoResolution(videoH, isOnDestroy);
-
-                mIsCurrVideo1080P = (videoH == 1080);
-                if (mRecordControlFlag == VideoRecordControl.RESET) {
-                    Logs.i(TAG, "doProcessResolutionOnPlay ----Reset---");
-                } else if (mRecordControlFlag == VideoRecordControl.CLOSE_ON_1080P_PLAYING) {
-                    doBroadcastStartRecord(!mIsCurrVideo1080P);
-                }
-            }
-        } catch (Exception e) {
-            Logs.printStackTrace(TAG + "doProcessResolutionOnPlay()", e);
-        }
-    }
-
-    /**
-     * Broadcast Video Resolution
-     */
-    protected void doBroadCastVideoResolution(int size, boolean isOnDestroy) {
-        Logs.i(TAG, "doBroadCastVideoResolution -> [VideoResolution:" + size + " , isOnDestroy:" + isOnDestroy + "]");
-        Intent resolutionIntent = new Intent(PlayerReceiverActions.NOTIFY_VIDEO_SIZE);
-        resolutionIntent.putExtra("size", size);
-        sendBroadcast(resolutionIntent);
-    }
-
-    /**
-     * Broadcast Start Record
-     */
-    protected void doBroadcastStartRecord(boolean isStart) {
-        Intent closeRecordIntent = new Intent(PlayerReceiverActions.NOTIFY_CONFIG_RECORD);
-        closeRecordIntent.putExtra("start", isStart);
-        sendBroadcast(closeRecordIntent);
-        Logs.i(TAG, "doBroadcastCloseRecord -> action.camera.ACTION_CONFIG_RECORD[start:" + isStart + "]");
-    }
-
-    /**
-     * Resume Record
-     */
-    protected void resumeRecord() {
-        if (mRecordControlFlag == VideoRecordControl.CLOSE_ON_1080P_PLAYING) {
-            mRecordControlFlag = VideoRecordControl.RESET;
-            doBroadcastStartRecord(true);
         }
     }
 

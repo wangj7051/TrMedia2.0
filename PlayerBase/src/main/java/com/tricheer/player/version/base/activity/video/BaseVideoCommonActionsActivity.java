@@ -8,14 +8,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 
-import com.tricheer.player.bean.ProVideo;
-import com.tricheer.player.engine.PlayEnableFlag;
 import com.tricheer.player.engine.PlayerAppManager.PlayerCxtFlag;
 import com.tricheer.player.utils.PlayerPreferUtils;
 import com.tricheer.player.version.base.activity.BasePlayerActivity;
 
 import java.util.List;
 
+import js.lib.android.media.PlayEnableController;
+import js.lib.android.media.bean.ProVideo;
 import js.lib.android.media.video.player_native.IVideoPlayer;
 import js.lib.android.utils.Logs;
 
@@ -92,25 +92,6 @@ public abstract class BaseVideoCommonActionsActivity extends BasePlayerActivity 
         return mIsPlayerReleased;
     }
 
-    @Override
-    public PlayEnableFlag getPlayEnableFlag() {
-        PlayEnableFlag pef = new PlayEnableFlag();
-        pef.pauseByUser(mIsPauseOnNotify);
-        pef.pauseByScreenOff(mIsPauseOnScreenOff);
-        pef.pauseByAiosOpen(mIsPauseOnAisOpen);
-        pef.complete();
-        return pef;
-    }
-
-    @Override
-    public boolean isPlayEnable() {
-        Logs.i(TAG, "^^ isPlayEnable() ^^");
-        PlayEnableFlag pef = getPlayEnableFlag();
-        pef.print();
-        return pef.isPlayEnable();
-    }
-
-    @Override
     public void removePlayRunnable() {
         if (mPlayPrevSecRunnable != null) {
             mHandler.removeCallbacks(mPlayPrevSecRunnable);
@@ -133,7 +114,7 @@ public abstract class BaseVideoCommonActionsActivity extends BasePlayerActivity 
     @Override
     public void playPrev() {
         Logs.i(TAG, "^^ playPrev() ^^");
-        if (isPlayEnable()) {
+        if (PlayEnableController.isPlayEnable()) {
             try {
                 mPlayPos--;
                 if (mPlayPos < 0) {
@@ -166,7 +147,7 @@ public abstract class BaseVideoCommonActionsActivity extends BasePlayerActivity 
     @Override
     public void playNext() {
         Logs.i(TAG, "^^ playNext() ^^");
-        if (isPlayEnable()) {
+        if (PlayEnableController.isPlayEnable()) {
             try {
                 mPlayPos++;
                 if (mPlayPos >= mListPrograms.size()) {
@@ -215,7 +196,7 @@ public abstract class BaseVideoCommonActionsActivity extends BasePlayerActivity 
     @Override
     public void resume() {
         Logs.i(TAG, "^^ resume() ^^");
-        if (isPlayEnable()) {
+        if (PlayEnableController.isPlayEnable()) {
             if (!isPlaying()) {
                 play();
                 makeScreenOn(true);
@@ -243,15 +224,15 @@ public abstract class BaseVideoCommonActionsActivity extends BasePlayerActivity 
     }
 
     @Override
-    public String getLastPath() {
-        return getLastTargetMediaUrl();
+    public String getLastMediaPath() {
+        return getLastTargetMediaPath();
     }
 
     @Override
-    public int getLastProgress() {
+    public long getLastProgress() {
         int lastProgress = 0;
         try {
-            String lastTargetMediaUrl = getLastPath();
+            String lastTargetMediaUrl = getLastMediaPath();
             Logs.i(TAG, "getLastMediaProgress() -> [lastTargetMediaUrl:" + lastTargetMediaUrl);
             String[] mediaInfos = getPlayedMediaInfos();
             if (mediaInfos != null) {
@@ -270,7 +251,7 @@ public abstract class BaseVideoCommonActionsActivity extends BasePlayerActivity 
     }
 
     @Override
-    public String getPath() {
+    public String getCurrMediaPath() {
         if (vvPlayer != null) {
             return vvPlayer.getMediaPath();
         }
@@ -278,7 +259,7 @@ public abstract class BaseVideoCommonActionsActivity extends BasePlayerActivity 
     }
 
     @Override
-    public int getPosition() {
+    public int getCurrIdx() {
         return mPlayPos;
     }
 
@@ -319,13 +300,13 @@ public abstract class BaseVideoCommonActionsActivity extends BasePlayerActivity 
     }
 
     @Override
-    public String getLastTargetMediaUrl() {
+    public String getLastTargetMediaPath() {
         return PlayerPreferUtils.getLastTargetMediaUrl(false, PlayerCxtFlag.VIDEO_PLAYER, "");
     }
 
     @Override
-    public void saveTargetMediaUrl(String mediaUrl) {
-        PlayerPreferUtils.getLastTargetMediaUrl(true, PlayerCxtFlag.VIDEO_PLAYER, mediaUrl);
+    public void saveTargetMediaPath(String mediaPath) {
+        PlayerPreferUtils.getLastTargetMediaUrl(true, PlayerCxtFlag.VIDEO_PLAYER, mediaPath);
     }
 
     @Override

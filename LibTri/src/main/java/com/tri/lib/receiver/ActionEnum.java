@@ -13,6 +13,21 @@ public enum ActionEnum {
     REVERSE_ON(10, "com.tricheer.carback.on"),
     REVERSE_OFF(11, "com.tricheer.carback.off"),
 
+    // ### Click FileManager Media to Play ###
+    // Parameter1 : "index" - [选中媒体所在数据列表位置]
+    // Parameter2 : "fileList" - [媒体路径数据列表]
+    PLAY_MUSIC_BY_FILEMANAGER(20,"com.tricheer.music.PLAY_FROM_FILEMANAGER"),
+    // Parameter1 : "index" - [选中媒体所在数据列表位置]
+    // Parameter2 : "fileList" - [媒体路径数据列表]
+    PLAY_VIDEO_BY_FILEMANAGER(21,"com.tricheer.video.PLAY_FROM_FILEMANAGER"),
+
+    /**
+     * ### Open Logs ###
+     * <p>
+     * Parameter1(boolean) : "IS_OPEN"[true,false]
+     */
+    OPEN_LOGS(30,"com.tricheer.app.OPEN_LOGS"),
+
     // ENUM - Test Actions
     TEST_OPEN_VIDEO_LIST(100000, "com.tri.test.OPEN_AUDIO"),
     TEST_OPEN_VIDEO(100002, "com.tri.test.OPEN_VIDEO"),
@@ -48,6 +63,10 @@ public enum ActionEnum {
             // ENUM - Car reverse Actions
             mMapEnums.put(REVERSE_ON.getAction(), REVERSE_ON);
             mMapEnums.put(REVERSE_OFF.getAction(), REVERSE_OFF);
+
+            mMapEnums.put(PLAY_MUSIC_BY_FILEMANAGER.getAction(), PLAY_MUSIC_BY_FILEMANAGER);
+            mMapEnums.put(PLAY_VIDEO_BY_FILEMANAGER.getAction(), PLAY_VIDEO_BY_FILEMANAGER);
+            mMapEnums.put(OPEN_LOGS.getAction(), OPEN_LOGS);
 
             // ENUM - Test Actions
             mMapEnums.put(TEST_OPEN_VIDEO_LIST.getAction(), TEST_OPEN_VIDEO_LIST);

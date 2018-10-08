@@ -9,11 +9,8 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.tri.lib.engine.KeyEnum;
 import com.tricheer.player.R;
-import com.tricheer.player.bean.ProMusic;
-import com.tricheer.player.engine.Keys;
-import com.tricheer.player.engine.PlayerConsts.PlayMode;
-import com.tricheer.player.engine.db.DBManager;
 import com.tricheer.player.service.MusicPlayService;
 import com.tricheer.player.utils.PlayerLogicUtils;
 import com.tricheer.player.utils.PlayerPreferUtils;
@@ -23,6 +20,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import js.lib.android.media.PlayMode;
+import js.lib.android.media.audio.db.AudioDBManager;
+import js.lib.android.media.bean.ProAudio;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.Logs;
 import js.lib.utils.date.DateFormatUtil;
@@ -127,7 +127,7 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseAudioPlayerActivity {
         Serializable serialListPros = getIntent().getSerializableExtra("MEDIA_LIST");
         if (mediaUrl != null && serialListPros != null) {
             // Play
-            mListPrograms = (ArrayList<ProMusic>) serialListPros;
+            mListPrograms = (ArrayList<ProAudio>) serialListPros;
             if (!EmptyUtil.isEmpty(mListPrograms)) {
                 //Show playing information
                 if (isPlaying() && isPlayingSameMedia(mediaUrl)) {
@@ -179,7 +179,7 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseAudioPlayerActivity {
         }
 
         void collect() {
-            ProMusic media = getCurrProgram();
+            ProAudio media = getCurrProgram();
             if (media != null) {
                 switch (media.isCollected) {
                     case 1:
@@ -191,7 +191,7 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseAudioPlayerActivity {
                         ivCollect.setImageResource(R.drawable.btn_op_favored_selector);
                         break;
                 }
-                DBManager.updateMediaCollect(media);
+                AudioDBManager.instance().updateMediaCollect(media);
             }
         }
     };
@@ -204,13 +204,13 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseAudioPlayerActivity {
     }
 
     @Override
-    public void onProgressChange(String mediaUrl, int progress, int duration) {
-        super.onProgressChange(mediaUrl, progress, duration);
+    public void onProgressChanged(String mediaUrl, int progress, int duration) {
+        super.onProgressChanged(mediaUrl, progress, duration);
         //Update current media duration
-        ProMusic program = getCurrProgram();
+        ProAudio program = getCurrProgram();
         if (program != null && program.duration <= 0) {
             program.duration = duration;
-            DBManager.updateMusicInfo(program);
+            AudioDBManager.instance().updateMusicInfo(program);
         }
 
         // Update
@@ -222,14 +222,14 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseAudioPlayerActivity {
 
     @Override
     protected void refreshCurrMediaInfo() {
-        final ProMusic media = getCurrProgram();
+        final ProAudio media = getCurrProgram();
         if (media != null) {
             // Media Cover
             PlayerLogicUtils.setMediaCover(ivMusicCover, media, getImageLoader());
             // Title / Artist/ Album
             tvName.setText(PlayerLogicUtils.getMediaTitle(mContext, -1, media, true));
             tvArtist.setText(PlayerLogicUtils.getUnKnowOnNull(mContext, media.artist));
-            tvAlbum.setText(media.albumName);
+            tvAlbum.setText(media.album);
 
             //Collect status
             switch (media.isCollected) {
@@ -292,19 +292,23 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseAudioPlayerActivity {
     }
 
     @Override
+    public void switchPlayMode(int supportFlag) {
+    }
+
+    @Override
     public void onPlayModeChange() {
         super.onPlayModeChange();
         Logs.i(TAG, "^^ onPlayModeChange() ^^");
-        int storePlayMode = PlayerPreferUtils.getMusicPlayMode(false, PlayMode.LOOP);
+        PlayMode storePlayMode = PlayerPreferUtils.getAudioPlayMode(false, PlayMode.LOOP);
         Logs.i(TAG, "onPlayModeChange() -> [storePlayMode:" + storePlayMode + "]");
         switch (storePlayMode) {
-            case PlayMode.LOOP:
+            case LOOP:
                 ivPlayModeSet.setImageResource(R.drawable.btn_op_mode_loop_selector);
                 break;
-            case PlayMode.SINGLE:
+            case SINGLE:
                 ivPlayModeSet.setImageResource(R.drawable.btn_op_mode_oneloop_selector);
                 break;
-            case PlayMode.RANDOM:
+            case RANDOM:
                 ivPlayModeSet.setImageResource(R.drawable.btn_op_mode_random_selector);
                 break;
             // case PlayMode.ORDER:
@@ -314,16 +318,41 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseAudioPlayerActivity {
     }
 
     @Override
-    public void onGetKeyCode(int keyCode) {
-        switch (keyCode) {
-            case Keys.KeyVals.KEYCODE_PREV:
+    public boolean isPlayEnable() {
+        return false;
+    }
+
+    @Override
+    public void onAudioFocusDuck() {
+
+    }
+
+    @Override
+    public void onAudioFocusTransient() {
+
+    }
+
+    @Override
+    public void onAudioFocusGain() {
+
+    }
+
+    @Override
+    public void onAudioFocusLoss() {
+
+    }
+
+    @Override
+    public void onGetKeyCode(KeyEnum key) {
+        switch (key) {
+            case KEYCODE_PREV:
                 playPrevBySecurity();
                 break;
-            case Keys.KeyVals.KEYCODE_NEXT:
+            case KEYCODE_NEXT:
                 playNextBySecurity();
                 break;
-            case Keys.KeyVals.KEYCODE_DPAD_LEFT:
-            case Keys.KeyVals.KEYCODE_DPAD_RIGHT:
+            case KEYCODE_DPAD_LEFT:
+            case KEYCODE_DPAD_RIGHT:
                 finishByOperate("PLAYER_FINISH_ON_GET_KEY");
                 break;
         }

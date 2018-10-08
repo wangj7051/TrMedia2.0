@@ -9,5 +9,5 @@ public interface BaseDelegate {
 	/**
 	 * 回调
 	 */
-	public void callback(IResponse response);
+	void callback(IResponse response);
 }

@@ -6,24 +6,24 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.text.TextUtils;
 
-import com.tricheer.player.bean.ProMusic;
-import com.tricheer.player.engine.PlayEnableFlag;
 import com.tricheer.player.engine.PlayerAppManager;
 import com.tricheer.player.engine.PlayerAppManager.PlayerCxtFlag;
 import com.tricheer.player.engine.PlayerConsts;
-import com.tricheer.player.engine.PlayerConsts.PlayMode;
-import com.tricheer.player.engine.VersionController;
-import com.tricheer.player.engine.db.DBManager;
-import com.tricheer.player.receiver.ReceiverOperates;
 import com.tricheer.player.utils.PlayerLogicUtils;
 import com.tricheer.player.utils.PlayerPreferUtils;
 
 import java.io.Serializable;
 import java.util.List;
 
-import js.lib.android.media.IPlayerState;
+import js.lib.android.media.PlayEnableController;
+import js.lib.android.media.PlayMode;
+import js.lib.android.media.PlayState;
+import js.lib.android.media.audio.AudioPreferUtils;
 import js.lib.android.media.audio.IAudioPlayer;
 import js.lib.android.media.audio.MusicPlayerFactory;
+import js.lib.android.media.audio.db.AudioDBManager;
+import js.lib.android.media.bean.ProAudio;
+import js.lib.android.media.bean.Program;
 import js.lib.android.utils.CommonUtil;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.JsFileUtils;
@@ -48,7 +48,7 @@ public class MusicPlayService extends BasePlayService {
     /**
      * 是否在播放器初始化的时，产生了异常错误
      * <p>
-     * {@link IPlayerState#ERROR_PLAYER_INIT}
+     * {@link PlayState#ERROR_PLAYER_INIT}
      */
     private boolean mIsPlayerInitError = false;
 
@@ -60,16 +60,11 @@ public class MusicPlayService extends BasePlayService {
     /**
      * Program list that to play
      */
-    private List<ProMusic> mListPrograms;
+    private List<ProAudio> mListPrograms;
     /**
      * Current Play Position
      */
     private int mPlayPos = 0;
-
-    /**
-     * 目标播放路径
-     */
-    private String mPendingMediaPath = "";
 
     /**
      * Music Player Object
@@ -140,11 +135,11 @@ public class MusicPlayService extends BasePlayService {
      * Play On Start
      */
     private void playOnStart() {
-        List<ProMusic> listMeidas = DBManager.getListMusics();
+        List<ProAudio> listMeidas = AudioDBManager.instance().getListMusics();
         if (!EmptyUtil.isEmpty(listMeidas)) {
             setPlayList(listMeidas);
             // Last Play Position
-            String lastMediaUrl = getLastPath();
+            String lastMediaUrl = getLastMediaPath();
             if (!EmptyUtil.isEmpty(lastMediaUrl)) {
                 setPlayPosition(getPosAtList(lastMediaUrl));
             } else {
@@ -154,16 +149,11 @@ public class MusicPlayService extends BasePlayService {
         }
     }
 
-    @Override
-    public boolean isCacheOnAccOff() {
-        return !mIsPauseOnNotify;
-    }
-
     /**
      * 被用户暂停
      */
     public void pauseByUser() {
-        mIsPauseOnNotify = true;
+        PlayEnableController.pauseByUser(true);
         removePlayRunnable();
         pause();
     }
@@ -174,100 +164,23 @@ public class MusicPlayService extends BasePlayService {
      * 指用户点击恢复或等同于此动作的操作
      */
     public void resumeByUser() {
-        mIsPauseOnNotify = false;
         removePlayRunnable();
         if (!EmptyUtil.isEmpty(mListPrograms)) {
             if (mAudioPlayer == null) {
-                playFixedMedia(getLastPath());
+                playFixedMedia(getLastMediaPath());
             } else {
                 resume();
             }
         }
     }
 
-    @Override
-    public void onNotifyPlayMedia(String path) {
-        Logs.i(TAG, "onNotifyPlayMedia(" + path + ")");
-        if (isPlayEnable()) {
-            play(path);
-        } else {
-            mPendingMediaPath = path;
-        }
-    }
-
-    @Override
-    public void onNotifyOperate(String opFlag) {
-        super.onNotifyOperate(opFlag);
-        Logs.i(TAG, "onNotifyOperate(" + opFlag + ")");
-        // Common
-        if (ReceiverOperates.PAUSE.equals(opFlag)) {
-            mIsPauseOnNotify = true;
-            pause();
-        } else if (ReceiverOperates.RESUME.equals(opFlag)) {
-            mIsPauseOnNotify = false;
-            doResumePlay();
-        } else if (ReceiverOperates.NEXT.equals(opFlag)) {
-            playNext();
-        } else if (ReceiverOperates.PREVIOUS.equals(opFlag)) {
-            playPrev();
-        } else if (ReceiverOperates.MUSIC_RANDOM.equals(opFlag)) {
-            playRandomOne();
-
-            // BlueTooth Call
-        } else if (ReceiverOperates.BTCALL_RUNING.equals(opFlag)) {
-            mIsPauseOnBtDialing = true;
-            pause();
-        } else if (ReceiverOperates.BTCALL_END.equals(opFlag)) {
-            mIsPauseOnBtDialing = false;
-            if (!isPlaying()) {
-                doResumePlay();
-            }
-
-            // AiSpeech
-        } else if (ReceiverOperates.AIS_OPEN.equals(opFlag)) {
-            mIsPauseOnAisOpen = true;
-        } else if (ReceiverOperates.AIS_EXIT.equals(opFlag)) {
-            if (VersionController.isCjVersion()) {
-                mIsPauseOnAisOpen = false;
-                if (EmptyUtil.isEmpty(mPendingMediaPath)) {
-                    doResumePlay();
-                } else {
-                    play(mPendingMediaPath);
-                    mPendingMediaPath = "";
-                }
-            }
-
-            // E-Dog
-        } else if (ReceiverOperates.PAUSE_ON_E_DOG_START.equals(opFlag)) {
-        } else if (ReceiverOperates.RESUME_ON_E_DOG_END.equals(opFlag)) {
-
-            // PLAY MODE
-        } else if (ReceiverOperates.MUSIC_MODE_SIGLE.equals(opFlag)) {
-            setPlayMode(PlayMode.SINGLE);
-        } else if (ReceiverOperates.MUSIC_MODE_RANDOM.equals(opFlag)) {
-            setPlayMode(PlayMode.RANDOM);
-        } else if (ReceiverOperates.MUSIC_MODE_LOOP.equals(opFlag)) {
-            setPlayMode(PlayMode.LOOP);
-        } else if (ReceiverOperates.MUSIC_MODE_ORDER.equals(opFlag)) {
-            setPlayMode(PlayMode.ORDER);
-        }
-    }
-
-    /**
-     * Resume Video Play
-     */
-    private void doResumePlay() {
-        Logs.i(TAG, "**----doResumePlay()----**");
-        resume();
-    }
-
     /**
      * Notify Play State
      *
-     * @param playState {@link IPlayerState}
+     * @param playState {@link PlayState}
      */
     @Override
-    public void onNotifyPlayState(int playState) {
+    public void onPlayStateChanged(PlayState playState) {
         // 阻止继续执行
         // (1) 已经执行了Service销毁
         if (mIsDestoryed) {
@@ -275,25 +188,26 @@ public class MusicPlayService extends BasePlayService {
         }
 
         // Service正常运行中
-        super.onNotifyPlayState(playState);
+        super.onPlayStateChanged(playState);
         // Print LOGS
-        PlayerLogicUtils.printPlayState(TAG, IPlayerState.getStateDesc(playState));
+        Logs.i(TAG, " ");
+        Logs.i(TAG, "---->>>> playState:[" + playState + "] <<<<----");
         // Cache Play State
         cachePlayState(playState);
         // Process By Play State
         switch (playState) {
-            case IPlayerState.PREPARED:
+            case PREPARED:
                 onNotifyPlayState$Prepared();
                 break;
-            case IPlayerState.COMPLETE:
+            case COMPLETE:
                 clearPlayedMediaInfos();
                 playAuto();
                 break;
-            case IPlayerState.ERROR:
-            case IPlayerState.ERROR_FILE_NOT_EXIST:
+            case ERROR:
+            case ERROR_FILE_NOT_EXIST:
                 onNotifyPlayState$Error();
                 break;
-            case IPlayerState.ERROR_PLAYER_INIT:
+            case ERROR_PLAYER_INIT:
                 mIsPlayerInitError = true;
                 onNotifyPlayState$Error();
                 break;
@@ -307,9 +221,9 @@ public class MusicPlayService extends BasePlayService {
             mIsPauseOnFirstLoaded = false;
             release();
         } else {
-            int lastProgress = getLastProgress();
+            long lastProgress = getLastProgress();
             if (lastProgress > 0) {
-                seekTo(lastProgress);
+                seekTo((int) lastProgress);
             }
         }
     }
@@ -332,7 +246,7 @@ public class MusicPlayService extends BasePlayService {
                 }
                 play(mPlayPos);
             }
-            notifyPlayState(IPlayerState.REFRESH_ON_ERROR);
+            notifyPlayState(PlayState.REFRESH_ON_ERROR);
         } catch (Exception e) {
             Logs.printStackTrace(TAG + "playOnError()", e);
         }
@@ -346,7 +260,7 @@ public class MusicPlayService extends BasePlayService {
         if (!EmptyUtil.isEmpty(mListPrograms)) {
             int loop = mListPrograms.size();
             for (int idx = 0; idx < loop; idx++) {
-                ProMusic pro = mListPrograms.get(idx);
+                ProAudio pro = mListPrograms.get(idx);
                 if (pro.mediaUrl.equals(mediaUrl)) {
                     pos = idx;
                     break;
@@ -361,7 +275,7 @@ public class MusicPlayService extends BasePlayService {
     /**
      * Get Play List
      */
-    public List<ProMusic> getPlayList() {
+    public List<ProAudio> getPlayList() {
         return mListPrograms;
     }
 
@@ -394,17 +308,17 @@ public class MusicPlayService extends BasePlayService {
      */
     private void playFixedMedia(String mediaUrl) {
         if (JsFileUtils.isFileExist(mediaUrl)) {
-            saveTargetMediaUrl(mediaUrl);
+            saveTargetMediaPath(mediaUrl);
             if (mAudioPlayer == null || mIsPlayerInitError) {
                 release();
                 mAudioPlayer = MusicPlayerFactory.instance().create(this, mediaUrl, this);
-                onNotifyPlayState(IPlayerState.REFRESH_UI);
+                onPlayStateChanged(PlayState.REFRESH_UI);
                 startPlay("");
             } else {
                 startPlay(mediaUrl);
             }
         } else {
-            onNotifyPlayState(IPlayerState.ERROR_FILE_NOT_EXIST);
+            onPlayStateChanged(PlayState.ERROR_FILE_NOT_EXIST);
         }
     }
 
@@ -412,15 +326,13 @@ public class MusicPlayService extends BasePlayService {
      * If you want play Music, this is the finally method that must be execute.
      */
     private void startPlay(String mediaUrl) {
-        if (isPlayEnable()) {
+        if (PlayEnableController.isPlayEnable()) {
             registerAudioFocus(1);
             if (EmptyUtil.isEmpty(mediaUrl)) {
                 mAudioPlayer.playMedia();
             } else {
                 mAudioPlayer.playMedia(mediaUrl);
             }
-        } else {
-            mPendingMediaPath = mediaUrl;
         }
     }
 
@@ -429,7 +341,7 @@ public class MusicPlayService extends BasePlayService {
      */
     public void playAuto() {
         Logs.i(TAG, "^^ playAuto() ^^");
-        int storePlayMode = PlayerPreferUtils.getMusicPlayMode(false, PlayMode.LOOP);
+        PlayMode storePlayMode = PlayerPreferUtils.getAudioPlayMode(false, PlayMode.LOOP);
         // 如果是播放模式是“顺序模式”，并且已经播放完毕了最后一个，那么下面的动作是在跳转到第一个媒体后，停止播放
         if (storePlayMode == PlayMode.ORDER) {
             try {
@@ -466,7 +378,7 @@ public class MusicPlayService extends BasePlayService {
      */
     private void setPlayPosByMode(int flag) {
         try {
-            int storePlayMode = PlayerPreferUtils.getMusicPlayMode(false, PlayMode.LOOP);
+            PlayMode storePlayMode = PlayerPreferUtils.getAudioPlayMode(false, PlayMode.LOOP);
             // MODE : RANDOM
             if (storePlayMode == PlayMode.RANDOM) {
                 setRandomPos();
@@ -511,51 +423,51 @@ public class MusicPlayService extends BasePlayService {
     }
 
     @Override
-    public void setPlayMode(int mode) {
-        // 设置播放模式
-        if (mode == PlayMode.NONE) {
-            int storePlayMode = PlayerPreferUtils.getMusicPlayMode(false, PlayMode.LOOP);
-            if (VersionController.isSupportOrderPlay()) {
-                switch (storePlayMode) {
-                    case PlayMode.SINGLE:
-                        PlayerPreferUtils.getMusicPlayMode(true, PlayMode.RANDOM);
-                        break;
-                    case PlayMode.RANDOM:
-                        PlayerPreferUtils.getMusicPlayMode(true, PlayMode.LOOP);
-                        break;
-                    case PlayMode.LOOP:
-                        PlayerPreferUtils.getMusicPlayMode(true, PlayMode.ORDER);
-                        break;
-                    case PlayMode.ORDER:
-                        PlayerPreferUtils.getMusicPlayMode(true, PlayMode.SINGLE);
-                        break;
-                }
-            } else {
-                switch (storePlayMode) {
-                    case PlayMode.SINGLE:
-                        PlayerPreferUtils.getMusicPlayMode(true, PlayMode.RANDOM);
-                        break;
-                    case PlayMode.RANDOM:
-                        PlayerPreferUtils.getMusicPlayMode(true, PlayMode.LOOP);
-                        break;
-                    case PlayMode.LOOP:
-                        PlayerPreferUtils.getMusicPlayMode(true, PlayMode.SINGLE);
-                        break;
-                }
+    public void switchPlayMode(int supportFlag) {
+        PlayMode storePlayMode = AudioPreferUtils.getAudioPlayMode(false, PlayMode.NONE);
+        if (supportFlag == 0) {
+            switch (storePlayMode) {
+                case SINGLE:
+                    AudioPreferUtils.getAudioPlayMode(true, PlayMode.RANDOM);
+                    break;
+                case RANDOM:
+                    AudioPreferUtils.getAudioPlayMode(true, PlayMode.LOOP);
+                    break;
+                case LOOP:
+                    AudioPreferUtils.getAudioPlayMode(true, PlayMode.ORDER);
+                    break;
+                case ORDER:
+                    AudioPreferUtils.getAudioPlayMode(true, PlayMode.SINGLE);
+                    break;
             }
-        } else {
-            PlayerPreferUtils.getMusicPlayMode(true, mode);
+        } else if (supportFlag == 1) {
+            switch (storePlayMode) {
+                case SINGLE:
+                    AudioPreferUtils.getAudioPlayMode(true, PlayMode.RANDOM);
+                    break;
+                case RANDOM:
+                    AudioPreferUtils.getAudioPlayMode(true, PlayMode.LOOP);
+                    break;
+                case LOOP:
+                    AudioPreferUtils.getAudioPlayMode(true, PlayMode.SINGLE);
+                    break;
+            }
         }
-        // 回调通知播放模式发生改变
+        onPlayModeChange();
+    }
+
+    @Override
+    public void setPlayMode(PlayMode mode) {
+        PlayerPreferUtils.getAudioPlayMode(true, mode);
         onPlayModeChange();
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public void setPlayList(List<?> listPros) {
+    public void setPlayList(List<? extends Program> listPros) {
         Logs.i(TAG, "^^ setPlayList() ^^");
         if (listPros != null) {
-            this.mListPrograms = (List<ProMusic>) listPros;
+            this.mListPrograms = (List<ProAudio>) listPros;
         }
     }
 
@@ -567,8 +479,8 @@ public class MusicPlayService extends BasePlayService {
     }
 
     @Override
-    public Serializable getCurrMedia() {
-        ProMusic program = null;
+    public Program getCurrMedia() {
+        ProAudio program = null;
         try {
             if (!EmptyUtil.isEmpty(mListPrograms)) {
                 program = mListPrograms.get(mPlayPos);
@@ -579,25 +491,6 @@ public class MusicPlayService extends BasePlayService {
         return program;
     }
 
-    @Override
-    public PlayEnableFlag getPlayEnableFlag() {
-        PlayEnableFlag pef = new PlayEnableFlag();
-        pef.pauseByUser(mIsPauseOnNotify);
-        pef.pauseByBtCalling((PlayerLogicUtils.getDialingStatus(mContext) == 1) || mIsPauseOnBtDialing || isBtCalling());
-        pef.pauseByAiosOpen(mIsPauseOnAisOpen);
-        pef.complete();
-        return pef;
-    }
-
-    @Override
-    public boolean isPlayEnable() {
-        Logs.i(TAG, "^^ isPlayEnable() ^^");
-        PlayEnableFlag pef = getPlayEnableFlag();
-        pef.print();
-        return pef.isPlayEnable();
-    }
-
-    @Override
     public void removePlayRunnable() {
         if (mPlayNextSecRunnable != null) {
             mHandler.removeCallbacks(mPlayNextSecRunnable);
@@ -610,10 +503,10 @@ public class MusicPlayService extends BasePlayService {
     @Override
     public void play() {
         Logs.i(TAG, "^^ play() ^^");
-        mIsPauseOnNotify = false;
+        PlayEnableController.pauseByUser(false);
         Serializable serialPro = getCurrMedia();
         if (serialPro != null) {
-            ProMusic program = (ProMusic) serialPro;
+            ProAudio program = (ProAudio) serialPro;
             playFixedMedia(program.mediaUrl);
             cacheProgram(program);
         }
@@ -703,15 +596,15 @@ public class MusicPlayService extends BasePlayService {
     }
 
     @Override
-    public String getLastPath() {
-        return getLastTargetMediaUrl();
+    public String getLastMediaPath() {
+        return super.getLastMediaPath();
     }
 
     @Override
-    public int getLastProgress() {
+    public long getLastProgress() {
         int lastProgress = 0;
         try {
-            String lastPath = getLastPath();
+            String lastPath = getLastMediaPath();
             Logs.i(TAG, "getLastProgress() -> [lastPath:" + lastPath);
 
             String[] mediaInfos = getPlayedMediaInfos();
@@ -730,7 +623,7 @@ public class MusicPlayService extends BasePlayService {
     }
 
     @Override
-    public String getPath() {
+    public String getCurrMediaPath() {
         if (mAudioPlayer != null) {
             return mAudioPlayer.getMediaPath();
         }
@@ -738,7 +631,7 @@ public class MusicPlayService extends BasePlayService {
     }
 
     @Override
-    public int getPosition() {
+    public int getCurrIdx() {
         return mPlayPos;
     }
 
@@ -767,13 +660,18 @@ public class MusicPlayService extends BasePlayService {
     }
 
     @Override
+    public boolean isPlayEnable() {
+        return PlayEnableController.isPlayEnable();
+    }
+
+    @Override
     public boolean isPlaying() {
         return mAudioPlayer != null && mAudioPlayer.isMediaPlaying();
     }
 
     @Override
     public boolean isPauseByUser() {
-        return mIsPauseOnNotify;
+        return PlayEnableController.isPauseByUser();
     }
 
     @Override
@@ -785,13 +683,13 @@ public class MusicPlayService extends BasePlayService {
     }
 
     @Override
-    public String getLastTargetMediaUrl() {
+    public String getLastTargetMediaPath() {
         return PlayerPreferUtils.getLastTargetMediaUrl(false, PlayerCxtFlag.MUSIC_PLAYER, "");
     }
 
     @Override
-    public void saveTargetMediaUrl(String mediaUrl) {
-        PlayerPreferUtils.getLastTargetMediaUrl(true, PlayerCxtFlag.MUSIC_PLAYER, mediaUrl);
+    public void saveTargetMediaPath(String mediaPath) {
+        PlayerPreferUtils.getLastTargetMediaUrl(true, PlayerCxtFlag.MUSIC_PLAYER, mediaPath);
     }
 
     @Override
@@ -815,7 +713,7 @@ public class MusicPlayService extends BasePlayService {
      */
     public void savePlayInfo() {
         if (isPlaying()) {
-            savePlayMediaInfos(getPath(), getProgress());
+            savePlayMediaInfos(getCurrMediaPath(), getProgress());
         }
     }
 
@@ -824,7 +722,7 @@ public class MusicPlayService extends BasePlayService {
      * <p>
      * This method used to set program path/name/image for Screen/Launcher
      */
-    private void cacheProgram(ProMusic program) {
+    private void cacheProgram(ProAudio program) {
         PlayerLogicUtils.cacheMusicProgram(getContentResolver(), program);
     }
 
@@ -833,8 +731,8 @@ public class MusicPlayService extends BasePlayService {
      * <p>
      * This method used to set playing status for Screen/Launcher
      */
-    public void cachePlayState(int playState) {
-        int isPlaying = (playState == IPlayerState.PLAY || playState == IPlayerState.PREPARED) ? 1 : 0;
+    public void cachePlayState(PlayState playState) {
+        int isPlaying = (playState == PlayState.PLAY || playState == PlayState.PREPARED) ? 1 : 0;
         PlayerLogicUtils.cachePlayerState(getContentResolver(), PlayerCxtFlag.MUSIC_PLAYER, isPlaying);
     }
 
@@ -855,7 +753,7 @@ public class MusicPlayService extends BasePlayService {
         Logs.i(TAG, "^^ onDestroy() ^^");
         mIsDestoryed = true;
         release();
-        cachePlayState(0);
+        cachePlayState(PlayState.NONE);
         registerAudioFocus(2);
         setCurrPlayer(false, this);
     }

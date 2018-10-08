@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import js.lib.android.media.video.bean.ProVideo;
+import js.lib.android.media.bean.ProVideo;
 import js.lib.android.media.video.db.VideoTables.VideoCacheInfo;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.Logs;

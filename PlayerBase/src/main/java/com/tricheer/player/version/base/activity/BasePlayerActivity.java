@@ -8,24 +8,24 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.tricheer.player.bean.ProMusic;
-import com.tricheer.player.bean.ProVideo;
-import com.tricheer.player.bean.Program;
-import com.tricheer.player.bean.ProgramPinyinComparator;
-import com.tricheer.player.engine.PlayEnableFlag;
-import com.tricheer.player.engine.PlayerActionsListener;
+import com.tri.lib.utils.PlayerPowerManager;
 import com.tricheer.player.engine.VersionController;
 import com.tricheer.player.receiver.MediaScanReceiver;
-import com.tricheer.player.receiver.PlayerBaseReceiver.PlayerReceiverListener;
-import com.tricheer.player.utils.PlayerPowerManager;
+import com.tricheer.player.receiver.PlayerReceiver.PlayerReceiverListener;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.Serializable;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.Set;
 
+import js.lib.android.media.PlayMode;
+import js.lib.android.media.PlayState;
+import js.lib.android.media.bean.ProAudio;
+import js.lib.android.media.bean.ProVideo;
+import js.lib.android.media.bean.Program;
+import js.lib.android.media.bean.ProgramPinyinComparator;
+import js.lib.android.media.engine.PlayListener;
 import js.lib.android.utils.Logs;
 
 /**
@@ -33,7 +33,7 @@ import js.lib.android.utils.Logs;
  *
  * @author Jun.Wang
  */
-public abstract class BasePlayerActivity extends BaseFragActivity implements PlayerReceiverListener, PlayerActionsListener {
+public abstract class BasePlayerActivity extends BaseFragActivity implements PlayerReceiverListener, PlayListener {
     // TAG
     private static final String TAG = "BasePlayerActivity";
 
@@ -159,33 +159,7 @@ public abstract class BasePlayerActivity extends BaseFragActivity implements Pla
 
     // {@link PlayerReceiverListener} Implements Method
     @Override
-    public void onNotifyOperate(String opFlag) {
-    }
-
-    // {@link PlayerReceiverListener} Implements Method
-    @Override
-    public boolean isCacheOnAccOff() {
-        return false;
-    }
-
-    // {@link PlayerReceiverListener} Implements Method
-    @Override
-    public void onNotifySearchMediaList(String title, String artist) {
-    }
-
-    // {@link PlayerReceiverListener} Implements Method
-    @Override
-    public void onNotifyPlaySearchedMusic(ProMusic program) {
-    }
-
-    // {@link PlayerReceiverListener} Implements Method
-    @Override
-    public void onNotifyPlayMedia(String path) {
-    }
-
-    // {@link PlayerReceiverListener} Implements Method
-    @Override
-    public void onNotifyScanAudios(int flag, List<ProMusic> listPrgrams, Set<String> allSdMountedPaths) {
+    public void onNotifyScanAudios(int flag, List<ProAudio> listPrgrams, Set<String> allSdMountedPaths) {
     }
 
     // {@link PlayerReceiverListener} Implements Method
@@ -195,17 +169,17 @@ public abstract class BasePlayerActivity extends BaseFragActivity implements Pla
 
     // {@link IPlayerListener} Implements Method
     @Override
-    public void onNotifyPlayState(int playState) {
+    public void onPlayStateChanged(PlayState playState) {
     }
 
     // {@link IPlayerListener} Implements Method
     @Override
-    public void onProgressChange(String mediaUrl, int progress, int duration) {
+    public void onProgressChanged(String mediaUrl, int progress, int duration) {
     }
 
     // {@link PlayerActionsListener} Implements Method
     @Override
-    public void setPlayMode(int mode) {
+    public void setPlayMode(PlayMode mode) {
     }
 
     // {@link PlayerActionsListener} Implements Method
@@ -215,35 +189,18 @@ public abstract class BasePlayerActivity extends BaseFragActivity implements Pla
 
     // {@link PlayerActionsListener} Implements Method
     @Override
-    public Serializable getCurrMedia() {
+    public Program getCurrMedia() {
         return null;
     }
 
     // {@link PlayerActionsListener} Implements Method
     @Override
-    public PlayEnableFlag getPlayEnableFlag() {
-        return null;
-    }
-
-    // {@link PlayerActionsListener} Implements Method
-    @Override
-    public void setPlayList(List<?> listMedias) {
+    public void setPlayList(List<? extends Program> listMedias) {
     }
 
     // {@link PlayerActionsListener} Implements Method
     @Override
     public void setPlayPosition(int position) {
-    }
-
-    // {@link PlayerActionsListener} Implements Method
-    @Override
-    public boolean isPlayEnable() {
-        return false;
-    }
-
-    // {@link PlayerActionsListener} Implements Method
-    @Override
-    public void removePlayRunnable() {
     }
 
     // {@link PlayerActionsListener} Implements Method
@@ -298,25 +255,25 @@ public abstract class BasePlayerActivity extends BaseFragActivity implements Pla
 
     // {@link PlayerActionsListener} Implements Method
     @Override
-    public String getLastPath() {
+    public String getLastMediaPath() {
         return null;
     }
 
     // {@link PlayerActionsListener} Implements Method
     @Override
-    public int getLastProgress() {
+    public long getLastProgress() {
         return 0;
     }
 
     // {@link PlayerActionsListener} Implements Method
     @Override
-    public String getPath() {
+    public String getCurrMediaPath() {
         return null;
     }
 
     // {@link PlayerActionsListener} Implements Method
     @Override
-    public int getPosition() {
+    public int getCurrIdx() {
         return 0;
     }
 
@@ -356,14 +313,15 @@ public abstract class BasePlayerActivity extends BaseFragActivity implements Pla
     }
 
     // {@link PlayerActionsListener} Implements Method
+
     @Override
-    public String getLastTargetMediaUrl() {
+    public String getLastTargetMediaPath() {
         return null;
     }
 
     // {@link PlayerActionsListener} Implements Method
     @Override
-    public void saveTargetMediaUrl(String mediaUrl) {
+    public void saveTargetMediaPath(String mediaPath) {
     }
 
     // {@link PlayerActionsListener} Implements Method
@@ -384,31 +342,11 @@ public abstract class BasePlayerActivity extends BaseFragActivity implements Pla
 
     // {@link PlayerActionsListener} Implements Method
     @Override
-    public void setPlayerActionsListener(PlayerActionsListener l) {
+    public void setPlayListener(PlayListener l) {
     }
 
     // {@link PlayerActionsListener} Implements Method
     @Override
-    public void removePlayerActionsListener(PlayerActionsListener l) {
-    }
-
-    // {@link PlayerActionsListener} Implements Method
-    @Override
-    public void onAudioFocusDuck() {
-    }
-
-    // {@link PlayerActionsListener} Implements Method
-    @Override
-    public void onAudioFocusTransient() {
-    }
-
-    // {@link PlayerActionsListener} Implements Method
-    @Override
-    public void onAudioFocusLoss() {
-    }
-
-    // {@link PlayerActionsListener} Implements Method
-    @Override
-    public void onAudioFocusGain() {
+    public void removePlayListener(PlayListener l) {
     }
 }

@@ -15,8 +15,6 @@ import android.widget.ListView;
 
 import com.js.sidebar.LetterSideBar;
 import com.tricheer.player.R;
-import com.tricheer.player.bean.ProMusic;
-import com.tricheer.player.engine.db.DBManager;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.activity.SclLc2010VdcAudioListActivity;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.activity.SclLc2010VdcAudioPlayerActivity;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.adapter.SclLc2010VdcAudioCollectsAdapter;
@@ -26,6 +24,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import js.lib.android.media.audio.db.AudioDBManager;
+import js.lib.android.media.bean.ProAudio;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.Logs;
 
@@ -57,7 +57,7 @@ public class SclLc2010VdcAudioCollectsFrag extends BaseAudioListFrag {
     /**
      * Media list
      */
-    private List<ProMusic> mListMedias;
+    private List<ProAudio> mListMedias;
 
     /**
      * Data adapter
@@ -100,11 +100,11 @@ public class SclLc2010VdcAudioCollectsFrag extends BaseAudioListFrag {
         lvDatas = (ListView) contentV.findViewById(R.id.lv_datas);
         lvDatas.setAdapter(mDataAdapter);
         lvDatas.setOnItemClickListener(new LvItemClick());
-        refreshDatas(mAttachedActivity.getListMedias(), mAttachedActivity.getLastPath());
+        refreshDatas(mAttachedActivity.getListMedias(), mAttachedActivity.getLastMediaPath());
     }
 
     @Override
-    public void refreshDatas(List<ProMusic> listMedias, String targetMediaUrl) {
+    public void refreshDatas(List<ProAudio> listMedias, String targetMediaUrl) {
         if (isAdded()) {
             //Check NULL
             if (EmptyUtil.isEmpty(listMedias)) {
@@ -113,7 +113,7 @@ public class SclLc2010VdcAudioCollectsFrag extends BaseAudioListFrag {
 
             //Filter collected
             mListMedias = new ArrayList<>();
-            for (ProMusic media : listMedias) {
+            for (ProAudio media : listMedias) {
                 if (media.isCollected == 1) {
                     mListMedias.add(media);
                 }
@@ -175,7 +175,7 @@ public class SclLc2010VdcAudioCollectsFrag extends BaseAudioListFrag {
                 Logs.i(TAG, "LvItemClick -> onItemClick(AdapterView," + position + ",id)");
                 final Object objItem = parent.getItemAtPosition(position);
                 if (objItem != null) {
-                    ProMusic program = (ProMusic) objItem;
+                    ProAudio program = (ProAudio) objItem;
                     openPlayerActivity(program.mediaUrl, mListMedias);
                 }
             }
@@ -190,7 +190,7 @@ public class SclLc2010VdcAudioCollectsFrag extends BaseAudioListFrag {
         };
     }
 
-    protected void openPlayerActivity(String mediaUrl, List<ProMusic> listPrograms) {
+    protected void openPlayerActivity(String mediaUrl, List<ProAudio> listPrograms) {
         try {
             Intent playerIntent = new Intent(mAttachedActivity, SclLc2010VdcAudioPlayerActivity.class);
             playerIntent.putExtra("SELECT_MEDIA_URL", mediaUrl);
@@ -204,7 +204,7 @@ public class SclLc2010VdcAudioCollectsFrag extends BaseAudioListFrag {
     private class CollectBtnCallback implements SclLc2010VdcAudioNamesAdapter.CollectListener {
         @Override
         public void onClickCollectBtn(ImageView ivCollect, int pos) {
-            ProMusic item = mDataAdapter.getItem(pos);
+            ProAudio item = mDataAdapter.getItem(pos);
             if (item == null) {
                 return;
             }
@@ -212,12 +212,12 @@ public class SclLc2010VdcAudioCollectsFrag extends BaseAudioListFrag {
             switch (item.isCollected) {
                 case 0:
                     item.isCollected = 1;
-                    DBManager.updateMediaCollect(item);
+                    AudioDBManager.instance().updateMediaCollect(item);
                     ivCollect.setImageResource(R.drawable.favor_c);
                     break;
                 case 1:
                     item.isCollected = 0;
-                    DBManager.updateMediaCollect(item);
+                    AudioDBManager.instance().updateMediaCollect(item);
                     ivCollect.setImageResource(R.drawable.favor_c_n);
                     break;
             }
@@ -228,6 +228,6 @@ public class SclLc2010VdcAudioCollectsFrag extends BaseAudioListFrag {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         mAttachedActivity.onActivityResult(requestCode, resultCode, data);
-        mDataAdapter.refreshDatas(mAttachedActivity.getLastPath());
+        mDataAdapter.refreshDatas(mAttachedActivity.getLastMediaPath());
     }
 }

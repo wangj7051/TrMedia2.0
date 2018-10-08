@@ -9,12 +9,12 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
 
-import com.lib.view.contacts.CharacterParser;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.tricheer.player.utils.PlayerFileUtils;
 
 import js.lib.android.utils.ImageLoaderUtils;
 import js.lib.android.utils.Logs;
+import js.lib.utils.CharacterParser;
 
 /**
  * Base FragmentActivity

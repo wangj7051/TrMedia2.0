@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 import js.lib.android.media.audio.utils.MediaUtils;
-import js.lib.android.media.video.bean.VideoInfo;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.Logs;
 import js.lib.utils.date.DateFormatUtil;

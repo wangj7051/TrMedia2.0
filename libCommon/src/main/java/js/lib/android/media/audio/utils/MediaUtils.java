@@ -6,7 +6,7 @@ import android.media.MediaPlayer;
 
 import java.util.List;
 
-import js.lib.android.media.video.bean.VideoInfo;
+import js.lib.android.media.video.utils.VideoInfo;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.Logs;
 

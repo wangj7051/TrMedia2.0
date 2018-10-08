@@ -9,10 +9,10 @@ import android.os.Handler;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import js.lib.android.media.IPlayerListener;
-import js.lib.android.media.IPlayerState;
+import js.lib.android.media.PlayState;
 import js.lib.android.media.audio.IAudioPlayer;
 import js.lib.android.media.audio.utils.MediaUtils;
+import js.lib.android.media.engine.PlayListener;
 import js.lib.android.utils.CommonUtil;
 import js.lib.android.utils.Logs;
 
@@ -60,12 +60,12 @@ public class AudioMediaPlayer implements IAudioPlayer {
     /**
      * Player Listener
      */
-    private IPlayerListener mPlayerListener;
+    private PlayListener mPlayerListener;
 
     /**
      * Create Music Player - MediaPlayer
      */
-    public AudioMediaPlayer(Context cxt, String mediaPath, IPlayerListener l) {
+    public AudioMediaPlayer(Context cxt, String mediaPath, PlayListener l) {
         this.mContext = cxt;
         this.mMediaPath = mediaPath;
         this.mPlayerListener = l;
@@ -83,7 +83,7 @@ public class AudioMediaPlayer implements IAudioPlayer {
 
                 @Override
                 public void onPrepared(MediaPlayer mp) {
-                    notifyPlayState(IPlayerState.PREPARED);
+                    notifyPlayState(PlayState.PREPARED);
                     mIsPreparing = false;
                     if (mIsPrepareAsync) {
                         mIsPrepareAsync = false;
@@ -96,7 +96,7 @@ public class AudioMediaPlayer implements IAudioPlayer {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     if (!mIsPreparing) {
-                        notifyPlayState(IPlayerState.COMPLETE);
+                        notifyPlayState(PlayState.COMPLETE);
                     }
                 }
             });
@@ -118,7 +118,7 @@ public class AudioMediaPlayer implements IAudioPlayer {
                     }
                     // 通知监听器处理ERROR
                     if (isProcessError) {
-                        notifyPlayState(IPlayerState.ERROR);
+                        notifyPlayState(PlayState.ERROR);
                     }
 
                     // LOG
@@ -132,13 +132,13 @@ public class AudioMediaPlayer implements IAudioPlayer {
                 @Override
                 public void onSeekComplete(MediaPlayer mp) {
                     if (!mIsPreparing) {
-                        notifyPlayState(IPlayerState.SEEK_COMPLETED);
+                        notifyPlayState(PlayState.SEEK_COMPLETED);
                     }
                 }
             });
         } catch (Exception e) {
             Logs.printStackTrace(TAG + "createMediaPlayer()", e);
-            notifyPlayState(IPlayerState.ERROR_PLAYER_INIT);
+            notifyPlayState(PlayState.ERROR_PLAYER_INIT);
         }
     }
 
@@ -150,7 +150,7 @@ public class AudioMediaPlayer implements IAudioPlayer {
             this.mIsPrepareAsync = true;
             this.mIsPreparing = true;
             this.mMediaPath = mediaUrl;
-            notifyPlayState(IPlayerState.REFRESH_UI);
+            notifyPlayState(PlayState.REFRESH_UI);
             if (mMediaPlayer == null) {
                 createMediaPlayer(mContext, mediaUrl);
             } else {
@@ -159,7 +159,7 @@ public class AudioMediaPlayer implements IAudioPlayer {
                 mMediaPlayer.prepareAsync();
             }
         } catch (Exception e) {
-            notifyPlayState(IPlayerState.ERROR);
+            notifyPlayState(PlayState.ERROR);
             Logs.printStackTrace(TAG + "play(mediaUrl)", e);
         }
     }
@@ -169,7 +169,7 @@ public class AudioMediaPlayer implements IAudioPlayer {
         if (mMediaPlayer != null) {
             mMediaPlayer.start();
             startProgressTimer();
-            notifyPlayState(IPlayerState.PLAY);
+            notifyPlayState(PlayState.PLAY);
         }
     }
 
@@ -178,7 +178,7 @@ public class AudioMediaPlayer implements IAudioPlayer {
         if (mMediaPlayer != null) {
             mMediaPlayer.pause();
             CommonUtil.cancelTimer(mProgressTimer);
-            notifyPlayState(IPlayerState.PAUSE);
+            notifyPlayState(PlayState.PAUSE);
         }
     }
 
@@ -197,7 +197,7 @@ public class AudioMediaPlayer implements IAudioPlayer {
         if (mMediaPlayer != null) {
             mMediaPlayer.reset();
             CommonUtil.cancelTimer(mProgressTimer);
-            notifyPlayState(IPlayerState.RESET);
+            notifyPlayState(PlayState.RESET);
         }
     }
 
@@ -206,7 +206,7 @@ public class AudioMediaPlayer implements IAudioPlayer {
         if (mMediaPlayer != null) {
             mMediaPlayer.stop();
             CommonUtil.cancelTimer(mProgressTimer);
-            notifyPlayState(IPlayerState.STOP);
+            notifyPlayState(PlayState.STOP);
         }
     }
 
@@ -216,7 +216,7 @@ public class AudioMediaPlayer implements IAudioPlayer {
             mMediaPlayer.release();
             mMediaPlayer = null;
             CommonUtil.cancelTimer(mProgressTimer);
-            notifyPlayState(IPlayerState.RELEASE);
+            notifyPlayState(PlayState.RELEASE);
         }
     }
 
@@ -256,7 +256,7 @@ public class AudioMediaPlayer implements IAudioPlayer {
         if (mMediaPlayer != null) {
             if (msec >= (getMediaDuration() - 1000)) {
                 if (!mIsPreparing) {
-                    notifyPlayState(IPlayerState.COMPLETE);
+                    notifyPlayState(PlayState.COMPLETE);
                 }
             } else {
                 mMediaPlayer.seekTo(msec);
@@ -275,7 +275,7 @@ public class AudioMediaPlayer implements IAudioPlayer {
     }
 
     @Override
-    public void setPlayerListener(IPlayerListener l) {
+    public void setPlayerListener(PlayListener l) {
         this.mPlayerListener = l;
     }
 
@@ -309,9 +309,9 @@ public class AudioMediaPlayer implements IAudioPlayer {
     /**
      * Notify Play state
      */
-    private void notifyPlayState(int playState) {
+    private void notifyPlayState(PlayState playState) {
         if (mPlayerListener != null) {
-            mPlayerListener.onNotifyPlayState(playState);
+            mPlayerListener.onPlayStateChanged(playState);
         }
     }
 
@@ -325,7 +325,7 @@ public class AudioMediaPlayer implements IAudioPlayer {
      */
     private void notifyProgress(String path, int time, int duration) {
         if (mPlayerListener != null) {
-            mPlayerListener.onProgressChange(path, time, duration);
+            mPlayerListener.onProgressChanged(path, time, duration);
         }
     }
 }

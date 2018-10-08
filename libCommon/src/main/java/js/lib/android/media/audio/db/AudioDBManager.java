@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import js.lib.android.media.audio.bean.ProAudio;
+import js.lib.android.media.bean.ProAudio;
 import js.lib.android.media.audio.db.AudioTables.MusicCacheInfo;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.Logs;

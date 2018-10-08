@@ -11,15 +11,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.tri.lib.engine.KeyEnum;
 import com.tri.lib.receiver.AccReceiver;
 import com.tri.lib.receiver.ReverseReceiver;
+import com.tri.lib.utils.SettingsSysUtil;
 import com.tricheer.player.R;
-import com.tricheer.player.bean.ProMusic;
-import com.tricheer.player.engine.Keys;
 import com.tricheer.player.engine.PlayerAppManager;
 import com.tricheer.player.engine.PlayerAppManager.PlayerCxtFlag;
 import com.tricheer.player.service.MusicPlayService;
-import com.tricheer.player.utils.SettingsSysUtil;
 import com.tricheer.player.version.base.activity.music.BaseAudioKeyEventActivity;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.frags.BaseAudioListFrag;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.frags.SclLc2010VdcAudioAlbumsFrag;
@@ -31,6 +30,7 @@ import com.tricheer.player.version.cj.slc_lc2010_vdc.frags.SclLc2010VdcAudioName
 import java.util.List;
 import java.util.Set;
 
+import js.lib.android.media.bean.ProAudio;
 import js.lib.android.utils.CommonUtil;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.FragUtil;
@@ -68,7 +68,7 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
         super.onCreate(bundle);
         ReverseReceiver.register(this);
         AccReceiver.register(this);
-        SettingsSysUtil.setMusicState(this, 1);
+        SettingsSysUtil.setAudioState(this, 1);
         setContentView(R.layout.scl_lc2010_vdc_activity_audio_list);
         PlayerAppManager.putCxt(PlayerCxtFlag.MUSIC_LIST, this);
         init();
@@ -208,7 +208,7 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
         mLoadMediaImageTask = new LoadMediaImageTask(new LoadImgListener() {
 
             @Override
-            public void postRefresh(ProMusic program, boolean isLoadEnd) {
+            public void postRefresh(ProAudio program, boolean isLoadEnd) {
             }
         });
         mLoadMediaImageTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -225,7 +225,7 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
     }
 
     @Override
-    protected void refreshPageOnScan(List<ProMusic> listScannedAudios, boolean isScaned) {
+    protected void refreshPageOnScan(List<ProAudio> listScannedAudios, boolean isScaned) {
         super.refreshPageOnScan(listScannedAudios, isScaned);
 //        if (EmptyUtil.isEmpty(mListPrograms)) {
         //showLctLm8917Loading(false);
@@ -244,7 +244,7 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
             release();
             //showLctLm8917Loading(false);
         } else {
-            String currPlayerUrl = getPath();
+            String currPlayerUrl = getCurrMediaPath();
             if (!EmptyUtil.isEmpty(currPlayerUrl)) {
                 boolean isCurrPlayingExist = false;
                 for (String path : allSdMountedPaths) {
@@ -263,7 +263,7 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
         }
     }
 
-    public List<ProMusic> getListMedias() {
+    public List<ProAudio> getListMedias() {
         return mListPrograms;
     }
 
@@ -273,7 +273,7 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
     private void refreshDatas() {
         // 刷新媒体列表
         if (mFragMedias != null) {
-            mFragMedias.refreshDatas(mListPrograms, getLastPath());
+            mFragMedias.refreshDatas(mListPrograms, getLastMediaPath());
         }
     }
 
@@ -323,22 +323,22 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
     }
 
     @Override
-    public void onGetKeyCode(int keyCode) {
-        switch (keyCode) {
-            case Keys.KeyVals.KEYCODE_PREV:
+    public void onGetKeyCode(KeyEnum key) {
+        switch (key) {
+            case KEYCODE_PREV:
                 playPrevBySecurity();
                 if (mFragMedias != null) {
                     mFragMedias.prev();
                 }
                 break;
-            case Keys.KeyVals.KEYCODE_NEXT:
+            case KEYCODE_NEXT:
                 playNextBySecurity();
                 if (mFragMedias != null) {
                     mFragMedias.next();
                 }
                 break;
 
-            case Keys.KeyVals.KEYCODE_DPAD_LEFT:
+            case KEYCODE_DPAD_LEFT:
                 if (!mIsMenuFrozenTime && mFragMedias != null) {
                     if (mFragMedias instanceof SclLc2010VdcAudioCollectsFrag) {
                         switchTab(vItems[4], false);
@@ -353,7 +353,7 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
                     }
                 }
                 break;
-            case Keys.KeyVals.KEYCODE_DPAD_RIGHT:
+            case KEYCODE_DPAD_RIGHT:
                 if (!mIsMenuFrozenTime && mFragMedias != null) {
                     if (mFragMedias instanceof SclLc2010VdcAudioCollectsFrag) {
                         switchTab(vItems[1], false);
@@ -422,7 +422,7 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
         cancelAllTasks();
         mHandler.removeCallbacksAndMessages(null);
         bindAndCreatePlayService(3, 4);
-        SettingsSysUtil.setMusicState(this, 0);
+        SettingsSysUtil.setAudioState(this, 0);
         PlayerAppManager.removeCxt(PlayerCxtFlag.MUSIC_LIST);
         super.onDestroy();
     }
@@ -456,8 +456,37 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
         @Override
         public void run() {
             if (mFragMedias != null) {
-                mFragMedias.playSelectMedia(getLastPath());
+                mFragMedias.playSelectMedia(getLastMediaPath());
             }
         }
     };
+
+    @Override
+    public void switchPlayMode(int supportFlag) {
+    }
+
+    @Override
+    public boolean isPlayEnable() {
+        return false;
+    }
+
+    @Override
+    public void onAudioFocusDuck() {
+
+    }
+
+    @Override
+    public void onAudioFocusTransient() {
+
+    }
+
+    @Override
+    public void onAudioFocusGain() {
+
+    }
+
+    @Override
+    public void onAudioFocusLoss() {
+
+    }
 }

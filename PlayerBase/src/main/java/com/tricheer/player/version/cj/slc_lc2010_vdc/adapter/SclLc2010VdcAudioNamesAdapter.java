@@ -10,21 +10,21 @@ import android.widget.SectionIndexer;
 import android.widget.TextView;
 
 import com.tricheer.player.R;
-import com.tricheer.player.bean.ProMusic;
 import com.tricheer.player.utils.PlayerLogicUtils;
 
 import java.util.List;
 
 import js.lib.android.adapter.BaseArrayAdapter;
+import js.lib.android.media.bean.ProAudio;
 import js.lib.android.utils.EmptyUtil;
 
-public class SclLc2010VdcAudioNamesAdapter extends BaseArrayAdapter<ProMusic> implements SectionIndexer {
+public class SclLc2010VdcAudioNamesAdapter extends BaseArrayAdapter<ProAudio> implements SectionIndexer {
     // TAG
     private final String TAG = "SlcLc2010VdcMusicListAdapter";
 
     private int mSelectedPos = 0;
     private String mSelectedMediaUrl = "";
-    private List<ProMusic> mListDatas;
+    private List<ProAudio> mListDatas;
 
     @IdRes
     private int mSelectFontColor, mNotSelectedColor;
@@ -49,7 +49,7 @@ public class SclLc2010VdcAudioNamesAdapter extends BaseArrayAdapter<ProMusic> im
         mCollectListener = l;
     }
 
-    public void setListDatas(List<ProMusic> listDatas) {
+    public void setListDatas(List<ProAudio> listDatas) {
         this.mListDatas = listDatas;
     }
 
@@ -58,13 +58,13 @@ public class SclLc2010VdcAudioNamesAdapter extends BaseArrayAdapter<ProMusic> im
     }
 
     public void refreshDatas(int pos) {
-        ProMusic item = getItem(pos);
+        ProAudio item = getItem(pos);
         if (item != null) {
             refreshDatas(item.mediaUrl);
         }
     }
 
-    public void refreshDatas(List<ProMusic> listDatas) {
+    public void refreshDatas(List<ProAudio> listDatas) {
         this.mListDatas = listDatas;
         refreshDatas();
     }
@@ -74,7 +74,7 @@ public class SclLc2010VdcAudioNamesAdapter extends BaseArrayAdapter<ProMusic> im
         refreshDatas();
     }
 
-    public void refreshDatas(List<ProMusic> listDatas, String selectedMediaUrl) {
+    public void refreshDatas(List<ProAudio> listDatas, String selectedMediaUrl) {
         this.mListDatas = listDatas;
         this.mSelectedMediaUrl = selectedMediaUrl;
         refreshDatas();
@@ -93,7 +93,7 @@ public class SclLc2010VdcAudioNamesAdapter extends BaseArrayAdapter<ProMusic> im
     }
 
     @Override
-    public ProMusic getItem(int position) {
+    public ProAudio getItem(int position) {
         if (EmptyUtil.isEmpty(mListDatas)) {
             return null;
         }
@@ -116,7 +116,7 @@ public class SclLc2010VdcAudioNamesAdapter extends BaseArrayAdapter<ProMusic> im
         }
 
         //
-        ProMusic item = getItem(position);
+        ProAudio item = getItem(position);
         String showName = PlayerLogicUtils.getMediaTitle(mContext, -1, item, true);
         holder.tvSongName.setText((position + 1) + "    " + showName);
 

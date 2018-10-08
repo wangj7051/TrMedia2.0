@@ -1,11 +1,11 @@
 package com.tricheer.player.utils;
 
 import com.tri.lib.utils.PreferUtils;
-import com.tricheer.player.engine.PlayerConsts.PlayMode;
 
 import java.util.HashSet;
 import java.util.Set;
 
+import js.lib.android.media.PlayMode;
 import js.lib.android.utils.Logs;
 
 /**
@@ -33,17 +33,18 @@ public class PlayerPreferUtils extends PreferUtils {
     }
 
     /**
-     * Get Play Mode
+     * Get audio play mode
      *
-     * @param mode : {@link PlayMode}
-     * @return int: {@link PlayMode}
+     * @param isSet    true - Cache mode value.
+     * @param playMode {@link PlayMode}
+     * @return js.lib.android.media.PlayMode
      */
-    public static int getMusicPlayMode(boolean isSet, int mode) {
-        final String PREFER_KEY = "PLAY_MODE";
+    public static PlayMode getAudioPlayMode(boolean isSet, PlayMode playMode) {
+        final String PREFER_KEY = "AUDIO_PLAY_MODE";
         if (isSet) {
-            saveInt(PREFER_KEY, mode);
+            saveInt(PREFER_KEY, playMode.getValue());
         }
-        return getInt(PREFER_KEY, PlayMode.LOOP);
+        return PlayMode.getMode(getInt(PREFER_KEY, PlayMode.NONE.getValue()));
     }
 
     /**

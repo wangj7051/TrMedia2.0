@@ -1,6 +1,6 @@
 package js.lib.android.media.audio;
 
-import js.lib.android.media.IPlayerListener;
+import js.lib.android.media.engine.PlayListener;
 
 /**
  * Define Player actions
@@ -64,5 +64,5 @@ public interface IAudioPlayer {
     /**
      * Set Player Listener
      */
-    void setPlayerListener(IPlayerListener l);
+    void setPlayerListener(PlayListener l);
 }

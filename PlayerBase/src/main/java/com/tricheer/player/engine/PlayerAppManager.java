@@ -6,7 +6,7 @@ import android.app.Service;
 import android.content.Context;
 
 import com.tricheer.player.App;
-import com.tricheer.player.receiver.PlayerBaseReceiver.PlayerReceiverListener;
+import com.tricheer.player.receiver.PlayerReceiver.PlayerReceiverListener;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -36,7 +36,7 @@ public class PlayerAppManager {
      * Player Objects
      */
     @SuppressLint("UseSparseArrays")
-    private static Map<Integer, Context> mMapCxts = new HashMap<Integer, Context>();
+    private static Map<Integer, Context> mMapCxts = new HashMap<>();
 
     /**
      * Cache Context[Activity or Service] Object

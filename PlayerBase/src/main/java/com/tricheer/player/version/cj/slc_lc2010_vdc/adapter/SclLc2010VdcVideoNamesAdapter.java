@@ -10,13 +10,13 @@ import android.widget.SectionIndexer;
 import android.widget.TextView;
 
 import com.tricheer.player.R;
-import com.tricheer.player.bean.ProVideo;
 import com.tricheer.player.utils.PlayerLogicUtils;
 
 import java.io.File;
 import java.util.List;
 
 import js.lib.android.adapter.BaseArrayAdapter;
+import js.lib.android.media.bean.ProVideo;
 import js.lib.android.utils.EmptyUtil;
 
 public class SclLc2010VdcVideoNamesAdapter extends BaseArrayAdapter<ProVideo> implements SectionIndexer {

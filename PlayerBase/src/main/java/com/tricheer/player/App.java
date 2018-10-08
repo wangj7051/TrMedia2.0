@@ -6,18 +6,18 @@ import android.content.Intent;
 
 import com.tricheer.player.engine.PlayerConsts.PlayerOpenMethod;
 import com.tricheer.player.engine.VersionController;
-import com.tricheer.player.engine.db.DBManager;
 import com.tricheer.player.receiver.MediaScanReceiver;
 import com.tricheer.player.receiver.PlayerReceiver;
 import com.tricheer.player.utils.PlayerFileUtils;
-import com.tricheer.player.utils.PlayerLogicUtils;
 import com.tricheer.player.utils.PlayerPreferUtils;
 
 import java.util.List;
 
-import js.lib.android.media.audio.bean.AudioInfo;
+import js.lib.android.media.audio.db.AudioDBManager;
+import js.lib.android.media.audio.utils.AudioInfo;
 import js.lib.android.media.audio.utils.AudioUtils;
-import js.lib.android.media.video.bean.VideoInfo;
+import js.lib.android.media.video.db.VideoDBManager;
+import js.lib.android.media.video.utils.VideoInfo;
 import js.lib.android.media.video.utils.VideoUtils;
 import js.lib.android.utils.AppCrashHandler;
 import js.lib.android.utils.AppUtil;
@@ -55,7 +55,8 @@ public class App extends Application {
         // 初始化异常处理类
         AppCrashHandler.instance().init(this);
         // 初始化数据库操作类
-        DBManager.init(this);
+        AudioDBManager.instance().init(this, PlayerFileUtils.getDBPath() + "/PlayerAudio.sqlite");
+        VideoDBManager.instance().init(this, PlayerFileUtils.getDBPath() + "/PlayerVideo.sqlite");
 
         // 初始化屏信息
         ScreenInfoUtil.init(this);
@@ -103,7 +104,6 @@ public class App extends Application {
                 playerIntent.putExtra(PlayerOpenMethod.PARAM, openMethod);
                 playerIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 cxt.startActivity(playerIntent);
-                PlayerLogicUtils.notifyLocalMediaOpen(cxt, "MUSIC_PLAYER");
             }
         }
     }
@@ -122,7 +122,6 @@ public class App extends Application {
             playerIntent.putExtra(PlayerOpenMethod.PARAM, openMethod);
             playerIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             cxt.startActivity(playerIntent);
-            PlayerLogicUtils.notifyLocalMediaOpen(cxt, "VIDEO_PLAYER");
         }
     }
 
@@ -141,7 +140,6 @@ public class App extends Application {
             intentOfPlayer.putExtra(PlayerOpenMethod.PARAM, PlayerOpenMethod.VAL_FILE_MANAGER);
             intentOfPlayer.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(intentOfPlayer);
-            PlayerLogicUtils.notifyLocalMediaOpen(context, "VIDEO_PLAYER");
         }
     }
 }

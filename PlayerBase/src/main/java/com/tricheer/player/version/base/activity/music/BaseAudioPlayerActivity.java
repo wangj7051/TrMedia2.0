@@ -4,12 +4,9 @@ import android.content.Context;
 import android.os.Bundle;
 import android.widget.SeekBar;
 
-import com.tricheer.player.bean.ProMusic;
 import com.tricheer.player.engine.PlayerAppManager;
 import com.tricheer.player.engine.PlayerAppManager.PlayerCxtFlag;
-import com.tricheer.player.engine.PlayerConsts.PlayMode;
 import com.tricheer.player.engine.music.PlayerDelegate;
-import com.tricheer.player.receiver.ReceiverOperates;
 import com.tricheer.player.service.MusicPlayService;
 import com.tricheer.player.utils.PlayerLogicUtils;
 import com.tricheer.player.utils.PlayerPreferUtils;
@@ -17,7 +14,9 @@ import com.tricheer.player.utils.PlayerPreferUtils;
 import java.io.File;
 import java.util.List;
 
-import js.lib.android.media.IPlayerState;
+import js.lib.android.media.PlayMode;
+import js.lib.android.media.PlayState;
+import js.lib.android.media.bean.ProAudio;
 import js.lib.android.utils.CommonUtil;
 import js.lib.android.utils.Logs;
 import js.lib.http.IResponse;
@@ -45,7 +44,7 @@ public abstract class BaseAudioPlayerActivity extends BaseAudioFocusActivity imp
     @Override
     protected void onPlayServiceConnected(MusicPlayService service) {
         super.onPlayServiceConnected(service);
-        setPlayerActionsListener(this);
+        setPlayListener(this);
     }
 
     @Override
@@ -65,26 +64,12 @@ public abstract class BaseAudioPlayerActivity extends BaseAudioFocusActivity imp
         }
     }
 
-    @Override
-    public void onNotifyOperate(String opFlag) {
-        Logs.i(TAG, "onNotifyOperate(" + opFlag + ")");
-        if (ReceiverOperates.PREV_PAGE.equals(opFlag)) {
-            execJumpPrevPage();
-        } else if (ReceiverOperates.NEXT_PAGE.equals(opFlag)) {
-            execJumpNextPage();
-
-            // Process By Service
-        } else {
-            super.onNotifyOperate(opFlag);
-        }
-    }
-
     /**
      * Is Playing Media
      */
     protected boolean isPlayingSameMedia(String mediaUrl) {
         try {
-            return mediaUrl.equals(getPath());
+            return mediaUrl.equals(getCurrMediaPath());
         } catch (Exception e) {
             Logs.printStackTrace(TAG + "isPlayingSameMedia()", e);
             return false;
@@ -123,8 +108,8 @@ public abstract class BaseAudioPlayerActivity extends BaseAudioFocusActivity imp
     }
 
     @Override
-    public void onNotifyPlayState(int playState) {
-        super.onNotifyPlayState(playState);
+    public void onPlayStateChanged(PlayState playState) {
+        super.onPlayStateChanged(playState);
         //Check page status
         if (isDestroyed()) {
             return;
@@ -132,29 +117,29 @@ public abstract class BaseAudioPlayerActivity extends BaseAudioFocusActivity imp
 
         //Process play state
         switch (playState) {
-            case IPlayerState.REFRESH_UI:
+            case REFRESH_UI:
                 refreshCurrMediaInfo();
                 break;
-            case IPlayerState.PLAY:
+            case PLAY:
                 refreshUIOfPlayBtn(1);
                 break;
-            case IPlayerState.PREPARED:
+            case PREPARED:
                 refreshSeekBar(true);
                 break;
-            case IPlayerState.SEEK_COMPLETED:
+            case SEEK_COMPLETED:
                 refreshSeekBar(false);
                 break;
-            case IPlayerState.PAUSE:
+            case PAUSE:
                 refreshUIOfPlayBtn(2);
                 break;
-            case IPlayerState.COMPLETE:
-            case IPlayerState.RESET:
-            case IPlayerState.STOP:
-            case IPlayerState.RELEASE:
+            case COMPLETE:
+            case RESET:
+            case STOP:
+            case RELEASE:
                 refreshUIOfPlayBtn(2);
                 refreshFrameTime(true);
                 break;
-            case IPlayerState.ERROR:
+            case ERROR:
                 refreshUIOfPlayBtn(2);
                 refreshFrameTime(true);
                 onNotifyPlayState$Error();
@@ -203,7 +188,7 @@ public abstract class BaseAudioPlayerActivity extends BaseAudioFocusActivity imp
      * After Play Error
      */
     protected void onNotifyPlayState$Error() {
-        ProMusic programWithError = getCurrProgram();
+        ProAudio programWithError = getCurrProgram();
         if (programWithError != null) {
             Logs.i(TAG, "onNotifyPlayState$Error :: " + programWithError.mediaUrl);
             PlayerLogicUtils.toastPlayError(mContext, programWithError.title);
@@ -211,18 +196,7 @@ public abstract class BaseAudioPlayerActivity extends BaseAudioFocusActivity imp
     }
 
     @Override
-    public void onProgressChange(String mediaUrl, int progress, int duration) {
-    }
-
-    /**
-     * Notify Search Music
-     */
-    @Override
-    public void onNotifySearchMediaList(String title, String artist) {
-    }
-
-    @Override
-    public void onNotifyPlaySearchedMusic(final ProMusic program) {
+    public void onProgressChanged(String mediaUrl, int progress, int duration) {
     }
 
     @Override

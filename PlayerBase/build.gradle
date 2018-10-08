@@ -20,7 +20,7 @@ android {
     }
 
     packagingOptions {
-        exclude 'META-INF/DEPENDENCIES'
+        pickFirst 'META-INF/*'
     }
 
     lintOptions {
@@ -33,7 +33,7 @@ android {
 
 dependencies {
     api project(':LibTri')
-    api project(':libTricheer')
+    //api project(':libTricheer')
     api project(':LetterSideBar')
     api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     //api files('libs/android-support-v4.jar')

@@ -3,7 +3,7 @@ package com.tricheer.player.version.base.activity.music;
 import android.util.Log;
 import android.view.KeyEvent;
 
-import com.tricheer.player.engine.Keys;
+import com.tri.lib.engine.KeyEnum;
 
 /**
  * Process {@link KeyEvent}
@@ -16,15 +16,15 @@ public abstract class BaseAudioKeyEventActivity extends BaseAudioExtendActionsAc
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        int keyCode = event.getKeyCode();
+        KeyEnum key = KeyEnum.getKey(event.getKeyCode());
         switch (event.getAction()) {
             case KeyEvent.ACTION_UP:
-                Log.i(TAG, "dispatchKeyEvent(" + keyCode + ")");
-                onGetKeyCode(keyCode);
+                Log.i(TAG, "dispatchKeyEvent(" + event + ")");
+                onGetKeyCode(key);
                 break;
         }
 
-        boolean isMenu = (keyCode == Keys.KeyVals.KEYCODE_DPAD_LEFT) || (keyCode == Keys.KeyVals.KEYCODE_DPAD_RIGHT);
+        boolean isMenu = (key == KeyEnum.KEYCODE_DPAD_LEFT) || (key == KeyEnum.KEYCODE_DPAD_RIGHT);
         if (isMenu) {
             return true;
         } else {
@@ -33,7 +33,7 @@ public abstract class BaseAudioKeyEventActivity extends BaseAudioExtendActionsAc
     }
 
     /**
-     * @param keyCode {@link com.tricheer.player.engine.Keys.KeyVals}
+     * @param key {@link KeyEnum}
      */
-    public abstract void onGetKeyCode(int keyCode);
+    public abstract void onGetKeyCode(KeyEnum key);
 }

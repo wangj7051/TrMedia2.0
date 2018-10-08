@@ -15,7 +15,6 @@ import android.widget.GridView;
 
 import com.js.sidebar.LetterSideBar;
 import com.tricheer.player.R;
-import com.tricheer.player.bean.ProVideo;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.activity.SclLc2010VdcVideoListActivity;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.activity.SclLc2010VdcVideoPlayerActivity;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.adapter.SclLc2010VdcVideoFoldersAdapter;
@@ -28,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import js.lib.android.media.bean.ProVideo;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.Logs;
 
@@ -96,7 +96,7 @@ public class SclLc2010VdcVideoFoldersFrag extends BaseVideoListFrag {
         gvDatas = (GridView) contentV.findViewById(R.id.v_datas);
         gvDatas.setAdapter(mDataAdapter);
         gvDatas.setOnItemClickListener(new GvItemClick());
-        refreshDatas(mAttachedActivity.getListMedias(), mAttachedActivity.getLastPath());
+        refreshDatas(mAttachedActivity.getListMedias(), mAttachedActivity.getLastMediaPath());
     }
 
     @Override
@@ -221,7 +221,7 @@ public class SclLc2010VdcVideoFoldersFrag extends BaseVideoListFrag {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case M_REQ_PLAYING_MEDIA_URL:
-                mDataAdapter.refreshDatas(mAttachedActivity.getLastPath());
+                mDataAdapter.refreshDatas(mAttachedActivity.getLastMediaPath());
                 break;
         }
     }

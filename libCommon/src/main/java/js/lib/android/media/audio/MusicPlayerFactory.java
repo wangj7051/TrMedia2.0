@@ -2,9 +2,9 @@ package js.lib.android.media.audio;
 
 import android.content.Context;
 
-import js.lib.android.media.IPlayerListener;
 import js.lib.android.media.audio.player_native.AudioMediaPlayer;
 import js.lib.android.media.audio.player_vlc.AudioVlcPlayer;
+import js.lib.android.media.engine.PlayListener;
 
 /**
  * Used to create player object
@@ -54,7 +54,7 @@ public class MusicPlayerFactory {
     /**
      * Create
      */
-    public IAudioPlayer create(Context cxt, String mediaPath, IPlayerListener l) {
+    public IAudioPlayer create(Context cxt, String mediaPath, PlayListener l) {
         if (mPlayer == null) {
             switch (mPlayerType) {
                 case PlayerType.VLC_PLAYER:

@@ -17,8 +17,6 @@ import android.widget.ListView;
 
 import com.js.sidebar.LetterSideBar;
 import com.tricheer.player.R;
-import com.tricheer.player.bean.ProMusic;
-import com.tricheer.player.engine.db.DBManager;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.activity.SclLc2010VdcAudioListActivity;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.activity.SclLc2010VdcAudioPlayerActivity;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.adapter.SclLc2010VdcAudioFoldersAdapter;
@@ -32,6 +30,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import js.lib.android.media.audio.db.AudioDBManager;
+import js.lib.android.media.bean.ProAudio;
 import js.lib.android.utils.Logs;
 
 /**
@@ -101,11 +101,11 @@ public class SclLc2010VdcAudioFoldersFrag extends BaseAudioListFrag {
         lvDatas = (ListView) contentV.findViewById(R.id.lv_datas);
         lvDatas.setAdapter(mDataAdapter);
         lvDatas.setOnItemClickListener(new LvItemClick());
-        refreshDatas(mAttachedActivity.getListMedias(), mAttachedActivity.getLastPath());
+        refreshDatas(mAttachedActivity.getListMedias(), mAttachedActivity.getLastMediaPath());
     }
 
     @Override
-    public void refreshDatas(List<ProMusic> listMedias, String targetMediaUrl) {
+    public void refreshDatas(List<ProAudio> listMedias, String targetMediaUrl) {
         if (isAdded()) {
             //Check NULL
             if (listMedias == null) {
@@ -114,7 +114,7 @@ public class SclLc2010VdcAudioFoldersFrag extends BaseAudioListFrag {
 
             //Filter collected
             Map<String, AudioFilter> mapDatas = new HashMap<>();
-            for (ProMusic media : listMedias) {
+            for (ProAudio media : listMedias) {
                 //Folder
                 String folderPath = "";
                 File file = new File(media.mediaUrl);
@@ -156,7 +156,7 @@ public class SclLc2010VdcAudioFoldersFrag extends BaseAudioListFrag {
                 if (obj instanceof AudioFilter) {
                     AudioFilter filter = (AudioFilter) obj;
                     if (filter.listMedias != null) {
-                        for (ProMusic media : filter.listMedias) {
+                        for (ProAudio media : filter.listMedias) {
                             filter.isSelected = TextUtils.equals(targetMediaUrl, media.mediaUrl);
                             if (filter.isSelected) {
                                 break;
@@ -192,7 +192,7 @@ public class SclLc2010VdcAudioFoldersFrag extends BaseAudioListFrag {
     public void playSelectMedia(String mediaUrl) {
         try {
             Object obj = mListDatas.get(0);
-            if (obj instanceof ProMusic) {
+            if (obj instanceof ProAudio) {
                 openPlayerActivity(mediaUrl, mListDatas);
             }
         } catch (Exception e) {
@@ -231,8 +231,8 @@ public class SclLc2010VdcAudioFoldersFrag extends BaseAudioListFrag {
                     mListDatas = item.listMedias;
                     mDataAdapter.refreshDatas(mListDatas);
                     lsb.setVisibility(View.VISIBLE);
-                } else if (objItem instanceof ProMusic) {
-                    ProMusic program = (ProMusic) objItem;
+                } else if (objItem instanceof ProAudio) {
+                    ProAudio program = (ProAudio) objItem;
                     openPlayerActivity(program.mediaUrl, mListDatas);
                 }
             }
@@ -262,17 +262,17 @@ public class SclLc2010VdcAudioFoldersFrag extends BaseAudioListFrag {
         @Override
         public void onClickCollectBtn(ImageView ivCollect, int pos) {
             Object item = mDataAdapter.getItem(pos);
-            if (item != null && item instanceof ProMusic) {
-                ProMusic media = (ProMusic) item;
+            if (item != null && item instanceof ProAudio) {
+                ProAudio media = (ProAudio) item;
                 switch (media.isCollected) {
                     case 0:
                         media.isCollected = 1;
-                        DBManager.updateMediaCollect(media);
+                        AudioDBManager.instance().updateMediaCollect(media);
                         ivCollect.setImageResource(R.drawable.favor_c);
                         break;
                     case 1:
                         media.isCollected = 0;
-                        DBManager.updateMediaCollect(media);
+                        AudioDBManager.instance().updateMediaCollect(media);
                         ivCollect.setImageResource(R.drawable.favor_c_n);
                         break;
                 }
@@ -284,6 +284,6 @@ public class SclLc2010VdcAudioFoldersFrag extends BaseAudioListFrag {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         mAttachedActivity.onActivityResult(requestCode, resultCode, data);
-        mDataAdapter.refreshDatas(mAttachedActivity.getLastPath());
+        mDataAdapter.refreshDatas(mAttachedActivity.getLastMediaPath());
     }
 }

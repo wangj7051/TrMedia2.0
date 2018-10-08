@@ -11,15 +11,11 @@ import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.tricheer.app.receiver.PlayerReceiverActions;
-import com.tricheer.player.bean.ProMusic;
-import com.tricheer.player.bean.ProVideo;
 import com.tricheer.player.engine.PlayerAppManager;
 import com.tricheer.player.engine.PlayerAppManager.PlayerCxtFlag;
 import com.tricheer.player.engine.PlayerType;
 import com.tricheer.player.engine.VersionController;
-import com.tricheer.player.engine.db.DBManager;
-import com.tricheer.player.receiver.PlayerBaseReceiver.PlayerReceiverListener;
+import com.tricheer.player.receiver.PlayerReceiver.PlayerReceiverListener;
 import com.tricheer.player.utils.PlayerFileUtils;
 import com.tricheer.player.utils.PlayerPreferUtils;
 
@@ -31,9 +27,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import js.lib.android.media.audio.bean.AudioInfo;
+import js.lib.android.media.audio.db.AudioDBManager;
+import js.lib.android.media.audio.utils.AudioInfo;
 import js.lib.android.media.audio.utils.AudioUtils;
-import js.lib.android.media.video.bean.VideoInfo;
+import js.lib.android.media.bean.ProAudio;
+import js.lib.android.media.bean.ProVideo;
+import js.lib.android.media.video.db.VideoDBManager;
+import js.lib.android.media.video.utils.VideoInfo;
 import js.lib.android.media.video.utils.VideoUtils;
 import js.lib.android.utils.CommonUtil;
 import js.lib.android.utils.EmptyUtil;
@@ -55,18 +55,13 @@ public class MediaScanReceiver extends BroadcastReceiver {
     private static Handler mHandler = new Handler();
 
     /**
-     * System Down Flag
-     */
-    private static boolean mIsSystemDown = false;
-
-    /**
      * Start list all medias action
      */
     public static final String ACTION_START_LIST = "com.tricheer.player.START.LIST.ALL_MEDIAS",
             LOADING_FLAG = "IS_LOADING_SHOWING";
 
     // Audio
-    private static ArrayList<ProMusic> mListMusics = new ArrayList<ProMusic>(), mListNewMusics = new ArrayList<ProMusic>();
+    private static ArrayList<ProAudio> mListMusics = new ArrayList<>(), mListNewMusics = new ArrayList<>();
     private static ArrayList<String> mListToSysScanAudios = new ArrayList<String>();
 
     // Video
@@ -128,20 +123,8 @@ public class MediaScanReceiver extends BroadcastReceiver {
         String action = intent.getAction();
         Log.i(TAG, "onReceive() -> [action:" + action);
 
-        // System Down/Up
-        if (PlayerReceiverActions.SYSTEM_DOWN.equals(action)) {
-            mIsSystemDown = true;
-        } else if (PlayerReceiverActions.SYSTEM_UP.equals(action)) {
-            mIsSystemDown = false;
-            refreshMountStatus();
-
-            // After 80s , System will drop down UDisk
-        } else if (PlayerReceiverActions.SYSTEM_POWER_DISCONN.equals(action)) {
-            PlayerPreferUtils.isLastPowerDisconned(true, true);
-            PlayerAppManager.exitCurrPlayer();
-
-            // Start list Task
-        } else if (ACTION_START_LIST.equals(action)) {
+        // Start list Task
+        if (ACTION_START_LIST.equals(action)) {
             refreshMountStatus();
             startListMediaTask();
 
@@ -163,14 +146,12 @@ public class MediaScanReceiver extends BroadcastReceiver {
             if (mIsUnMounted) {
                 mIsUnMounted = false;
                 CommonUtil.cancelTask(mListMediaTask);
-                // If System Down ,just stop clear
-                if (!mIsSystemDown) {
-                    clearPlayCacheInfos();
-                    for (String supportPath : mSetPathsUnMounted) {
-                        DBManager.deleteMusics(supportPath);
-                        DBManager.deleteVideos(supportPath);
-                    }
+                clearPlayCacheInfos();
+                for (String supportPath : mSetPathsUnMounted) {
+                    AudioDBManager.instance().deleteMusics(supportPath);
+                    VideoDBManager.instance().deleteVideos(supportPath);
                 }
+
                 // Refresh
                 notifyAudiosRefresh(ScanActives.CLEAR);
                 notifyVideosRefresh(ScanActives.CLEAR);
@@ -197,7 +178,7 @@ public class MediaScanReceiver extends BroadcastReceiver {
      * List Medias Task
      */
     private static class ListMediaTask extends AsyncTask<Void, Void, Void> {
-        private Map<String, ProMusic> mmMapDBMusics;
+        private Map<String, ProAudio> mmMapDBMusics;
         private Map<String, AudioInfo> mmMapSDCardAudios;
         private Map<String, ProVideo> mmMapDBVideos;
         private Map<String, VideoInfo> mmMapSDCardVideos;
@@ -226,8 +207,8 @@ public class MediaScanReceiver extends BroadcastReceiver {
         protected Void doInBackground(Void... params) {
             Logs.i(TAG, "ListMediaTask-> doInBackground(params)");
             // Query DB Medias
-            mmMapDBMusics = DBManager.getMapMusics();
-            mmMapDBVideos = DBManager.getMapVideos(true, false);
+            mmMapDBMusics = AudioDBManager.instance().getMapMusics();
+            mmMapDBVideos = VideoDBManager.instance().getMapVideos(true, false);
             // Query SDCard Medias
             mmMapSDCardAudios = AudioUtils.queryMapAudioInfos(null);
             mmMapSDCardVideos = VideoUtils.queryMapVideoInfos(null);
@@ -242,8 +223,8 @@ public class MediaScanReceiver extends BroadcastReceiver {
             }
             // Save Medias
             if (!isCancelled()) {
-                insertMusicCount = DBManager.insertListMusics(mListNewMusics);
-                insertVideoCount = DBManager.insertListVideos(mListNewVideos);
+                insertMusicCount = AudioDBManager.instance().insertListMusics(mListNewMusics);
+                insertVideoCount = VideoDBManager.instance().insertListVideos(mListNewVideos);
             }
             // Refresh
             return null;
@@ -323,11 +304,11 @@ public class MediaScanReceiver extends BroadcastReceiver {
                     if (mmMapDBMusics.containsKey(path)) {
                         mListMusics.add(mmMapDBMusics.get(path));
                     } else if (mmMapSDCardAudios.containsKey(path)) {
-                        ProMusic program = new ProMusic(mmMapSDCardAudios.get(path));
+                        ProAudio program = new ProAudio(mmMapSDCardAudios.get(path));
                         mListNewMusics.add(program);
                         mListMusics.add(program);
                     } else {
-                        ProMusic program = new ProMusic(path, PlayerFileUtils.getFileName(cf, false));
+                        ProAudio program = new ProAudio(path, PlayerFileUtils.getFileName(cf, false));
                         mListNewMusics.add(program);
                         mListMusics.add(program);
                         mListToSysScanAudios.add(path);
@@ -404,15 +385,15 @@ public class MediaScanReceiver extends BroadcastReceiver {
 
                     @Override
                     public void run() {
-                        ArrayList<ProMusic> listToSaveMusics = new ArrayList<ProMusic>();
+                        ArrayList<ProAudio> listToSaveMusics = new ArrayList<>();
                         List<AudioInfo> listAudioInfos = AudioUtils.queryListAudioInfos(mListToSysScanAudios);
                         for (AudioInfo audio : listAudioInfos) {
                             if (AudioUtils.isExist(audio.path)) {
-                                listToSaveMusics.add(new ProMusic(audio));
+                                listToSaveMusics.add(new ProAudio(audio));
                             }
                         }
                         if (!EmptyUtil.isEmpty(listToSaveMusics)) {
-                            DBManager.updateListMusics(listToSaveMusics);
+                            AudioDBManager.instance().updateListMusics(listToSaveMusics);
                         }
                         notifyAudiosRefresh(ScanActives.SYS_SCANED);
                         Logs.i(TAG, "startScanMusics() ----|> END <|----");
@@ -461,7 +442,7 @@ public class MediaScanReceiver extends BroadcastReceiver {
                             }
                         }
                         if (!EmptyUtil.isEmpty(listToSaveVideos)) {
-                            DBManager.updateListVideos(listToSaveVideos);
+                            VideoDBManager.instance().updateListVideos(listToSaveVideos);
                         }
                         notifyVideosRefresh(ScanActives.SYS_SCANED);
                         Logs.i(TAG, "startScanVideos() ----|> End <|----");

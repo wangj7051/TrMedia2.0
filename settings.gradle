@@ -1,7 +1,7 @@
 //Libs
 include ':LibTri'
 include ':libCommon'
-include ':libTricheer'
+//include ':libTricheer'
 include ':LetterSideBar'
 
 //Radio
@@ -9,3 +9,4 @@ include ':RadioBase'
 
 //Player
 include ':PlayerBase'
+include ':PlayerAudio_K218'

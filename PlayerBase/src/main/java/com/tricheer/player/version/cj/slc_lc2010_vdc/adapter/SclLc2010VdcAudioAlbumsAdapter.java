@@ -11,7 +11,6 @@ import android.widget.SectionIndexer;
 import android.widget.TextView;
 
 import com.tricheer.player.R;
-import com.tricheer.player.bean.ProMusic;
 import com.tricheer.player.utils.PlayerLogicUtils;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.bean.AudioFilter;
 
@@ -19,6 +18,7 @@ import java.io.File;
 import java.util.List;
 
 import js.lib.android.adapter.BaseArrayAdapter;
+import js.lib.android.media.bean.ProAudio;
 import js.lib.android.utils.EmptyUtil;
 
 public class SclLc2010VdcAudioAlbumsAdapter<T> extends BaseArrayAdapter<T> implements SectionIndexer {
@@ -62,8 +62,8 @@ public class SclLc2010VdcAudioAlbumsAdapter<T> extends BaseArrayAdapter<T> imple
 
     public void refreshDatas(int pos) {
         T item = getItem(pos);
-        if (item != null && item instanceof ProMusic) {
-            refreshDatas(((ProMusic) item).mediaUrl);
+        if (item != null && item instanceof ProAudio) {
+            refreshDatas(((ProAudio) item).mediaUrl);
         }
     }
 
@@ -122,9 +122,9 @@ public class SclLc2010VdcAudioAlbumsAdapter<T> extends BaseArrayAdapter<T> imple
         //
         T tItem = getItem(position);
         if (tItem != null) {
-            //ProMusic
-            if (tItem instanceof ProMusic) {
-                ProMusic item = (ProMusic) tItem;
+            //ProAudio
+            if (tItem instanceof ProAudio) {
+                ProAudio item = (ProAudio) tItem;
                 String showName = PlayerLogicUtils.getMediaTitle(mContext, -1, item, true);
                 holder.tvItem.setText((position + 1) + "    " + showName);
                 if (TextUtils.equals(mSelectedMediaUrl, item.mediaUrl)) {

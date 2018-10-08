@@ -7,16 +7,15 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.SeekBar;
 
-import com.tricheer.player.bean.ProVideo;
-import com.tricheer.player.engine.PlayEnableFlag;
 import com.tricheer.player.engine.PlayerAppManager;
 import com.tricheer.player.engine.PlayerAppManager.PlayerCxtFlag;
 import com.tricheer.player.engine.VersionController;
-import com.tricheer.player.engine.db.DBManager;
 import com.tricheer.player.receiver.ReceiverOperates;
-import com.tricheer.player.utils.PlayerLogicUtils;
 
-import js.lib.android.media.IPlayerState;
+import js.lib.android.media.PlayEnableController;
+import js.lib.android.media.PlayState;
+import js.lib.android.media.bean.ProVideo;
+import js.lib.android.media.video.db.VideoDBManager;
 import js.lib.android.utils.CommonUtil;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.Logs;
@@ -103,74 +102,7 @@ public abstract class BaseVideoPlayerActivity extends BaseVideoFocusActivity {
     }
 
     @Override
-    public void onNotifyOperate(String opFlag) {
-        Logs.i(TAG, "onNotifyOperate(" + opFlag + ")");
-        // Common
-        if (ReceiverOperates.PAUSE.equals(opFlag)) {
-            mIsPauseOnNotify = true;
-            pause();
-        } else if (ReceiverOperates.RESUME.equals(opFlag)) {
-            mIsPauseOnNotify = false;
-            resume();
-        } else if (ReceiverOperates.NEXT.equals(opFlag)) {
-            resumeByUser();
-            playNext();
-        } else if (ReceiverOperates.PREVIOUS.equals(opFlag)) {
-            resumeByUser();
-            playPrev();
-
-            // AIOS
-        } else if (ReceiverOperates.AIS_OPEN.equals(opFlag)) {
-        } else if (ReceiverOperates.AIS_EXIT.equals(opFlag)) {
-
-            // BlueTooth Call
-        } else if (ReceiverOperates.BTCALL_RUNING.equals(opFlag)) {
-            removePlayRunnable();
-            pause();
-        } else if (ReceiverOperates.BTCALL_END.equals(opFlag)) {
-            resume();
-
-            // Screen
-        } else if (ReceiverOperates.VIDEO_PAUSE_ON_SCREEN_OFF.equals(opFlag)) {
-            mIsPauseOnScreenOff = true;
-            pause();
-        } else if (ReceiverOperates.VIDEO_RESUME_ON_SCREEN_ON.equals(opFlag)
-                || ReceiverOperates.VIDEO_RESUME_ON_MASKAPP_EXIT.equals(opFlag)) {
-            mIsPauseOnScreenOff = false;
-            resume();
-
-            // E-Dog
-        } else if (ReceiverOperates.PAUSE_ON_E_DOG_START.equals(opFlag)) {
-        } else if (ReceiverOperates.RESUME_ON_E_DOG_END.equals(opFlag)) {
-
-            // Video Screen Resize
-        } else if (ReceiverOperates.VIDEO_SCREEN_21_9.equals(opFlag) || ReceiverOperates.VIDEO_SCREEN_FULL.equals(opFlag)
-                || ReceiverOperates.VIDEO_SCREEN_16_9.equals(opFlag) || ReceiverOperates.VIDEO_SCREEN_4_3.equals(opFlag)
-                || ReceiverOperates.VIDEO_SCREEN_BIGGER.equals(opFlag) || ReceiverOperates.VIDEO_SCREEN_SMALLER.equals(opFlag)) {
-            execResizeScreen(opFlag);
-            // Video Speed Mode
-        } else if (ReceiverOperates.VIDEO_FORWARD.equals(opFlag) || ReceiverOperates.VIDEO_BACKWARD.equals(opFlag)
-                || ReceiverOperates.VIDEO_NORMAL.equals(opFlag)) {
-            mPlaySpeedFlag = opFlag;
-
-            // System High Temperature
-        } else if (ReceiverOperates.RESUME_ON_E_DOG_END.equals(opFlag)) {
-//            showHignTemperatureDialog(1);
-
-            // Record
-        } else if (ReceiverOperates.RECORD_STATE_START.equals(opFlag)) {
-        } else if (ReceiverOperates.RECORD_STATE_END.equals(opFlag)) {
-        }
-    }
-
-    /**
-     * Resize Screen
-     */
-    protected void execResizeScreen(String resizeFlag) {
-    }
-
-    @Override
-    public void onProgressChange(String mediaUrl, int progress, int duration) {
+    public void onProgressChanged(String mediaUrl, int progress, int duration) {
         // 如下2种情况，不执行任何操作
         // (1) 未处于正在播放中
         // (2) SeekBar 正在进行手动拖动进度条
@@ -179,8 +111,7 @@ public abstract class BaseVideoPlayerActivity extends BaseVideoFocusActivity {
         }
 
         // 不否允许播放
-        PlayEnableFlag pef = getPlayEnableFlag();
-        if (!pef.isPlayEnable()) {
+        if (!PlayEnableController.isPlayEnable()) {
             removePlayRunnable();
             pause();
             return;
@@ -221,19 +152,19 @@ public abstract class BaseVideoPlayerActivity extends BaseVideoFocusActivity {
         // 每秒钟保存一次播放信息
         savePlayInfo();
         // 通知仪表盘信息
-        notifyDashboard(IPlayerState.PLAY);
+        notifyDashboard(PlayState.PLAY);
     }
 
     /**
      * 通知仪表盘
      */
-    private void notifyDashboard(int status) {
+    private void notifyDashboard(PlayState state) {
         if (VersionController.isSupportDashboard()) {
             Intent dashboardIntent = new Intent("com.tricheer.player.video_info");
-            dashboardIntent.putExtra("path", getPath());
-            dashboardIntent.putExtra("status", status);
+            dashboardIntent.putExtra("path", getCurrMediaPath());
+            dashboardIntent.putExtra("status", state);
             dashboardIntent.putExtra("progress", getProgress());
-            dashboardIntent.putExtra("position", getPlayPosByMediaUrl(getPath()));
+            dashboardIntent.putExtra("position", getPlayPosByMediaUrl(getCurrMediaPath()));
             dashboardIntent.putExtra("total", getTotalCount());
             sendBroadcast(dashboardIntent);
         }
@@ -256,9 +187,10 @@ public abstract class BaseVideoPlayerActivity extends BaseVideoFocusActivity {
     }
 
     @Override
-    public void onNotifyPlayState(int playState) {
-        super.onNotifyPlayState(playState);
-        PlayerLogicUtils.printPlayState(TAG, IPlayerState.getStateDesc(playState));
+    public void onPlayStateChanged(PlayState playState) {
+        super.onPlayStateChanged(playState);
+        Logs.i(TAG, " ");
+        Logs.i(TAG, "---->>>> playState:[" + playState + "] <<<<----");
         // 以下三种情况不执行状态监听
         // （1） Activity未被销毁的时候
         // （2）Player播放器未获取到
@@ -271,26 +203,26 @@ public abstract class BaseVideoPlayerActivity extends BaseVideoFocusActivity {
         notifyDashboard(playState);
 
         switch (playState) {
-            case IPlayerState.PLAY:
+            case PLAY:
                 updatePlayStatus(1);
                 onNotifyPlayState$Play();
                 break;
-            case IPlayerState.PREPARED:
+            case PREPARED:
                 updatePlayStatus(1);
                 onNotifyPlayState$Prepared();
                 break;
-            case IPlayerState.PAUSE:
+            case PAUSE:
                 updatePlayStatus(2);
                 break;
-            case IPlayerState.COMPLETE:
+            case COMPLETE:
                 updatePlayStatus(2);
                 onNotifyPlayState$Complete();
                 break;
-            case IPlayerState.ERROR:
+            case ERROR:
                 updatePlayStatus(2);
                 onNotifyPlayState$Error();
                 break;
-            case IPlayerState.SEEK_COMPLETED:
+            case SEEK_COMPLETED:
                 updateSeekTime(getProgress(), getDuration());
                 break;
             default:
@@ -312,7 +244,7 @@ public abstract class BaseVideoPlayerActivity extends BaseVideoFocusActivity {
             ProVideo video = (ProVideo) objParam;
             if (video.duration == 0) {
                 video.duration = getDuration();
-                DBManager.updateMediaDuration(video);
+                VideoDBManager.instance().updateMediaDuration(video);
             }
         }
     }
@@ -324,17 +256,6 @@ public abstract class BaseVideoPlayerActivity extends BaseVideoFocusActivity {
 
     protected void onNotifyPlayState$Error() {
         ProVideo programWithError = null;
-        if (!EmptyUtil.isEmpty(mListPrograms)) {
-            programWithError = mListPrograms.get(mPlayPos);
-            if (programWithError != null) {
-                programWithError.isCauseError = 1;
-                // DBManager.updateProgramInfo(programWithError);
-                mListPrograms.remove(programWithError);
-            }
-            // Toast Play Error
-            PlayerLogicUtils.toastPlayError(mContext, programWithError.title);
-        }
-
         // Play Next
         if (!EmptyUtil.isEmpty(mListPrograms)) {
             mPlaySpeedFlag = ReceiverOperates.VIDEO_NORMAL;
@@ -348,7 +269,7 @@ public abstract class BaseVideoPlayerActivity extends BaseVideoFocusActivity {
 
     private void seekToTargetProgress() {
         if (mTargetAutoSeekProgress > 0) {
-            seekTo(mTargetAutoSeekProgress);
+            seekTo((int) mTargetAutoSeekProgress);
             mTargetAutoSeekProgress = -1;
         }
     }
@@ -442,7 +363,7 @@ public abstract class BaseVideoPlayerActivity extends BaseVideoFocusActivity {
         pause();
         // 如果允许后台播放
         if (isCanPlayAtBg()) {
-            if (isPlayEnable()) {
+            if (PlayEnableController.isPlayEnable()) {
                 // 获取此时目标进度，这是为了在图像重构完成后能够跳转到历史位置
                 mTargetAutoSeekProgress = getLastProgress();
                 vvPlayer.setPlayAtBgOnSufaceDestoryed(true);
@@ -459,10 +380,6 @@ public abstract class BaseVideoPlayerActivity extends BaseVideoFocusActivity {
         execRelease();
         // 取消屏常亮
         makeScreenOn(false);
-
-        // 更新分辨率，并恢复行车记录
-        doBroadCastVideoResolution(0, true);
-        resumeRecord();
     }
 
     /**

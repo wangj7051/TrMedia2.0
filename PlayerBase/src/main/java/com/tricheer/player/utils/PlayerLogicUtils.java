@@ -2,23 +2,16 @@ package com.tricheer.player.utils;
 
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.provider.Settings;
-import android.provider.Settings.SettingNotFoundException;
 import android.text.TextUtils;
 import android.widget.ImageView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.tricheer.app.receiver.PlayerReceiverActions;
 import com.tricheer.player.R;
-import com.tricheer.player.bean.ProMusic;
-import com.tricheer.player.bean.ProVideo;
-import com.tricheer.player.bean.Program;
 import com.tricheer.player.engine.PlayerAppManager.PlayerCxtFlag;
 import com.tricheer.player.engine.PlayerConsts;
 import com.tricheer.player.engine.VersionController;
-import com.tricheer.player.receiver.PlayerReceiver;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -28,6 +21,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 import js.lib.android.media.audio.utils.MediaUtils;
+import js.lib.android.media.bean.ProAudio;
+import js.lib.android.media.bean.ProVideo;
+import js.lib.android.media.bean.Program;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.ImageLoaderUtils;
 import js.lib.android.utils.Logs;
@@ -100,7 +96,7 @@ public class PlayerLogicUtils {
     /**
      * Set media cover Image
      */
-    public static void setMediaCover(ImageView ivCover, ProMusic program) {
+    public static void setMediaCover(ImageView ivCover, ProAudio program) {
         if (EmptyUtil.isEmpty(program.coverUrl)) {
             ivCover.setImageResource(0);
         } else {
@@ -111,7 +107,7 @@ public class PlayerLogicUtils {
     /**
      * Set media cover Image
      */
-    public static void setMediaCover(ImageView ivCover, ProMusic program, ImageLoader imgLoader) {
+    public static void setMediaCover(ImageView ivCover, ProAudio program, ImageLoader imgLoader) {
         if (EmptyUtil.isEmpty(program.coverUrl)) {
             ivCover.setImageResource(R.drawable.bg_cover_music);
         } else if (isHttpUrl(program.coverUrl)) {
@@ -165,28 +161,6 @@ public class PlayerLogicUtils {
     }
 
     /**
-     * Notify AiSpeech Play String
-     */
-    public static void notifyAisPlayStr(Context cxt, String str) {
-        Intent notifyAisIntent = new Intent(PlayerReceiverActions.NOTIFY_AIS_PLAY_STR);
-        notifyAisIntent.putExtra("NOTIFY_PLAY_STR", str);
-        cxt.sendBroadcast(notifyAisIntent);
-    }
-
-    /**
-     * Notify local media player opened
-     * <p>
-     *
-     * @param player : ["MUSIC_PLAYER" / "VIDEO_PLAYER"]
-     */
-    public static void notifyLocalMediaOpen(Context cxt, String player) {
-        Logs.i(TAG, "^^ notifyLocalMediaOpen(cxt," + player + ") ^^");
-        Intent mediaPlayerOpenIntent = new Intent(PlayerReceiverActions.MEDIA_PLAYER_OPEN);
-        mediaPlayerOpenIntent.putExtra("PLAYER_FLAG", player);
-        cxt.sendBroadcast(mediaPlayerOpenIntent);
-    }
-
-    /**
      * Get Temperature Mode
      *
      * @return 1 高温模式(>105度), 0 低温模式(<98度)
@@ -227,7 +201,7 @@ public class PlayerLogicUtils {
      * <p>
      * This method used to set program path/name/image for Screen/Launcher
      */
-    public static void cacheMusicProgram(ContentResolver cr, ProMusic program) {
+    public static void cacheMusicProgram(ContentResolver cr, ProAudio program) {
         if (VersionController.isCanAutoResume()) {
             try {
                 Logs.i(TAG, "cacheMusicProgram(cr,program) ----Start----");
@@ -348,30 +322,8 @@ public class PlayerLogicUtils {
     }
 
     /**
-     * Get BlueTooth Dialing Status
-     *
-     * @return : 1 dialing, 0 no dialing
-     */
-    public static int getDialingStatus(Context cxt) {
-        int dialingStatus = 0;
-        try {
-            dialingStatus = Settings.System.getInt(cxt.getContentResolver(), "exist_bluetooth_calling");
-        } catch (SettingNotFoundException e) {
-            dialingStatus = 0;
-        }
-        return dialingStatus;
-    }
-
-    /**
-     * Print Play State
-     */
-    public static void printPlayState(String tag, String state) {
-        Logs.i(TAG, " ");
-        Logs.i(TAG, "---->>>> playState:[" + state + "] <<<<----");
-    }
-
-    /**
-     * Toast Play Error
+     * Toast Play
+     * Error
      */
     public static void toastPlayError(Context cxt, String mediaTitle) {
         String errorMsg = String.format(cxt.getString(R.string.play_error), mediaTitle);
@@ -396,13 +348,5 @@ public class PlayerLogicUtils {
             title = "";
         }
         return title;
-    }
-
-    /**
-     * 蓝牙电话是否进行中 ...
-     */
-    public static boolean isBtCalling(Context cxt) {
-        int btCallingStatus = getDialingStatus(cxt);
-        return (btCallingStatus == 1 || PlayerReceiver.isBtCalling);
     }
 }
