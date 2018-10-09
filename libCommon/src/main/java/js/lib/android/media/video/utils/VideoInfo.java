@@ -45,13 +45,13 @@ public class VideoInfo {
     /**
      * Display Name
      */
-    public String displayName = "";
+    public String title = "", titlePinYin = "";
     public static final String _DISPLAY_NAME = MediaStore.Video.Media.DISPLAY_NAME;
 
     /**
      * Path
      */
-    public String path = "";
+    public String path = "", directory = "", directoryPinYin = "";
     public static final String _PATH = MediaStore.Video.Media.DATA;
 
     /**

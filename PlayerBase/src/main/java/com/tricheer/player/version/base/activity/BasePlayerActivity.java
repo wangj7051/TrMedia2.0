@@ -203,6 +203,11 @@ public abstract class BasePlayerActivity extends BaseFragActivity implements Pla
     public void setPlayPosition(int position) {
     }
 
+    @Override
+    public List<? extends Program> getListMedias() {
+        return null;
+    }
+
     // {@link PlayerActionsListener} Implements Method
     @Override
     public void play() {

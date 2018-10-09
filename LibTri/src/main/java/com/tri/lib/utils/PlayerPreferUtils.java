@@ -3,7 +3,6 @@ package com.tri.lib.utils;
 import java.util.HashSet;
 import java.util.Set;
 
-import js.lib.android.media.PlayMode;
 import js.lib.android.utils.Logs;
 
 /**
@@ -28,21 +27,6 @@ public class PlayerPreferUtils extends PreferUtils {
         }
 
         return getInt(PREFER_KEY, 2);
-    }
-
-    /**
-     * Get audio play mode
-     *
-     * @param isSet    true - Cache mode value.
-     * @param playMode {@link PlayMode}
-     * @return js.lib.android.media.PlayMode
-     */
-    public static PlayMode getAudioPlayMode(boolean isSet, PlayMode playMode) {
-        final String PREFER_KEY = "AUDIO_PLAY_MODE";
-        if (isSet) {
-            saveInt(PREFER_KEY, playMode.getValue());
-        }
-        return PlayMode.getMode(getInt(PREFER_KEY, PlayMode.NONE.getValue()));
     }
 
     /**

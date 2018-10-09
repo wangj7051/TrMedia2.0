@@ -1,5 +1,6 @@
 package com.tricheer.player.version.cj.slc_lc2010_vdc.activity;
 
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,9 +12,7 @@ import android.widget.TextView;
 
 import com.tri.lib.engine.KeyEnum;
 import com.tricheer.player.R;
-import com.tricheer.player.service.MusicPlayService;
 import com.tricheer.player.utils.PlayerLogicUtils;
-import com.tricheer.player.utils.PlayerPreferUtils;
 import com.tricheer.player.version.base.activity.music.BaseAudioPlayerActivity;
 
 import java.io.Serializable;
@@ -21,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import js.lib.android.media.PlayMode;
+import js.lib.android.media.audio.AudioPreferUtils;
 import js.lib.android.media.audio.db.AudioDBManager;
 import js.lib.android.media.bean.ProAudio;
 import js.lib.android.utils.EmptyUtil;
@@ -112,7 +112,7 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseAudioPlayerActivity {
     }
 
     @Override
-    protected void onPlayServiceConnected(MusicPlayService service) {
+    protected void onPlayServiceConnected(Service service) {
         super.onPlayServiceConnected(service);
         loadLocalMedias();
     }
@@ -138,7 +138,6 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseAudioPlayerActivity {
                     //Play selected media
                 } else {
                     setPlayList(mListPrograms);
-                    setPlayPosition(mediaUrl);
                     execPlay(mediaUrl);
                 }
             }
@@ -164,7 +163,7 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseAudioPlayerActivity {
         @Override
         public void onClick(View v) {
             if (v == ivPlayModeSet) {
-                execPlayModeSet();
+                switchPlayMode(1);
             } else if (v == ivPlayPre) {
                 playPrevBySecurity();
             } else if (v == ivPlay) {
@@ -215,9 +214,6 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseAudioPlayerActivity {
 
         // Update
         refreshFrameTime(false);
-
-        // Save Play Info Per Second
-        execSavePlayInfo();
     }
 
     @Override
@@ -292,28 +288,26 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseAudioPlayerActivity {
     }
 
     @Override
-    public void switchPlayMode(int supportFlag) {
-    }
-
-    @Override
     public void onPlayModeChange() {
         super.onPlayModeChange();
         Logs.i(TAG, "^^ onPlayModeChange() ^^");
-        PlayMode storePlayMode = PlayerPreferUtils.getAudioPlayMode(false, PlayMode.LOOP);
+        PlayMode storePlayMode = AudioPreferUtils.getAudioPlayMode(false, PlayMode.LOOP);
         Logs.i(TAG, "onPlayModeChange() -> [storePlayMode:" + storePlayMode + "]");
-        switch (storePlayMode) {
-            case LOOP:
-                ivPlayModeSet.setImageResource(R.drawable.btn_op_mode_loop_selector);
-                break;
-            case SINGLE:
-                ivPlayModeSet.setImageResource(R.drawable.btn_op_mode_oneloop_selector);
-                break;
-            case RANDOM:
-                ivPlayModeSet.setImageResource(R.drawable.btn_op_mode_random_selector);
-                break;
-            // case PlayMode.ORDER:
-            // ivPlayModeSet.setImageResource(R.drawable.btn_op_mode_order_selector);
-            // break;
+        if (storePlayMode != null) {
+            switch (storePlayMode) {
+                case LOOP:
+                    ivPlayModeSet.setImageResource(R.drawable.btn_op_mode_loop_selector);
+                    break;
+                case SINGLE:
+                    ivPlayModeSet.setImageResource(R.drawable.btn_op_mode_oneloop_selector);
+                    break;
+                case RANDOM:
+                    ivPlayModeSet.setImageResource(R.drawable.btn_op_mode_random_selector);
+                    break;
+                // case PlayMode.ORDER:
+                // ivPlayModeSet.setImageResource(R.drawable.btn_op_mode_order_selector);
+                // break;
+            }
         }
     }
 

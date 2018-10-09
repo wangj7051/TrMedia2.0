@@ -43,11 +43,18 @@ public interface VideoTables {
         String SQL_CREATE = "CREATE TABLE IF NOT EXISTS " + T_NAME
                 + "("
                 + ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+
                 + TITLE + " TEXT,"
+                + TITLE_PINYIN + " TEXT,"
+
                 + MEDIA_URL + " TEXT,"
+                + MEDIA_DIRECTORY + " TEXT,"
+                + MEDIA_DIRECTORY_PINYIN + " TEXT,"
+
                 + DURATION + " TEXT,"
-                + COVER_URL + " LONG,"
                 + IS_COLLECT + " INTEGER DEFAULT 0,"
+
+                + COVER_URL + " LONG,"
                 + CREATE_TIME + " LONG,"
                 + UPDATE_TIME + " LONG"
                 + ")";

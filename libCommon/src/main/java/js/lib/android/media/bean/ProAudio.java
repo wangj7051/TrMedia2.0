@@ -68,9 +68,13 @@ public class ProAudio extends Program {
         this.title = info.title;
         this.titlePinYin = info.titlePinYin;
         this.artist = info.artist;
+        artistPinYin = info.artistPinYin;
         this.albumID = info.albumID;
         this.album = info.album;
+        albumPinYin = info.albumPinYin;
         this.mediaUrl = info.path;
+        mediaDirectory = info.directory;
+        mediaDirectoryPinYin = info.directoryPinYin;
         this.duration = info.duration;
     }
 

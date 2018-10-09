@@ -229,10 +229,17 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
             } else if (v == ivPlayNext) {
                 doSecPlayNext();
             } else if (v == vList) {
-                finish();
+                finishByOperate("EXIT_VIDEO_PLAYER");
             }
         }
     };
+
+    private void finishByOperate(String flag) {
+        Intent data = new Intent();
+        data.putExtra("flag", flag);
+        setResult(0, data);
+        finish();
+    }
 
     private void doPlayOrPause() {
         execPlayOrPause();

@@ -1,6 +1,7 @@
 package com.tricheer.player.version.cj.slc_lc2010_vdc.activity;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -38,15 +39,23 @@ public class SclLc2010VdcVideoWarningActivity extends BaseFragActivity {
         public void onClick(View v) {
             if (v == vAgree) {
                 PlayerPreferUtils.getVideoWarningFlag(true, 1);
-                finish();
+                finishByOperate("EXIT_WARNING");
             } else if (v == vNoToast) {
                 PlayerPreferUtils.getVideoWarningFlag(true, 2);
-                finish();
+                finishByOperate("EXIT_WARNING");
             } else if (v == vExit) {
                 exitPlayer();
+                finishByOperate("EXIT_PLAYER");
             }
         }
     };
+
+    private void finishByOperate(String flag) {
+        Intent data = new Intent();
+        data.putExtra("flag", flag);
+        setResult(0, data);
+        finish();
+    }
 
     @Override
 

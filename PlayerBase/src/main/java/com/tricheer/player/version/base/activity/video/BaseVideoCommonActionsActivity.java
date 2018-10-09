@@ -112,6 +112,14 @@ public abstract class BaseVideoCommonActionsActivity extends BasePlayerActivity 
     }
 
     @Override
+    public void play(String mediaPath) {
+    }
+
+    @Override
+    public void play(int pos) {
+    }
+
+    @Override
     public void playPrev() {
         Logs.i(TAG, "^^ playPrev() ^^");
         if (PlayEnableController.isPlayEnable()) {

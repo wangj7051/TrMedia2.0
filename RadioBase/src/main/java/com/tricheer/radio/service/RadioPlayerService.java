@@ -5,6 +5,7 @@ import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 
+import com.tricheer.radio.engine.BandInfos.BandType;
 import com.tricheer.radio.engine.FmDelegate;
 import com.tricheer.radio.engine.FmDelegate.FmListener;
 import com.tricheer.radio.engine.FmUtilV2;
@@ -177,7 +178,7 @@ public class RadioPlayerService extends BaseAudioFocusService implements FmDeleg
 
     @Override
     public boolean isRadioOpened() {
-        return mFmUtil.isRadioOpened();
+        return mFmUtil != null && mFmUtil.isRadioOpened();
     }
 
     @Override
@@ -194,91 +195,114 @@ public class RadioPlayerService extends BaseAudioFocusService implements FmDeleg
 
     @Override
     public boolean closeFm() {
-        return mFmUtil.closeFm();
+        return mFmUtil != null && mFmUtil.closeFm();
     }
 
     @Override
     public boolean searchAll() {
-        return mFmUtil.searchAll();
+        return mFmUtil != null && mFmUtil.searchAll();
     }
 
     @Override
     public int[] getAllAvailableFreqs() {
-        return mFmUtil.getAllAvailableFreqs();
+        if (mFmUtil != null) {
+            return mFmUtil.getAllAvailableFreqs();
+        }
+        return new int[]{};
     }
 
     @Override
     public boolean preview() {
-        return mFmUtil.preview();
+        return mFmUtil != null && mFmUtil.preview();
     }
 
     @Override
     public void setBand(int band) {
-        mFmUtil.setBand(band);
+        if (mFmUtil != null) {
+            mFmUtil.setBand(band);
+        }
     }
 
     @Override
     public int getCurrBand() {
-        return mFmUtil.getCurrBand();
+        if (mFmUtil != null) {
+            return mFmUtil.getCurrBand();
+        }
+        return BandType.FM;
     }
 
     @Override
     public int getMinFreq() {
-        return mFmUtil.getMinFreq();
+        if (mFmUtil != null) {
+            return mFmUtil.getMinFreq();
+        }
+        return 8750;
     }
 
     @Override
     public int getMinFreq(int band) {
-        return mFmUtil.getMinFreq(band);
+        if (mFmUtil != null) {
+            return mFmUtil.getMinFreq(band);
+        }
+        return 8750;
     }
 
     @Override
     public int getMaxFreq() {
-        return mFmUtil.getMaxFreq();
+        if (mFmUtil != null) {
+            return mFmUtil.getMaxFreq();
+        }
+        return 10800;
     }
 
     @Override
     public int getMaxFreq(int band) {
-        return mFmUtil.getMaxFreq(band);
+        if (mFmUtil != null) {
+            return mFmUtil.getMaxFreq(band);
+        }
+        return 10800;
     }
 
     @Override
     public int getCurrFreq() {
-        return mFmUtil.getCurrFreq();
+        if (mFmUtil != null) {
+            return mFmUtil.getCurrFreq();
+        }
+        return 8750;
     }
 
     public boolean play(int freq) {
-        return mFmUtil.play(freq);
+        return mFmUtil != null && mFmUtil.play(freq);
     }
 
     @Override
     public boolean play(int band, int freq) {
-        return mFmUtil.play(band, freq);
+        return mFmUtil != null && mFmUtil.play(band, freq);
     }
 
     @Override
     public boolean stepPrev() {
-        return mFmUtil.stepPrev();
+        return mFmUtil != null && mFmUtil.stepPrev();
     }
 
     @Override
     public boolean stepNext() {
-        return mFmUtil.stepNext();
+        return mFmUtil != null && mFmUtil.stepNext();
     }
 
     @Override
     public boolean scanAndPlayPrev() {
-        return mFmUtil.scanAndPlayPrev();
+        return mFmUtil != null && mFmUtil.scanAndPlayPrev();
     }
 
     @Override
     public boolean scanAndPlayNext() {
-        return mFmUtil.scanAndPlayNext();
+        return mFmUtil != null && mFmUtil.scanAndPlayNext();
     }
 
     @Override
     public boolean setSt(boolean enable) {
-        return mFmUtil.setSt(enable);
+        return mFmUtil != null && mFmUtil.setSt(enable);
     }
 
     @Override
@@ -288,7 +312,7 @@ public class RadioPlayerService extends BaseAudioFocusService implements FmDeleg
 
     @Override
     public boolean isLocOpen() {
-        return mFmUtil.isLocOpen();
+        return mFmUtil != null && mFmUtil.isLocOpen();
     }
 
     @Override

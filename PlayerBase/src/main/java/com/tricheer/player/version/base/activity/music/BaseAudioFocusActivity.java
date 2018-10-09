@@ -1,12 +1,13 @@
 package com.tricheer.player.version.base.activity.music;
 
+import android.app.Service;
 import android.os.Bundle;
 
-import com.tricheer.player.service.MusicPlayService;
+import com.tricheer.player.service.TrPlayService;
 
 public abstract class BaseAudioFocusActivity extends BaseAudioKeyEventActivity {
 
-    private MusicPlayService mService;
+    private Service mService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -16,13 +17,13 @@ public abstract class BaseAudioFocusActivity extends BaseAudioKeyEventActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (mService != null) {
-            mService.resumeByUser();
+        if (mService instanceof TrPlayService) {
+            ((TrPlayService) mService).resumeByUser();
         }
     }
 
     @Override
-    protected void onPlayServiceConnected(MusicPlayService service) {
+    protected void onPlayServiceConnected(Service service) {
         super.onPlayServiceConnected(service);
         if (service != null) {
             mService = service;

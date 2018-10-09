@@ -156,11 +156,23 @@ public class AudioUtils extends MediaUtils {
                 audio.mimeType = cur.getString(cur.getColumnIndex(AudioInfo._MIME_TYPE));
                 audio.displayName = displayName;
                 audio.title = cur.getString(cur.getColumnIndex(AudioInfo._TITLE));
-                audio.titlePinYin = CharacterParser.getInstance().getSelling(audio.title);
+                audio.titlePinYin = CharacterParser.getPingYin(audio.title);
                 audio.artist = cur.getString(cur.getColumnIndex(AudioInfo._ARTIST));
+                audio.artistPinYin = CharacterParser.getPingYin(audio.artist);
                 audio.albumID = cur.getInt(cur.getColumnIndex(AudioInfo._ALBUM_ID));
                 audio.album = cur.getString(cur.getColumnIndex(AudioInfo._ALBUM));
+                audio.albumPinYin = CharacterParser.getPingYin(audio.album);
+
+                //
                 audio.path = path;
+                File file = new File(audio.path);
+                File parentFile = file.getParentFile();
+                if (parentFile != null) {
+                    audio.directory = parentFile.getName();
+                    audio.directoryPinYin = CharacterParser.getPingYin(audio.directory);
+                }
+
+                //
                 audio.duration = DateFormatUtil.getIntSecondMsec(cur.getInt(cur.getColumnIndex(AudioInfo._DURATION)));
                 // Messy Code
                 if (ChineseUtils.isMessyCode(audio.title)) {

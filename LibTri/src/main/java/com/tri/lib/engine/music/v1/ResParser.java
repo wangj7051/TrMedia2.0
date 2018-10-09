@@ -1,10 +1,10 @@
-package com.tricheer.player.engine.music.v1;
+package com.tri.lib.engine.music.v1;
 
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Xml;
 
-import com.tricheer.player.engine.music.ReqUris;
+import com.tri.lib.engine.music.ReqUris;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

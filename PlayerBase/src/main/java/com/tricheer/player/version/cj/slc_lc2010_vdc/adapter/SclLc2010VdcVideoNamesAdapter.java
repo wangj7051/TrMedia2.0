@@ -134,7 +134,7 @@ public class SclLc2010VdcVideoNamesAdapter extends BaseArrayAdapter<ProVideo> im
 
     public int getPrevPos() {
         int prevPos = mSelectedPos - 1;
-        if (prevPos <= 0) {
+        if (prevPos < 0) {
             prevPos = getCount() - 1;
         }
         return prevPos;

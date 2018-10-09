@@ -20,7 +20,7 @@ android {
 
 dependencies {
     //VLC Library
-    api fileTree(dir: 'src/main/libs', include: ['*.jar', '*.aar'])
+    api fileTree(include: ['*.jar', '*.aar'], dir: 'src/main/libs')
     api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 

@@ -1,20 +1,19 @@
 package com.tricheer.player.version.base.activity.music;
 
+import android.app.Service;
 import android.content.Context;
 import android.os.Bundle;
 import android.widget.SeekBar;
 
+import com.tri.lib.engine.music.PlayerDelegate;
 import com.tricheer.player.engine.PlayerAppManager;
 import com.tricheer.player.engine.PlayerAppManager.PlayerCxtFlag;
-import com.tricheer.player.engine.music.PlayerDelegate;
-import com.tricheer.player.service.MusicPlayService;
 import com.tricheer.player.utils.PlayerLogicUtils;
 import com.tricheer.player.utils.PlayerPreferUtils;
 
 import java.io.File;
 import java.util.List;
 
-import js.lib.android.media.PlayMode;
 import js.lib.android.media.PlayState;
 import js.lib.android.media.bean.ProAudio;
 import js.lib.android.utils.CommonUtil;
@@ -42,7 +41,7 @@ public abstract class BaseAudioPlayerActivity extends BaseAudioFocusActivity imp
     }
 
     @Override
-    protected void onPlayServiceConnected(MusicPlayService service) {
+    protected void onPlayServiceConnected(Service service) {
         super.onPlayServiceConnected(service);
         setPlayListener(this);
     }
@@ -86,13 +85,6 @@ public abstract class BaseAudioPlayerActivity extends BaseAudioFocusActivity imp
         } else {
             resumeByUser();
         }
-    }
-
-    /**
-     * Set Play Mode
-     */
-    public void execPlayModeSet() {
-        setPlayMode(PlayMode.NONE);
     }
 
     /**

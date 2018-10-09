@@ -90,6 +90,7 @@ public class SclLc2010VdcVideoFoldersFrag extends BaseVideoListFrag {
         lsb = (LetterSideBar) contentV.findViewById(R.id.lsb);
         lsb.refreshLetters(null);
         lsb.addCallback(new LetterSideBarCallback());
+        lsb.setVisibility(View.VISIBLE);
 
         // Data
         mDataAdapter = new SclLc2010VdcVideoFoldersAdapter(mAttachedActivity, 0);
@@ -140,6 +141,7 @@ public class SclLc2010VdcVideoFoldersFrag extends BaseVideoListFrag {
                 if (videoFilter == null) {
                     videoFilter = new VideoFilter();
                     videoFilter.folderPath = folderPath;
+                    videoFilter.folderPathPinYin = media.mediaDirectoryPinYin;
                     videoFilter.listMedias = new ArrayList<>();
                     videoFilter.listMedias.add(media);
                     mapDatas.put(videoFilter.folderPath, videoFilter);
@@ -155,8 +157,13 @@ public class SclLc2010VdcVideoFoldersFrag extends BaseVideoListFrag {
 
             //Refresh UI
             mListDatas = new ArrayList<>(mapDatas.values());
+            VideoFilter.sortByFolder((List<VideoFilter>) mListDatas);
             mDataAdapter.refreshDatas(mListDatas, targetMediaUrl);
         }
+    }
+
+    @Override
+    public void play() {
     }
 
     private class LetterSideBarCallback implements LetterSideBar.LetterSideBarListener {
@@ -186,7 +193,6 @@ public class SclLc2010VdcVideoFoldersFrag extends BaseVideoListFrag {
                         VideoFilter item = (VideoFilter) objItem;
                         mListDatas = item.listMedias;
                         mDataAdapter.refreshDatas(mListDatas);
-                        lsb.setVisibility(View.VISIBLE);
                     } else if (objItem instanceof ProVideo) {
                         ProVideo item = (ProVideo) objItem;
                         Logs.i(TAG, "LvItemClick -> onItemClick ----Just Play----");

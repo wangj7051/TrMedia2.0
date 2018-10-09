@@ -91,7 +91,7 @@ public abstract class BaseAudioService extends Service implements PlayListener {
      * <p>
      * if==2 : Abandon audio focus
      */
-    protected void registerAudioFocus(int flag) {
+    public void registerAudioFocus(int flag) {
         if (flag == 1) {
             int result = AudioManagerUtil.requestMusicGain(this, mAfChangeListener);
             Logs.i(TAG, "registerAudioFocus(" + flag + ") *request AUDIOFOCUS_GAIN* >> [result:" + result);

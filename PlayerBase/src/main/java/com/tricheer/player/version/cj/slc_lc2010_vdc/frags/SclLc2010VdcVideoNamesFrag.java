@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import js.lib.android.media.bean.ProVideo;
+import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.Logs;
 
 public class SclLc2010VdcVideoNamesFrag extends BaseVideoListFrag {
@@ -112,6 +114,35 @@ public class SclLc2010VdcVideoNamesFrag extends BaseVideoListFrag {
         if (isAdded()) {
             mListMedias = listMedias;
             mDataAdapter.refreshDatas(mListMedias, targetMediaUrl);
+            if (EmptyUtil.isEmpty(listMedias)) {
+                mDataAdapter.refreshDatas();
+            } else {
+                if (TextUtils.isEmpty(targetMediaUrl)) {
+                    ProVideo first = listMedias.get(0);
+                    mDataAdapter.refreshDatas((mListMedias = listMedias), first.mediaUrl);
+                    delayPlay();
+                } else {
+                    mDataAdapter.refreshDatas((mListMedias = listMedias), targetMediaUrl);
+                    delayPlay();
+                }
+            }
+        }
+    }
+
+    private void delayPlay() {
+        mHandler.removeCallbacksAndMessages(null);
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                play();
+            }
+        }, 500);
+    }
+
+    @Override
+    public void play() {
+        if (!mAttachedActivity.isWarningShowing()) {
+            openVideoPlayerActivity(mAttachedActivity.getLastMediaPath(), mListMedias);
         }
     }
 
@@ -168,10 +199,11 @@ public class SclLc2010VdcVideoNamesFrag extends BaseVideoListFrag {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-//            case M_REQ_PLAYING_MEDIA_URL:
-//                mDataAdapter.refreshDatas(mAttachedActivity.getLastPath());
-//                break;
+        if (data != null) {
+            String flag = data.getStringExtra("flag");
+            if ("EXIT_VIDEO_PLAYER".equals(flag)) {
+                mDataAdapter.refreshDatas(mAttachedActivity.getLastMediaPath());
+            }
         }
     }
 
@@ -183,5 +215,11 @@ public class SclLc2010VdcVideoNamesFrag extends BaseVideoListFrag {
     @Override
     public void next() {
         mDataAdapter.refreshDatas(mDataAdapter.getNextPos());
+    }
+
+    @Override
+    public void onDestroy() {
+        mHandler.removeCallbacksAndMessages(null);
+        super.onDestroy();
     }
 }

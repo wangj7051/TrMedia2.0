@@ -2,7 +2,7 @@ package com.tri.lib.engine.music.v2;
 
 import android.os.Handler;
 
-import com.tricheer.player.engine.music.ReqUris;
+import com.tri.lib.engine.music.ReqUris;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

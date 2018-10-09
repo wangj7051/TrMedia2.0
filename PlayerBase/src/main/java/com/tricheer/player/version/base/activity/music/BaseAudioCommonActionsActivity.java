@@ -1,5 +1,6 @@
 package com.tricheer.player.version.base.activity.music;
 
+import android.app.Service;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -8,8 +9,8 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.tricheer.player.service.MusicPlayService;
-import com.tricheer.player.service.MusicPlayService.LocalBinder;
+import com.tricheer.player.service.TrPlayService;
+import com.tricheer.player.service.TrPlayService.LocalBinder;
 import com.tricheer.player.version.base.activity.BasePlayerActivity;
 
 import java.util.List;
@@ -35,7 +36,7 @@ public abstract class BaseAudioCommonActionsActivity extends BasePlayerActivity 
     /**
      * Music Play Service
      */
-    protected MusicPlayService mPlayService;
+    protected TrPlayService mPlayService;
     protected ServiceConnection mServiceConnection = new ServiceConnection() {
 
         @Override
@@ -61,7 +62,7 @@ public abstract class BaseAudioCommonActionsActivity extends BasePlayerActivity 
     /**
      * 当MusicPlayService绑定成功
      */
-    protected void onPlayServiceConnected(MusicPlayService service) {
+    protected void onPlayServiceConnected(Service service) {
     }
 
     public void registerAudioFocus(int flag) {
@@ -79,11 +80,28 @@ public abstract class BaseAudioCommonActionsActivity extends BasePlayerActivity 
     }
 
     @Override
+    public void switchPlayMode(int supportFlag) {
+        Logs.i(TAG, "^^ switchPlayMode(" + supportFlag + ") ^^");
+        if (mPlayService != null) {
+            mPlayService.switchPlayMode(supportFlag);
+        }
+    }
+
+    @Override
     public void setPlayList(List<? extends Program> listPros) {
         Logs.i(TAG, "^^ setPlayList() ^^");
         if (mPlayService != null) {
             mPlayService.setPlayList(listPros);
         }
+    }
+
+    @Override
+    public List<? extends Program> getListMedias() {
+        Logs.i(TAG, "^^ getListMedias() ^^");
+        if (mPlayService != null) {
+            return mPlayService.getListMedias();
+        }
+        return null;
     }
 
     @Override
@@ -107,6 +125,22 @@ public abstract class BaseAudioCommonActionsActivity extends BasePlayerActivity 
         Logs.i(TAG, "^^ play() ^^");
         if (mPlayService != null) {
             mPlayService.play();
+        }
+    }
+
+    @Override
+    public void play(String mediaPath) {
+        Logs.i(TAG, "^^ play(" + mediaPath + ") ^^");
+        if (mPlayService != null) {
+            mPlayService.play(mediaPath);
+        }
+    }
+
+    @Override
+    public void play(int pos) {
+        Logs.i(TAG, "^^ play(" + pos + ") ^^");
+        if (mPlayService != null) {
+            mPlayService.play(pos);
         }
     }
 
@@ -276,7 +310,7 @@ public abstract class BaseAudioCommonActionsActivity extends BasePlayerActivity 
      */
     protected void bindAndCreatePlayService(int... flags) {
         try {
-            Intent serviceIntent = new Intent(mContext, MusicPlayService.class);
+            Intent serviceIntent = new Intent(mContext, TrPlayService.class);
             for (int flag : flags) {
                 switch (flag) {
                     case 1:

@@ -18,6 +18,7 @@
 LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
+#### 指定编译所用SDK  ####
 TARGET_PLATFORM=android-25
 
 ## user: 指该模块只在user版本下才编译

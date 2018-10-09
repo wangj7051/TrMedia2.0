@@ -60,7 +60,7 @@ public abstract class AudioPlayService extends BaseAudioService {
     /**
      * Media list
      */
-    private List<ProAudio> mListMedias;
+    private List<? extends Program> mListMedias;
     /**
      * Current Play Position
      */
@@ -75,8 +75,13 @@ public abstract class AudioPlayService extends BaseAudioService {
     public void setPlayList(List<? extends Program> listMedias) {
         Logs.i(TAG, "^^ List<? extends Program> ^^");
         if (listMedias != null) {
-            this.mListMedias = (List<ProAudio>) listMedias;
+            this.mListMedias = listMedias;
         }
+    }
+
+    @Override
+    public List<? extends Program> getListMedias() {
+        return mListMedias;
     }
 
     @Override
@@ -102,7 +107,7 @@ public abstract class AudioPlayService extends BaseAudioService {
         try {
             return mListMedias.get(getCurrIdx());
         } catch (Exception e) {
-            Log.i(TAG, "getCurrMedia() > " + e.getMessage());
+            Log.i(TAG, "ERROR :: getCurrMedia() > " + e.getMessage());
         }
         return null;
     }
@@ -147,6 +152,7 @@ public abstract class AudioPlayService extends BaseAudioService {
         if (JsFileUtils.isFileExist(mediaUrl)) {
             saveTargetMediaPath(mediaUrl);
             if (mAudioPlayer == null || mIsPlayerInitError) {
+                release();
                 mAudioPlayer = MusicPlayerFactory.instance().create(this, mediaUrl, this);
                 onPlayStateChanged(PlayState.REFRESH_UI);
                 startPlay("");
@@ -156,6 +162,36 @@ public abstract class AudioPlayService extends BaseAudioService {
         } else {
             onPlayStateChanged(PlayState.ERROR_FILE_NOT_EXIST);
         }
+    }
+
+    @Override
+    public void play(String mediaPath) {
+        int playPos = getPosAtList(mediaPath);
+        play((playPos >= 0 ? playPos : 0));
+    }
+
+    /**
+     * Get media position at list
+     */
+    private int getPosAtList(String mediaPath) {
+        int pos = -1;
+        if (!EmptyUtil.isEmpty(mListMedias)) {
+            int loop = mListMedias.size();
+            for (int idx = 0; idx < loop; idx++) {
+                Program program = mListMedias.get(idx);
+                if (TextUtils.equals(program.mediaUrl, mediaPath)) {
+                    pos = idx;
+                    break;
+                }
+            }
+        }
+        return pos;
+    }
+
+    @Override
+    public void play(int pos) {
+        setPlayPosition(pos);
+        play();
     }
 
     /**
@@ -176,6 +212,7 @@ public abstract class AudioPlayService extends BaseAudioService {
     public void playPrev() {
         Logs.i(TAG, "^^ playPrev() ^^");
         try {
+            mIsPlayPrev = true;
             setPlayPosByMode(2);
             play();
         } catch (Throwable e) {
@@ -198,30 +235,11 @@ public abstract class AudioPlayService extends BaseAudioService {
         postDelayRunnable(mPlayPrevSecRunnable, 500);
     }
 
-    /**
-     * AUTO Select to play
-     */
-    public void playAuto() {
-        Logs.i(TAG, "^^ playAuto() ^^");
-        PlayMode storePlayMode = AudioPreferUtils.getAudioPlayMode(false, PlayMode.LOOP);
-        // 如果是播放模式是“顺序模式”，并且已经播放完毕了最后一个，那么下面的动作是在跳转到第一个媒体后，停止播放
-        if (storePlayMode == PlayMode.ORDER) {
-            if (mPlayIdx >= (getTotalCount() - 1)) {
-                mIsPauseOnFirstLoaded = true;
-            }
-        }
-
-        // 如果不是单曲循环，获取下一个播放位置
-        if (storePlayMode != PlayMode.SINGLE) {
-            setPlayPosByMode(1);
-        }
-        play();
-    }
-
     @Override
     public void playNext() {
         Logs.i(TAG, "^^ playNext() ^^");
         try {
+            mIsPlayNext = true;
             setPlayPosByMode(1);
             play();
         } catch (Throwable e) {
@@ -243,6 +261,26 @@ public abstract class AudioPlayService extends BaseAudioService {
             };
         }
         postDelayRunnable(mPlayNextSecRunnable, 500);
+    }
+
+    /**
+     * AUTO Select to play
+     */
+    public void playAuto() {
+        Logs.i(TAG, "^^ playAuto() ^^");
+        PlayMode storePlayMode = AudioPreferUtils.getAudioPlayMode(false, PlayMode.LOOP);
+        // 如果是播放模式是“顺序模式”，并且已经播放完毕了最后一个，那么下面的动作是在跳转到第一个媒体后，停止播放
+        if (storePlayMode == PlayMode.ORDER) {
+            if (mPlayIdx >= (getTotalCount() - 1)) {
+                mIsPauseOnFirstLoaded = true;
+            }
+        }
+
+        // 如果不是单曲循环，获取下一个播放位置
+        if (storePlayMode != PlayMode.SINGLE) {
+            setPlayPosByMode(1);
+        }
+        play();
     }
 
     /**
@@ -409,7 +447,9 @@ public abstract class AudioPlayService extends BaseAudioService {
 
     @Override
     public void savePlayMediaInfos(String mediaPath, int progress) {
-        AudioPreferUtils.getAudioLastPlayedMediaInfo(true, mediaPath, progress);
+        if (isPlaying()) {
+            AudioPreferUtils.getAudioLastPlayedMediaInfo(true, mediaPath, progress);
+        }
     }
 
     @Override
@@ -424,7 +464,10 @@ public abstract class AudioPlayService extends BaseAudioService {
 
     @Override
     public void switchPlayMode(int supportFlag) {
-        PlayMode storePlayMode = AudioPreferUtils.getAudioPlayMode(false, PlayMode.NONE);
+        PlayMode storePlayMode = AudioPreferUtils.getAudioPlayMode(false, PlayMode.LOOP);
+        if (storePlayMode == null) {
+            return;
+        }
         if (supportFlag == 0) {
             switch (storePlayMode) {
                 case SINGLE:
@@ -469,6 +512,7 @@ public abstract class AudioPlayService extends BaseAudioService {
 
     @Override
     public void onPlayStateChanged(PlayState playState) {
+        super.onPlayStateChanged(playState);
         // 阻止继续执行
         // (1) 已经执行了Service销毁
         if (mIsServiceDestroy) {
@@ -527,6 +571,40 @@ public abstract class AudioPlayService extends BaseAudioService {
         } catch (Exception e) {
             Logs.printStackTrace(TAG + "onMediaError()", e);
         }
+    }
+
+    @Override
+    public void onProgressChanged(String mediaPath, int progress, int duration) {
+        super.onProgressChanged(mediaPath, progress, duration);
+        savePlayMediaInfos(mediaPath, progress);
+    }
+
+    @Override
+    public void onAudioFocusDuck() {
+        super.onAudioFocusDuck();
+        Logs.i(TAG, "----$$ onAudioFocusDuck() $$----");
+    }
+
+    @Override
+    public void onAudioFocusTransient() {
+        super.onAudioFocusTransient();
+        Logs.i(TAG, "----$$ onAudioFocusTransient() $$----");
+        clearAllRunables();
+        pause();
+    }
+
+    @Override
+    public void onAudioFocusGain() {
+        super.onAudioFocusGain();
+        Logs.i(TAG, "----$$ onAudioFocusGain() $$----");
+        resumeByUser();
+    }
+
+    @Override
+    public void onAudioFocusLoss() {
+        super.onAudioFocusLoss();
+        Logs.i(TAG, "----$$ onAudioFocusLoss() $$----");
+        pauseByUser();
     }
 
     @Override

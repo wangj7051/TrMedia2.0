@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -101,8 +102,33 @@ public class SclLc2010VdcAudioNamesFrag extends BaseAudioListFrag {
     @Override
     public void refreshDatas(List<ProAudio> listMedias, String targetMediaUrl) {
         if (isAdded()) {
-            mDataAdapter.refreshDatas((mListMedias = listMedias), targetMediaUrl);
+            if (EmptyUtil.isEmpty(listMedias)) {
+                mDataAdapter.refreshDatas();
+            } else {
+                if (TextUtils.isEmpty(targetMediaUrl)) {
+                    ProAudio firstAudio = listMedias.get(0);
+                    mDataAdapter.refreshDatas((mListMedias = listMedias), firstAudio.mediaUrl);
+                    delayPlay(firstAudio.mediaUrl);
+                } else {
+                    mDataAdapter.refreshDatas((mListMedias = listMedias), targetMediaUrl);
+                    delayPlay(targetMediaUrl);
+                }
+            }
+        }
+    }
+
+    private void delayPlay(final String targetMediaUrl) {
+        if (mAttachedActivity.isPlaying()) {
             lvDatas.setSelection(mAttachedActivity.getCurrIdx());
+        } else if (!mAttachedActivity.isPauseByUser()) {
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mAttachedActivity.setPlayList(mListMedias);
+                    mAttachedActivity.play(targetMediaUrl);
+                    lvDatas.setSelection(mAttachedActivity.getCurrIdx());
+                }
+            }, 500);
         }
     }
 

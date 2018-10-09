@@ -32,6 +32,7 @@ import js.lib.android.media.video.utils.VideoUtils;
 import js.lib.android.utils.CommonUtil;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.Logs;
+import js.lib.utils.CharacterParser;
 
 /**
  * 播放器扩展行动作 - BASE
@@ -217,7 +218,7 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
             } else {
                 for (ProVideo program : mListPrograms) {
                     try {
-                        program.titlePinYin = mCharacterParser.getSelling(program.title);
+                        program.titlePinYin = CharacterParser.getPingYin(program.title);
                         String firstChar = program.titlePinYin.substring(0, 1).toUpperCase();
                         if (firstChar.matches("[A-Z]")) {
                             program.sortLetter = firstChar;

@@ -118,6 +118,9 @@ public class TabFreqCollectFragment extends BaseAppV4Fragment {
         boolean isCollectedBgSelected = false;
         int currFreq = getCurrFreq();
         for (TextView tv : tvItems) {
+            if (tv == null) {
+                continue;
+            }
             if (isCollectedBgSelected) {
                 setBg(tv, false);
             } else {

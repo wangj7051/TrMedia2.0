@@ -13,12 +13,12 @@ import java.io.File;
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import js.lib.android.media.audio.AudioSortUtils;
 import js.lib.android.media.audio.db.AudioDBManager;
 import js.lib.android.media.audio.utils.AudioImgUtils;
 import js.lib.android.media.audio.utils.AudioInfo;
@@ -170,7 +170,7 @@ public abstract class BaseAudioExtendActionsActivity extends BaseAudioCommonActi
                         }
                     }
                 }
-                sortMediaList(mListPrograms);
+                AudioSortUtils.sortByTitle(mListPrograms);
             } catch (Exception e) {
                 Logs.printStackTrace(TAG + "refreshPageOnScan()", e);
             }
@@ -191,31 +191,6 @@ public abstract class BaseAudioExtendActionsActivity extends BaseAudioCommonActi
     }
 
     /**
-     * 根据首字母排序列表集合
-     */
-    protected void sortMediaList(List<ProAudio> listPrograms) {
-        // Sort Medias
-        if (!EmptyUtil.isEmpty(listPrograms)) {
-            for (ProAudio music : listPrograms) {
-                try {
-                    music.titlePinYin = mCharacterParser.getSelling(music.title);
-                    String firstChar = music.titlePinYin.substring(0, 1).toUpperCase();
-                    if (firstChar.matches("[A-Z]")) {
-                        music.sortLetter = firstChar;
-                    } else {
-                        music.sortLetter = "#";
-                    }
-                } catch (Exception e) {
-                    Logs.printStackTrace(TAG + "sortMediaList()", e);
-                    music.titlePinYin = "";
-                    music.sortLetter = "";
-                }
-            }
-            Collections.sort(listPrograms, mComparator);
-        }
-    }
-
-    /**
      * 加载本地媒体
      */
     protected void loadLocalMedias() {
@@ -232,7 +207,7 @@ public abstract class BaseAudioExtendActionsActivity extends BaseAudioCommonActi
         protected Void doInBackground(Void... params) {
             // Get List Medias
             mListPrograms = AudioDBManager.instance().getListMusics();
-            sortMediaList(mListPrograms);
+            AudioSortUtils.sortByTitle(mListPrograms);
             return null;
         }
 
@@ -287,7 +262,7 @@ public abstract class BaseAudioExtendActionsActivity extends BaseAudioCommonActi
             AudioDBManager.instance().insertListMusics(mmListNewPrograms);
             AudioDBManager.instance().updateListMusics(mmListExistPrograms);
             // Sort & Notify load end
-            sortMediaList(mListPrograms);
+            AudioSortUtils.sortByTitle(mListPrograms);
             mHandler.postDelayed(mmLoadSDCardMediasRunnable, 1000);
             return null;
         }
@@ -344,10 +319,10 @@ public abstract class BaseAudioExtendActionsActivity extends BaseAudioCommonActi
 
     protected class LoadMediaImageTask extends AsyncTask<Void, Integer, String> {
 
-        private WeakReference<LoadImgListener> mmWeakReference;
+        private LoadImgListener mmLoadImgListener;
 
         public LoadMediaImageTask(LoadImgListener l) {
-            mmWeakReference = new WeakReference<>(l);
+            mmLoadImgListener = l;
         }
 
         @Override
@@ -423,10 +398,8 @@ public abstract class BaseAudioExtendActionsActivity extends BaseAudioCommonActi
 
                     @Override
                     public void run() {
-                        try {
-                            mmWeakReference.get().postRefresh(program, isLoadEnd);
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                        if (mmLoadImgListener != null) {
+                            mmLoadImgListener.postRefresh(program, isLoadEnd);
                         }
                     }
                 });
@@ -449,55 +422,14 @@ public abstract class BaseAudioExtendActionsActivity extends BaseAudioCommonActi
      * EXEC Play Selected Music
      */
     protected void execPlay(String mediaUrl) {
-        execPlay(getPosByMediaUrl(mediaUrl));
+        play(mediaUrl);
     }
 
     /**
      * EXEC Play Selected Music
      */
-    protected void execPlay(int playPos) {
-        setPlayPosition(playPos);
-        play();
-    }
-
-    /**
-     * Random Select On Music To Play
-     */
-    protected void execPlayRandomOne() {
-        if (mPlayService != null) {
-            mPlayService.playRandomOne();
-        }
-    }
-
-    public void execSavePlayInfo() {
-        if (mPlayService != null) {
-            mPlayService.savePlayInfo();
-        }
-    }
-
-    /**
-     * Set Play Position
-     */
-    public void setPlayPosition(String mediaUrl) {
-        setPlayPosition(getPosByMediaUrl(mediaUrl));
-    }
-
-    /**
-     * Loop and get current play position at list
-     */
-    protected int getPosOfList(String mediaUrl) {
-        if (mPlayService != null) {
-            return mPlayService.getPosAtList(mediaUrl);
-        }
-        return -1;
-    }
-
-    /**
-     * Loop and get current play position at list
-     */
-    public int getPosByMediaUrl(String mediaUrl) {
-        int selectPos = getPosOfList(mediaUrl);
-        return selectPos >= 0 ? selectPos : 0;
+    protected void execPlay(int position) {
+        play(position);
     }
 
     @Override

@@ -93,6 +93,7 @@ public class SclLc2010VdcAudioArtistsFrag extends BaseAudioListFrag {
         lsb = (LetterSideBar) contentV.findViewById(R.id.lsb);
         lsb.refreshLetters(null);
         lsb.addCallback(new LetterSideBarCallback());
+        lsb.setVisibility(View.VISIBLE);
 
         //ListView
         mDataAdapter = new SclLc2010VdcAudioArtistAdapter(mAttachedActivity, 0);
@@ -131,6 +132,7 @@ public class SclLc2010VdcAudioArtistsFrag extends BaseAudioListFrag {
                     audioFilter = new AudioFilter();
                     audioFilter.folderPath = folderPath;
                     audioFilter.artist = media.artist;
+                    audioFilter.artistPinYin = media.artistPinYin;
                     audioFilter.listMedias = new ArrayList<>();
                     audioFilter.listMedias.add(media);
                     mapDatas.put(media.artist, audioFilter);
@@ -146,6 +148,7 @@ public class SclLc2010VdcAudioArtistsFrag extends BaseAudioListFrag {
 
             //Refresh UI
             mListDatas = new ArrayList<>(mapDatas.values());
+            AudioFilter.sortByArtist((List<AudioFilter>) mListDatas);
             mDataAdapter.refreshDatas(mListDatas, targetMediaUrl);
         }
     }
@@ -231,7 +234,6 @@ public class SclLc2010VdcAudioArtistsFrag extends BaseAudioListFrag {
                     AudioFilter item = (AudioFilter) objItem;
                     mListDatas = item.listMedias;
                     mDataAdapter.refreshDatas(mListDatas);
-                    lsb.setVisibility(View.VISIBLE);
                 } else if (objItem instanceof ProAudio) {
                     ProAudio program = (ProAudio) objItem;
                     openPlayerActivity(program.mediaUrl, mListDatas);

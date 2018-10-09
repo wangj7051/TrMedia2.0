@@ -24,7 +24,8 @@ public class AudioPreferUtils extends PreferenceHelper {
         if (isSet) {
             saveInt(PREFER_KEY, playMode.getValue());
         }
-        return PlayMode.getMode(getInt(PREFER_KEY, PlayMode.NONE.getValue()));
+        int modeVal = getInt(PREFER_KEY, PlayMode.LOOP.getValue());
+        return PlayMode.getMode(modeVal);
     }
 
     /**

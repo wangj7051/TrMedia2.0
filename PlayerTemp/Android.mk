@@ -18,6 +18,9 @@
 LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
+#### 指定编译所用SDK  ####
+TARGET_PLATFORM=android-22
+
 LOCAL_MODULE := Player_SCL_LC2010_VDC_TEMP
 LOCAL_MODULE_CLASS := APPS
 

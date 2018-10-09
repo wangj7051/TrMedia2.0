@@ -16,6 +16,7 @@ import java.util.Map;
 import js.lib.android.media.audio.utils.MediaUtils;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.Logs;
+import js.lib.utils.CharacterParser;
 import js.lib.utils.date.DateFormatUtil;
 
 /**
@@ -146,8 +147,19 @@ public class VideoUtils extends MediaUtils {
             if (VideoInfo.isSupport(displayName.substring(displayName.lastIndexOf("."))) && isExist(path)) {
                 video = new VideoInfo();
                 video.mimeType = cur.getString(cur.getColumnIndex(VideoInfo._MIME_TYPE));
-                video.displayName = displayName;
+                video.title = displayName;
+                video.titlePinYin = CharacterParser.getPingYin(video.title);
+
+                //
                 video.path = path;
+                File file = new File(video.path);
+                File parentFile = file.getParentFile();
+                if (parentFile != null) {
+                    video.directory = parentFile.getName();
+                    video.directoryPinYin = CharacterParser.getPingYin(video.directory);
+                }
+
+                //
                 video.duration = DateFormatUtil.getIntSecondMsec(cur.getInt(cur.getColumnIndex(MediaStore.Video.Media.DURATION)));
             }
         } catch (Exception e) {

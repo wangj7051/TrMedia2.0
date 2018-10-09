@@ -261,7 +261,7 @@ public class FmUtilV2 implements FmDelegate {
             return mFmManager.getFmMinSearchFreq();
         } catch (Exception e) {
             Log.i(TAG, "getMinFreq() > " + e.getMessage());
-            return 7600;
+            return 8750;
         }
     }
 

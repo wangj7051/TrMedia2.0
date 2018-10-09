@@ -35,6 +35,11 @@ public interface PlayListener extends IPlayStateLitener, IPlayProgressListener, 
     void setPlayList(List<? extends Program> listMedias);
 
     /**
+     * 获取播放列表
+     */
+    List<? extends Program> getListMedias();
+
+    /**
      * 设置播放位置
      * <p>2nd parameter</p>
      *
@@ -87,6 +92,20 @@ public interface PlayListener extends IPlayStateLitener, IPlayProgressListener, 
      * 执行播放
      */
     void play();
+
+    /**
+     * 播放指定媒体文件
+     *
+     * @param mediaPath "../sdcard/Music/test.mp3"
+     */
+    void play(String mediaPath);
+
+    /**
+     * 播放指定媒体文件
+     *
+     * @param pos 指定位置媒体
+     */
+    void play(int pos);
 
     /**
      * 执行播放上一个

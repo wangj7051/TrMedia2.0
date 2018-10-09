@@ -18,6 +18,9 @@
 LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
+#### 指定编译所用SDK  ####
+TARGET_PLATFORM=android-22
+
 ## user: 指该模块只在user版本下才编译
 ## eng: 指该模块只在eng版本下才编译
 ## tests: 指该模块只在tests版本下才编译
@@ -99,7 +102,7 @@ LOCAL_CERTIFICATE := platform
 LOCAL_STATIC_JAVA_LIBRARIES := android-support-v4
 LOCAL_STATIC_JAVA_LIBRARIES += JAR_jcifs
 LOCAL_STATIC_JAVA_LIBRARIES += JAR_jsoup
-#LOCAL_STATIC_JAVA_LIBRARIES += JAR_qtsdk
+LOCAL_STATIC_JAVA_LIBRARIES += JAR_pinyin4j
 LOCAL_STATIC_JAVA_LIBRARIES += JAR_image_loader
 LOCAL_STATIC_JAVA_LIBRARIES += JAR_httpcore
 LOCAL_STATIC_JAVA_LIBRARIES += JAR_httpclient
@@ -124,7 +127,7 @@ include $(CLEAR_VARS)
 ## ^^ .jar 预编译 ^^
 LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES := JAR_jcifs:libs/jcifs-1.3.18.jar
 LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES += JAR_jsoup:libs/jsoup-1.8.3.jar
-#LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES += JAR_qtsdk:libs/qtsdk.jar
+LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES += JAR_pinyin4j:libs/pinyin4j-2.5.0.jar
 LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES += JAR_image_loader:libs/universal-image-loader-1.9.4-with-sources.jar
 LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES += JAR_httpcore:libs/httpcore-4.4.10.jar
 LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES += JAR_httpclient:libs/httpclient-4.5.6.jar

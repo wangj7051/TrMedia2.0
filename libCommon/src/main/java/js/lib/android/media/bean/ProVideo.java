@@ -18,8 +18,11 @@ public class ProVideo extends Program {
     }
 
     public ProVideo(VideoInfo video) {
-        this.title = video.displayName;
+        this.title = video.title;
+        titlePinYin = video.titlePinYin;
         this.mediaUrl = video.path;
+        mediaDirectory = video.directory;
+        mediaDirectoryPinYin = video.directoryPinYin;
         this.duration = video.duration;
     }
 

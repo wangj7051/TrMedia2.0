@@ -3,6 +3,7 @@ package com.tricheer.player.version.cj.slc_lc2010_vdc.activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
@@ -50,6 +51,9 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
      */
     protected final int M_REQ_WARNING = 2;
 
+    private boolean mIsWarningShowing = false;
+    private static Handler mHandler = new Handler();
+
     @Override
     protected void onCreate(@Nullable Bundle bundle) {
         super.onCreate(bundle);
@@ -78,6 +82,7 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
         int flag = PlayerPreferUtils.getVideoWarningFlag(false, 0);
         switch (flag) {
             case 1:
+                mIsWarningShowing = true;
                 Intent warningIntent = new Intent(this, SclLc2010VdcVideoWarningActivity.class);
                 startActivityForResult(warningIntent, M_REQ_WARNING);
                 break;
@@ -271,20 +276,45 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
                 }
                 break;
             case KEYCODE_DPAD_LEFT:
+                if (mFragMedias != null) {
+                    mFragMedias.prev();
+                }
+                break;
             case KEYCODE_DPAD_RIGHT:
                 if (mFragMedias != null) {
-                    if (mFragMedias instanceof SclLc2010VdcVideoFoldersFrag) {
-                        switchTab(vItems[0], false);
-                    } else if (mFragMedias instanceof SclLc2010VdcVideoNamesFrag) {
-                        switchTab(vItems[1], false);
-                    }
+                    mFragMedias.next();
                 }
                 break;
         }
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (data != null) {
+            String flag = data.getStringExtra("flag");
+            if ("EXIT_WARNING".equals(flag)) {
+                mIsWarningShowing = false;
+                if (mFragMedias instanceof SclLc2010VdcVideoNamesFrag) {
+                    mHandler.removeCallbacksAndMessages(null);
+                    mHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mFragMedias.play();
+                        }
+                    }, 800);
+                }
+            }
+        }
+    }
+
+    public boolean isWarningShowing() {
+        return mIsWarningShowing;
+    }
+
+    @Override
     protected void onDestroy() {
+        mHandler.removeCallbacksAndMessages(null);
         super.onDestroy();
         onIDestroy();
     }

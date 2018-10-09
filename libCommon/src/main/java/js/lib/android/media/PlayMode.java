@@ -1,5 +1,7 @@
 package js.lib.android.media;
 
+import android.annotation.SuppressLint;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,10 +13,6 @@ import java.util.Map;
  * @author Jun.Wang
  */
 public enum PlayMode {
-    /**
-     * 未设置播放模式
-     */
-    NONE(-1),
     /**
      * 单曲循环
      */
@@ -44,6 +42,7 @@ public enum PlayMode {
 
     private static Map<Integer, PlayMode> mMapModes;
 
+    @SuppressLint("UseSparseArrays")
     public static PlayMode getMode(int modeVal) {
         if (mMapModes == null) {
             mMapModes = new HashMap<>();

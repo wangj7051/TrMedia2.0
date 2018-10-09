@@ -1,5 +1,6 @@
 package com.tricheer.player.version.cj.slc_lc2010_vdc.activity;
 
+import android.app.Service;
 import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
@@ -18,7 +19,6 @@ import com.tri.lib.utils.SettingsSysUtil;
 import com.tricheer.player.R;
 import com.tricheer.player.engine.PlayerAppManager;
 import com.tricheer.player.engine.PlayerAppManager.PlayerCxtFlag;
-import com.tricheer.player.service.MusicPlayService;
 import com.tricheer.player.version.base.activity.music.BaseAudioKeyEventActivity;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.frags.BaseAudioListFrag;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.frags.SclLc2010VdcAudioAlbumsFrag;
@@ -30,6 +30,7 @@ import com.tricheer.player.version.cj.slc_lc2010_vdc.frags.SclLc2010VdcAudioName
 import java.util.List;
 import java.util.Set;
 
+import js.lib.android.media.PlayState;
 import js.lib.android.media.bean.ProAudio;
 import js.lib.android.utils.CommonUtil;
 import js.lib.android.utils.EmptyUtil;
@@ -95,6 +96,7 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
         vItems[4].setOnClickListener(mFilterViewOnClick);
 
         ivRhythmAnim = (ImageView) findViewById(R.id.v_rate);
+        ivRhythmAnim.setOnClickListener(mFilterViewOnClick);
 
         //
         switchTab(vItems[2], true);
@@ -131,27 +133,14 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
     @Override
     protected void onResume() {
         super.onResume();
-        //
         registerAudioFocus(1);
-        //
-        if (isPlaying()) {
-            activeAnimRhythm();
-        }
-    }
-
-    private void activeAnimRhythm() {
-        Drawable drawable = ivRhythmAnim.getDrawable();
-        if (drawable instanceof AnimationDrawable) {
-            AnimationDrawable animDrawable = (AnimationDrawable) drawable;
-            if (!animDrawable.isRunning()) {
-                animDrawable.start();
-            }
-        }
+        activeAnimRhythm(isPlaying());
     }
 
     @Override
-    protected void onPlayServiceConnected(MusicPlayService service) {
+    protected void onPlayServiceConnected(Service service) {
         super.onPlayServiceConnected(service);
+        setPlayListener(this);
         loadLocalMedias();
     }
 
@@ -286,10 +275,10 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
     private View.OnClickListener mFilterViewOnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            //Forbidden click the same item
-            //TODO
-            //
-            switchTab(v, true);
+            if (v == ivRhythmAnim) {
+            } else {
+                switchTab(v, true);
+            }
         }
     };
 
@@ -304,10 +293,12 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
         for (int idx = 0; idx < loop; idx++) {
             View item = vItems[idx];
             if (item == v) {
+                item.setFocusable(true);
                 item.requestFocus();
                 setBg(item, true);
                 loadFragment(idx);
             } else {
+                item.setFocusable(false);
                 item.clearFocus();
                 setBg(item, false);
             }
@@ -339,33 +330,13 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
                 break;
 
             case KEYCODE_DPAD_LEFT:
-                if (!mIsMenuFrozenTime && mFragMedias != null) {
-                    if (mFragMedias instanceof SclLc2010VdcAudioCollectsFrag) {
-                        switchTab(vItems[4], false);
-                    } else if (mFragMedias instanceof SclLc2010VdcAudioFoldersFrag) {
-                        switchTab(vItems[0], false);
-                    } else if (mFragMedias instanceof SclLc2010VdcAudioNamesFrag) {
-                        switchTab(vItems[1], false);
-                    } else if (mFragMedias instanceof SclLc2010VdcAudioArtistsFrag) {
-                        switchTab(vItems[2], false);
-                    } else if (mFragMedias instanceof SclLc2010VdcAudioAlbumsFrag) {
-                        switchTab(vItems[3], false);
-                    }
+                if (mFragMedias != null) {
+                    mFragMedias.prev();
                 }
                 break;
             case KEYCODE_DPAD_RIGHT:
-                if (!mIsMenuFrozenTime && mFragMedias != null) {
-                    if (mFragMedias instanceof SclLc2010VdcAudioCollectsFrag) {
-                        switchTab(vItems[1], false);
-                    } else if (mFragMedias instanceof SclLc2010VdcAudioFoldersFrag) {
-                        switchTab(vItems[2], false);
-                    } else if (mFragMedias instanceof SclLc2010VdcAudioNamesFrag) {
-                        switchTab(vItems[3], false);
-                    } else if (mFragMedias instanceof SclLc2010VdcAudioArtistsFrag) {
-                        switchTab(vItems[4], false);
-                    } else if (mFragMedias instanceof SclLc2010VdcAudioAlbumsFrag) {
-                        switchTab(vItems[0], false);
-                    }
+                if (mFragMedias != null) {
+                    mFragMedias.next();
                 }
                 break;
         }
@@ -377,7 +348,9 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
         if (data != null) {
             String flag = data.getStringExtra("flag");
             if ("PLAYER_FINISH_ON_CLICK_LIST".equals(flag)) {
-                switchTab(vItems[2], false);
+//                if (!(mFragMedias instanceof SclLc2010VdcAudioNamesFrag)) {
+//                    switchTab(vItems[2], false);
+//                }
             } else if ("PLAYER_FINISH_ON_GET_KEY".equals(flag)) {
                 autoOpenPlayer();
             }
@@ -416,7 +389,42 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
     }
 
     @Override
+    public void onPlayStateChanged(PlayState playState) {
+        super.onPlayStateChanged(playState);
+        Log.i(TAG, "playState -> " + playState);
+        switch (playState) {
+            case PLAY:
+            case PREPARED:
+                activeAnimRhythm(true);
+                if (mFragMedias != null) {
+                    mFragMedias.refreshDatas(getCurrMediaPath());
+                }
+                break;
+            default:
+                activeAnimRhythm(false);
+                break;
+        }
+    }
+
+    private void activeAnimRhythm(boolean isActive) {
+        Drawable drawable = ivRhythmAnim.getDrawable();
+        if (drawable instanceof AnimationDrawable) {
+            AnimationDrawable animDrawable = (AnimationDrawable) drawable;
+            if (isActive) {
+                if (!animDrawable.isRunning()) {
+                    animDrawable.start();
+                }
+            } else {
+                if (animDrawable.isRunning()) {
+                    animDrawable.stop();
+                }
+            }
+        }
+    }
+
+    @Override
     protected void onDestroy() {
+        removePlayListener(this);
         AccReceiver.unregister(this);
         ReverseReceiver.unregister(this);
         cancelAllTasks();

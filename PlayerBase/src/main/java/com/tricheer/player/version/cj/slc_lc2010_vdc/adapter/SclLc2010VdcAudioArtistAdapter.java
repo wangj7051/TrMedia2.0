@@ -62,8 +62,15 @@ public class SclLc2010VdcAudioArtistAdapter<T> extends BaseArrayAdapter<T> imple
 
     public void refreshDatas(int pos) {
         T item = getItem(pos);
-        if (item != null && item instanceof ProAudio) {
+        if (item instanceof ProAudio) {
             refreshDatas(((ProAudio) item).mediaUrl);
+        } else if (item instanceof AudioFilter) {
+            AudioFilter selectedAf = (AudioFilter) item;
+            for (T t : mListDatas) {
+                AudioFilter af = (AudioFilter) t;
+                af.isSelected = TextUtils.equals(selectedAf.artist, af.artist);
+            }
+            refreshDatas();
         }
     }
 

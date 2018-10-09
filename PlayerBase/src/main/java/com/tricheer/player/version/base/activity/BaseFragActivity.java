@@ -14,7 +14,6 @@ import com.tricheer.player.utils.PlayerFileUtils;
 
 import js.lib.android.utils.ImageLoaderUtils;
 import js.lib.android.utils.Logs;
-import js.lib.utils.CharacterParser;
 
 /**
  * Base FragmentActivity
@@ -40,11 +39,6 @@ public abstract class BaseFragActivity extends FragmentActivity {
      * 图片加载器
      */
     private ImageLoader mImageLoader;
-
-    /**
-     * Chinese to Spelling Covert Class
-     */
-    protected CharacterParser mCharacterParser;
 
     /**
      * Is Click Home Key , And Application is Running Background
@@ -84,7 +78,6 @@ public abstract class BaseFragActivity extends FragmentActivity {
 
     private void init() {
         this.mContext = this;
-        this.mCharacterParser = CharacterParser.getInstance();
         this.mImageLoader = ImageLoaderUtils.getImageLoader(PlayerFileUtils.getMusicPicPath(""));
     }
 

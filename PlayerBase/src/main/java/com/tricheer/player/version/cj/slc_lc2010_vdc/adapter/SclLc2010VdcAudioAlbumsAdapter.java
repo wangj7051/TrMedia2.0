@@ -14,7 +14,6 @@ import com.tricheer.player.R;
 import com.tricheer.player.utils.PlayerLogicUtils;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.bean.AudioFilter;
 
-import java.io.File;
 import java.util.List;
 
 import js.lib.android.adapter.BaseArrayAdapter;
@@ -62,8 +61,15 @@ public class SclLc2010VdcAudioAlbumsAdapter<T> extends BaseArrayAdapter<T> imple
 
     public void refreshDatas(int pos) {
         T item = getItem(pos);
-        if (item != null && item instanceof ProAudio) {
+        if (item instanceof ProAudio) {
             refreshDatas(((ProAudio) item).mediaUrl);
+        } else if (item instanceof AudioFilter) {
+            AudioFilter selectedAf = (AudioFilter) item;
+            for (T t : mListDatas) {
+                AudioFilter af = (AudioFilter) t;
+                af.isSelected = TextUtils.equals(selectedAf.album, af.album);
+            }
+            refreshDatas();
         }
     }
 
@@ -161,8 +167,6 @@ public class SclLc2010VdcAudioAlbumsAdapter<T> extends BaseArrayAdapter<T> imple
                 AudioFilter item = (AudioFilter) tItem;
                 holder.tvItem.setText((position + 1) + "    " + item.album);
                 holder.ivEnd.setVisibility(View.INVISIBLE);
-
-                File file = new File(mSelectedMediaUrl);
                 if (item.isSelected) {
                     mSelectedPos = position;
                     holder.ivStart.setImageResource(R.drawable.icon_singer_c);

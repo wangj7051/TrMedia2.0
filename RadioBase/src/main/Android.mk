@@ -18,6 +18,9 @@
 LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
+#### 指定编译所用SDK  ####
+TARGET_PLATFORM=android-22
+
 ## user: 指该模块只在user版本下才编译
 ## eng: 指该模块只在eng版本下才编译
 ## tests: 指该模块只在tests版本下才编译
@@ -99,7 +102,7 @@ LOCAL_PROGUARD_ENABLED := disabled
 ## .jar
 LOCAL_STATIC_JAVA_LIBRARIES := android-support-v4
 LOCAL_STATIC_JAVA_LIBRARIES += LIB_COMMON
-LOCAL_STATIC_JAVA_LIBRARIES += LIB_TRICHEER
+LOCAL_STATIC_JAVA_LIBRARIES += LIB_TRI
 #LOCAL_STATIC_JAVA_LIBRARIES += JAR_jcifs
 #LOCAL_STATIC_JAVA_LIBRARIES += JAR_jsoup
 #LOCAL_STATIC_JAVA_LIBRARIES += JAR_qtsdk
