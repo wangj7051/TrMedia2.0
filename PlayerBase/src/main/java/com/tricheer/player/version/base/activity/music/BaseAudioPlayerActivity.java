@@ -9,7 +9,6 @@ import com.tri.lib.engine.music.PlayerDelegate;
 import com.tricheer.player.engine.PlayerAppManager;
 import com.tricheer.player.engine.PlayerAppManager.PlayerCxtFlag;
 import com.tricheer.player.utils.PlayerLogicUtils;
-import com.tricheer.player.utils.PlayerPreferUtils;
 
 import java.io.File;
 import java.util.List;
@@ -55,12 +54,6 @@ public abstract class BaseAudioPlayerActivity extends BaseAudioFocusActivity imp
     public void onPlayFromFolder(int playPos, List<String> listPlayPaths) {
         // Save last select media Path
         File selectMedia = new File(listPlayPaths.get(playPos));
-        if (selectMedia.exists()) {
-            File parentFolder = selectMedia.getParentFile();
-            if (parentFolder != null) {
-                PlayerPreferUtils.getLastMusicPath(true, parentFolder.getPath());
-            }
-        }
     }
 
     /**

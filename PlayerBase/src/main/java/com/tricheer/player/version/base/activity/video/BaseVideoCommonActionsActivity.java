@@ -8,8 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 
-import com.tricheer.player.engine.PlayerAppManager.PlayerCxtFlag;
-import com.tricheer.player.utils.PlayerPreferUtils;
+import com.tri.lib.utils.TrVideoPreferUtils;
 import com.tricheer.player.version.base.activity.BasePlayerActivity;
 
 import java.util.List;
@@ -309,28 +308,28 @@ public abstract class BaseVideoCommonActionsActivity extends BasePlayerActivity 
 
     @Override
     public String getLastTargetMediaPath() {
-        return PlayerPreferUtils.getLastTargetMediaUrl(false, PlayerCxtFlag.VIDEO_PLAYER, "");
+        return TrVideoPreferUtils.getLastTargetMediaUrl(false, "");
     }
 
     @Override
     public void saveTargetMediaPath(String mediaPath) {
-        PlayerPreferUtils.getLastTargetMediaUrl(true, PlayerCxtFlag.VIDEO_PLAYER, mediaPath);
+        TrVideoPreferUtils.getLastTargetMediaUrl(true, mediaPath);
     }
 
     @Override
     public String[] getPlayedMediaInfos() {
-        return PlayerPreferUtils.getLastPlayedMediaInfo(false, PlayerCxtFlag.VIDEO_PLAYER, "", 0);
+        return TrVideoPreferUtils.getLastPlayedMediaInfo(false, "", 0);
     }
 
     @Override
     public void savePlayMediaInfos(String mediaUrl, int progress) {
-        PlayerPreferUtils.getLastPlayedMediaInfo(true, PlayerCxtFlag.VIDEO_PLAYER, mediaUrl, progress);
+        TrVideoPreferUtils.getLastPlayedMediaInfo(true, mediaUrl, progress);
         Logs.debugI("SavePlayInfo", "savePlayMediaInfos() -> [mediaUrl:" + mediaUrl + " ; progress:" + progress);
     }
 
     @Override
     public void clearPlayedMediaInfos() {
-        PlayerPreferUtils.getLastPlayedMediaInfo(true, PlayerCxtFlag.VIDEO_PLAYER, "", 0);
+        TrVideoPreferUtils.getLastPlayedMediaInfo(true, "", 0);
     }
 
     /**

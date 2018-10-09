@@ -11,13 +11,14 @@ import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.tri.lib.utils.TrAudioPreferUtils;
+import com.tri.lib.utils.TrVideoPreferUtils;
 import com.tricheer.player.engine.PlayerAppManager;
 import com.tricheer.player.engine.PlayerAppManager.PlayerCxtFlag;
 import com.tricheer.player.engine.PlayerType;
 import com.tricheer.player.engine.VersionController;
 import com.tricheer.player.receiver.PlayerReceiver.PlayerReceiverListener;
 import com.tricheer.player.utils.PlayerFileUtils;
-import com.tricheer.player.utils.PlayerPreferUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -587,13 +588,13 @@ public class MediaScanReceiver extends BroadcastReceiver {
             return;
         }
         // Clear Music Informations
-        String lastMediaUrl = PlayerPreferUtils.getLastTargetMediaUrl(false, PlayerCxtFlag.MUSIC_PLAYER, "");
+        String lastMediaUrl = TrAudioPreferUtils.getLastTargetMediaUrl(false, "");
         if (!EmptyUtil.isEmpty(lastMediaUrl)) {
             for (String root : mSetPathsUnMounted) {
                 try {
                     if (lastMediaUrl.startsWith(root)) {
-                        PlayerPreferUtils.getLastTargetMediaUrl(true, PlayerCxtFlag.MUSIC_PLAYER, "");
-                        PlayerPreferUtils.getLastPlayedMediaInfo(true, PlayerCxtFlag.MUSIC_PLAYER, "", 0);
+                        TrAudioPreferUtils.getLastTargetMediaUrl(true, "");
+                        TrAudioPreferUtils.getLastPlayedMediaInfo(true, "", 0);
                         break;
                     }
                 } catch (Exception e) {
@@ -603,13 +604,13 @@ public class MediaScanReceiver extends BroadcastReceiver {
         }
 
         // Clear Video Informations
-        lastMediaUrl = PlayerPreferUtils.getLastTargetMediaUrl(false, PlayerCxtFlag.VIDEO_PLAYER, "");
+        lastMediaUrl = TrVideoPreferUtils.getLastTargetMediaUrl(false, "");
         if (!EmptyUtil.isEmpty(lastMediaUrl)) {
             for (String root : mSetPathsUnMounted) {
                 try {
                     if (lastMediaUrl.startsWith(root)) {
-                        PlayerPreferUtils.getLastTargetMediaUrl(true, PlayerCxtFlag.VIDEO_PLAYER, "");
-                        PlayerPreferUtils.getLastPlayedMediaInfo(true, PlayerCxtFlag.VIDEO_PLAYER, "", 0);
+                        TrVideoPreferUtils.getLastTargetMediaUrl(true, "");
+                        TrVideoPreferUtils.getLastPlayedMediaInfo(true, "", 0);
                         break;
                     }
                 } catch (Exception e) {

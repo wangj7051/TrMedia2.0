@@ -1,7 +1,6 @@
 //Libs
-include ':LibTri'
-include ':libCommon'
-//include ':libTricheer'
+include ':LibCommon'
+include ':LibTricheer'
 include ':LetterSideBar'
 
 //Radio

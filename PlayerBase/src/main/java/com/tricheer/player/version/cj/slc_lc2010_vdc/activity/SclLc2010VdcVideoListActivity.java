@@ -9,10 +9,10 @@ import android.util.Log;
 import android.view.View;
 
 import com.tri.lib.engine.KeyEnum;
+import com.tri.lib.utils.TrVideoPreferUtils;
 import com.tricheer.player.R;
 import com.tricheer.player.engine.PlayerAppManager;
 import com.tricheer.player.engine.PlayerAppManager.PlayerCxtFlag;
-import com.tricheer.player.utils.PlayerPreferUtils;
 import com.tricheer.player.version.base.activity.video.BaseVideoKeyEventActivity;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.frags.BaseVideoListFrag;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.frags.SclLc2010VdcVideoFoldersFrag;
@@ -79,7 +79,7 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
     }
 
     private void showWarning() {
-        int flag = PlayerPreferUtils.getVideoWarningFlag(false, 0);
+        int flag = TrVideoPreferUtils.getVideoWarningFlag(false, 0);
         switch (flag) {
             case 1:
                 mIsWarningShowing = true;

@@ -4,12 +4,13 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 
+import com.tri.lib.utils.TrAudioPreferUtils;
+import com.tri.lib.utils.TrVideoPreferUtils;
 import com.tricheer.player.engine.PlayerConsts.PlayerOpenMethod;
 import com.tricheer.player.engine.VersionController;
 import com.tricheer.player.receiver.MediaScanReceiver;
 import com.tricheer.player.receiver.PlayerReceiver;
 import com.tricheer.player.utils.PlayerFileUtils;
-import com.tricheer.player.utils.PlayerPreferUtils;
 
 import java.util.List;
 
@@ -45,7 +46,8 @@ public class App extends Application {
         PlayerReceiver.init(this);
 
         // 初始化Preference操作类
-        PlayerPreferUtils.init(this);
+        TrAudioPreferUtils.init(this);
+        TrVideoPreferUtils.init(this);
         // 初始化日志类
         Logs.init("-Player");
         // 初始化文件管理类

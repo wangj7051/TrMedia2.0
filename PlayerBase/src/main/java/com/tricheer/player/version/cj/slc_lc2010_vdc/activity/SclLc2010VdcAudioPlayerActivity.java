@@ -11,6 +11,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.tri.lib.engine.KeyEnum;
+import com.tri.lib.utils.TrAudioPreferUtils;
 import com.tricheer.player.R;
 import com.tricheer.player.utils.PlayerLogicUtils;
 import com.tricheer.player.version.base.activity.music.BaseAudioPlayerActivity;
@@ -20,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import js.lib.android.media.PlayMode;
-import js.lib.android.media.audio.AudioPreferUtils;
 import js.lib.android.media.audio.db.AudioDBManager;
 import js.lib.android.media.bean.ProAudio;
 import js.lib.android.utils.EmptyUtil;
@@ -291,7 +291,7 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseAudioPlayerActivity {
     public void onPlayModeChange() {
         super.onPlayModeChange();
         Logs.i(TAG, "^^ onPlayModeChange() ^^");
-        PlayMode storePlayMode = AudioPreferUtils.getAudioPlayMode(false, PlayMode.LOOP);
+        PlayMode storePlayMode = TrAudioPreferUtils.getPlayMode(false, PlayMode.LOOP);
         Logs.i(TAG, "onPlayModeChange() -> [storePlayMode:" + storePlayMode + "]");
         if (storePlayMode != null) {
             switch (storePlayMode) {

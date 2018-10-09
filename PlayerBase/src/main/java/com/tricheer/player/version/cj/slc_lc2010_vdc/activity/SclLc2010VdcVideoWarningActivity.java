@@ -6,9 +6,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
 
+import com.tri.lib.utils.TrVideoPreferUtils;
 import com.tricheer.player.R;
 import com.tricheer.player.engine.PlayerAppManager;
-import com.tricheer.player.utils.PlayerPreferUtils;
 import com.tricheer.player.version.base.activity.BaseFragActivity;
 
 public class SclLc2010VdcVideoWarningActivity extends BaseFragActivity {
@@ -38,10 +38,10 @@ public class SclLc2010VdcVideoWarningActivity extends BaseFragActivity {
         @Override
         public void onClick(View v) {
             if (v == vAgree) {
-                PlayerPreferUtils.getVideoWarningFlag(true, 1);
+                TrVideoPreferUtils.getVideoWarningFlag(true, 1);
                 finishByOperate("EXIT_WARNING");
             } else if (v == vNoToast) {
-                PlayerPreferUtils.getVideoWarningFlag(true, 2);
+                TrVideoPreferUtils.getVideoWarningFlag(true, 2);
                 finishByOperate("EXIT_WARNING");
             } else if (v == vExit) {
                 exitPlayer();
