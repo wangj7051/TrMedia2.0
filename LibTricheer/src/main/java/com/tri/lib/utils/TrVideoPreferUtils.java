@@ -1,6 +1,6 @@
 package com.tri.lib.utils;
 
-import js.lib.android.media.video.VideoPreferUtils;
+import js.lib.android.media.utils.VideoPreferUtils;
 
 public class TrVideoPreferUtils extends VideoPreferUtils {
     /**

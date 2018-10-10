@@ -19,13 +19,13 @@ import java.net.URLEncoder;
 import java.util.List;
 import java.util.Set;
 
-import js.lib.android.media.PlayMode;
-import js.lib.android.media.PlayState;
 import js.lib.android.media.bean.ProAudio;
 import js.lib.android.media.bean.ProVideo;
 import js.lib.android.media.bean.Program;
 import js.lib.android.media.bean.ProgramPinyinComparator;
-import js.lib.android.media.engine.PlayListener;
+import js.lib.android.media.player.PlayListener;
+import js.lib.android.media.player.PlayMode;
+import js.lib.android.media.player.PlayState;
 import js.lib.android.utils.Logs;
 
 /**

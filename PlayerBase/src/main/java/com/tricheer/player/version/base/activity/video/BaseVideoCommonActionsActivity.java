@@ -13,11 +13,11 @@ import com.tricheer.player.version.base.activity.BasePlayerActivity;
 
 import java.util.List;
 
-import js.lib.android.media.PlayEnableController;
-import js.lib.android.media.PlayMode;
 import js.lib.android.media.bean.ProVideo;
-import js.lib.android.media.video.VideoPreferUtils;
-import js.lib.android.media.video.player_native.IVideoPlayer;
+import js.lib.android.media.player.PlayEnableController;
+import js.lib.android.media.player.PlayMode;
+import js.lib.android.media.player.video.IVideoPlayer;
+import js.lib.android.media.utils.VideoPreferUtils;
 import js.lib.android.utils.Logs;
 
 /**

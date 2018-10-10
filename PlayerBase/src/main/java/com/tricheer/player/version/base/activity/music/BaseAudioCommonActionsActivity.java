@@ -15,10 +15,10 @@ import com.tricheer.player.version.base.activity.BasePlayerActivity;
 
 import java.util.List;
 
-import js.lib.android.media.PlayMode;
 import js.lib.android.media.bean.ProAudio;
 import js.lib.android.media.bean.Program;
-import js.lib.android.media.engine.PlayListener;
+import js.lib.android.media.player.PlayListener;
+import js.lib.android.media.player.PlayMode;
 import js.lib.android.utils.Logs;
 
 /**

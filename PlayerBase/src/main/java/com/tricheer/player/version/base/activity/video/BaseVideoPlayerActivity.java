@@ -13,11 +13,11 @@ import com.tricheer.player.engine.PlayerAppManager.PlayerCxtFlag;
 import com.tricheer.player.engine.VersionController;
 import com.tricheer.player.receiver.ReceiverOperates;
 
-import js.lib.android.media.PlayEnableController;
-import js.lib.android.media.PlayMode;
-import js.lib.android.media.PlayState;
 import js.lib.android.media.bean.ProVideo;
-import js.lib.android.media.video.db.VideoDBManager;
+import js.lib.android.media.player.PlayEnableController;
+import js.lib.android.media.player.PlayMode;
+import js.lib.android.media.player.PlayState;
+import js.lib.android.media.engine.db_video.VideoDBManager;
 import js.lib.android.utils.CommonUtil;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.Logs;

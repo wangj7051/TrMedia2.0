@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import js.lib.android.media.audio.utils.MediaUtils;
+import js.lib.android.media.utils.MediaUtils;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.Logs;
 import js.lib.utils.CharacterParser;
@@ -21,13 +21,15 @@ import js.lib.utils.date.DateFormatUtil;
 
 /**
  * Video Common Methods
- * <p>
- * frameworks\base\media\java\android\media\MediaFile.java （1）addFileType("RMVB", FILE_TYPE_RMVB,
- * "video/x-pn-realvideo");//添加RMVB （2）isVideoFileType,条件中添加 fileType == FILE_TYPE_RMVB
+ *
+ * <p>1.Add ".rmvb" support</p>
+ * <p>frameworks\base\media\java\android\media\MediaFile.java</p>
+ * <p>(1)addFileType("RMVB", FILE_TYPE_RMVB,"video/x-pn-realvideo");</p>
+ * <p>(2)isVideoFileType,条件中添加 fileType == FILE_TYPE_RMVB</p>
  */
 public class VideoUtils extends MediaUtils {
     // TAG
-    private static final String TAG = "VideoUtils -> ";
+    private static final String TAG = "VideoUtils";
 
     /**
      * Context
@@ -45,8 +47,19 @@ public class VideoUtils extends MediaUtils {
      */
     private static List<String> mListFilterPaths;
 
+    private VideoUtils() {
+    }
+
+    private static class SingletonHolder {
+        private static final VideoUtils INSTANCE = new VideoUtils();
+    }
+
+    public static VideoUtils instance() {
+        return SingletonHolder.INSTANCE;
+    }
+
     public static void init(Context cxt, List<String> listSupportPaths, List<String> listFilterPaths) {
-        mContext = cxt;
+        mContext = cxt.getApplicationContext();
         mContentResolver = mContext.getContentResolver();
         mlistSupportPaths = listSupportPaths;
         mListFilterPaths = listFilterPaths;

@@ -22,8 +22,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import js.lib.android.media.PlayMode;
 import js.lib.android.media.bean.ProVideo;
+import js.lib.android.media.player.PlayMode;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.KillTouch;
 import js.lib.android.utils.Logs;

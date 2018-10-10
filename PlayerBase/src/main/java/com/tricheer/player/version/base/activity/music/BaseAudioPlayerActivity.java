@@ -13,7 +13,7 @@ import com.tricheer.player.utils.PlayerLogicUtils;
 import java.io.File;
 import java.util.List;
 
-import js.lib.android.media.PlayState;
+import js.lib.android.media.player.PlayState;
 import js.lib.android.media.bean.ProAudio;
 import js.lib.android.utils.CommonUtil;
 import js.lib.android.utils.Logs;

@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/bg_main">
 
-    <js.lib.android.media.video.player_native.IVideoPlayer
+    <js.lib.android.media.player.video.IVideoPlayer
         android:id="@+id/vv_player"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

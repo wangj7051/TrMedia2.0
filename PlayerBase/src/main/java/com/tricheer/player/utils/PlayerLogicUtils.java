@@ -12,7 +12,7 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import js.lib.android.media.audio.utils.MediaUtils;
+import js.lib.android.media.utils.MediaUtils;
 import js.lib.android.media.bean.ProAudio;
 import js.lib.android.media.bean.ProVideo;
 import js.lib.android.media.bean.Program;

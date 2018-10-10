@@ -11,9 +11,9 @@ import android.support.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Set;
 
-import js.lib.android.media.PlayState;
-import js.lib.android.media.audio.AudioPreferUtils;
-import js.lib.android.media.engine.PlayListener;
+import js.lib.android.media.player.PlayState;
+import js.lib.android.media.utils.AudioPreferUtils;
+import js.lib.android.media.player.PlayListener;
 import js.lib.android.utils.AudioManagerUtil;
 import js.lib.android.utils.Logs;
 

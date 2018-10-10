@@ -27,31 +27,61 @@
       <change beforePath="$PROJECT_DIR$/.gradle/4.10.2/taskHistory/taskHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.10.2/taskHistory/taskHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/4.10.2/taskHistory/taskHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.10.2/taskHistory/taskHistory.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle____local_aars___C__Users_Administrator__gradle_caches_transforms_1_files_1_1_libvlc_3_0_0_aar_da64f621f94837b664c2ed4e5149ba9e_unspecified_jar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle____local_aars___C__Users_wangjun__gradle_caches_transforms_1_files_1_1_libvlc_3_0_0_aar_da64f621f94837b664c2ed4e5149ba9e_unspecified_jar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__android_android_22.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__android_android_27.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/LetterSideBar/LetterSideBar.iml" beforeDir="false" afterPath="$PROJECT_DIR$/LetterSideBar/LetterSideBar.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/LibCommon/LibCommon.iml" beforeDir="false" afterPath="$PROJECT_DIR$/LibCommon/LibCommon.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/PlayEnableController.java" beforeDir="false" afterPath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/player/PlayEnableController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/PlayMode.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/PlayState.java" beforeDir="false" afterPath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/player/PlayState.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/audio/AudioPreferUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/utils/AudioPreferUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/audio/AudioSortUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/utils/AudioSortUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/audio/IAudioPlayer.java" beforeDir="false" afterPath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/player/audio/IAudioPlayer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/audio/MusicPlayerFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/player/audio/MusicPlayerFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/audio/db/AudioDBHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/engine/db_audio/AudioDBHelper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/audio/db/AudioDBManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/engine/db_audio/AudioDBManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/audio/db/AudioTables.java" beforeDir="false" afterPath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/engine/db_audio/AudioTables.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/audio/player_native/AudioMediaPlayer.java" beforeDir="false" afterPath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/player/audio/AudioMediaPlayer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/audio/player_vlc/AudioVlcPlayer.java" beforeDir="false" afterPath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/player/audio/AudioVlcPlayer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/audio/service/AudioPlayService.java" beforeDir="false" afterPath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/audio/service/AudioPlayService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/audio/utils/AudioInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/audio/utils/AudioInfo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/audio/service/BaseAudioService.java" beforeDir="false" afterPath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/audio/service/BaseAudioService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/audio/utils/AudioImgUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/utils/AudioImgUtils.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/audio/utils/AudioUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/audio/utils/AudioUtils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/engine/PlayListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/engine/PlayListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/audio/utils/MediaUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/utils/MediaUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/engine/IPlayAudioFocusListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/engine/IAudioFocusListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/engine/IPlayProgressListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/player/IPlayProgressListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/engine/IPlayStateLitener.java" beforeDir="false" afterPath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/player/IPlayStateLitener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/engine/PlayListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/player/PlayListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/video/VideoPreferUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/utils/VideoPreferUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/video/db/VideoDBHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/engine/db_video/VideoDBHelper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/video/db/VideoDBManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/engine/db_video/VideoDBManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/video/db/VideoTables.java" beforeDir="false" afterPath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/engine/db_video/VideoTables.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/video/player_native/IVideoPlayer.java" beforeDir="false" afterPath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/player/video/IVideoPlayer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/video/utils/VideoInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/video/utils/VideoInfo.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/video/utils/VideoUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/video/utils/VideoUtils.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/LibTricheer/LibTricheer.iml" beforeDir="false" afterPath="$PROJECT_DIR$/LibTricheer/LibTricheer.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LibTricheer/src/main/java/com/tri/lib/utils/TrAudioPreferUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/LibTricheer/src/main/java/com/tri/lib/utils/TrAudioPreferUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LibTricheer/src/main/java/com/tri/lib/utils/TrVideoPreferUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/LibTricheer/src/main/java/com/tri/lib/utils/TrVideoPreferUtils.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PlayerAudio_K218/PlayerAudio_K218.iml" beforeDir="false" afterPath="$PROJECT_DIR$/PlayerAudio_K218/PlayerAudio_K218.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PlayerBase/PlayerBase.iml" beforeDir="false" afterPath="$PROJECT_DIR$/PlayerBase/PlayerBase.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PlayerBase/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/PlayerBase/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/App.java" beforeDir="false" afterPath="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/App.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/receiver/MediaScanAsyncTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/receiver/MediaScanAsyncTask.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/receiver/MediaScanReceiver.java" beforeDir="false" afterPath="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/receiver/MediaScanReceiver.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/receiver/PlayerReceiver.java" beforeDir="false" afterPath="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/receiver/PlayerReceiver.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/service/TrPlayService.java" beforeDir="false" afterPath="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/service/TrPlayService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/utils/PlayerLogicUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/utils/PlayerLogicUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/base/activity/BasePlayerActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/base/activity/BasePlayerActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/base/activity/music/BaseAudioCommonActionsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/base/activity/music/BaseAudioCommonActionsActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/base/activity/music/BaseAudioExtendActionsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/base/activity/music/BaseAudioExtendActionsActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/base/activity/music/BaseAudioPlayerActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/base/activity/music/BaseAudioPlayerActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/base/activity/video/BaseVideoCommonActionsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/base/activity/video/BaseVideoCommonActionsActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/base/activity/video/BaseVideoExtendActionsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/base/activity/video/BaseVideoExtendActionsActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/base/activity/video/BaseVideoPlayerActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/base/activity/video/BaseVideoPlayerActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/cj/slc_lc2010_vdc/activity/SclLc2010VdcAudioListActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/cj/slc_lc2010_vdc/activity/SclLc2010VdcAudioListActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/cj/slc_lc2010_vdc/activity/SclLc2010VdcAudioPlayerActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/cj/slc_lc2010_vdc/activity/SclLc2010VdcAudioPlayerActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/cj/slc_lc2010_vdc/activity/SclLc2010VdcVideoPlayerActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/cj/slc_lc2010_vdc/activity/SclLc2010VdcVideoPlayerActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/cj/slc_lc2010_vdc/adapter/SclLc2010VdcAudioNamesAdapter.java" beforeDir="false" afterPath="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/cj/slc_lc2010_vdc/adapter/SclLc2010VdcAudioNamesAdapter.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/cj/slc_lc2010_vdc/frags/SclLc2010VdcAudioAlbumsFrag.java" beforeDir="false" afterPath="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/cj/slc_lc2010_vdc/frags/SclLc2010VdcAudioAlbumsFrag.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/cj/slc_lc2010_vdc/frags/SclLc2010VdcAudioArtistsFrag.java" beforeDir="false" afterPath="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/cj/slc_lc2010_vdc/frags/SclLc2010VdcAudioArtistsFrag.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/cj/slc_lc2010_vdc/frags/SclLc2010VdcAudioCollectsFrag.java" beforeDir="false" afterPath="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/cj/slc_lc2010_vdc/frags/SclLc2010VdcAudioCollectsFrag.java" afterDir="false" />
@@ -59,10 +89,6 @@
       <change beforePath="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/cj/slc_lc2010_vdc/frags/SclLc2010VdcAudioNamesFrag.java" beforeDir="false" afterPath="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/cj/slc_lc2010_vdc/frags/SclLc2010VdcAudioNamesFrag.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PlayerBase/src/main/res/layout/scl_lc2010_vdc_activity_video_player.xml" beforeDir="false" afterPath="$PROJECT_DIR$/PlayerBase/src/main/res/layout/scl_lc2010_vdc_activity_video_player.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/RadioBase/RadioBase.iml" beforeDir="false" afterPath="$PROJECT_DIR$/RadioBase/RadioBase.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RadioBase/src/main/java/com/tricheer/radio/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/RadioBase/src/main/java/com/tricheer/radio/MainActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RadioBase/src/main/java/com/tricheer/radio/activity/BaseKeyEventActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/RadioBase/src/main/java/com/tricheer/radio/activity/BaseKeyEventActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RadioBase/src/main/java/com/tricheer/radio/frags/TabFreqCollectFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/RadioBase/src/main/java/com/tricheer/radio/frags/TabFreqCollectFragment.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RadioBase/src/main/java/com/tricheer/radio/utils/SettingsSysUtil.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/local.properties" beforeDir="false" afterPath="$PROJECT_DIR$/local.properties" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -98,7 +124,7 @@
     </system>
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
+    <leaf />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -111,12 +137,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>Audio</find>
-      <find>ivCollect</find>
-      <find>PLAYER_FINISH_ON_CLICK_LIST</find>
-      <find>finishByOperate</find>
-      <find>iv_play_mode_set</find>
-      <find>switchPlayMode</find>
       <find>ivPrev.set</find>
       <find>tvUpdate</find>
       <find>refreshPageOnScan</find>
@@ -141,6 +161,12 @@
       <find>mListToSysScanAudios</find>
       <find>mmMapDBMusics</find>
       <find>mSetPathsMounted</find>
+      <find>IVideoPlayer</find>
+      <find>js.lib.android.media.video.player_native.IVideoPlayer</find>
+      <find>VideoInfo</find>
+      <find>mSetSuffixs</find>
+      <find>sysMediaID</find>
+      <find>TAG</find>
     </findStrings>
     <replaceStrings>
       <replace>&lt;/add-resource&gt;</replace>
@@ -148,6 +174,7 @@
       <replace>mAudioPlayer</replace>
       <replace>ProAudio</replace>
       <replace>js.lib.android.media.PlayMode</replace>
+      <replace>mSetSuffixes</replace>
     </replaceStrings>
   </component>
   <component name="GenerateSignedApkSettings">
@@ -162,7 +189,7 @@
   <component name="GradleLocalSettings">
     <option name="myGradleHomes">
       <map>
-        <entry key="$PROJECT_DIR$" value="C:\Users\wangjun\.gradle\wrapper\dists\gradle-4.10.2-all\9fahxiiecdb76a5g3aw9oi8rv\gradle-4.10.2" />
+        <entry key="$PROJECT_DIR$" value="C:\Users\Administrator\.gradle\wrapper\dists\gradle-4.10.2-all\9fahxiiecdb76a5g3aw9oi8rv\gradle-4.10.2" />
       </map>
     </option>
     <option name="myGradleVersions">
@@ -264,6 +291,10 @@
                 <option name="description" value="Runs all device checks using Device Providers and Test Servers." />
                 <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
                 <option name="name" value="deviceCheck" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
+                <option name="name" value="transformNativeLibsWithStripDebugSymbolForRelease" />
               </ExternalTaskPojo>
               <ExternalTaskPojo>
                 <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
@@ -1077,6 +1108,10 @@
               </ExternalTaskPojo>
               <ExternalTaskPojo>
                 <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
+                <option name="name" value="transformNativeLibsWithStripDebugSymbolForDebug" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
                 <option name="name" value="compileDebugNdk" />
               </ExternalTaskPojo>
               <ExternalTaskPojo>
@@ -1325,6 +1360,10 @@
                 <option name="description" value="Displays all dependencies declared in project ':LetterSideBar'." />
                 <option name="linkedExternalProjectPath" value="$PROJECT_DIR$/LetterSideBar" />
                 <option name="name" value="dependencies" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$/LetterSideBar" />
+                <option name="name" value="transformNativeLibsWithStripDebugSymbolForRelease" />
               </ExternalTaskPojo>
               <ExternalTaskPojo>
                 <option name="description" value="Runs lint on all variants." />
@@ -1757,6 +1796,10 @@
               </ExternalTaskPojo>
               <ExternalTaskPojo>
                 <option name="linkedExternalProjectPath" value="$PROJECT_DIR$/LetterSideBar" />
+                <option name="name" value="transformNativeLibsWithStripDebugSymbolForDebug" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$/LetterSideBar" />
                 <option name="name" value="compileDebugNdk" />
               </ExternalTaskPojo>
               <ExternalTaskPojo>
@@ -2106,6 +2149,10 @@
                 <option name="description" value="Displays all dependencies declared in project ':LibCommon'." />
                 <option name="linkedExternalProjectPath" value="$PROJECT_DIR$/LibCommon" />
                 <option name="name" value="dependencies" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$/LibCommon" />
+                <option name="name" value="transformNativeLibsWithStripDebugSymbolForRelease" />
               </ExternalTaskPojo>
               <ExternalTaskPojo>
                 <option name="description" value="Runs lint on all variants." />
@@ -2538,6 +2585,10 @@
               </ExternalTaskPojo>
               <ExternalTaskPojo>
                 <option name="linkedExternalProjectPath" value="$PROJECT_DIR$/LibCommon" />
+                <option name="name" value="transformNativeLibsWithStripDebugSymbolForDebug" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$/LibCommon" />
                 <option name="name" value="compileDebugNdk" />
               </ExternalTaskPojo>
               <ExternalTaskPojo>
@@ -2887,6 +2938,10 @@
                 <option name="description" value="Displays all dependencies declared in project ':LibTricheer'." />
                 <option name="linkedExternalProjectPath" value="$PROJECT_DIR$/LibTricheer" />
                 <option name="name" value="dependencies" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$/LibTricheer" />
+                <option name="name" value="transformNativeLibsWithStripDebugSymbolForRelease" />
               </ExternalTaskPojo>
               <ExternalTaskPojo>
                 <option name="description" value="Runs lint on all variants." />
@@ -3304,6 +3359,10 @@
               </ExternalTaskPojo>
               <ExternalTaskPojo>
                 <option name="linkedExternalProjectPath" value="$PROJECT_DIR$/LibTricheer" />
+                <option name="name" value="transformNativeLibsWithStripDebugSymbolForDebug" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$/LibTricheer" />
                 <option name="name" value="compileDebugNdk" />
               </ExternalTaskPojo>
               <ExternalTaskPojo>
@@ -3575,6 +3634,10 @@
               <ExternalTaskPojo>
                 <option name="linkedExternalProjectPath" value="$PROJECT_DIR$/PlayerAudio_K218" />
                 <option name="name" value="processDebugResources" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$/PlayerAudio_K218" />
+                <option name="name" value="transformNativeLibsWithStripDebugSymbolForRelease" />
               </ExternalTaskPojo>
               <ExternalTaskPojo>
                 <option name="description" value="Runs lint on all variants." />
@@ -4258,6 +4321,10 @@
               </ExternalTaskPojo>
               <ExternalTaskPojo>
                 <option name="linkedExternalProjectPath" value="$PROJECT_DIR$/PlayerAudio_K218" />
+                <option name="name" value="transformNativeLibsWithStripDebugSymbolForDebug" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$/PlayerAudio_K218" />
                 <option name="name" value="compileDebugNdk" />
               </ExternalTaskPojo>
               <ExternalTaskPojo>
@@ -4429,6 +4496,10 @@
               <ExternalTaskPojo>
                 <option name="linkedExternalProjectPath" value="$PROJECT_DIR$/PlayerBase" />
                 <option name="name" value="processDebugResources" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$/PlayerBase" />
+                <option name="name" value="transformNativeLibsWithStripDebugSymbolForRelease" />
               </ExternalTaskPojo>
               <ExternalTaskPojo>
                 <option name="description" value="Runs lint on all variants." />
@@ -5132,6 +5203,10 @@
               </ExternalTaskPojo>
               <ExternalTaskPojo>
                 <option name="linkedExternalProjectPath" value="$PROJECT_DIR$/PlayerBase" />
+                <option name="name" value="transformNativeLibsWithStripDebugSymbolForDebug" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$/PlayerBase" />
                 <option name="name" value="compileDebugNdk" />
               </ExternalTaskPojo>
               <ExternalTaskPojo>
@@ -5303,6 +5378,10 @@
               <ExternalTaskPojo>
                 <option name="linkedExternalProjectPath" value="$PROJECT_DIR$/RadioBase" />
                 <option name="name" value="processDebugResources" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$/RadioBase" />
+                <option name="name" value="transformNativeLibsWithStripDebugSymbolForRelease" />
               </ExternalTaskPojo>
               <ExternalTaskPojo>
                 <option name="description" value="Runs lint on all variants." />
@@ -6008,6 +6087,10 @@
               <ExternalTaskPojo>
                 <option name="linkedExternalProjectPath" value="$PROJECT_DIR$/RadioBase" />
                 <option name="name" value="packageAppClassesDebugAndroidTest" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$/RadioBase" />
+                <option name="name" value="transformNativeLibsWithStripDebugSymbolForDebug" />
               </ExternalTaskPojo>
               <ExternalTaskPojo>
                 <option name="linkedExternalProjectPath" value="$PROJECT_DIR$/RadioBase" />
@@ -7805,24 +7888,12 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/PlayerBase/src/main/res/values/styles.xml" />
-        <option value="$PROJECT_DIR$/LibTri/src/main/java/com/tri/lib/engine/music/PlayerDelegate.java" />
-        <option value="$PROJECT_DIR$/LibTri/src/main/java/com/tri/lib/engine/music/ReqUris.java" />
-        <option value="$PROJECT_DIR$/LibTri/src/main/java/com/tri/lib/engine/music/ReqUsage.java" />
-        <option value="$PROJECT_DIR$/LibTri/src/main/java/com/tri/lib/engine/music/v2/ReqUtilsV2.java" />
-        <option value="$PROJECT_DIR$/LibTri/src/main/java/com/tri/lib/engine/music/v1/ReqUtils.java" />
-        <option value="$PROJECT_DIR$/LibTri/src/main/java/com/tri/lib/engine/music/v1/ResParser.java" />
-        <option value="$PROJECT_DIR$/PlayerBase/src/main/Android.mk" />
-        <option value="$PROJECT_DIR$/LibTri/src/main/Android.mk" />
-        <option value="$PROJECT_DIR$/LibTri/src/main/java/com/tri/lib/engine/music/v2/ResParserV2.java" />
         <option value="$PROJECT_DIR$/settings.gradle" />
         <option value="$PROJECT_DIR$/LetterSideBar/build.gradle" />
         <option value="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/base/activity/music/BaseAudioPlayerActivity.java" />
         <option value="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/utils/PlayerPreferUtils.java" />
         <option value="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/utils/PreferenceHelper.java" />
         <option value="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/video/AudioPreferUtils.java" />
-        <option value="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/video/VideoPreferUtils.java" />
-        <option value="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/audio/AudioPreferUtils.java" />
         <option value="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/utils/TrVideoPreferUtils.java" />
         <option value="$PROJECT_DIR$/LibTricheer/src/main/java/com/tri/lib/utils/TrAudioPreferUtils.java" />
         <option value="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/App.java" />
@@ -7832,14 +7903,6 @@
         <option value="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/utils/PlayerLogicUtils.java" />
         <option value="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/receiver/PlayerReceiver.java" />
         <option value="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/cj/slc_lc2010_vdc/adapter/SclLc2010VdcAudioNamesAdapter.java" />
-        <option value="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/base/activity/music/BaseAudioCommonActionsActivity.java" />
-        <option value="$PROJECT_DIR$/PlayerBase/src/main/res/layout/scl_lc2010_vdc_activity_video_player.xml" />
-        <option value="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/engine/PlayListener.java" />
-        <option value="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/audio/service/AudioPlayService.java" />
-        <option value="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/cj/slc_lc2010_vdc/activity/SclLc2010VdcAudioPlayerActivity.java" />
-        <option value="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/base/activity/video/BaseVideoCommonActionsActivity.java" />
-        <option value="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/base/activity/video/BaseVideoPlayerActivity.java" />
-        <option value="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/cj/slc_lc2010_vdc/activity/SclLc2010VdcVideoPlayerActivity.java" />
         <option value="$PROJECT_DIR$/RadioBase/src/main/java/com/tricheer/radio/frags/TabFreqCollectFragment.java" />
         <option value="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/base/activity/music/BaseAudioExtendActionsActivity.java" />
         <option value="$PROJECT_DIR$/RadioBase/src/main/java/com/tricheer/radio/activity/BaseKeyEventActivity.java" />
@@ -7853,9 +7916,29 @@
         <option value="$PROJECT_DIR$/PlayerBase/src/main/AndroidManifest.xml" />
         <option value="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/audio/utils/AudioInfo.java" />
         <option value="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/audio/utils/AudioUtils.java" />
-        <option value="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/video/utils/VideoUtils.java" />
         <option value="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/receiver/MediaScanReceiver.java" />
         <option value="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/receiver/MediaScanAsyncTask.java" />
+        <option value="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/video/player_native/IVideoPlayer.java" />
+        <option value="$PROJECT_DIR$/PlayerBase/src/main/res/layout/scl_lc2010_vdc_activity_video_player.xml" />
+        <option value="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/audio/IAudioPlayer.java" />
+        <option value="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/player/PlayMode.java" />
+        <option value="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/audio/AudioPreferUtils.java" />
+        <option value="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/audio/service/AudioPlayService.java" />
+        <option value="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/engine/PlayListener.java" />
+        <option value="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/video/VideoPreferUtils.java" />
+        <option value="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/service/TrPlayService.java" />
+        <option value="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/base/activity/music/BaseAudioCommonActionsActivity.java" />
+        <option value="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/base/activity/video/BaseVideoCommonActionsActivity.java" />
+        <option value="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/base/activity/video/BaseVideoPlayerActivity.java" />
+        <option value="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/cj/slc_lc2010_vdc/activity/SclLc2010VdcAudioPlayerActivity.java" />
+        <option value="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/cj/slc_lc2010_vdc/activity/SclLc2010VdcVideoPlayerActivity.java" />
+        <option value="$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/base/activity/BasePlayerActivity.java" />
+        <option value="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/engine/IPlayAudioFocusListener.java" />
+        <option value="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/player/PlayListener.java" />
+        <option value="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/video/utils/VideoInfo.java" />
+        <option value="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/bean/PinyinComparator.java" />
+        <option value="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/IAudioFocusListener.java" />
+        <option value="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/video/utils/VideoUtils.java" />
       </list>
     </option>
   </component>
@@ -7873,6 +7956,42 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="AndroidView">
+        <subPane>
+          <expand>
+            <path>
+              <item name="TrMedia2.0" type="1abcf292:AndroidViewProjectNode" />
+              <item name="PlayerAudio_K218" type="feadf853:AndroidModuleNode" />
+            </path>
+            <path>
+              <item name="TrMedia2.0" type="1abcf292:AndroidViewProjectNode" />
+              <item name="PlayerAudio_K218" type="feadf853:AndroidModuleNode" />
+              <item name="java" type="edd41e36:AndroidSourceTypeNode" />
+            </path>
+            <path>
+              <item name="TrMedia2.0" type="1abcf292:AndroidViewProjectNode" />
+              <item name="PlayerAudio_K218" type="feadf853:AndroidModuleNode" />
+              <item name="java" type="edd41e36:AndroidSourceTypeNode" />
+              <item name="audio" type="cbb59c9e:AndroidPsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="TrMedia2.0" type="1abcf292:AndroidViewProjectNode" />
+              <item name="PlayerAudio_K218" type="feadf853:AndroidModuleNode" />
+              <item name="java" type="edd41e36:AndroidSourceTypeNode" />
+              <item name="audio" type="cbb59c9e:AndroidPsiDirectoryNode" />
+              <item name="activity" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="TrMedia2.0" type="1abcf292:AndroidViewProjectNode" />
+              <item name="PlayerAudio_K218" type="feadf853:AndroidModuleNode" />
+              <item name="java" type="edd41e36:AndroidSourceTypeNode" />
+              <item name="audio" type="cbb59c9e:AndroidPsiDirectoryNode" />
+              <item name="engine" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
       <pane id="PackagesPane">
         <subPane>
           <expand>
@@ -7979,44 +8098,6 @@
               <item name="lib" type="462c0819:PsiDirectoryNode" />
               <item name="android" type="462c0819:PsiDirectoryNode" />
               <item name="media" type="462c0819:PsiDirectoryNode" />
-              <item name="audio" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TrMedia2.0" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TrMedia2.0" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="LibCommon" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="lib" type="462c0819:PsiDirectoryNode" />
-              <item name="android" type="462c0819:PsiDirectoryNode" />
-              <item name="media" type="462c0819:PsiDirectoryNode" />
-              <item name="audio" type="462c0819:PsiDirectoryNode" />
-              <item name="utils" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TrMedia2.0" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TrMedia2.0" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="LibCommon" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="lib" type="462c0819:PsiDirectoryNode" />
-              <item name="android" type="462c0819:PsiDirectoryNode" />
-              <item name="media" type="462c0819:PsiDirectoryNode" />
-              <item name="video" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TrMedia2.0" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TrMedia2.0" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="LibCommon" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="lib" type="462c0819:PsiDirectoryNode" />
-              <item name="android" type="462c0819:PsiDirectoryNode" />
-              <item name="media" type="462c0819:PsiDirectoryNode" />
-              <item name="video" type="462c0819:PsiDirectoryNode" />
               <item name="utils" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -8062,43 +8143,30 @@
               <item name="main" type="462c0819:PsiDirectoryNode" />
               <item name="java" type="462c0819:PsiDirectoryNode" />
               <item name="player" type="462c0819:PsiDirectoryNode" />
-              <item name="receiver" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
-      <pane id="AndroidView">
-        <subPane>
-          <expand>
-            <path>
-              <item name="TrMedia2.0" type="1abcf292:AndroidViewProjectNode" />
-              <item name="PlayerAudio_K218" type="feadf853:AndroidModuleNode" />
+              <item name="version" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="TrMedia2.0" type="1abcf292:AndroidViewProjectNode" />
-              <item name="PlayerAudio_K218" type="feadf853:AndroidModuleNode" />
-              <item name="java" type="edd41e36:AndroidSourceTypeNode" />
+              <item name="TrMedia2.0" type="b2602c69:ProjectViewProjectNode" />
+              <item name="TrMedia2.0" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="PlayerBase" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="player" type="462c0819:PsiDirectoryNode" />
+              <item name="version" type="462c0819:PsiDirectoryNode" />
+              <item name="slc_lc2010_vdc" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="TrMedia2.0" type="1abcf292:AndroidViewProjectNode" />
-              <item name="PlayerAudio_K218" type="feadf853:AndroidModuleNode" />
-              <item name="java" type="edd41e36:AndroidSourceTypeNode" />
-              <item name="audio" type="cbb59c9e:AndroidPsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TrMedia2.0" type="1abcf292:AndroidViewProjectNode" />
-              <item name="PlayerAudio_K218" type="feadf853:AndroidModuleNode" />
-              <item name="java" type="edd41e36:AndroidSourceTypeNode" />
-              <item name="audio" type="cbb59c9e:AndroidPsiDirectoryNode" />
+              <item name="TrMedia2.0" type="b2602c69:ProjectViewProjectNode" />
+              <item name="TrMedia2.0" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="PlayerBase" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="player" type="462c0819:PsiDirectoryNode" />
+              <item name="version" type="462c0819:PsiDirectoryNode" />
+              <item name="slc_lc2010_vdc" type="462c0819:PsiDirectoryNode" />
               <item name="activity" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TrMedia2.0" type="1abcf292:AndroidViewProjectNode" />
-              <item name="PlayerAudio_K218" type="feadf853:AndroidModuleNode" />
-              <item name="java" type="edd41e36:AndroidSourceTypeNode" />
-              <item name="audio" type="cbb59c9e:AndroidPsiDirectoryNode" />
-              <item name="engine" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -8115,17 +8183,17 @@
     <property name="SearchEverywhereHistoryKey" value="l&#9;PSI&#9;JAVA://com.js.sidebar.R.layout&#10;Viewpager&#9;FILE&#9;file://D:/install/Android/Sdk/sources/android-22/android/support/v4/view/ViewPager.java" />
     <property name="android.recentlyUsedThemes" value="android:Theme.Material.NoActionBar.Fullscreen&#10;android:Theme.Material.Light.Dialog.NoActionBar" />
     <property name="device.picker.selection" value="1261d2e9" />
-    <property name="last_directory_selection" value="$PROJECT_DIR$/LibTri/src/main/java/com/tri/lib" />
+    <property name="last_directory_selection" value="$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/player" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../TrBackService" />
     <property name="settings.editor.selected.configurable" value="AndroidSdkUpdater" />
   </component>
   <component name="RecentsManager">
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="js.lib.android.media.bean" />
+      <recent name="js.lib.android.media.player" />
       <recent name="js.lib.android.media.video" />
       <recent name="com.tricheer.player.utils" />
       <recent name="js.lib.android.media" />
-      <recent name="com.tricheer.audio.engine" />
-      <recent name="com.tri.lib.receiver" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="E:\WorkSpace\Code\Studio\TrMedia2.0\LibTricheer\src\main\java\com\tri\lib\utils" />
@@ -8364,15 +8432,16 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
     <layout>
-      <window_info anchor="bottom" id="Android Profiler" order="12" />
+      <window_info anchor="bottom" id="Android Profiler" order="12" show_stripe_button="false" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="right" id="Palette&#9;" order="9" />
       <window_info id="Image Layers" order="7" />
       <window_info id="Build Variants" order="3" side_tool="true" />
       <window_info anchor="right" id="Capture Analysis" order="3" />
       <window_info anchor="bottom" id="Event Log" order="8" side_tool="true" />
+      <window_info anchor="right" id="Preview" order="8" />
       <window_info anchor="bottom" id="Run" order="2" />
       <window_info anchor="bottom" id="Version Control" order="9" />
       <window_info anchor="bottom" id="Terminal" order="11" />
@@ -8380,9 +8449,9 @@
       <window_info id="Captures" order="4" weight="0.32980332" />
       <window_info id="Capture Tool" order="6" />
       <window_info id="Designer" order="2" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.2771855" />
-      <window_info anchor="bottom" id="Build" order="7" weight="0.34313726" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.3278867" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.27685326" />
+      <window_info anchor="bottom" id="Build" order="7" weight="0.34158415" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32673267" />
       <window_info anchor="right" id="Gradle" order="5" weight="0.32980332" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="right" id="Device File Explorer" order="4" side_tool="true" />
@@ -8391,7 +8460,6 @@
       <window_info id="Favorites" order="5" side_tool="true" />
       <window_info anchor="right" id="Assistant" order="7" weight="0.32980332" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
-      <window_info anchor="right" id="Preview" order="8" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -8399,14 +8467,14 @@
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
     </layout>
     <layout-to-restore>
-      <window_info anchor="bottom" id="Build" order="7" weight="0.34313726" />
+      <window_info anchor="bottom" id="Build" order="7" weight="0.34158415" />
       <window_info id="Designer" order="2" />
       <window_info id="Build Variants" order="3" side_tool="true" />
       <window_info id="Image Layers" order="7" />
       <window_info anchor="bottom" id="Run" order="2" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
-      <window_info anchor="bottom" id="Android Profiler" order="12" />
+      <window_info anchor="bottom" id="Android Profiler" order="12" show_stripe_button="false" />
       <window_info id="Favorites" order="5" side_tool="true" />
       <window_info id="Captures" order="4" weight="0.32980332" />
       <window_info id="Capture Tool" order="6" />
@@ -8421,14 +8489,14 @@
       <window_info anchor="bottom" id="Version Control" order="9" />
       <window_info anchor="bottom" id="Terminal" order="11" />
       <window_info anchor="right" id="Gradle" order="5" weight="0.32980332" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.2771855" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.27685326" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="right" id="Palette&#9;" order="9" />
       <window_info anchor="right" id="Theme Preview" order="6" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.3278867" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32673267" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39978212" />
     </layout-to-restore>
   </component>
@@ -8449,280 +8517,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/PlayerBase/src/main/res/layout/scl_lc2010_vdc_activity_video_player.xml">
-      <provider editor-type-id="text-editor">
-        <state relative-caret-position="570">
-          <caret line="30" column="29" selection-start-line="30" selection-start-column="29" selection-end-line="30" selection-end-column="29" />
-          <folding>
-            <element signature="e#1178#1199#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-      <provider selected="true" editor-type-id="android-designer2">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/engine/PlayListener.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="526">
-          <caret line="239" column="23" selection-start-line="239" selection-start-column="9" selection-end-line="239" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/video/VideoPreferUtils.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="297">
-          <caret line="18" column="27" selection-start-line="18" selection-start-column="27" selection-end-line="18" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/service/TrPlayService.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="308">
-          <caret line="219" column="25" lean-forward="true" selection-start-line="219" selection-start-column="25" selection-end-line="219" selection-end-column="25" />
-          <folding>
-            <element signature="e#1554#1555#0" expanded="true" />
-            <element signature="e#1598#1599#0" expanded="true" />
-            <element signature="e#1935#1936#0" expanded="true" />
-            <element signature="e#1978#1979#0" expanded="true" />
-            <element signature="e#4437#4438#0" expanded="true" />
-            <element signature="e#4486#4487#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/cj/slc_lc2010_vdc/activity/SclLc2010VdcVideoListActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="305">
-          <caret line="245" column="25" selection-start-line="245" selection-start-column="25" selection-end-line="245" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/audio/service/AudioPlayService.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="403">
-          <caret line="304" column="31" lean-forward="true" selection-start-line="304" selection-start-column="31" selection-end-line="304" selection-end-column="31" />
-          <folding>
-            <element signature="e#11874#11875#0" expanded="true" />
-            <element signature="e#11942#11943#0" expanded="true" />
-            <element signature="e#13637#13638#0" expanded="true" />
-            <element signature="e#13677#13678#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/base/activity/BasePlayerActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="171">
-          <caret line="171" column="57" lean-forward="true" selection-start-line="171" selection-start-column="57" selection-end-line="171" selection-end-column="57" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/base/activity/video/BaseVideoKeyEventActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="171">
-          <caret line="12" column="71" lean-forward="true" selection-start-line="12" selection-start-column="71" selection-end-line="12" selection-end-column="71" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/base/activity/video/BaseVideoFocusActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="76">
-          <caret line="8" column="65" lean-forward="true" selection-start-line="8" selection-start-column="65" selection-end-line="8" selection-end-column="65" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/base/activity/video/BaseVideoCommonActionsActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="384">
-          <caret line="220" column="48" selection-start-line="220" selection-start-column="48" selection-end-line="220" selection-end-column="48" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/base/activity/video/BaseVideoExtendActionsActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="308">
-          <caret line="716" column="22" selection-start-line="716" selection-start-column="22" selection-end-line="716" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/base/activity/video/BaseVideoPlayerActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="479">
-          <caret line="237" lean-forward="true" selection-start-line="237" selection-end-line="237" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/cj/slc_lc2010_vdc/activity/SclLc2010VdcVideoPlayerActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2151">
-          <caret line="195" column="19" lean-forward="true" selection-start-line="195" selection-start-column="19" selection-end-line="195" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RadioBase/src/main/java/com/tricheer/radio/frags/TabFreqCollectFragment.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="365">
-          <caret line="193" column="13" lean-forward="true" selection-start-line="193" selection-start-column="13" selection-end-line="193" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$PROJECT_DIR$/LibCommon/src/main/libs/android-support-v4.jar!/android/support/v4/app/FragmentActivity.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="297">
-          <caret line="97" column="16" selection-start-line="97" selection-start-column="16" selection-end-line="97" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/cj/slc_lc2010_vdc/activity/SclLc2010VdcAudioPlayerActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="251">
-          <caret line="168" column="22" lean-forward="true" selection-start-line="168" selection-start-column="22" selection-end-line="168" selection-end-column="22" />
-          <folding>
-            <element signature="e#3592#3593#0" expanded="true" />
-            <element signature="e#3622#3623#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RadioBase/src/main/java/com/tricheer/radio/utils/SettingsSysUtil.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="418">
-          <caret line="24" column="1" lean-forward="true" selection-start-line="24" selection-start-column="1" selection-end-line="24" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RadioBase/src/main/java/com/tricheer/radio/engine/FmUtilV2.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="297">
-          <caret line="172" column="19" selection-start-line="172" selection-start-column="19" selection-end-line="172" selection-end-column="19" />
-          <folding>
-            <element signature="e#5582#5583#0" expanded="true" />
-            <element signature="e#5619#5620#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RadioBase/src/main/java/com/tricheer/radio/service/RadioPlayerService.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="308">
-          <caret line="180" column="46" lean-forward="true" selection-start-line="180" selection-start-column="46" selection-end-line="180" selection-end-column="46" />
-          <folding>
-            <element signature="e#4280#4281#0" expanded="true" />
-            <element signature="e#4345#4346#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RadioBase/src/main/java/com/tricheer/radio/activity/BaseFmLogicActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="327">
-          <caret line="48" column="14" lean-forward="true" selection-start-line="48" selection-start-column="14" selection-end-line="48" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RadioBase/src/main/java/com/tricheer/radio/activity/BaseAudioFocusActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="228">
-          <caret line="21" column="22" selection-start-line="21" selection-start-column="22" selection-end-line="21" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RadioBase/src/main/java/com/tricheer/radio/activity/BaseFmActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="335">
-          <caret line="129" column="13" lean-forward="true" selection-start-line="129" selection-start-column="13" selection-end-line="129" selection-end-column="13" />
-          <folding>
-            <element signature="e#2875#2876#0" expanded="true" />
-            <element signature="e#2949#2950#0" expanded="true" />
-            <element signature="e#3128#3129#0" expanded="true" />
-            <element signature="e#3203#3204#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/LibTricheer/src/main/java/com/tri/lib/utils/PlayerPowerManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-209">
-          <caret line="30" column="25" selection-start-line="30" selection-start-column="25" selection-end-line="30" selection-end-column="25" />
-          <folding>
-            <element signature="e#876#908#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RadioBase/src/main/java/com/tricheer/radio/activity/BaseKeyEventActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="627">
-          <caret line="36" column="5" selection-start-line="36" selection-start-column="5" selection-end-line="36" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RadioBase/src/main/java/com/tricheer/radio/engine/Keys.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="247">
-          <caret line="13" column="31" selection-start-line="13" selection-start-column="28" selection-end-line="13" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RadioBase/src/main/java/com/tricheer/radio/MainActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="304">
-          <caret line="515" column="17" lean-forward="true" selection-start-line="515" selection-start-column="17" selection-end-line="515" selection-end-column="17" />
-          <folding>
-            <element signature="e#16982#16983#0" expanded="true" />
-            <element signature="e#17068#17069#0" expanded="true" />
-            <element signature="e#17339#17340#0" expanded="true" />
-            <element signature="e#17383#17384#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/LibTricheer/src/main/java/com/tri/lib/utils/SettingsSysUtil.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="184">
-          <caret line="13" column="7" lean-forward="true" selection-start-line="13" selection-start-column="7" selection-end-line="13" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/cj/slc_lc2010_vdc/frags/BaseAudioListFrag.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="95">
-          <caret line="8" column="49" selection-start-line="8" selection-start-column="49" selection-end-line="8" selection-end-column="49" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/cj/slc_lc2010_vdc/frags/SclLc2010VdcAudioNamesFrag.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="251">
-          <caret line="154" column="55" selection-start-line="154" selection-start-column="55" selection-end-line="154" selection-end-column="55" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/cj/slc_lc2010_vdc/frags/SclLc2010VdcAudioCollectsFrag.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="364">
-          <caret line="148" column="44" selection-start-line="148" selection-start-column="44" selection-end-line="148" selection-end-column="44" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/cj/slc_lc2010_vdc/frags/SclLc2010VdcAudioAlbumsFrag.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="190">
-          <caret line="197" column="33" selection-start-line="197" selection-start-column="16" selection-end-line="197" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/cj/slc_lc2010_vdc/frags/SclLc2010VdcAudioArtistsFrag.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="441">
-          <caret line="196" column="42" selection-start-line="196" selection-start-column="42" selection-end-line="196" selection-end-column="42" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/cj/slc_lc2010_vdc/frags/SclLc2010VdcAudioFoldersFrag.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="213">
@@ -8751,31 +8545,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/base/activity/music/BaseAudioCommonActionsActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="988">
-          <caret line="73" lean-forward="true" selection-start-line="73" selection-end-line="73" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/base/activity/music/BaseAudioExtendActionsActivity.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="380">
           <caret line="98" column="9" lean-forward="true" selection-start-line="98" selection-start-column="9" selection-end-line="98" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/PlayEnableController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="9" column="13" selection-start-line="9" selection-start-column="13" selection-end-line="9" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/audio/utils/AudioImgUtils.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="114">
-          <caret line="20" column="13" selection-start-line="20" selection-start-column="13" selection-end-line="20" selection-end-column="13" />
         </state>
       </provider>
     </entry>
@@ -8786,13 +8559,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://D:/install/Android/Sdk/sources/android-22/android/content/Intent.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="269">
-          <caret line="2222" column="54" selection-start-line="2222" selection-start-column="54" selection-end-line="2222" selection-end-column="54" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://D:/install/Android/Sdk/sources/android-22/android/content/Intent.java" />
     <entry file="file://$PROJECT_DIR$/PlayerBase/src/main/AndroidManifest.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="285">
@@ -8803,34 +8570,7 @@
         <state />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/video/utils/VideoInfo.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="19">
-          <caret line="13" column="13" selection-start-line="13" selection-start-column="13" selection-end-line="13" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/audio/utils/AudioInfo.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="54" column="31" selection-start-line="54" selection-start-column="31" selection-end-line="54" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://D:/install/Android/Sdk/sources/android-22/android/media/MediaScannerConnection.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="307">
-          <caret line="234" column="64" selection-start-line="234" selection-start-column="64" selection-end-line="234" selection-end-column="64" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/video/utils/VideoUtils.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="114">
-          <caret line="99" column="74" lean-forward="true" selection-start-line="99" selection-start-column="74" selection-end-line="99" selection-end-column="74" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://D:/install/Android/Sdk/sources/android-22/android/media/MediaScannerConnection.java" />
     <entry file="file://$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/audio/utils/AudioUtils.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="127">
@@ -8856,13 +8596,295 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/receiver/MediaScanAsyncTask.java">
+    <entry file="file://$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/receiver/MediaScanAsyncTask.java" />
+    <entry file="file://$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/player/audio/AudioMediaPlayer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="336">
-          <caret line="83" column="32" lean-forward="true" selection-start-line="83" selection-start-column="32" selection-end-line="83" selection-end-column="32" />
+        <state>
+          <caret column="36" lean-forward="true" selection-start-column="8" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/player/video/IVideoPlayer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="260">
+          <caret line="33" column="25" selection-start-line="33" selection-start-column="13" selection-end-line="33" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PlayerBase/src/main/res/layout/scl_lc2010_vdc_activity_video_player.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="6" column="51" selection-start-line="6" selection-start-column="51" selection-end-line="6" selection-end-column="51" />
+        </state>
+      </provider>
+      <provider editor-type-id="android-designer2">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/player/audio/AudioVlcPlayer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="247" column="33" lean-forward="true" selection-start-line="247" selection-start-column="33" selection-end-line="247" selection-end-column="33" />
+          <folding>
+            <element signature="e#7160#7161#0" expanded="true" />
+            <element signature="e#7200#7201#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/player/audio/MusicPlayerFactory.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="14" column="22" selection-start-line="14" selection-start-column="22" selection-end-line="14" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/player/PlayState.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="12" column="17" lean-forward="true" selection-start-line="12" selection-start-column="17" selection-end-line="12" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/player/PlayEnableController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="320">
+          <caret line="24" lean-forward="true" selection-start-line="24" selection-end-line="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/audio/service/AudioPlayService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="244">
+          <caret line="513" column="34" selection-start-line="513" selection-start-column="34" selection-end-line="513" selection-end-column="34" />
+          <folding>
+            <element signature="e#13627#13628#0" expanded="true" />
+            <element signature="e#13667#13668#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/service/TrPlayService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="184">
+          <caret line="226" selection-start-line="226" selection-end-line="226" />
+          <folding>
+            <element signature="e#4522#4523#0" expanded="true" />
+            <element signature="e#4561#4562#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/base/activity/music/BaseAudioCommonActionsActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="249">
+          <caret line="72" column="5" selection-start-line="72" selection-start-column="5" selection-end-line="72" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/base/activity/video/BaseVideoCommonActionsActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="220">
+          <caret line="116" column="19" selection-start-line="116" selection-start-column="19" selection-end-line="116" selection-end-column="19" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/base/activity/video/BaseVideoPlayerActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="259" column="22" selection-start-line="259" selection-start-column="22" selection-end-line="259" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/cj/slc_lc2010_vdc/activity/SclLc2010VdcAudioPlayerActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="184">
+          <caret line="296" column="36" selection-start-line="296" selection-start-column="36" selection-end-line="296" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/base/activity/BasePlayerActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="185" column="13" selection-start-line="185" selection-start-column="13" selection-end-line="185" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PlayerBase/src/main/java/com/tricheer/player/version/cj/slc_lc2010_vdc/activity/SclLc2010VdcVideoPlayerActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="564">
+          <caret line="268" column="26" selection-start-line="268" selection-start-column="26" selection-end-line="268" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/player/audio/IAudioPlayer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="236">
+          <caret line="58" column="7" lean-forward="true" selection-start-line="58" selection-start-column="7" selection-end-line="58" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/player/IPlayProgressListener.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="140">
+          <caret line="7" column="17" selection-start-line="7" selection-start-column="17" selection-end-line="7" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/player/PlayListener.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="222">
+          <caret line="244" column="30" selection-start-line="244" selection-start-column="30" selection-end-line="244" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/player/PlayMode.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="500">
+          <caret line="25" column="7" lean-forward="true" selection-start-line="25" selection-start-column="7" selection-end-line="25" selection-end-column="7" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/player/IPlayStateLitener.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="220">
+          <caret line="11" column="23" lean-forward="true" selection-start-line="11" selection-start-column="23" selection-end-line="11" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/utils/VideoPreferUtils.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="13" column="6" lean-forward="true" selection-start-line="13" selection-start-column="6" selection-end-line="13" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/audio/utils/AudioInfo.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="100">
+          <caret line="20" column="12" lean-forward="true" selection-start-line="20" selection-start-column="12" selection-end-line="20" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/utils/AudioImgUtils.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="140">
+          <caret line="26" column="9" selection-start-line="26" selection-start-column="9" selection-end-line="26" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/utils/AudioSortUtils.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="16" column="13" lean-forward="true" selection-start-line="16" selection-start-column="13" selection-end-line="16" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/utils/MediaUtils.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="20">
+          <caret line="12" column="13" selection-start-line="12" selection-start-column="13" selection-end-line="12" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/audio/online/BaiduMusicAPI.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="20">
+          <caret line="26" column="21" lean-forward="true" selection-start-line="26" selection-start-column="21" selection-end-line="26" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/utils/AudioPreferUtils.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="260">
+          <caret line="14" column="7" selection-start-line="14" selection-start-column="7" selection-end-line="14" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/bean/ProgramPinyinComparator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="160">
+          <caret line="10" column="3" lean-forward="true" selection-start-line="10" selection-start-column="3" selection-end-line="10" selection-end-column="3" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/bean/PinyinComparator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="9" column="19" selection-start-line="9" selection-start-column="19" selection-end-line="9" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/engine/IAudioFocusListener.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="34" lean-forward="true" selection-start-column="34" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/engine/db_audio/AudioDBHelper.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="11" column="13" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/engine/db_audio/AudioDBManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="27" column="13" selection-start-line="27" selection-start-column="13" selection-end-line="27" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/engine/db_audio/AudioTables.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="9" column="7" lean-forward="true" selection-start-line="9" selection-start-column="7" selection-end-line="9" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/engine/db_video/VideoDBHelper.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="11" column="13" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/engine/db_video/VideoDBManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="26" column="13" selection-start-line="26" selection-start-column="13" selection-end-line="26" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/engine/db_video/VideoTables.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="200">
+          <caret line="10" column="7" lean-forward="true" selection-start-line="10" selection-start-column="7" selection-end-line="10" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/video/utils/VideoInfo.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="300">
+          <caret line="37" lean-forward="true" selection-start-line="37" selection-end-line="37" />
+          <folding>
+            <element signature="e#1450#1451#0" expanded="true" />
+            <element signature="e#1502#1503#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/LibCommon/src/main/java/js/lib/android/media/video/utils/VideoUtils.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="160">
+          <caret line="63" column="26" lean-forward="true" selection-start-line="63" selection-start-column="26" selection-end-line="63" selection-end-column="26" />
         </state>
       </provider>
     </entry>

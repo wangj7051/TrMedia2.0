@@ -17,13 +17,13 @@ public class VideoInfo {
      * <p>
      * like Set<".mp4"> ...
      */
-    private static Set<String> mSetSuffixs = new HashSet<>();
+    private static Set<String> mSetSuffixes = new HashSet<>();
 
     static {
-        mSetSuffixs.add(".3gp");
-        mSetSuffixs.add(".avi");
-        mSetSuffixs.add(".mp4");
-        mSetSuffixs.add(".mkv");
+        mSetSuffixes.add(".3gp");
+        mSetSuffixes.add(".avi");
+        mSetSuffixes.add(".mp4");
+        mSetSuffixes.add(".mkv");
     }
 
     /**
@@ -64,7 +64,7 @@ public class VideoInfo {
      * Is Support Files
      */
     public static boolean isSupport(String suffix) {
-        return mSetSuffixs.contains(suffix);
+        return mSetSuffixes.contains(suffix);
     }
 
     /**
@@ -72,14 +72,14 @@ public class VideoInfo {
      */
     public static void setSupportMedias(boolean isSupportAll) {
         if (isSupportAll) {
-            // mSetSuffixs.add(".3gp");
-            // mSetSuffixs.add(".avi");
-            mSetSuffixs.add(".flv");
-            // mSetSuffixs.add(".mp4");
-            // mSetSuffixs.add(".mkv");
-            mSetSuffixs.add(".ts");
-            mSetSuffixs.add(".mov");
-            //mSetSuffixs.add(".mpg");
+            // mSetSuffixes.add(".3gp");
+            // mSetSuffixes.add(".avi");
+            mSetSuffixes.add(".flv");
+            // mSetSuffixes.add(".mp4");
+            // mSetSuffixes.add(".mkv");
+            mSetSuffixes.add(".ts");
+            mSetSuffixes.add(".mov");
+            //mSetSuffixes.add(".mpg");
         }
     }
 }

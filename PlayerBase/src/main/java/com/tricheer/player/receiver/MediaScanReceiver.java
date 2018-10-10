@@ -29,12 +29,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import js.lib.android.media.audio.db.AudioDBManager;
+import js.lib.android.media.engine.db_audio.AudioDBManager;
 import js.lib.android.media.audio.utils.AudioInfo;
 import js.lib.android.media.audio.utils.AudioUtils;
 import js.lib.android.media.bean.ProAudio;
 import js.lib.android.media.bean.ProVideo;
-import js.lib.android.media.video.db.VideoDBManager;
+import js.lib.android.media.engine.db_video.VideoDBManager;
 import js.lib.android.media.video.utils.VideoInfo;
 import js.lib.android.media.video.utils.VideoUtils;
 import js.lib.android.utils.CommonUtil;
