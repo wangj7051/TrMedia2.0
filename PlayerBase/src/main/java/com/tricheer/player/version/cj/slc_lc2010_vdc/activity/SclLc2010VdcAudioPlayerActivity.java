@@ -163,7 +163,7 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseAudioPlayerActivity {
         @Override
         public void onClick(View v) {
             if (v == ivPlayModeSet) {
-                switchPlayMode(1);
+                switchPlayMode(12);
             } else if (v == ivPlayPre) {
                 playPrevBySecurity();
             } else if (v == ivPlay) {

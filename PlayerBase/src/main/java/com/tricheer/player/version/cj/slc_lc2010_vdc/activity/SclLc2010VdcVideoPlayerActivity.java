@@ -6,11 +6,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.tri.lib.engine.KeyEnum;
 import com.tri.lib.receiver.AccReceiver;
 import com.tri.lib.receiver.ReverseReceiver;
+import com.tri.lib.utils.TrVideoPreferUtils;
 import com.tricheer.player.R;
 import com.tricheer.player.engine.PlayerConsts;
 import com.tricheer.player.version.base.activity.video.BaseVideoPlayerActivity;
@@ -20,6 +22,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import js.lib.android.media.PlayMode;
 import js.lib.android.media.bean.ProVideo;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.KillTouch;
@@ -41,6 +44,7 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
     //==========Widget in this Activity==========
     private View vControlPanel;
     private TextView tvFolder, tvPosition, tvName;
+    private ImageView ivModeSet;
     private View vList;
     private View layoutWarning;
 
@@ -102,6 +106,10 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
 
         ivPlayNext = findView(R.id.iv_play_next);
         ivPlayNext.setOnClickListener(mViewOnClick);
+
+        ivModeSet = (ImageView) findViewById(R.id.iv_play_mode_set);
+        ivModeSet.setOnClickListener(mViewOnClick);
+        onPlayModeChange();
 
         vList = findViewById(R.id.v_list);
         vList.setOnClickListener(mViewOnClick);
@@ -228,18 +236,13 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
                 doSecPlayPre();
             } else if (v == ivPlayNext) {
                 doSecPlayNext();
+            } else if (v == ivModeSet) {
+                switchPlayMode(53);
             } else if (v == vList) {
                 finishByOperate("EXIT_VIDEO_PLAYER");
             }
         }
     };
-
-    private void finishByOperate(String flag) {
-        Intent data = new Intent();
-        data.putExtra("flag", flag);
-        setResult(0, data);
-        finish();
-    }
 
     private void doPlayOrPause() {
         execPlayOrPause();
@@ -253,6 +256,31 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
     private void doSecPlayNext() {
         mIsPauseOnNotify = false;
         playNextBySecurity();
+    }
+
+    @Override
+    public void onPlayModeChange() {
+        super.onPlayModeChange();
+        Logs.i(TAG, "^^ onPlayModeChange() ^^");
+        PlayMode storePlayMode = TrVideoPreferUtils.getPlayMode(false, PlayMode.LOOP);
+        Logs.i(TAG, "onPlayModeChange() -> [storePlayMode:" + storePlayMode + "]");
+        if (storePlayMode != null) {
+            switch (storePlayMode) {
+                case LOOP:
+                    ivModeSet.setImageResource(R.drawable.btn_op_mode_loop_selector);
+                    break;
+                case SINGLE:
+                    ivModeSet.setImageResource(R.drawable.btn_op_mode_oneloop_selector);
+                    break;
+            }
+        }
+    }
+
+    private void finishByOperate(String flag) {
+        Intent data = new Intent();
+        data.putExtra("flag", flag);
+        setResult(0, data);
+        finish();
     }
 
     @Override
@@ -291,7 +319,7 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
 
     @Override
     protected void onNotifyPlayState$Play() {
-//        super.onNotifyPlayState$Play();
+        super.onNotifyPlayState$Play();
         ProVideo program = getCurrProgram();
         if (program != null) {
             File file = new File(program.mediaUrl);
@@ -301,7 +329,6 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
                     tvFolder.setText(folder.getName());
                 }
                 tvName.setText(program.title);
-
                 tvPosition.setText((getCurrIdx() + 1) + "/" + getTotalCount());
             }
         }
@@ -319,10 +346,6 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
                 playNextBySecurity();
                 break;
         }
-    }
-
-    @Override
-    public void switchPlayMode(int supportFlag) {
     }
 
     @Override

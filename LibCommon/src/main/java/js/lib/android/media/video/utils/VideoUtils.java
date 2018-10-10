@@ -97,6 +97,7 @@ public class VideoUtils extends MediaUtils {
 
     /**
      * Query Video Paths
+     * //Video in path "/data/data/com.android.providers.media/databases/"
      */
     public static Map<String, VideoInfo> queryMapVideoInfos(List<String> listSelectedPaths) {
         //

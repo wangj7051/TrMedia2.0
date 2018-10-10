@@ -140,6 +140,10 @@
                 <data android:scheme="file" />
             </intent-filter>
             <intent-filter android:priority="1000">
+                <action android:name="android.intent.action.MEDIA_SCANNER_STARTED" />
+                <action android:name="android.intent.action.MEDIA_SCANNER_FINISHED" />
+            </intent-filter>
+            <intent-filter android:priority="1000">
                 <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
             </intent-filter>

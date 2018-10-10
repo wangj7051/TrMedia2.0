@@ -14,7 +14,9 @@ import com.tricheer.player.version.base.activity.BasePlayerActivity;
 import java.util.List;
 
 import js.lib.android.media.PlayEnableController;
+import js.lib.android.media.PlayMode;
 import js.lib.android.media.bean.ProVideo;
+import js.lib.android.media.video.VideoPreferUtils;
 import js.lib.android.media.video.player_native.IVideoPlayer;
 import js.lib.android.utils.Logs;
 
@@ -98,6 +100,68 @@ public abstract class BaseVideoCommonActionsActivity extends BasePlayerActivity 
         if (mPlayNextSecRunnable != null) {
             mHandler.removeCallbacks(mPlayNextSecRunnable);
         }
+    }
+
+    @Override
+    public void switchPlayMode(int supportFlag) {
+        PlayMode storePlayMode = VideoPreferUtils.getPlayMode(false, PlayMode.LOOP);
+        if (storePlayMode == null) {
+            return;
+        }
+        switch (supportFlag) {
+            case 51: {
+                switch (storePlayMode) {
+                    case SINGLE:
+                        VideoPreferUtils.getPlayMode(true, PlayMode.RANDOM);
+                        break;
+                    case RANDOM:
+                        VideoPreferUtils.getPlayMode(true, PlayMode.LOOP);
+                        break;
+                    case LOOP:
+                        VideoPreferUtils.getPlayMode(true, PlayMode.ORDER);
+                        break;
+                    case ORDER:
+                        VideoPreferUtils.getPlayMode(true, PlayMode.SINGLE);
+                        break;
+                    default:
+                        VideoPreferUtils.getPlayMode(true, PlayMode.LOOP);
+                        break;
+                }
+            }
+            break;
+            case 52: {
+                switch (storePlayMode) {
+                    case SINGLE:
+                        VideoPreferUtils.getPlayMode(true, PlayMode.RANDOM);
+                        break;
+                    case RANDOM:
+                        VideoPreferUtils.getPlayMode(true, PlayMode.LOOP);
+                        break;
+                    case LOOP:
+                        VideoPreferUtils.getPlayMode(true, PlayMode.SINGLE);
+                        break;
+                    default:
+                        VideoPreferUtils.getPlayMode(true, PlayMode.LOOP);
+                        break;
+                }
+            }
+            break;
+            case 53: {
+                switch (storePlayMode) {
+                    case SINGLE:
+                        VideoPreferUtils.getPlayMode(true, PlayMode.LOOP);
+                        break;
+                    case LOOP:
+                        VideoPreferUtils.getPlayMode(true, PlayMode.SINGLE);
+                        break;
+                    default:
+                        VideoPreferUtils.getPlayMode(true, PlayMode.LOOP);
+                        break;
+                }
+            }
+            break;
+        }
+        onPlayModeChange();
     }
 
     @Override

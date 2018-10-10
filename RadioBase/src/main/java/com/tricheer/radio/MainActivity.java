@@ -3,6 +3,7 @@ package com.tricheer.radio;
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,12 +20,13 @@ import android.widget.TextView;
 
 import com.tri.lib.receiver.AccReceiver;
 import com.tri.lib.receiver.ReverseReceiver;
+import com.tri.lib.utils.SettingsSysUtil;
 import com.tricheer.radio.activity.BaseAudioFocusActivity;
 import com.tricheer.radio.engine.BandInfos.BandType;
+import com.tricheer.radio.engine.Keys;
 import com.tricheer.radio.frags.TabFreqCollectFragment;
 import com.tricheer.radio.utils.FreqFormatUtil;
 import com.tricheer.radio.utils.PreferUtils;
-import com.tricheer.radio.utils.SettingsSysUtil;
 import com.tricheer.radio.view.ToastView;
 
 import java.util.ArrayList;
@@ -75,13 +77,22 @@ public class MainActivity extends BaseAudioFocusActivity
     private static Handler mHandler = new Handler();
     private SearchingController mSearchingController;
     private ScanningController mScanningController;
+    private FmStateController mFmStateController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //
+        mSearchingController = new SearchingController();
+        mScanningController = new ScanningController();
+
+        mFmStateController = new FmStateController();
+        mFmStateController.onCreate(this);
+
+        //
         AccReceiver.register(this);
-        SettingsSysUtil.setFmState(this, 1);
         init();
     }
 
@@ -124,8 +135,6 @@ public class MainActivity extends BaseAudioFocusActivity
         tvUpdate.setOnClickListener(mViewOnClick);
 
         //---- Variables ----
-        mSearchingController = new SearchingController();
-        mScanningController = new ScanningController();
 
         // Bind Service
         bindAndCreateControlService(1, 2);
@@ -141,6 +150,20 @@ public class MainActivity extends BaseAudioFocusActivity
         super.onNewIntent(intent);
         setIntent(intent);
         openRadioOnNewIntent();
+    }
+
+    @Override
+    public boolean openFm() {
+        boolean res = super.openFm();
+        mFmStateController.onFmStateChanged();
+        return res;
+    }
+
+    @Override
+    public boolean closeFm() {
+        boolean res = super.closeFm();
+        mFmStateController.onFmStateChanged();
+        return res;
     }
 
     private void openRadioOnNewIntent() {
@@ -475,6 +498,48 @@ public class MainActivity extends BaseAudioFocusActivity
     }
 
     @Override
+    protected void onGetKeyCode(int keyCode) {
+        //super.onGetKeyCode(keyCode);
+        switch (keyCode) {
+            case Keys.KeyVals.KEYCODE_VOLUME_UP:
+                break;
+            case Keys.KeyVals.KEYCODE_VOLUME_DOWN:
+                break;
+            case Keys.KeyVals.KEYCODE_VOLUME_MUTE:
+                break;
+
+            case Keys.KeyVals.KEYCODE_RADIO:
+                if (mSearchingController.isSearching()) {
+                    mSearchingController.resumeOrigin();
+                } else {
+                    execSwitchBand();
+                }
+                break;
+
+            case Keys.KeyVals.KEYCODE_PREV:
+                scanAndPlayPrev();
+                break;
+            case Keys.KeyVals.KEYCODE_NEXT:
+                scanAndPlayNext();
+                break;
+
+            case Keys.KeyVals.KEYCODE_DPAD_LEFT:
+                stepPrev();
+                break;
+            case Keys.KeyVals.KEYCODE_DPAD_RIGHT:
+                stepNext();
+                break;
+
+            case Keys.KeyVals.KEYCODE_ENTER:
+                break;
+            case Keys.KeyVals.KEYCODE_HOME:
+                break;
+            case Keys.KeyVals.KEYCODE_BACK:
+                break;
+        }
+    }
+
+    @Override
     public void onBackPressed() {
 //        super.onBackPressed();
         moveTaskToBack(true);
@@ -483,11 +548,28 @@ public class MainActivity extends BaseAudioFocusActivity
     @Override
     protected void onDestroy() {
         AccReceiver.unregister(this);
-        SettingsSysUtil.setFmState(this, 0);
+        mFmStateController.onDestroy();
         unregister(this);
         closeFm();
         bindAndCreateControlService(3, 4);
         super.onDestroy();
+    }
+
+    private final class FmStateController {
+        private Context mmContext;
+
+        void onCreate(Context context) {
+            mmContext = context;
+            SettingsSysUtil.setFmState(mmContext, 1);
+        }
+
+        void onFmStateChanged() {
+            SettingsSysUtil.setFmState(mmContext, isRadioOpened() ? 2 : 1);
+        }
+
+        void onDestroy() {
+            SettingsSysUtil.setFmState(mmContext, 0);
+        }
     }
 
     private final class ScanningController {

@@ -35,7 +35,7 @@ public class AudioInfo extends BaseBean {
     /**
      * MIME
      */
-    public static final String[] MIME = {"video/*"};
+    public static final String[] MIME = {"audio/*"};
 
     /**
      * Query System Media URI

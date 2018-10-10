@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.tri.lib.utils.TrAudioPreferUtils;
 import com.tri.lib.utils.TrVideoPreferUtils;
@@ -63,21 +64,21 @@ public class MediaScanReceiver extends BroadcastReceiver {
 
     // Audio
     private static ArrayList<ProAudio> mListMusics = new ArrayList<>(), mListNewMusics = new ArrayList<>();
-    private static ArrayList<String> mListToSysScanAudios = new ArrayList<String>();
+    private static ArrayList<String> mListToSysScanAudios = new ArrayList<>();
 
     // Video
-    private static ArrayList<ProVideo> mlistVideos = new ArrayList<ProVideo>(), mListNewVideos = new ArrayList<ProVideo>();
-    private static List<String> mListToSysScanVideos = new ArrayList<String>();
+    private static ArrayList<ProVideo> mlistVideos = new ArrayList<>(), mListNewVideos = new ArrayList<>();
+    private static List<String> mListToSysScanVideos = new ArrayList<>();
 
     /**
      * 支持的挂载点信息
      */
-    private static Map<String, SDCardInfo> mMapSupportSDCards = new HashMap<String, SDCardInfo>();
+    private static Map<String, SDCardInfo> mMapSupportSDCards = new HashMap<>();
 
     /**
      * 挂载的路径 / 未挂载的路径
      */
-    private static Set<String> mSetPathsMounted = new HashSet<String>(), mSetPathsUnMounted = new HashSet<String>();
+    private static Set<String> mSetPathsMounted = new HashSet<>(), mSetPathsUnMounted = new HashSet<>();
 
     /**
      * 已挂载 / 未挂载
@@ -123,11 +124,15 @@ public class MediaScanReceiver extends BroadcastReceiver {
         // Action
         String action = intent.getAction();
         Log.i(TAG, "onReceive() -> [action:" + action);
+//        Toast.makeText(context, action, Toast.LENGTH_LONG).show();
 
         // Start list Task
         if (ACTION_START_LIST.equals(action)) {
             refreshMountStatus();
             startListMediaTask();
+
+        } else if (Intent.ACTION_MEDIA_SCANNER_STARTED.equals(action)) {
+        } else if (Intent.ACTION_MEDIA_SCANNER_FINISHED.equals(action)) {
 
         } else if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action)) {
         } else if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
@@ -179,10 +184,12 @@ public class MediaScanReceiver extends BroadcastReceiver {
      * List Medias Task
      */
     private static class ListMediaTask extends AsyncTask<Void, Void, Void> {
-        private Map<String, ProAudio> mmMapDBMusics;
-        private Map<String, AudioInfo> mmMapSDCardAudios;
-        private Map<String, ProVideo> mmMapDBVideos;
-        private Map<String, VideoInfo> mmMapSDCardVideos;
+        //
+        private Map<String, ProAudio> mmMapDbAudios;
+        private Map<String, AudioInfo> mmMapSysDbAudios;
+        //
+        private Map<String, ProVideo> mmMapDbVideos;
+        private Map<String, VideoInfo> mmMapSysDbVideos;
 
         long insertMusicCount = 0;
         int insertVideoCount = 0;
@@ -208,11 +215,12 @@ public class MediaScanReceiver extends BroadcastReceiver {
         protected Void doInBackground(Void... params) {
             Logs.i(TAG, "ListMediaTask-> doInBackground(params)");
             // Query DB Medias
-            mmMapDBMusics = AudioDBManager.instance().getMapMusics();
-            mmMapDBVideos = VideoDBManager.instance().getMapVideos(true, false);
+            mmMapDbAudios = AudioDBManager.instance().getMapMusics();
+            mmMapSysDbAudios = AudioUtils.queryMapAudioInfos(null);
+
             // Query SDCard Medias
-            mmMapSDCardAudios = AudioUtils.queryMapAudioInfos(null);
-            mmMapSDCardVideos = VideoUtils.queryMapVideoInfos(null);
+            mmMapDbVideos = VideoDBManager.instance().getMapVideos(true, false);
+            mmMapSysDbVideos = VideoUtils.queryMapVideoInfos(null);
 
             // List All Medias
             for (String supportPath : mSetPathsMounted) {
@@ -302,10 +310,10 @@ public class MediaScanReceiver extends BroadcastReceiver {
                 if (AudioInfo.isSupport(suffix) && !PlayerFileUtils.isInBlacklist(path)) {
                     Logs.debugI(TAG, "ListMediaTask -Music-> parseFileToMedia() " + cf.getName() + "----\n" + path);
                     renameFileWithSpecialName(cf);
-                    if (mmMapDBMusics.containsKey(path)) {
-                        mListMusics.add(mmMapDBMusics.get(path));
-                    } else if (mmMapSDCardAudios.containsKey(path)) {
-                        ProAudio program = new ProAudio(mmMapSDCardAudios.get(path));
+                    if (mmMapDbAudios.containsKey(path)) {
+                        mListMusics.add(mmMapDbAudios.get(path));
+                    } else if (mmMapSysDbAudios.containsKey(path)) {
+                        ProAudio program = new ProAudio(mmMapSysDbAudios.get(path));
                         mListNewMusics.add(program);
                         mListMusics.add(program);
                     } else {
@@ -319,10 +327,10 @@ public class MediaScanReceiver extends BroadcastReceiver {
                 } else if (VideoInfo.isSupport(suffix) && !PlayerFileUtils.isInBlacklist(path)) {
                     Logs.debugI(TAG, "ListMediaTask -Video-> parseFileToMedia() " + cf.getName() + "----\n" + path);
                     renameFileWithSpecialName(cf);
-                    if (mmMapDBVideos.containsKey(path)) {
-                        mlistVideos.add(mmMapDBVideos.get(path));
-                    } else if (mmMapSDCardVideos.containsKey(path)) {
-                        ProVideo program = new ProVideo(mmMapSDCardVideos.get(path));
+                    if (mmMapDbVideos.containsKey(path)) {
+                        mlistVideos.add(mmMapDbVideos.get(path));
+                    } else if (mmMapSysDbVideos.containsKey(path)) {
+                        ProVideo program = new ProVideo(mmMapSysDbVideos.get(path));
                         mListNewVideos.add(program);
                         mlistVideos.add(program);
                     } else {
@@ -359,6 +367,8 @@ public class MediaScanReceiver extends BroadcastReceiver {
      * Scan Musics to System DataBase
      */
     private static void startScanMusics() {
+        Log.i(TAG, "startScanMusics()");
+        Log.i(TAG, "mListToSysScanAudios.size()" + mListToSysScanAudios.size());
         if (mListToSysScanAudios.size() <= 0) {
             return;
         }
@@ -367,7 +377,7 @@ public class MediaScanReceiver extends BroadcastReceiver {
         final Object[] objArrAudioPaths = mListToSysScanAudios.toArray();
         if (objArrAudioPaths != null && objArrAudioPaths.length > 0) {
             Logs.i(TAG, "startScanMusics() ----|> START <|----");
-            String[] toScanArr = new String[objArrAudioPaths.length];
+            final String[] toScanArr = new String[objArrAudioPaths.length];
             for (int idx = 0; idx < objArrAudioPaths.length; idx++) {
                 toScanArr[idx] = (String) objArrAudioPaths[idx];
             }
@@ -386,6 +396,7 @@ public class MediaScanReceiver extends BroadcastReceiver {
 
                     @Override
                     public void run() {
+                        Toast.makeText(mContext, "onScanCompleted :: " + toScanArr.toString(), Toast.LENGTH_LONG).show();
                         ArrayList<ProAudio> listToSaveMusics = new ArrayList<>();
                         List<AudioInfo> listAudioInfos = AudioUtils.queryListAudioInfos(mListToSysScanAudios);
                         for (AudioInfo audio : listAudioInfos) {

@@ -64,6 +64,7 @@ public class AudioUtils extends MediaUtils {
 
     /**
      * Query Audio Paths
+     * //Audio in path "/data/data/com.android.providers.media/databases/"
      */
     public static Map<String, AudioInfo> queryMapAudioInfos(List<String> listSelectedPaths) {
         //
@@ -214,7 +215,7 @@ public class AudioUtils extends MediaUtils {
     /**
      * Scan Audio Files
      */
-    public static void scanAudios(Context cxt, String[] paths, final MediaScannerConnection.OnScanCompletedListener l) {
+    public static void scanAudios(Context cxt, final String[] paths, final MediaScannerConnection.OnScanCompletedListener l) {
         try {
             MediaScannerConnection.scanFile(cxt, paths, AudioInfo.MIME, l);
         } catch (Exception e) {

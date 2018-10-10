@@ -27,6 +27,7 @@ import com.tricheer.player.version.cj.slc_lc2010_vdc.frags.SclLc2010VdcAudioColl
 import com.tricheer.player.version.cj.slc_lc2010_vdc.frags.SclLc2010VdcAudioFoldersFrag;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.frags.SclLc2010VdcAudioNamesFrag;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
@@ -252,10 +253,6 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
         }
     }
 
-    public List<ProAudio> getListMedias() {
-        return mListPrograms;
-    }
-
     /**
      * 刷新列表-媒体
      */
@@ -276,11 +273,25 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
         @Override
         public void onClick(View v) {
             if (v == ivRhythmAnim) {
+                if (isPlaying()) {
+                    openPlayerActivity(getLastMediaPath(), getListMedias());
+                }
             } else {
                 switchTab(v, true);
             }
         }
     };
+
+    public void openPlayerActivity(String mediaUrl, List<?> listPrograms) {
+        try {
+            Intent playerIntent = new Intent(this, SclLc2010VdcAudioPlayerActivity.class);
+            playerIntent.putExtra("SELECT_MEDIA_URL", mediaUrl);
+            playerIntent.putExtra("MEDIA_LIST", (Serializable) listPrograms);
+            startActivityForResult(playerIntent, 1);
+        } catch (Exception e) {
+            Logs.printStackTrace(TAG + "openPlayerActivity()", e);
+        }
+    }
 
     private void switchTab(View v, boolean isFromUser) {
         //Load new data
@@ -348,12 +359,19 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
         if (data != null) {
             String flag = data.getStringExtra("flag");
             if ("PLAYER_FINISH_ON_CLICK_LIST".equals(flag)) {
-//                if (!(mFragMedias instanceof SclLc2010VdcAudioNamesFrag)) {
-//                    switchTab(vItems[2], false);
-//                }
+                refreshOnPlayerFinish();
             } else if ("PLAYER_FINISH_ON_GET_KEY".equals(flag)) {
+                refreshOnPlayerFinish();
                 autoOpenPlayer();
             }
+        }
+    }
+
+    private void refreshOnPlayerFinish() {
+        Log.i(TAG, "refreshOnPlayerFinish()");
+        if (mFragMedias instanceof SclLc2010VdcAudioNamesFrag) {
+            mListPrograms = getListMedias();
+            mFragMedias.refreshDatas(mListPrograms, getLastMediaPath());
         }
     }
 

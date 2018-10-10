@@ -16,6 +16,7 @@ import com.tricheer.player.version.base.activity.BasePlayerActivity;
 import java.util.List;
 
 import js.lib.android.media.PlayMode;
+import js.lib.android.media.bean.ProAudio;
 import js.lib.android.media.bean.Program;
 import js.lib.android.media.engine.PlayListener;
 import js.lib.android.utils.Logs;
@@ -96,10 +97,14 @@ public abstract class BaseAudioCommonActionsActivity extends BasePlayerActivity 
     }
 
     @Override
-    public List<? extends Program> getListMedias() {
+    public List<ProAudio> getListMedias() {
         Logs.i(TAG, "^^ getListMedias() ^^");
         if (mPlayService != null) {
-            return mPlayService.getListMedias();
+            List<?> list = mPlayService.getListMedias();
+            if (list != null) {
+                List<ProAudio> listAudios = (List<ProAudio>) list;
+                return listAudios;
+            }
         }
         return null;
     }

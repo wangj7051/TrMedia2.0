@@ -16,11 +16,9 @@ import android.widget.ListView;
 import com.js.sidebar.LetterSideBar;
 import com.tricheer.player.R;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.activity.SclLc2010VdcAudioListActivity;
-import com.tricheer.player.version.cj.slc_lc2010_vdc.activity.SclLc2010VdcAudioPlayerActivity;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.adapter.SclLc2010VdcAudioCollectsAdapter;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.adapter.SclLc2010VdcAudioNamesAdapter;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -148,7 +146,9 @@ public class SclLc2010VdcAudioCollectsFrag extends BaseAudioListFrag {
 
     @Override
     public void playSelectMedia(String mediaUrl) {
-        openPlayerActivity(mediaUrl, mListMedias);
+        if (isAdded() && mAttachedActivity != null) {
+            mAttachedActivity.openPlayerActivity(mediaUrl, mListMedias);
+        }
     }
 
     private class LetterSideBarCallback implements LetterSideBar.LetterSideBarListener {
@@ -176,7 +176,7 @@ public class SclLc2010VdcAudioCollectsFrag extends BaseAudioListFrag {
                 final Object objItem = parent.getItemAtPosition(position);
                 if (objItem != null) {
                     ProAudio program = (ProAudio) objItem;
-                    openPlayerActivity(program.mediaUrl, mListMedias);
+                    mAttachedActivity.openPlayerActivity(program.mediaUrl, mListMedias);
                 }
             }
         }
@@ -188,17 +188,6 @@ public class SclLc2010VdcAudioCollectsFrag extends BaseAudioListFrag {
                 mIsLvItemClicking = false;
             }
         };
-    }
-
-    protected void openPlayerActivity(String mediaUrl, List<ProAudio> listPrograms) {
-        try {
-            Intent playerIntent = new Intent(mAttachedActivity, SclLc2010VdcAudioPlayerActivity.class);
-            playerIntent.putExtra("SELECT_MEDIA_URL", mediaUrl);
-            playerIntent.putExtra("MEDIA_LIST", (Serializable) listPrograms);
-            startActivityForResult(playerIntent, M_REQ_PLAYING_MEDIA_URL);
-        } catch (Exception e) {
-            Logs.printStackTrace(TAG + "openPlayerActivity()", e);
-        }
     }
 
     private class CollectBtnCallback implements SclLc2010VdcAudioNamesAdapter.CollectListener {

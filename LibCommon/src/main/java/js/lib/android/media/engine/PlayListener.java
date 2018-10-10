@@ -231,7 +231,11 @@ public interface PlayListener extends IPlayStateLitener, IPlayProgressListener, 
      * 设置播放器模式
      * * <p>循环->随机->单曲->顺序</p>
      *
-     * @param supportFlag 0:支持所有的播放模式; 1:不支持顺序模式
+     * @param supportFlag <p>11~ AUDIO支持 LOOP/RANDOM/SINGLE/ORDER</p>
+     *                    <p>12~ AUDIO支持 LOOP/RANDOM/SINGLE</p>
+     *                    <p>51~ VIDEO支持 LOOP/RANDOM/SINGLE/ORDER</p>
+     *                    <p>52~ VIDEO支持 LOOP/RANDOM/SINGLE</p>
+     *                    <p>53~ VIDEO支持 LOOP/SINGLE</p>
      */
     void switchPlayMode(int supportFlag);
 

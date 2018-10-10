@@ -129,7 +129,6 @@ public class PlayerReceiver extends BroadcastReceiver {
                     PlayerAppManager.exitCurrPlayer();
                     break;
             }
-            return;
         }
     }
 

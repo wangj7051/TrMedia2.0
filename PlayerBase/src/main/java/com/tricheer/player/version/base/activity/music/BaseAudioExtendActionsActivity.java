@@ -11,7 +11,6 @@ import com.tricheer.player.utils.PlayerLogicUtils;
 
 import java.io.File;
 import java.io.Serializable;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -197,10 +196,10 @@ public abstract class BaseAudioExtendActionsActivity extends BaseAudioCommonActi
     }
 
     public class LoadLocalMediasTask extends AsyncTask<Void, Integer, Void> {
-        private WeakReference<LoadMediaListener> mmWeakReference;
+        private LoadMediaListener mLoadMediaListener;
 
         public LoadLocalMediasTask(LoadMediaListener l) {
-            mmWeakReference = new WeakReference<LoadMediaListener>(l);
+            mLoadMediaListener = l;
         }
 
         @Override
@@ -214,10 +213,8 @@ public abstract class BaseAudioExtendActionsActivity extends BaseAudioCommonActi
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
-            try {
-                mmWeakReference.get().afterLoaded();
-            } catch (Exception e) {
-                e.printStackTrace();
+            if (mLoadMediaListener != null) {
+                mLoadMediaListener.afterLoaded();
             }
         }
     }
@@ -235,12 +232,12 @@ public abstract class BaseAudioExtendActionsActivity extends BaseAudioCommonActi
     }
 
     protected class LoadSDCardMediasTask extends AsyncTask<Void, Integer, Void> {
-        private WeakReference<LoadMediaListener> mmWeakReference;
+        private LoadMediaListener mLoadMediaListener;
         private List<ProAudio> mmListNewPrograms = new ArrayList<ProAudio>();
         private List<ProAudio> mmListExistPrograms = new ArrayList<ProAudio>();
 
         public LoadSDCardMediasTask(LoadMediaListener l) {
-            mmWeakReference = new WeakReference<>(l);
+            mLoadMediaListener = l;
         }
 
         @Override
@@ -302,7 +299,7 @@ public abstract class BaseAudioExtendActionsActivity extends BaseAudioCommonActi
             public void run() {
                 try {
                     if (!isCancelled()) {
-                        mmWeakReference.get().afterLoaded();
+                        mLoadMediaListener.afterLoaded();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

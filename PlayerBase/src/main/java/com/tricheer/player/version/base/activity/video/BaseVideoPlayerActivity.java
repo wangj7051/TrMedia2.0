@@ -7,12 +7,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.SeekBar;
 
+import com.tri.lib.utils.TrVideoPreferUtils;
 import com.tricheer.player.engine.PlayerAppManager;
 import com.tricheer.player.engine.PlayerAppManager.PlayerCxtFlag;
 import com.tricheer.player.engine.VersionController;
 import com.tricheer.player.receiver.ReceiverOperates;
 
 import js.lib.android.media.PlayEnableController;
+import js.lib.android.media.PlayMode;
 import js.lib.android.media.PlayState;
 import js.lib.android.media.bean.ProVideo;
 import js.lib.android.media.video.db.VideoDBManager;
@@ -251,7 +253,13 @@ public abstract class BaseVideoPlayerActivity extends BaseVideoFocusActivity {
 
     protected void onNotifyPlayState$Complete() {
         mPlaySpeedFlag = ReceiverOperates.VIDEO_NORMAL;
-        playNext();
+        PlayMode storePlayMode = TrVideoPreferUtils.getPlayMode(false, PlayMode.LOOP);
+        if (storePlayMode == PlayMode.LOOP) {
+            playNext();
+        } else {
+            clearPlayedMediaInfos();
+            execPlay(mPlayPos);
+        }
     }
 
     protected void onNotifyPlayState$Error() {

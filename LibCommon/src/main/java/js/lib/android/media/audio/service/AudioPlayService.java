@@ -468,33 +468,38 @@ public abstract class AudioPlayService extends BaseAudioService {
         if (storePlayMode == null) {
             return;
         }
-        if (supportFlag == 0) {
-            switch (storePlayMode) {
-                case SINGLE:
-                    AudioPreferUtils.getPlayMode(true, PlayMode.RANDOM);
-                    break;
-                case RANDOM:
-                    AudioPreferUtils.getPlayMode(true, PlayMode.LOOP);
-                    break;
-                case LOOP:
-                    AudioPreferUtils.getPlayMode(true, PlayMode.ORDER);
-                    break;
-                case ORDER:
-                    AudioPreferUtils.getPlayMode(true, PlayMode.SINGLE);
-                    break;
+        switch (supportFlag) {
+            case 11: {
+                switch (storePlayMode) {
+                    case SINGLE:
+                        AudioPreferUtils.getPlayMode(true, PlayMode.RANDOM);
+                        break;
+                    case RANDOM:
+                        AudioPreferUtils.getPlayMode(true, PlayMode.LOOP);
+                        break;
+                    case LOOP:
+                        AudioPreferUtils.getPlayMode(true, PlayMode.ORDER);
+                        break;
+                    case ORDER:
+                        AudioPreferUtils.getPlayMode(true, PlayMode.SINGLE);
+                        break;
+                }
             }
-        } else if (supportFlag == 1) {
-            switch (storePlayMode) {
-                case SINGLE:
-                    AudioPreferUtils.getPlayMode(true, PlayMode.RANDOM);
-                    break;
-                case RANDOM:
-                    AudioPreferUtils.getPlayMode(true, PlayMode.LOOP);
-                    break;
-                case LOOP:
-                    AudioPreferUtils.getPlayMode(true, PlayMode.SINGLE);
-                    break;
+            break;
+            case 12: {
+                switch (storePlayMode) {
+                    case SINGLE:
+                        AudioPreferUtils.getPlayMode(true, PlayMode.RANDOM);
+                        break;
+                    case RANDOM:
+                        AudioPreferUtils.getPlayMode(true, PlayMode.LOOP);
+                        break;
+                    case LOOP:
+                        AudioPreferUtils.getPlayMode(true, PlayMode.SINGLE);
+                        break;
+                }
             }
+            break;
         }
         onPlayModeChange();
     }

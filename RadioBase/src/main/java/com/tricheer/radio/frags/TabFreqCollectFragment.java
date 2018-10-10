@@ -189,7 +189,9 @@ public class TabFreqCollectFragment extends BaseAppV4Fragment {
 
     private int getCurrFreq() {
         if (isAdded()) {
-            return mAttachedActivity.getCurrFreq();
+            if (mAttachedActivity != null) {
+                return mAttachedActivity.getCurrFreq();
+            }
         }
         return -1;
     }

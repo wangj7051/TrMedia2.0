@@ -17,10 +17,8 @@ import android.widget.ListView;
 import com.js.sidebar.LetterSideBar;
 import com.tricheer.player.R;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.activity.SclLc2010VdcAudioListActivity;
-import com.tricheer.player.version.cj.slc_lc2010_vdc.activity.SclLc2010VdcAudioPlayerActivity;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.adapter.SclLc2010VdcAudioNamesAdapter;
 
-import java.io.Serializable;
 import java.util.List;
 
 import js.lib.android.media.audio.db.AudioDBManager;
@@ -56,7 +54,7 @@ public class SclLc2010VdcAudioNamesFrag extends BaseAudioListFrag {
     /**
      * Media list
      */
-    private List<ProAudio> mListMedias;
+    private List<ProAudio> mListDatas;
 
     /**
      * Data adapter
@@ -104,15 +102,13 @@ public class SclLc2010VdcAudioNamesFrag extends BaseAudioListFrag {
         if (isAdded()) {
             if (EmptyUtil.isEmpty(listMedias)) {
                 mDataAdapter.refreshDatas();
+            } else if (TextUtils.isEmpty(targetMediaUrl)) {
+                ProAudio firstAudio = listMedias.get(0);
+                mDataAdapter.refreshDatas((mListDatas = listMedias), firstAudio.mediaUrl);
+                delayPlay(firstAudio.mediaUrl);
             } else {
-                if (TextUtils.isEmpty(targetMediaUrl)) {
-                    ProAudio firstAudio = listMedias.get(0);
-                    mDataAdapter.refreshDatas((mListMedias = listMedias), firstAudio.mediaUrl);
-                    delayPlay(firstAudio.mediaUrl);
-                } else {
-                    mDataAdapter.refreshDatas((mListMedias = listMedias), targetMediaUrl);
-                    delayPlay(targetMediaUrl);
-                }
+                mDataAdapter.refreshDatas((mListDatas = listMedias), targetMediaUrl);
+                delayPlay(targetMediaUrl);
             }
         }
     }
@@ -124,7 +120,7 @@ public class SclLc2010VdcAudioNamesFrag extends BaseAudioListFrag {
             mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    mAttachedActivity.setPlayList(mListMedias);
+                    mAttachedActivity.setPlayList(mListDatas);
                     mAttachedActivity.play(targetMediaUrl);
                     lvDatas.setSelection(mAttachedActivity.getCurrIdx());
                 }
@@ -155,7 +151,9 @@ public class SclLc2010VdcAudioNamesFrag extends BaseAudioListFrag {
 
     @Override
     public void playSelectMedia(String mediaUrl) {
-        openPlayerActivity(mediaUrl, mListMedias);
+        if (isAdded() && mAttachedActivity != null) {
+            mAttachedActivity.openPlayerActivity(mediaUrl, mListDatas);
+        }
     }
 
     private class LetterSideBarCallback implements LetterSideBar.LetterSideBarListener {
@@ -183,7 +181,7 @@ public class SclLc2010VdcAudioNamesFrag extends BaseAudioListFrag {
                 final Object objItem = parent.getItemAtPosition(position);
                 if (objItem != null) {
                     ProAudio program = (ProAudio) objItem;
-                    playSelectMedia(program.mediaUrl, false);
+                    mAttachedActivity.openPlayerActivity(program.mediaUrl, mListDatas);
                 }
             }
         }
@@ -195,33 +193,6 @@ public class SclLc2010VdcAudioNamesFrag extends BaseAudioListFrag {
                 mIsLvItemClicking = false;
             }
         };
-    }
-
-    protected void playSelectMedia(final String mediaUrl, boolean isNeedDelay) {
-        if (!EmptyUtil.isEmpty(mediaUrl)) {
-            if (isNeedDelay) {
-                mHandler.postDelayed(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        openPlayerActivity(mediaUrl, mListMedias);
-                    }
-                }, 300);
-            } else {
-                openPlayerActivity(mediaUrl, mListMedias);
-            }
-        }
-    }
-
-    protected void openPlayerActivity(String mediaUrl, List<ProAudio> listPrograms) {
-        try {
-            Intent playerIntent = new Intent(mAttachedActivity, SclLc2010VdcAudioPlayerActivity.class);
-            playerIntent.putExtra("SELECT_MEDIA_URL", mediaUrl);
-            playerIntent.putExtra("MEDIA_LIST", (Serializable) listPrograms);
-            startActivityForResult(playerIntent, M_REQ_PLAYING_MEDIA_URL);
-        } catch (Exception e) {
-            Logs.printStackTrace(TAG + "openPlayerActivity()", e);
-        }
     }
 
     private class CollectBtnCallback implements SclLc2010VdcAudioNamesAdapter.CollectListener {
@@ -250,7 +221,11 @@ public class SclLc2010VdcAudioNamesFrag extends BaseAudioListFrag {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        mAttachedActivity.onActivityResult(requestCode, resultCode, data);
-        mDataAdapter.refreshDatas(mAttachedActivity.getLastMediaPath());
+        if (data != null) {
+            String flag = data.getStringExtra("flag");
+            if ("PLAYER_FINISH_ON_CLICK_LIST".equals(flag) || "PLAYER_FINISH_ON_GET_KEY".equals(flag)) {
+                mDataAdapter.refreshDatas(mAttachedActivity.getLastMediaPath());
+            }
+        }
     }
 }

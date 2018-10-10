@@ -65,12 +65,12 @@ public class SclLc2010VdcAudioNamesAdapter extends BaseArrayAdapter<ProAudio> im
     }
 
     public void refreshDatas(List<ProAudio> listDatas) {
-        this.mListDatas = listDatas;
+        setListDatas(listDatas);
         refreshDatas();
     }
 
     public void refreshDatas(String selectedMediaUrl) {
-        this.mSelectedMediaUrl = selectedMediaUrl;
+        setSelect(selectedMediaUrl);
         refreshDatas();
     }
 
