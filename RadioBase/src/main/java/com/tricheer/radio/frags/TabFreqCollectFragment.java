@@ -10,10 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.tri.lib.radio.engine.BandCategoryEnum;
 import com.tricheer.radio.MainActivity;
 import com.tricheer.radio.R;
 import com.tricheer.radio.utils.FreqFormatUtil;
-import com.tricheer.radio.utils.PreferUtils;
+import com.tricheer.radio.utils.TrRadioPreferUtils;
 
 import js.lib.android.fragment.BaseAppV4Fragment;
 
@@ -100,11 +101,11 @@ public class TabFreqCollectFragment extends BaseAppV4Fragment {
     }
 
     private void loadCollected() {
-        int band = getCurrBand();
+        BandCategoryEnum band = getCurrBand();
         int loop = tvItems.length;
         for (int idx = 0; idx < loop; idx++) {
             TextView tv = tvItems[idx];
-            int collectedFreq = PreferUtils.getCollect(false, band, mPageIdx, idx, 0);
+            int collectedFreq = TrRadioPreferUtils.getCollect(false, band, mPageIdx, idx, 0);
             if (collectedFreq != -1) {
                 tv.setTag(collectedFreq);
                 tv.setText(FreqFormatUtil.getFreqStr(band, collectedFreq));
@@ -173,18 +174,18 @@ public class TabFreqCollectFragment extends BaseAppV4Fragment {
 
         private void collectFreq(TextView tv, int position) {
             int currFreq = getCurrFreq();
-            int currBand = getCurrBand();
-            PreferUtils.getCollect(true, currBand, mPageIdx, position, currFreq);
+            BandCategoryEnum currBand = getCurrBand();
+            TrRadioPreferUtils.getCollect(true, currBand, mPageIdx, position, currFreq);
             tv.setText(FreqFormatUtil.getFreqStr(currBand, currFreq));
             tv.setTag(currFreq);
         }
     };
 
-    private int getCurrBand() {
+    private BandCategoryEnum getCurrBand() {
         if (isAdded()) {
             return mAttachedActivity.getCurrBand();
         }
-        return -1;
+        return BandCategoryEnum.FM;
     }
 
     private int getCurrFreq() {

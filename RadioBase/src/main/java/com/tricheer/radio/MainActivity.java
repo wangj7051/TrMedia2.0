@@ -18,15 +18,15 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.tri.lib.engine.KeyEnum;
+import com.tri.lib.radio.engine.BandCategoryEnum;
 import com.tri.lib.receiver.AccReceiver;
 import com.tri.lib.receiver.ReverseReceiver;
 import com.tri.lib.utils.SettingsSysUtil;
 import com.tricheer.radio.activity.BaseAudioFocusActivity;
-import com.tricheer.radio.engine.BandInfos.BandType;
-import com.tricheer.radio.engine.Keys;
 import com.tricheer.radio.frags.TabFreqCollectFragment;
 import com.tricheer.radio.utils.FreqFormatUtil;
-import com.tricheer.radio.utils.PreferUtils;
+import com.tricheer.radio.utils.TrRadioPreferUtils;
 import com.tricheer.radio.view.ToastView;
 
 import java.util.ArrayList;
@@ -73,6 +73,8 @@ public class MainActivity extends BaseAudioFocusActivity
     //==========Variables in this Activity==========
     private ViewPagerOnChange mViewPageOnChange;
     private VPFragStateAdapter mFragAdapter;
+
+    private ObjectAnimator mAnimTowerRoate;
 
     private static Handler mHandler = new Handler();
     private SearchingController mSearchingController;
@@ -172,19 +174,20 @@ public class MainActivity extends BaseAudioFocusActivity
         }
 
         //Get parameters
-        int paramBand = getIntent().getIntExtra("TARGET_BAND", -1);
+        int paramBandVal = getIntent().getIntExtra("TARGET_BAND", -1);
+        BandCategoryEnum paramBand = BandCategoryEnum.get(paramBandVal);
         getIntent().removeExtra("TARGET_BAND");
         Log.i(TAG, "openRadioOnNewIntent() > paramBand:" + paramBand);
 
 
         //Check and Play
-        if (paramBand == -1) {
+        if (paramBand == BandCategoryEnum.NONE) {
             if (!isRadioOpened()) {
                 execOpenRadio();
             }
         } else {
             if (isRadioOpened()) {
-                int currBand = getCurrBand();
+                BandCategoryEnum currBand = getCurrBand();
                 if (paramBand != currBand) {
                     execSwitchBand();
                     return;
@@ -205,7 +208,7 @@ public class MainActivity extends BaseAudioFocusActivity
     }
 
     private void openRadioOnInit() {
-        final boolean isFirstTimeOpen = PreferUtils.isFirstOpen();
+        final boolean isFirstTimeOpen = TrRadioPreferUtils.isFirstOpen();
         if (isFirstTimeOpen) {
             ToastView.show(this, R.string.first_time_searching_toast);
             initSeekBar(true);
@@ -214,7 +217,8 @@ public class MainActivity extends BaseAudioFocusActivity
         }
 
         //Get parameters
-        final int paramBand = getIntent().getIntExtra("TARGET_BAND", -1);
+        final int paramBandVal = getIntent().getIntExtra("TARGET_BAND", -1);
+        final BandCategoryEnum paramBand = BandCategoryEnum.get(paramBandVal);
         getIntent().removeExtra("TARGET_BAND");
         Log.i(TAG, "openRadioOnInit() > paramBand:" + paramBand);
 
@@ -222,7 +226,7 @@ public class MainActivity extends BaseAudioFocusActivity
         mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (paramBand == -1) {
+                if (paramBand == BandCategoryEnum.NONE) {
                     execOpenRadio();
                     if (isFirstTimeOpen) {
                         mSearchingController.prepare();
@@ -238,13 +242,13 @@ public class MainActivity extends BaseAudioFocusActivity
         //Points view
         vPointsContainer.removeAllViews();
         switch (getLastBand()) {
-            case BandType.FM:
+            case FM:
                 View vFMRoot = getLayoutInflater().inflate(R.layout.v_points_fm, vPointsContainer);
                 ivArrow = (ImageView) vFMRoot.findViewById(R.id.v_arrow_to_right);
                 vBgPoints = (LinearLayout) vFMRoot.findViewById(R.id.v_bg_points);
                 vSelectedPoint = (ImageView) vFMRoot.findViewById(R.id.v_select_point);
                 break;
-            case BandType.AM:
+            case AM:
                 View vAMRoot = getLayoutInflater().inflate(R.layout.v_points_am, vPointsContainer);
                 ivArrow = (ImageView) vAMRoot.findViewById(R.id.v_arrow_to_right);
                 vBgPoints = (LinearLayout) vAMRoot.findViewById(R.id.v_bg_points);
@@ -264,12 +268,12 @@ public class MainActivity extends BaseAudioFocusActivity
     }
 
     private void initSeekBar(boolean isFirstTime) {
-        seekBarFreq.setMax(isFirstTime ? getSeekBarMax(BandType.FM) : getSeekBarMax());
+        seekBarFreq.setMax(isFirstTime ? getSeekBarMax(BandCategoryEnum.FM) : getSeekBarMax());
         seekBarFreq.setProgress(0);
     }
 
     @Override
-    public void onFreqChanged(int freq, int band) {
+    public void onFreqChanged(int freq, BandCategoryEnum band) {
         super.onFreqChanged(freq, band);
         int currProgress = freq - getMinFreq();
         seekBarFreq.setProgress(currProgress);
@@ -290,7 +294,7 @@ public class MainActivity extends BaseAudioFocusActivity
         }
     }
 
-    private void setFreqInfo(int freq, int band) {
+    private void setFreqInfo(int freq, BandCategoryEnum band) {
         if (tvFreq == null || tvBand == null) {
             return;
         }
@@ -299,11 +303,11 @@ public class MainActivity extends BaseAudioFocusActivity
         String txtBand = "";
         String txtFreq = "";
         switch (band) {
-            case BandType.FM:
+            case FM:
                 txtBand = getString(R.string.band_fm);
                 txtFreq = txtBand + FreqFormatUtil.getFmFreqStr(freq);
                 break;
-            case BandType.AM:
+            case AM:
                 txtBand = getString(R.string.band_am);
                 txtFreq = txtBand + FreqFormatUtil.getAmFreqStr(freq);
                 break;
@@ -337,77 +341,80 @@ public class MainActivity extends BaseAudioFocusActivity
 
     @Override
     protected void execSwitchBand() {
-        ivTower.setEnabled(false);
-        ObjectAnimator objAnim = ObjectAnimator.ofFloat(ivTower, "rotationY", 0, 180);
-        objAnim.setInterpolator(new LinearInterpolator());
-        objAnim.setDuration(300);
-        objAnim.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                mViewPageOnChange.reset();
-                viewPager.setCurrentItem(0, true);
-            }
+        Log.i(TAG, "execSwitchBand()");
+        if (mAnimTowerRoate == null) {
+            mAnimTowerRoate = ObjectAnimator.ofFloat(ivTower, "rotationY", 0, 180);
+            mAnimTowerRoate.setInterpolator(new LinearInterpolator());
+            mAnimTowerRoate.setDuration(300);
+            mAnimTowerRoate.addListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    mViewPageOnChange.reset();
+                    viewPager.setCurrentItem(0, true);
+                }
 
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                //Switch
-                MainActivity.super.execSwitchBand();
-                //UI
-                refreshCollectViews();
-                initSeekBar(false);
-                ivTower.setEnabled(true);
-            }
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    //Switch
+                    MainActivity.super.execSwitchBand();
+                    //UI
+                    refreshCollectViews();
+                    initSeekBar(false);
+                }
 
-            @Override
-            public void onAnimationCancel(Animator animation) {
-            }
+                @Override
+                public void onAnimationCancel(Animator animation) {
+                }
 
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-            }
-        });
-        objAnim.start();
+                @Override
+                public void onAnimationRepeat(Animator animation) {
+                }
+            });
+        }
+        if (!mAnimTowerRoate.isRunning()) {
+            mAnimTowerRoate.start();
+        }
     }
 
     @Override
-    public void onScanFreqStart(int type) {
-        super.onScanFreqStart(type);
-        Log.i(TAG, "onScanFreqStart(" + type + ")");
+    public void onScanFreqStart(BandCategoryEnum band) {
+        super.onScanFreqStart(band);
+        Log.i(TAG, "onScanFreqStart(" + band + ")");
         mScanningController.start();
     }
 
     @Override
-    public void onScanFreqEnd(int type) {
-        super.onScanFreqEnd(type);
-        Log.i(TAG, "onScanFreqEnd(" + type + ")");
+    public void onScanFreqEnd(BandCategoryEnum band) {
+        super.onScanFreqEnd(band);
+        Log.i(TAG, "onScanFreqEnd(" + band + ")");
         mScanningController.end();
     }
 
     @Override
-    public void onScanFreqFail(int type, int reason) {
-        super.onScanFreqFail(type, reason);
-        Log.i(TAG, "onScanFreqFail(" + type + "," + reason + ")");
+    public void onScanFreqFail(BandCategoryEnum band, int reason) {
+        super.onScanFreqFail(band, reason);
+        Log.i(TAG, "onScanFreqFail(" + band + "," + reason + ")");
         mScanningController.fail();
     }
 
     @Override
-    public void onSeachFreqStart(int type) {
-        super.onSeachFreqStart(type);
-        Log.i(TAG, "onSeachFreqStart(" + type + ")");
+    public void onSeachFreqStart(BandCategoryEnum band) {
+        super.onSeachFreqStart(band);
+        Log.i(TAG, "onSeachFreqStart(" + band + ")");
     }
 
     @Override
-    public void onSeachFreqEnd(int type) {
-        super.onSeachFreqEnd(type);
-        Log.i(TAG, "onSeachFreqEnd(" + type + ")");
-        PreferUtils.saveSearchedFreqs(type, getAllAvailableFreqs());
-        mSearchingController.onLastSearched(type);
+    public void onSeachFreqEnd(BandCategoryEnum band) {
+        super.onSeachFreqEnd(band);
+        Log.i(TAG, "onSeachFreqEnd(" + band + ")");
+        TrRadioPreferUtils.saveSearchedFreqs(band, getAllAvailableFreqs());
+        mSearchingController.onLastSearched(band);
     }
 
     @Override
-    public void onSeachFreqFail(int type, int reason) {
-        super.onSeachFreqFail(type, reason);
-        Log.i(TAG, "onSeachFreqFail(" + type + "," + reason + ")");
+    public void onSeachFreqFail(BandCategoryEnum band, int reason) {
+        super.onSeachFreqFail(band, reason);
+        Log.i(TAG, "onSeachFreqFail(" + band + "," + reason + ")");
         mSearchingController.onSearchFailed();
     }
 
@@ -430,7 +437,7 @@ public class MainActivity extends BaseAudioFocusActivity
             int childCount = vBgPoints.getChildCount();
             for (int idx = 0; idx < childCount; idx++) {
                 View childV = vBgPoints.getChildAt(idx);
-                if (childV != null && childV instanceof ImageView) {
+                if (childV instanceof ImageView) {
                     ((ImageView) childV).setImageResource(isScanning ? R.drawable.tab_point_bg_disable : R.drawable.tab_point_bg);
                 }
             }
@@ -441,8 +448,8 @@ public class MainActivity extends BaseAudioFocusActivity
         seekBarSearchingAll.setEnabled(isScanning);
         seekBarSearchingAll.setProgress(0);
         if (isScanning) {
-            int fmMax = getSeekBarMax(BandType.FM);
-            int amMax = getSeekBarMax(BandType.AM);
+            int fmMax = getSeekBarMax(BandCategoryEnum.FM);
+            int amMax = getSeekBarMax(BandCategoryEnum.AM);
             seekBarSearchingAll.setMax(fmMax + amMax);
             seekBarSearchingAll.setVisibility(View.VISIBLE);
         } else {
@@ -500,15 +507,17 @@ public class MainActivity extends BaseAudioFocusActivity
     @Override
     protected void onGetKeyCode(int keyCode) {
         //super.onGetKeyCode(keyCode);
-        switch (keyCode) {
-            case Keys.KeyVals.KEYCODE_VOLUME_UP:
+        KeyEnum ke = KeyEnum.getKey(keyCode);
+        Log.i(TAG, "onGetKeyCode(" + ke + "-" + keyCode + ")");
+        switch (ke) {
+            case KEYCODE_VOLUME_UP:
                 break;
-            case Keys.KeyVals.KEYCODE_VOLUME_DOWN:
+            case KEYCODE_VOLUME_DOWN:
                 break;
-            case Keys.KeyVals.KEYCODE_VOLUME_MUTE:
+            case KEYCODE_VOLUME_MUTE:
                 break;
 
-            case Keys.KeyVals.KEYCODE_RADIO:
+            case KEYCODE_RADIO:
                 if (mSearchingController.isSearching()) {
                     mSearchingController.resumeOrigin();
                 } else {
@@ -516,25 +525,25 @@ public class MainActivity extends BaseAudioFocusActivity
                 }
                 break;
 
-            case Keys.KeyVals.KEYCODE_PREV:
+            case KEYCODE_PREV:
                 scanAndPlayPrev();
                 break;
-            case Keys.KeyVals.KEYCODE_NEXT:
+            case KEYCODE_NEXT:
                 scanAndPlayNext();
                 break;
 
-            case Keys.KeyVals.KEYCODE_DPAD_LEFT:
+            case KEYCODE_DPAD_LEFT:
                 stepPrev();
                 break;
-            case Keys.KeyVals.KEYCODE_DPAD_RIGHT:
+            case KEYCODE_DPAD_RIGHT:
                 stepNext();
                 break;
 
-            case Keys.KeyVals.KEYCODE_ENTER:
+            case KEYCODE_ENTER:
                 break;
-            case Keys.KeyVals.KEYCODE_HOME:
+            case KEYCODE_HOME:
                 break;
-            case Keys.KeyVals.KEYCODE_BACK:
+            case KEYCODE_BACK:
                 break;
         }
     }
@@ -547,6 +556,16 @@ public class MainActivity extends BaseAudioFocusActivity
 
     @Override
     protected void onDestroy() {
+        //
+        if (mAnimTowerRoate != null) {
+            if (mAnimTowerRoate.isRunning()) {
+                mAnimTowerRoate.cancel();
+                mAnimTowerRoate.end();
+            }
+            mAnimTowerRoate = null;
+        }
+
+        //
         AccReceiver.unregister(this);
         mFmStateController.onDestroy();
         unregister(this);
@@ -597,14 +616,14 @@ public class MainActivity extends BaseAudioFocusActivity
      */
     private class SearchingController {
         //
-        int mmOriginBand = BandType.NONE;
+        BandCategoryEnum mmOriginBand = BandCategoryEnum.NONE;
         int mmOriginFreq = 0;
 
         //
         int mmBaseProgress = 0;
         boolean mmIsSearching = false;
-        int mmLastSearchedBand = BandType.NONE;
-        Set<Integer> mmSetSearchedBand = new HashSet<>();
+        BandCategoryEnum mmLastSearchedBand = BandCategoryEnum.NONE;
+        Set<BandCategoryEnum> mmSetSearchedBand = new HashSet<>();
 
         void prepare() {
             //
@@ -621,15 +640,15 @@ public class MainActivity extends BaseAudioFocusActivity
             searchAll();
         }
 
-        void onLastSearched(int lastBand) {
+        void onLastSearched(BandCategoryEnum lastBand) {
             //Record searched.
             mmBaseProgress += getSeekBarMax(lastBand);
             mmLastSearchedBand = lastBand;
             mmSetSearchedBand.add(lastBand);
 
             //Execute next search
-            int nextBand = nextBand();
-            if (nextBand != BandType.NONE) {
+            BandCategoryEnum nextBand = nextBand();
+            if (nextBand != BandCategoryEnum.NONE) {
                 setBand(nextBand);
                 initSeekBar(false);
                 searchAll();
@@ -643,19 +662,19 @@ public class MainActivity extends BaseAudioFocusActivity
             resumeOrigin();
         }
 
-        int nextBand() {
-            int next = BandType.NONE;
+        BandCategoryEnum nextBand() {
+            BandCategoryEnum next = null;
             switch (mmLastSearchedBand) {
-                case BandType.FM:
-                    next = BandType.AM;
+                case FM:
+                    next = BandCategoryEnum.AM;
                     break;
-                case BandType.AM:
-                    next = BandType.FM;
+                case AM:
+                    next = BandCategoryEnum.FM;
                     break;
             }
 
             if (mmSetSearchedBand.contains(next)) {
-                next = BandType.NONE;
+                next = BandCategoryEnum.NONE;
             }
             return next;
         }
@@ -673,18 +692,18 @@ public class MainActivity extends BaseAudioFocusActivity
             openRadioAfterSearchedAll(mmOriginBand, mmOriginFreq);
 
             //Reset origin
-            mmOriginBand = BandType.NONE;
+            mmOriginBand = BandCategoryEnum.NONE;
             mmOriginFreq = 0;
 
             mmBaseProgress = 0;
             mmIsSearching = false;
-            mmLastSearchedBand = BandType.NONE;
+            mmLastSearchedBand = BandCategoryEnum.NONE;
             mmSetSearchedBand.clear();
         }
     }
 
     @Override
-    protected void openRadioAfterSearchedAll(int band, int freq) {
+    protected void openRadioAfterSearchedAll(BandCategoryEnum band, int freq) {
         super.openRadioAfterSearchedAll(band, freq);
         //UI
         refreshCollectViews();
@@ -795,14 +814,14 @@ public class MainActivity extends BaseAudioFocusActivity
      * @return int
      */
     private int getPageSum() {
-        final int lastBand = getLastBand();
+        final BandCategoryEnum lastBand = getLastBand();
         switch (lastBand) {
-            case BandType.FM:
+            case FM:
                 return 6;
-            case BandType.AM:
+            case AM:
                 return 2;
         }
-        return 0;
+        return 6;
     }
 
     /**

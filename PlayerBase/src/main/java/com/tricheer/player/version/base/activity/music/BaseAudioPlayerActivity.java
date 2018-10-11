@@ -5,7 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.widget.SeekBar;
 
-import com.tri.lib.engine.music.PlayerDelegate;
+import com.tri.lib.audio.PlayerDelegate;
 import com.tricheer.player.engine.PlayerAppManager;
 import com.tricheer.player.engine.PlayerAppManager.PlayerCxtFlag;
 import com.tricheer.player.utils.PlayerLogicUtils;

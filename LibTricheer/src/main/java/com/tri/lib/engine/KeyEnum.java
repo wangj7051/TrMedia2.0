@@ -1,7 +1,6 @@
 package com.tri.lib.engine;
 
-import java.util.HashMap;
-import java.util.Map;
+import android.util.SparseArray;
 
 /**
  * Customized keys
@@ -25,25 +24,25 @@ public enum KeyEnum {
         return mValue;
     }
 
-    private static Map<Integer, KeyEnum> mMapKeys;
+    private static SparseArray<KeyEnum> mSaKeys;
 
     public static KeyEnum getKey(int value) {
-        if (mMapKeys == null) {
-            mMapKeys = new HashMap<>();
-            mMapKeys.put(KEYCODE_VOLUME_UP.getKeyVal(), KEYCODE_VOLUME_UP);
-            mMapKeys.put(KEYCODE_VOLUME_DOWN.getKeyVal(), KEYCODE_VOLUME_DOWN);
-            mMapKeys.put(KEYCODE_VOLUME_MUTE.getKeyVal(), KEYCODE_VOLUME_MUTE);
+        if (mSaKeys == null) {
+            mSaKeys = new SparseArray<>();
+            mSaKeys.put(KEYCODE_VOLUME_UP.getKeyVal(), KEYCODE_VOLUME_UP);
+            mSaKeys.put(KEYCODE_VOLUME_DOWN.getKeyVal(), KEYCODE_VOLUME_DOWN);
+            mSaKeys.put(KEYCODE_VOLUME_MUTE.getKeyVal(), KEYCODE_VOLUME_MUTE);
 
-            mMapKeys.put(KEYCODE_RADIO.getKeyVal(), KEYCODE_RADIO);
-            mMapKeys.put(KEYCODE_PREV.getKeyVal(), KEYCODE_PREV);
-            mMapKeys.put(KEYCODE_NEXT.getKeyVal(), KEYCODE_NEXT);
-            mMapKeys.put(KEYCODE_DPAD_LEFT.getKeyVal(), KEYCODE_DPAD_LEFT);
-            mMapKeys.put(KEYCODE_DPAD_RIGHT.getKeyVal(), KEYCODE_DPAD_RIGHT);
+            mSaKeys.put(KEYCODE_RADIO.getKeyVal(), KEYCODE_RADIO);
+            mSaKeys.put(KEYCODE_PREV.getKeyVal(), KEYCODE_PREV);
+            mSaKeys.put(KEYCODE_NEXT.getKeyVal(), KEYCODE_NEXT);
+            mSaKeys.put(KEYCODE_DPAD_LEFT.getKeyVal(), KEYCODE_DPAD_LEFT);
+            mSaKeys.put(KEYCODE_DPAD_RIGHT.getKeyVal(), KEYCODE_DPAD_RIGHT);
 
-            mMapKeys.put(KEYCODE_ENTER.getKeyVal(), KEYCODE_ENTER);
-            mMapKeys.put(KEYCODE_HOME.getKeyVal(), KEYCODE_HOME);
-            mMapKeys.put(KEYCODE_BACK.getKeyVal(), KEYCODE_BACK);
+            mSaKeys.put(KEYCODE_ENTER.getKeyVal(), KEYCODE_ENTER);
+            mSaKeys.put(KEYCODE_HOME.getKeyVal(), KEYCODE_HOME);
+            mSaKeys.put(KEYCODE_BACK.getKeyVal(), KEYCODE_BACK);
         }
-        return mMapKeys.get(value);
+        return mSaKeys.get(value);
     }
 }

@@ -1,6 +1,6 @@
 package com.tricheer.radio.utils;
 
-import com.tricheer.radio.engine.BandInfos;
+import com.tri.lib.radio.engine.BandCategoryEnum;
 
 import java.util.Locale;
 
@@ -10,8 +10,8 @@ import java.util.Locale;
  * @author Jun.Wang
  */
 public class FreqFormatUtil {
-    public static String getFreqStr(int band, int freq) {
-        return (band == BandInfos.BandType.FM) ? getFmFreqStr(freq) : getAmFreqStr(freq);
+    public static String getFreqStr(BandCategoryEnum band, int freq) {
+        return (band == BandCategoryEnum.FM) ? getFmFreqStr(freq) : getAmFreqStr(freq);
     }
 
     public static String getFmFreqStr(int freq) {

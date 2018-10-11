@@ -3,10 +3,16 @@ package com.tricheer.radio.activity;
 import android.app.Service;
 import android.os.Bundle;
 
-import com.tricheer.radio.service.BaseAudioFocusService;
 import com.tricheer.radio.service.RadioPlayerService;
 
-public abstract class BaseAudioFocusActivity extends BaseKeyEventActivity implements BaseAudioFocusService.AudioFocusListener {
+import js.lib.android.media.engine.IAudioFocusListener;
+
+/**
+ * Audio focus process activity
+ *
+ * @author Jun.Wang
+ */
+public abstract class BaseAudioFocusActivity extends BaseKeyEventActivity implements IAudioFocusListener {
 
     private RadioPlayerService mService;
 

@@ -3,14 +3,14 @@ package com.tricheer.radio.activity;
 import android.util.Log;
 import android.view.KeyEvent;
 
-import com.tricheer.radio.engine.Keys;
+import com.tri.lib.engine.KeyEnum;
 
 /**
  * Process {@link KeyEvent}
  *
  * @author Jun.Wang
  */
-public abstract class BaseKeyEventActivity extends BaseFmLogicActivity {
+public abstract class BaseKeyEventActivity extends BaseRadioImplActivity {
     //TAG
     private final String TAG = "BaseKeyEventActivity";
 
@@ -24,7 +24,7 @@ public abstract class BaseKeyEventActivity extends BaseFmLogicActivity {
                 break;
         }
 
-        boolean isMenu = (keyCode == Keys.KeyVals.KEYCODE_DPAD_LEFT) || (keyCode == Keys.KeyVals.KEYCODE_DPAD_RIGHT);
+        boolean isMenu = (keyCode == KeyEnum.KEYCODE_DPAD_LEFT.getKeyVal()) || (keyCode == KeyEnum.KEYCODE_DPAD_RIGHT.getKeyVal());
         if (isMenu) {
             return true;
         } else {

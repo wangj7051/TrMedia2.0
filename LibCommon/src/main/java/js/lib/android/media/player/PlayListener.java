@@ -2,8 +2,8 @@ package js.lib.android.media.player;
 
 import java.util.List;
 
-import js.lib.android.media.IAudioFocusListener;
 import js.lib.android.media.bean.Program;
+import js.lib.android.media.engine.IAudioFocusListener;
 
 /**
  * Play actions listener
