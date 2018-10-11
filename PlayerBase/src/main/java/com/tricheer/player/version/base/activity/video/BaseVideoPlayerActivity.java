@@ -17,7 +17,7 @@ import js.lib.android.media.bean.ProVideo;
 import js.lib.android.media.player.PlayEnableController;
 import js.lib.android.media.player.PlayMode;
 import js.lib.android.media.player.PlayState;
-import js.lib.android.media.engine.db_video.VideoDBManager;
+import js.lib.android.media.engine.video.db.VideoDBManager;
 import js.lib.android.utils.CommonUtil;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.Logs;

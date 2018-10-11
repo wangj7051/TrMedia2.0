@@ -1,9 +1,7 @@
 package js.lib.android.media.player;
 
 import android.annotation.SuppressLint;
-
-import java.util.HashMap;
-import java.util.Map;
+import android.util.SparseArray;
 
 /**
  * 播放模式
@@ -40,17 +38,18 @@ public enum PlayMode {
         return mValue;
     }
 
-    private static Map<Integer, PlayMode> mMapModes;
+    private static SparseArray<PlayMode> mSaModes;
 
     @SuppressLint("UseSparseArrays")
     public static PlayMode getMode(int modeVal) {
-        if (mMapModes == null) {
-            mMapModes = new HashMap<>();
-            mMapModes.put(SINGLE.getValue(), SINGLE);
-            mMapModes.put(RANDOM.getValue(), RANDOM);
-            mMapModes.put(LOOP.getValue(), LOOP);
-            mMapModes.put(ORDER.getValue(), ORDER);
+        if (mSaModes == null) {
+            mSaModes = new SparseArray<>();
+            mSaModes.put(SINGLE.getValue(), SINGLE);
+            mSaModes.put(RANDOM.getValue(), RANDOM);
+            mSaModes.put(LOOP.getValue(), LOOP);
+            mSaModes.put(ORDER.getValue(), ORDER);
         }
-        return mMapModes.get(modeVal);
+        PlayMode playMode = mSaModes.get(modeVal);
+        return (playMode == null) ? LOOP : playMode;
     }
 }

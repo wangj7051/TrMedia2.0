@@ -2,7 +2,7 @@ package js.lib.android.media.bean;
 
 import android.util.Log;
 
-import js.lib.android.media.video.utils.VideoInfo;
+import js.lib.android.media.engine.video.utils.VideoInfo;
 import js.lib.android.utils.Logs;
 
 /**

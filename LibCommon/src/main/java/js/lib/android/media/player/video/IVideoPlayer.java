@@ -17,7 +17,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import js.lib.android.media.player.PlayState;
-import js.lib.android.media.utils.MediaUtils;
+import js.lib.android.media.engine.MediaUtils;
 import js.lib.android.media.player.PlayListener;
 import js.lib.android.utils.Logs;
 import js.lib.utils.date.DateFormatUtil;

@@ -14,7 +14,7 @@ import com.tri.lib.radio.utils.RadioPreferUtils;
 import java.util.HashSet;
 import java.util.Set;
 
-import js.lib.android.media.audio.service.BaseAudioFocusService;
+import js.lib.android.media.player.audio.service.BaseAudioFocusService;
 
 /**
  * Base Radio operate service

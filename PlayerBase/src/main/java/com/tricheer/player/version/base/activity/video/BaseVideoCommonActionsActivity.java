@@ -17,7 +17,7 @@ import js.lib.android.media.bean.ProVideo;
 import js.lib.android.media.player.PlayEnableController;
 import js.lib.android.media.player.PlayMode;
 import js.lib.android.media.player.video.IVideoPlayer;
-import js.lib.android.media.utils.VideoPreferUtils;
+import js.lib.android.media.player.video.utils.VideoPreferUtils;
 import js.lib.android.utils.Logs;
 
 /**

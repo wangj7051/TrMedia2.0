@@ -8,7 +8,7 @@ import com.tri.lib.utils.SettingsSysUtil;
 
 import java.util.List;
 
-import js.lib.android.media.audio.service.AudioPlayService;
+import js.lib.android.media.player.audio.service.AudioPlayService;
 import js.lib.android.media.bean.Program;
 import js.lib.android.media.player.PlayMode;
 import js.lib.android.media.player.PlayState;

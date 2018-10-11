@@ -25,10 +25,10 @@ import java.util.Map;
 import java.util.Set;
 
 import js.lib.android.media.bean.ProVideo;
+import js.lib.android.media.engine.video.utils.VideoInfo;
+import js.lib.android.media.engine.video.utils.VideoUtils;
+import js.lib.android.media.engine.video.db.VideoDBManager;
 import js.lib.android.media.player.PlayListener;
-import js.lib.android.media.engine.db_video.VideoDBManager;
-import js.lib.android.media.video.utils.VideoInfo;
-import js.lib.android.media.video.utils.VideoUtils;
 import js.lib.android.utils.CommonUtil;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.Logs;

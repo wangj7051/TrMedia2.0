@@ -17,11 +17,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import js.lib.android.media.utils.AudioSortUtils;
-import js.lib.android.media.engine.db_audio.AudioDBManager;
-import js.lib.android.media.utils.AudioImgUtils;
-import js.lib.android.media.audio.utils.AudioInfo;
-import js.lib.android.media.audio.utils.AudioUtils;
+import js.lib.android.media.player.audio.utils.AudioSortUtils;
+import js.lib.android.media.engine.audio.db.AudioDBManager;
+import js.lib.android.media.engine.audio.utils.AudioImgUtils;
+import js.lib.android.media.engine.audio.utils.AudioInfo;
+import js.lib.android.media.engine.audio.utils.AudioUtils;
 import js.lib.android.media.bean.ProAudio;
 import js.lib.android.utils.CommonUtil;
 import js.lib.android.utils.EmptyUtil;

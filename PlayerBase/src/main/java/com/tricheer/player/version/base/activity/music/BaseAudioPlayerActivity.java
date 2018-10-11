@@ -5,7 +5,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.widget.SeekBar;
 
-import com.tri.lib.audio.PlayerDelegate;
 import com.tricheer.player.engine.PlayerAppManager;
 import com.tricheer.player.engine.PlayerAppManager.PlayerCxtFlag;
 import com.tricheer.player.utils.PlayerLogicUtils;
@@ -13,8 +12,9 @@ import com.tricheer.player.utils.PlayerLogicUtils;
 import java.io.File;
 import java.util.List;
 
-import js.lib.android.media.player.PlayState;
+import js.lib.android.media.engine.audio.online.PlayerDelegate;
 import js.lib.android.media.bean.ProAudio;
+import js.lib.android.media.player.PlayState;
 import js.lib.android.utils.CommonUtil;
 import js.lib.android.utils.Logs;
 import js.lib.http.IResponse;

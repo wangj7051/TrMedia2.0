@@ -2,7 +2,7 @@ package js.lib.android.media.bean;
 
 import android.util.Log;
 
-import js.lib.android.media.audio.utils.AudioInfo;
+import js.lib.android.media.engine.audio.utils.AudioInfo;
 
 /**
  * Audio Program
