@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.tri.lib.engine.KeyEnum;
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import js.lib.android.media.bean.ProVideo;
+import js.lib.android.media.player.PlayEnableController;
 import js.lib.android.media.player.PlayMode;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.KillTouch;
@@ -49,15 +51,16 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
     private View layoutWarning;
 
     //==========Variables in this Activity==========
+    private SeekBarOnChange mSeekBarOnChange;
     private GpsImpl mGpsImpl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.scl_lc2010_vdc_activity_video_player);
+        setCurrPlayer(true, this);
         ReverseReceiver.register(this);
         AccReceiver.register(this);
-        setCurrPlayer(true, this);
         init();
     }
 
@@ -95,7 +98,7 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
         tvStartTime = findView(R.id.tv_play_start_time);
         tvEndTime = findView(R.id.tv_play_end_time);
         seekBar = findView(R.id.seekbar);
-        seekBar.setOnSeekBarChangeListener(new SeekOnChange());
+        seekBar.setOnSeekBarChangeListener((mSeekBarOnChange = new SeekBarOnChange()));
         seekBar.setOnTouchListener(new SeekOnTouch());
 
         ivPlayPre = findView(R.id.iv_play_pre);
@@ -142,8 +145,6 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
         super.onResume();
         // UI Loaded
         if (isUILoaded()) {
-            // Resume 手刹状态
-            // resumeHandBrakeStatus(tvTitle);
             // Resume Light MODE
             setLightMode(VideoLightMode.ON);
             resetLightMode();
@@ -208,7 +209,7 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
     }
 
     @SuppressWarnings("unchecked")
-    private boolean playByIntent() {
+    private void playByIntent() {
         String mediaUrl = getIntent().getStringExtra("SELECT_MEDIA_URL");
         Serializable serialListPros = getIntent().getSerializableExtra("MEDIA_LIST");
         if (mediaUrl != null && serialListPros != null) {
@@ -216,10 +217,32 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
             mListPrograms = (ArrayList<ProVideo>) serialListPros;
             if (!EmptyUtil.isEmpty(mListPrograms)) {
                 execPlay(mediaUrl);
-                return true;
             }
         }
-        return false;
+    }
+
+    @Override
+    public void onProgressChanged(String mediaUrl, int progress, int duration) {
+        // 如下2种情况，不执行任何操作
+        // (1) 未处于正在播放中
+        // (2) SeekBar 正在进行手动拖动进度条
+        if (!isPlaying() || mSeekBarOnChange.isTrackingTouch()) {
+            return;
+        }
+
+        // 不否允许播放
+        if (!PlayEnableController.isPlayEnable()) {
+            removePlayRunnable();
+            pause();
+            return;
+        }
+
+        // 视频播放 - {正常模式}
+        seekBar.setProgress(progress);
+        updateSeekTime(progress, duration);
+
+        // 每秒钟保存一次播放信息
+        savePlayInfo();
     }
 
     /**
@@ -231,11 +254,16 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
         public void onClick(View v) {
             resetLightMode();
             if (v == ivPlay) {
-                doPlayOrPause();
+                execPlayOrPause();
+
             } else if (v == ivPlayPre) {
-                doSecPlayPre();
+                mIsPauseOnNotify = false;
+                playPrevBySecurity();
+
             } else if (v == ivPlayNext) {
-                doSecPlayNext();
+                mIsPauseOnNotify = false;
+                playNextBySecurity();
+
             } else if (v == ivModeSet) {
                 switchPlayMode(53);
             } else if (v == vList) {
@@ -243,20 +271,6 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
             }
         }
     };
-
-    private void doPlayOrPause() {
-        execPlayOrPause();
-    }
-
-    private void doSecPlayPre() {
-        mIsPauseOnNotify = false;
-        playPrevBySecurity();
-    }
-
-    private void doSecPlayNext() {
-        mIsPauseOnNotify = false;
-        playNextBySecurity();
-    }
 
     @Override
     public void onPlayModeChange() {
@@ -319,7 +333,6 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
 
     @Override
     protected void onNotifyPlayState$Play() {
-        super.onNotifyPlayState$Play();
         ProVideo program = getCurrProgram();
         if (program != null) {
             File file = new File(program.mediaUrl);
@@ -390,13 +403,68 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
             mGpsImpl.destroy();
             mGpsImpl = null;
         }
+
+        // 释放播放器
+        execRelease();
+        setCurrPlayer(false, this);
         super.onDestroy();
-        onIDestroy();
     }
 
-    @Override
-    protected void onIDestroy() {
-        super.onIDestroy();
-        setCurrPlayer(false, this);
+    /**
+     * SeekBar Seek Event
+     */
+    public class SeekBarOnChange implements SeekBar.OnSeekBarChangeListener {
+
+        int mmProgress = 0;
+        boolean mmIsTrackingTouch = false;
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+            Log.i(TAG, "SeekBarOnChange - onStartTrackingTouch(SeekBar)");
+            mmIsTrackingTouch = true;
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+            Log.i(TAG, "SeekBarOnChange - onStopTrackingTouch(SeekBar)");
+            if (mmIsTrackingTouch) {
+                mmIsTrackingTouch = false;
+                seekTo(mmProgress);
+            }
+        }
+
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            Logs.debugI(TAG, "SeekBarOnChange - onProgressChanged(SeekBar," + progress + "," + fromUser + ")");
+            if (fromUser) {
+                mmProgress = progress;
+            }
+        }
+
+        boolean isTrackingTouch() {
+            return mmIsTrackingTouch;
+        }
+    }
+
+    /**
+     * SeekBar Touch Event
+     */
+    public class SeekOnTouch implements View.OnTouchListener {
+
+        @SuppressLint("ClickableViewAccessibility")
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    Logs.i(TAG, "seekBar -> SeekOnTouch -> ACTION_DOWN");
+                    setLightMode(VideoLightMode.ON);
+                    break;
+                case MotionEvent.ACTION_UP:
+                    Logs.i(TAG, "seekBar -> SeekOnTouch -> ACTION_UP");
+                    resetLightMode();
+                    break;
+            }
+            return false;
+        }
     }
 }

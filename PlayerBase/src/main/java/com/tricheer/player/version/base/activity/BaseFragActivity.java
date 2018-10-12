@@ -188,12 +188,6 @@ public abstract class BaseFragActivity extends FragmentActivity {
         super.onTrimMemory(level);
     }
 
-    /**
-     * Must Be used in onDestroy()
-     */
-    protected void onIDestroy() {
-    }
-
     @SuppressWarnings("unchecked")
     public <T> T findView(int vResID) {
         return (T) findViewById(vResID);

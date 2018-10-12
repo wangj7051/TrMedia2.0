@@ -221,9 +221,4 @@ public abstract class BaseAudioPlayerActivity extends BaseAudioFocusActivity imp
             PlayerAppManager.exitCurrPlayer();
         }
     }
-
-    @Override
-    protected void onIDestroy() {
-        super.onIDestroy();
-    }
 }

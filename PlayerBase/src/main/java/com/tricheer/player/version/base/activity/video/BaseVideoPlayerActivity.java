@@ -1,27 +1,21 @@
 package com.tricheer.player.version.base.activity.video;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.MotionEvent;
-import android.view.View;
-import android.widget.SeekBar;
 
 import com.tri.lib.utils.TrVideoPreferUtils;
 import com.tricheer.player.engine.PlayerAppManager;
 import com.tricheer.player.engine.PlayerAppManager.PlayerCxtFlag;
 import com.tricheer.player.engine.VersionController;
-import com.tricheer.player.receiver.ReceiverOperates;
 
 import js.lib.android.media.bean.ProVideo;
+import js.lib.android.media.engine.video.db.VideoDBManager;
 import js.lib.android.media.player.PlayEnableController;
 import js.lib.android.media.player.PlayMode;
 import js.lib.android.media.player.PlayState;
-import js.lib.android.media.engine.video.db.VideoDBManager;
 import js.lib.android.utils.CommonUtil;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.Logs;
-import js.lib.utils.date.DateFormatUtil;
 
 /**
  * Video Player Base Activity
@@ -31,25 +25,6 @@ import js.lib.utils.date.DateFormatUtil;
 public abstract class BaseVideoPlayerActivity extends BaseVideoFocusActivity {
     // LOG TAG
     private final String TAG = "BaseVideoPlayerActivity";
-
-    //==========Widget in this Activity==========
-    //==========Variable in this Activity==========
-    /**
-     * Check is seek by user
-     */
-    private boolean mIsSeekFromUser = false;
-
-    /**
-     * Video Play Speed Control
-     */
-    private String mPlaySpeedFlag = ReceiverOperates.VIDEO_NORMAL;
-    private static final int PLAY_STEP_PEROID = 5 * 1000;
-
-    /**
-     * Video Screen 4:3 / 16:9 / 21:9
-     */
-    protected final int SCREEN_4_3 = 1, SCREEN_16_9 = 2, SCREEN_21_9 = 3;
-    protected int mResizeMode = SCREEN_16_9;
 
     /**
      * Light Mode Flag
@@ -104,91 +79,6 @@ public abstract class BaseVideoPlayerActivity extends BaseVideoFocusActivity {
     }
 
     @Override
-    public void onProgressChanged(String mediaUrl, int progress, int duration) {
-        // 如下2种情况，不执行任何操作
-        // (1) 未处于正在播放中
-        // (2) SeekBar 正在进行手动拖动进度条
-        if (!isPlaying() || mIsSeekFromUser) {
-            return;
-        }
-
-        // 不否允许播放
-        if (!PlayEnableController.isPlayEnable()) {
-            removePlayRunnable();
-            pause();
-            return;
-        }
-
-        // 视频播放 - {正常模式}
-        if (mPlaySpeedFlag == ReceiverOperates.VIDEO_NORMAL) {
-            seekBar.setProgress(progress);
-            updateSeekTime(progress, duration);
-
-            // 视频播放 - {快进 / 快退 模式}
-        } else {
-            int targetProgress = progress;
-            if (mPlaySpeedFlag == ReceiverOperates.VIDEO_FORWARD) {
-                targetProgress = progress + PLAY_STEP_PEROID;
-                if (targetProgress >= duration) {
-                    mPlaySpeedFlag = ReceiverOperates.VIDEO_NORMAL;
-                    targetProgress = progress;
-                }
-            } else if (mPlaySpeedFlag == ReceiverOperates.VIDEO_BACKWARD) {
-                targetProgress = progress - PLAY_STEP_PEROID;
-                if (targetProgress <= 0) {
-                    mPlaySpeedFlag = ReceiverOperates.VIDEO_NORMAL;
-                    targetProgress = progress;
-                }
-            }
-
-            if (targetProgress != progress) {
-                seekTo(targetProgress);
-                seekBar.setProgress(targetProgress);
-                updateSeekTime(targetProgress, duration);
-            } else {
-                seekBar.setProgress(progress);
-                updateSeekTime(progress, duration);
-            }
-        }
-
-        // 每秒钟保存一次播放信息
-        savePlayInfo();
-        // 通知仪表盘信息
-        notifyDashboard(PlayState.PLAY);
-    }
-
-    /**
-     * 通知仪表盘
-     */
-    private void notifyDashboard(PlayState state) {
-        if (VersionController.isSupportDashboard()) {
-            Intent dashboardIntent = new Intent("com.tricheer.player.video_info");
-            dashboardIntent.putExtra("path", getCurrMediaPath());
-            dashboardIntent.putExtra("status", state);
-            dashboardIntent.putExtra("progress", getProgress());
-            dashboardIntent.putExtra("position", getPlayPosByMediaUrl(getCurrMediaPath()));
-            dashboardIntent.putExtra("total", getTotalCount());
-            sendBroadcast(dashboardIntent);
-        }
-    }
-
-    /**
-     * Refresh SeekBar & Play Time
-     */
-    protected void updateSeekTime(int progress, int duration) {
-        Logs.debugI("updateTime", progress + "----" + duration);
-        // Set Time Display
-        if (tvStartTime != null) {
-            tvStartTime.setText(DateFormatUtil.getFormatHHmmss(progress));
-            Logs.debugI("updateTime", "StartTime --> " + tvStartTime.getText().toString());
-        }
-        if (tvEndTime != null) {
-            tvEndTime.setText(DateFormatUtil.getFormatHHmmss(duration - progress));
-            Logs.debugI("updateTime", "EndTime --> " + tvEndTime.getText().toString() + "\n ");
-        }
-    }
-
-    @Override
     public void onPlayStateChanged(PlayState playState) {
         super.onPlayStateChanged(playState);
         Logs.i(TAG, " ");
@@ -200,9 +90,6 @@ public abstract class BaseVideoPlayerActivity extends BaseVideoFocusActivity {
         if (isDestroyed() || vvPlayer == null || isPlayerReleased()) {
             return;
         }
-
-        // 通知仪表盘信息
-        notifyDashboard(playState);
 
         switch (playState) {
             case PLAY:
@@ -233,12 +120,16 @@ public abstract class BaseVideoPlayerActivity extends BaseVideoFocusActivity {
         }
     }
 
-    protected void onNotifyPlayState$Play() {
-    }
+    protected abstract void onNotifyPlayState$Play();
+
+    protected abstract void updateSeekTime(int progress, int duration);
 
     protected void onNotifyPlayState$Prepared() {
         seekBar.setMax(getDuration());
-        seekToTargetProgress();
+        if (mTargetAutoSeekProgress > 0 && mTargetAutoSeekProgress < seekBar.getMax()) {
+            seekTo((int) mTargetAutoSeekProgress);
+            mTargetAutoSeekProgress = -1;
+        }
 
         // Refresh Current Media Duration
         Object objParam = vvPlayer.getTag();
@@ -252,10 +143,9 @@ public abstract class BaseVideoPlayerActivity extends BaseVideoFocusActivity {
     }
 
     protected void onNotifyPlayState$Complete() {
-        mPlaySpeedFlag = ReceiverOperates.VIDEO_NORMAL;
         PlayMode storePlayMode = TrVideoPreferUtils.getPlayMode(false, PlayMode.LOOP);
         if (storePlayMode == PlayMode.LOOP) {
-            playNext();
+            playNextBySecurity();
         } else {
             clearPlayedMediaInfos();
             execPlay(mPlayPos);
@@ -263,22 +153,9 @@ public abstract class BaseVideoPlayerActivity extends BaseVideoFocusActivity {
     }
 
     protected void onNotifyPlayState$Error() {
-        ProVideo programWithError = null;
         // Play Next
         if (!EmptyUtil.isEmpty(mListPrograms)) {
-            mPlaySpeedFlag = ReceiverOperates.VIDEO_NORMAL;
-            if (mPlayPos <= mListPrograms.size()) {
-                execPlay(mPlayPos);
-            } else {
-                execPlay(0);
-            }
-        }
-    }
-
-    private void seekToTargetProgress() {
-        if (mTargetAutoSeekProgress > 0) {
-            seekTo((int) mTargetAutoSeekProgress);
-            mTargetAutoSeekProgress = -1;
+            playNextBySecurity();
         }
     }
 
@@ -290,56 +167,6 @@ public abstract class BaseVideoPlayerActivity extends BaseVideoFocusActivity {
      * if==2 : pause
      */
     protected void updatePlayStatus(int flag) {
-    }
-
-    /**
-     * SeekBar Seek Event
-     */
-    public class SeekOnChange implements SeekBar.OnSeekBarChangeListener {
-
-        int mmProgress = 0;
-
-        @Override
-        public void onStartTrackingTouch(SeekBar seekBar) {
-        }
-
-        @Override
-        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            mmProgress = progress;
-            mIsSeekFromUser = fromUser;
-            if (mIsSeekFromUser) {
-                mPlaySpeedFlag = ReceiverOperates.VIDEO_NORMAL;
-            }
-        }
-
-        @Override
-        public void onStopTrackingTouch(SeekBar seekBar) {
-            if (mIsSeekFromUser) {
-                mIsSeekFromUser = false;
-                seekTo(mmProgress);
-            }
-        }
-    }
-
-    /**
-     * SeekBar Touch Event
-     */
-    public class SeekOnTouch implements View.OnTouchListener {
-
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    Logs.i(TAG, "seekBar -> SeekOnTouch -> ACTION_DOWN");
-                    setLightMode(VideoLightMode.ON);
-                    break;
-                case MotionEvent.ACTION_UP:
-                    Logs.i(TAG, "seekBar -> SeekOnTouch -> ACTION_UP");
-                    resetLightMode();
-                    break;
-            }
-            return false;
-        }
     }
 
     @Override
@@ -379,15 +206,6 @@ public abstract class BaseVideoPlayerActivity extends BaseVideoFocusActivity {
                 vvPlayer.setPlayAtBgOnSufaceDestoryed(false);
             }
         }
-    }
-
-    @Override
-    protected void onIDestroy() {
-        super.onIDestroy();
-        // 释放播放器
-        execRelease();
-        // 取消屏常亮
-        makeScreenOn(false);
     }
 
     /**
@@ -458,4 +276,9 @@ public abstract class BaseVideoPlayerActivity extends BaseVideoFocusActivity {
             setLightMode(VideoLightMode.OFF);
         }
     };
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
 }

@@ -315,14 +315,8 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
     @Override
     protected void onDestroy() {
         mHandler.removeCallbacksAndMessages(null);
-        super.onDestroy();
-        onIDestroy();
-    }
-
-    @Override
-    protected void onIDestroy() {
-        super.onIDestroy();
         PlayerAppManager.removeCxt(PlayerCxtFlag.VIDEO_LIST);
+        super.onDestroy();
     }
 
     @Override

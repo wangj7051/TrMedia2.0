@@ -20,8 +20,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import js.lib.android.media.engine.audio.db.AudioDBManager;
 import js.lib.android.media.bean.ProAudio;
+import js.lib.android.media.engine.audio.db.AudioDBManager;
 import js.lib.android.media.player.PlayMode;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.Logs;
@@ -43,9 +43,7 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseAudioPlayerActivity {
     private SeekBar seekBar;
     private ImageView ivPlayPre, ivPlay, ivPlayNext, ivCollect, ivPlayModeSet, ivList;
 
-    /**
-     * ==========Variables in this Activity==========
-     */
+    //==========Variables in this Activity==========
     private Context mContext;
     private SeekBarOnChange mSeekBarOnChange;
 
@@ -366,13 +364,13 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseAudioPlayerActivity {
 
         @Override
         public void onStartTrackingTouch(SeekBar seekBar) {
+            Log.i(TAG, "SeekBarOnChange - onStartTrackingTouch(SeekBar)");
             mmIsTracking = true;
-            Log.i(TAG, "SeekBarOnChange --onStartTrackingTouch(SeekBar)--");
         }
 
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
-            Log.i(TAG, "SeekBarOnChange --onStopTrackingTouch(SeekBar)--");
+            Log.i(TAG, "SeekBarOnChange - onStopTrackingTouch(SeekBar)");
             if (mmIsTracking) {
                 mmIsTracking = false;
                 seekTo(mmProgress);
@@ -381,7 +379,7 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseAudioPlayerActivity {
 
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            Logs.debugI(TAG, "SeekBarOnChange --onProgressChanged(SeekBar," + progress + "," + fromUser + ")--");
+            Logs.debugI(TAG, "SeekBarOnChange - onProgressChanged(SeekBar," + progress + "," + fromUser + ")");
             if (fromUser) {
                 mmProgress = progress;
             }

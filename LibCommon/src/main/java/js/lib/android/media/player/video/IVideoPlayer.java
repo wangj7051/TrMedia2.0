@@ -5,20 +5,20 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnInfoListener;
 import android.net.Uri;
-import android.os.Handler;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
 
 import java.io.IOException;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
-import js.lib.android.media.player.PlayState;
 import js.lib.android.media.engine.MediaUtils;
 import js.lib.android.media.player.PlayListener;
+import js.lib.android.media.player.PlayState;
 import js.lib.android.utils.Logs;
 import js.lib.utils.date.DateFormatUtil;
 
@@ -46,15 +46,12 @@ public class IVideoPlayer extends SurfaceView {
      * 上下文
      */
     private Context mContext;
-    /**
-     * 线程句柄
-     */
-    private Handler mHandler = new Handler();
 
     /**
      * 媒体播放器
      */
     private MediaPlayer mMediaPlayer;
+    private boolean mIsPlayAtBgOnSurfaceDestoryed = false;
 
     // 正在播放的媒体文件路径
     private String mMediaPath = "";
@@ -67,33 +64,19 @@ public class IVideoPlayer extends SurfaceView {
 
     private PlayListener mPlayerListener;
 
-    /**
-     * 超时保护时间
-     * <p>
-     * 现处理为"播放时间" 超过 "媒体总时长" 1S以上，还在刷新时间，则认为此时已经播放结束
-     * <p>
-     * 实际播放时频时，发现有的媒体文件在播放结束的时候不会响应onCompletion, 所以要对这种情况做一个保护性处理，以防止出现卡在一个视频结束位置，不向下执行的情况
-     */
-    private int mDetectionTime = -1;
-
     // 进度计时器
-    private Timer mProgressTimer;
-    private final int M_REFRESH_TIME = 1000;// 计时器刷新时间长度 1S
+    private ProgressTimer mProgressTimer;
     private OnProgressChangeListener mProgressListener;
-    private boolean mIsPlayAtBgOnSurfaceDestoryed = false;
 
     public interface OnProgressChangeListener {
         void onProgressChange(String mediaUrl, int progress, int duration);
     }
 
     // 播放器状态
-    private int mStatus = PlayerStatus.NONE;
+    private StatusMachine mStatus = StatusMachine.NONE;
 
-    private interface PlayerStatus {
-        int NONE = -1;
-        int ASYNC_PREPARING = 1;
-        int STARTED = 2;
-        int PAUSED = 3;
+    private enum StatusMachine {
+        NONE, ASYNC_PREPARING, STARTED, PAUSED
     }
 
     public IVideoPlayer(Context context) {
@@ -114,7 +97,13 @@ public class IVideoPlayer extends SurfaceView {
     private void init(Context context) {
         // Context
         mContext = context;
-        mHandler = new Handler();
+
+        //
+        if (mProgressTimer == null) {
+            mProgressTimer = new ProgressTimer();
+        } else {
+            mProgressTimer.cancel();
+        }
 
         // SurfaceView
         surfaceHolder = getHolder();
@@ -139,10 +128,8 @@ public class IVideoPlayer extends SurfaceView {
                 targetSurfaceHolder = null;
                 if (mIsPlayAtBgOnSurfaceDestoryed) {
                     play(false);
-                } else {
-                    if (mMediaPlayer != null) {
-                        mMediaPlayer.setDisplay(targetSurfaceHolder);
-                    }
+                } else if (mMediaPlayer != null) {
+                    mMediaPlayer.setDisplay(null);
                 }
             }
         });
@@ -176,7 +163,7 @@ public class IVideoPlayer extends SurfaceView {
                 public void onPrepared(MediaPlayer mp) {
                     Logs.i(TAG, "createMediaPlayer() -> onPrepared() -> [mStatus:" + mStatus + "]");
                     // 异步加载完成后，启动播放
-                    if (mStatus == PlayerStatus.ASYNC_PREPARING) {
+                    if (mStatus == StatusMachine.ASYNC_PREPARING) {
                         if (mPreparedListener != null) {
                             mPreparedListener.onPrepared(mp);
                         }
@@ -189,9 +176,9 @@ public class IVideoPlayer extends SurfaceView {
 
                 @Override
                 public void onCompletion(MediaPlayer mp) {
-                    cancelProgressTimer();
+                    mProgressTimer.cancel();
                     Logs.i(TAG, "createMediaPlayer() -> onCompletion() -> [mStatus:" + mStatus + "]");
-                    if (mStatus != PlayerStatus.ASYNC_PREPARING) {
+                    if (mStatus != StatusMachine.ASYNC_PREPARING) {
                         if (mCompletionListener != null) {
                             mCompletionListener.onCompletion(mp);
                         }
@@ -203,7 +190,13 @@ public class IVideoPlayer extends SurfaceView {
 
                 @Override
                 public boolean onError(MediaPlayer mp, int what, int extra) {
-                    cancelProgressTimer();
+                    // LOG
+                    Logs.i(TAG, "createMediaPlayer() -> onError(mp," + what + "," + extra + ")");
+                    MediaUtils.printError(mp, what, extra);
+
+                    //Cancel progress timer
+                    mProgressTimer.cancel();
+
                     // Process Error
                     boolean isProcessError = true;
                     switch (what) {
@@ -211,21 +204,17 @@ public class IVideoPlayer extends SurfaceView {
                         case -38:
                             isProcessError = false;
                             break;
-                        // Player Died Error
+
+                        //Media server died. In this case, the application must release the
+                        //MediaPlayer object and instantiate a new one.
                         case MediaPlayer.MEDIA_ERROR_SERVER_DIED:
-                            if (mMediaPlayer != null) {
-                                mMediaPlayer.reset();
-                            }
+                            release();
                             break;
                     }
-                    // 通知监听器处理ERROR
+                    // Error callback
                     if (isProcessError && mErrorListener != null) {
                         mErrorListener.onError(mp, what, extra);
                     }
-
-                    // LOG
-                    Logs.i(TAG, "createMediaPlayer() -> onError(mp," + what + "," + extra + ")");
-                    MediaUtils.printError(mp, what, extra);
                     return false;
                 }
             });
@@ -235,9 +224,8 @@ public class IVideoPlayer extends SurfaceView {
                 @Override
                 public void onSeekComplete(MediaPlayer mp) {
                     Logs.i(TAG, "createMediaPlayer() -> onSeekComplete() -> [mStatus:" + mStatus + "]");
-                    if (mStatus != PlayerStatus.ASYNC_PREPARING) {
+                    if (mStatus != StatusMachine.ASYNC_PREPARING) {
                         if (mSeekCompleteListener != null) {
-                            mDetectionTime = getCurrentPosition();
                             mSeekCompleteListener.onSeekComplete(mp);
                         }
                     }
@@ -271,7 +259,7 @@ public class IVideoPlayer extends SurfaceView {
     public void play() {
         Logs.i(TAG, "^^ play() ^^");
         if (TextUtils.isEmpty(mMediaPath) || TextUtils.isEmpty(mMediaPath.trim())) {
-        } else if (mStatus == PlayerStatus.PAUSED) {
+        } else if (mStatus == StatusMachine.PAUSED) {
             resume();
         } else {
             boolean isNewCreated = createMediaPlayer();
@@ -291,7 +279,7 @@ public class IVideoPlayer extends SurfaceView {
                     mMediaPlayer.setDataSource(mMediaPath);
                     mMediaPlayer.setDisplay(targetSurfaceHolder);
                     mMediaPlayer.prepareAsync();
-                    mStatus = PlayerStatus.ASYNC_PREPARING;
+                    mStatus = StatusMachine.ASYNC_PREPARING;
                 }
             }
         } catch (IllegalArgumentException e) {
@@ -319,8 +307,8 @@ public class IVideoPlayer extends SurfaceView {
         Logs.i(TAG, "^^ start() ^^");
         if (mMediaPlayer != null) {
             mMediaPlayer.start();
-            mStatus = PlayerStatus.STARTED;
-            startProgressTimer();
+            mStatus = StatusMachine.STARTED;
+            mProgressTimer.scheduleRun();
         }
     }
 
@@ -331,9 +319,9 @@ public class IVideoPlayer extends SurfaceView {
         Logs.i(TAG, "^^ pause() ^^");
         if (mMediaPlayer != null) {
             if (mMediaPlayer.isPlaying()) {
-                cancelProgressTimer();
+                mProgressTimer.cancel();
                 mMediaPlayer.pause();
-                mStatus = PlayerStatus.PAUSED;
+                mStatus = StatusMachine.PAUSED;
             }
         }
     }
@@ -343,7 +331,7 @@ public class IVideoPlayer extends SurfaceView {
      */
     private void resume() {
         Logs.i(TAG, "^^ resume() ^^");
-        if (mStatus == PlayerStatus.PAUSED) {
+        if (mStatus == StatusMachine.PAUSED) {
             start();
         }
     }
@@ -351,11 +339,11 @@ public class IVideoPlayer extends SurfaceView {
     private void release() {
         Logs.i(TAG, "^^ release() ^^");
         if (mMediaPlayer != null) {
-            cancelProgressTimer();
+            mProgressTimer.cancel();
             mMediaPlayer.stop();
             mMediaPlayer.release();
             mMediaPlayer = null;
-            mStatus = PlayerStatus.NONE;
+            mStatus = StatusMachine.NONE;
         }
     }
 
@@ -409,9 +397,6 @@ public class IVideoPlayer extends SurfaceView {
      */
     public void setOnPreparedListener(MediaPlayer.OnPreparedListener l) {
         this.mPreparedListener = l;
-        // if (mMediaPlayer != null) {
-        // mMediaPlayer.setOnPreparedListener(mPreparedListener);
-        // }
     }
 
     /**
@@ -421,9 +406,6 @@ public class IVideoPlayer extends SurfaceView {
      */
     public void setOnCompletionListener(MediaPlayer.OnCompletionListener l) {
         this.mCompletionListener = l;
-        // if (mMediaPlayer != null) {
-        // mMediaPlayer.setOnCompletionListener(mCompletionListener);
-        // }
     }
 
     /**
@@ -433,9 +415,6 @@ public class IVideoPlayer extends SurfaceView {
      */
     public void setOnErrorListener(MediaPlayer.OnErrorListener l) {
         this.mErrorListener = l;
-        // if (mMediaPlayer != null) {
-        // mMediaPlayer.setOnErrorListener(mErrorListener);
-        // }
     }
 
     /**
@@ -445,9 +424,6 @@ public class IVideoPlayer extends SurfaceView {
      */
     public void setOnSeekCompleteListener(MediaPlayer.OnSeekCompleteListener l) {
         this.mSeekCompleteListener = l;
-        // if (mMediaPlayer != null) {
-        // mMediaPlayer.setOnSeekCompleteListener(mSeekCompleteListener);
-        // }
     }
 
     /**
@@ -459,51 +435,46 @@ public class IVideoPlayer extends SurfaceView {
         this.mProgressListener = l;
     }
 
-    /**
-     * 启动进度计时器
-     */
-    private void startProgressTimer() {
-        cancelProgressTimer();
-        mDetectionTime = -1;
-        mProgressTimer = new Timer();
-        mProgressTimer.schedule(new TimerTask() {
+    private class ProgressTimer {
+        //TAG
+        final String MM_TAG = "ProgressTimer";
+        ScheduledThreadPoolExecutor mmExecutor;
 
-            @Override
-            public void run() {
-                if (mProgressListener != null) {
-                    mHandler.post(mmProgressRunnable);
+        ProgressTimer() {
+        }
+
+        void scheduleRun() {
+            // 隔DELAY_PERIOD后开始执行任务，并且在上一次任务开始后隔REFRESH_PERIOD再执行一次
+            cancel();
+            Log.i(MM_TAG, "scheduleRun()");
+            mmExecutor = new ScheduledThreadPoolExecutor(5);
+            mmExecutor.scheduleAtFixedRate(new ProgressRunnable(), 0, 1, TimeUnit.SECONDS);
+        }
+
+        void cancel() {
+            Log.i(MM_TAG, "cancel()");
+            if (mmExecutor != null) {
+                try {
+                    mmExecutor.shutdown();
+                    mmExecutor = null;
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
+        }
 
-            private Runnable mmProgressRunnable = new Runnable() {
-
-                @Override
-                public void run() {
-                    int progress = getCurrentPosition();
+        private class ProgressRunnable implements Runnable {
+            @Override
+            public void run() {
+//                Log.i(MM_TAG, "run()()");
+                try {
                     int duration = getDuration();
+                    int progress = getCurrentPosition();
                     mProgressListener.onProgressChange(mMediaPath, progress, duration);
-
-                    // 超时判断
-                    if (mDetectionTime == -1) {
-                        mDetectionTime = progress;
-                    } else {
-                        mDetectionTime += M_REFRESH_TIME;
-                    }
-                    Logs.debugI(TAG, "mDetectionTime - duration = " + (mDetectionTime - duration) + "ms");
-                    if (mDetectionTime - duration >= 1000) {
-                        Logs.i(TAG, "**:: PLAY COMPLETED ::**");
-                        mCompletionListener.onCompletion(mMediaPlayer);
-                        cancelProgressTimer();
-                    }
+                } catch (Exception e) {
+                    Log.i(TAG, "EXCEPTION :: " + e.getMessage());
                 }
-            };
-        }, 0, M_REFRESH_TIME);
-    }
-
-    private void cancelProgressTimer() {
-        if (mProgressTimer != null) {
-            mProgressTimer.cancel();
-            mProgressTimer = null;
+            }
         }
     }
 
