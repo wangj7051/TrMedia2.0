@@ -16,14 +16,14 @@ import android.widget.ListView;
 import com.js.sidebar.LetterSideBar;
 import com.tricheer.player.R;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.activity.SclLc2010VdcAudioListActivity;
+import com.tricheer.player.version.cj.slc_lc2010_vdc.adapter.BaseAudioAdapter;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.adapter.SclLc2010VdcAudioCollectsAdapter;
-import com.tricheer.player.version.cj.slc_lc2010_vdc.adapter.SclLc2010VdcAudioNamesAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import js.lib.android.media.engine.audio.db.AudioDBManager;
 import js.lib.android.media.bean.ProAudio;
+import js.lib.android.media.engine.audio.db.AudioDBManager;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.Logs;
 
@@ -190,14 +190,13 @@ public class SclLc2010VdcAudioCollectsFrag extends BaseAudioListFrag {
         };
     }
 
-    private class CollectBtnCallback implements SclLc2010VdcAudioNamesAdapter.CollectListener {
+    private class CollectBtnCallback implements BaseAudioAdapter.CollectListener {
         @Override
         public void onClickCollectBtn(ImageView ivCollect, int pos) {
             ProAudio item = mDataAdapter.getItem(pos);
             if (item == null) {
                 return;
             }
-
             switch (item.isCollected) {
                 case 0:
                     item.isCollected = 1;
@@ -218,5 +217,10 @@ public class SclLc2010VdcAudioCollectsFrag extends BaseAudioListFrag {
         super.onActivityResult(requestCode, resultCode, data);
         mAttachedActivity.onActivityResult(requestCode, resultCode, data);
         mDataAdapter.refreshDatas(mAttachedActivity.getLastMediaPath());
+    }
+
+    @Override
+    public int onBackPressed() {
+        return 0;
     }
 }

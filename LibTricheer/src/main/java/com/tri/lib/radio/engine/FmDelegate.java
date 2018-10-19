@@ -19,15 +19,15 @@ public interface FmDelegate {
     interface FmListener extends IAudioFocusListener {
         void onFreqChanged(int freq, BandCategoryEnum band);
 
-        void onSeachAvailableFreq(int currentSeachfreq, int count, int[] freqs, BandCategoryEnum band);
+        void onSearchAvailableFreq(int currentSeachfreq, int count, int[] freqs, BandCategoryEnum band);
 
         void onStChange(boolean show);
 
-        void onSeachFreqStart(BandCategoryEnum band);
+        void onSearchFreqStart(BandCategoryEnum band);
 
-        void onSeachFreqEnd(BandCategoryEnum band);
+        void onSearchFreqEnd(BandCategoryEnum band);
 
-        void onSeachFreqFail(BandCategoryEnum band, int reason);
+        void onSearchFreqFail(BandCategoryEnum band, int reason);
 
         void onScanFreqStart(BandCategoryEnum band);
 

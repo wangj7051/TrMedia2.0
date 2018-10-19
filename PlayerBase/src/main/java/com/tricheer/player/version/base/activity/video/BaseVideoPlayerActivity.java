@@ -72,13 +72,6 @@ public abstract class BaseVideoPlayerActivity extends BaseVideoFocusActivity {
     }
 
     @Override
-    public void onAudioFocusGain() {
-        super.onAudioFocusGain();
-        Logs.i(TAG, "^^ onAudioFocusGain() ^^");
-        resume();
-    }
-
-    @Override
     public void onPlayStateChanged(PlayState playState) {
         super.onPlayStateChanged(playState);
         Logs.i(TAG, " ");
@@ -265,7 +258,7 @@ public abstract class BaseVideoPlayerActivity extends BaseVideoFocusActivity {
     protected void resetLightMode() {
         if (VersionController.isCanTurnOffLight()) {
             mHandler.removeCallbacks(mLightModeOffRunnable);
-            mHandler.postDelayed(mLightModeOffRunnable, 5 * 1000);
+            mHandler.postDelayed(mLightModeOffRunnable, 3 * 1000);
         }
     }
 

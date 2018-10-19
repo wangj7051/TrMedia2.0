@@ -25,7 +25,6 @@ public class MusicPlayerActivity extends BaseUsbLogicActivity {
 
     private void init() {
         Logs.i(TAG, "^^ init() ^^");
-
         if (isTest() || PlayerFileUtils.isHasSupportStorage()) {
             openPlayer();
         } else {

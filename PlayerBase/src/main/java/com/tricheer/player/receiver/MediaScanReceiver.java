@@ -4,13 +4,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.usb.UsbManager;
-import android.media.MediaScannerConnection.OnScanCompletedListener;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.tri.lib.utils.TrAudioPreferUtils;
 import com.tri.lib.utils.TrVideoPreferUtils;
@@ -31,12 +28,10 @@ import java.util.Set;
 
 import js.lib.android.media.bean.ProAudio;
 import js.lib.android.media.bean.ProVideo;
-import js.lib.android.media.engine.audio.utils.AudioInfo;
-import js.lib.android.media.engine.audio.utils.AudioUtils;
 import js.lib.android.media.engine.audio.db.AudioDBManager;
-import js.lib.android.media.engine.video.utils.VideoInfo;
-import js.lib.android.media.engine.video.utils.VideoUtils;
+import js.lib.android.media.engine.audio.utils.AudioInfo;
 import js.lib.android.media.engine.video.db.VideoDBManager;
+import js.lib.android.media.engine.video.utils.VideoInfo;
 import js.lib.android.utils.CommonUtil;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.Logs;
@@ -98,17 +93,13 @@ public class MediaScanReceiver extends BroadcastReceiver {
     /**
      * Scan Active
      */
-    public interface ScanActives {
-        int START = 1;
-        int END = 2;
-        int TASK_CANCEL = 4;
-        int REFRESH = 5;
-
-        //Has new media that u need scan yourself.
-        int SYS_SCANED = 6;
-
-        //
-        int CLEAR = 7;
+    public enum MediaScanActives {
+        START,
+        END,
+        TASK_CANCEL,
+        REFRESH,
+        SYS_SCANNED,//Has new media that u need scan yourself.
+        CLEAR
     }
 
     /**
@@ -159,8 +150,8 @@ public class MediaScanReceiver extends BroadcastReceiver {
                 }
 
                 // Refresh
-                notifyAudiosRefresh(ScanActives.CLEAR);
-                notifyVideosRefresh(ScanActives.CLEAR);
+                notifyAudiosRefresh(MediaScanActives.CLEAR);
+                notifyVideosRefresh(MediaScanActives.CLEAR);
             }
 
             //
@@ -186,10 +177,10 @@ public class MediaScanReceiver extends BroadcastReceiver {
     private static class ListMediaTask extends AsyncTask<Void, Void, Void> {
         //
         private Map<String, ProAudio> mmMapDbAudios;
-        private Map<String, AudioInfo> mmMapSysDbAudios;
+        //        private Map<String, AudioInfo> mmMapSysDbAudios;
         //
         private Map<String, ProVideo> mmMapDbVideos;
-        private Map<String, VideoInfo> mmMapSysDbVideos;
+//        private Map<String, VideoInfo> mmMapSysDbVideos;
 
         long insertMusicCount = 0;
         int insertVideoCount = 0;
@@ -199,8 +190,8 @@ public class MediaScanReceiver extends BroadcastReceiver {
             Logs.i(TAG, "ListMediaTask-> onPreExecute()");
             super.onPreExecute();
             // Notify Start
-            notifyAudiosRefresh(ScanActives.START);
-            notifyVideosRefresh(ScanActives.START);
+            notifyAudiosRefresh(MediaScanActives.START);
+            notifyVideosRefresh(MediaScanActives.START);
             // Reset Audio
             mListMusics.clear();
             mListNewMusics.clear();
@@ -216,11 +207,11 @@ public class MediaScanReceiver extends BroadcastReceiver {
             Logs.i(TAG, "ListMediaTask-> doInBackground(params)");
             // Query DB Medias
             mmMapDbAudios = AudioDBManager.instance().getMapMusics();
-            mmMapSysDbAudios = AudioUtils.queryMapAudioInfos(null);
+//            mmMapSysDbAudios = AudioUtils.queryMapAudioInfos(null);
 
             // Query SDCard Medias
             mmMapDbVideos = VideoDBManager.instance().getMapVideos(true, false);
-            mmMapSysDbVideos = VideoUtils.queryMapVideoInfos(null);
+//            mmMapSysDbVideos = VideoUtils.queryMapVideoInfos(null);
 
             // List All Medias
             for (String supportPath : mSetPathsMounted) {
@@ -243,8 +234,8 @@ public class MediaScanReceiver extends BroadcastReceiver {
         protected void onCancelled() {
             super.onCancelled();
             Logs.i(TAG, "ListMediaTask-> onCancelled()");
-            notifyAudiosRefresh(ScanActives.TASK_CANCEL);
-            notifyVideosRefresh(ScanActives.TASK_CANCEL);
+            notifyAudiosRefresh(MediaScanActives.TASK_CANCEL);
+            notifyVideosRefresh(MediaScanActives.TASK_CANCEL);
         }
 
         @Override
@@ -253,11 +244,11 @@ public class MediaScanReceiver extends BroadcastReceiver {
             Logs.i(TAG, "ListMediaTask-> onPostExecute()");
             if (!isCancelled()) {
                 // Notify END
-                notifyAudiosRefresh(ScanActives.END);
-                notifyVideosRefresh(ScanActives.END);
+                notifyAudiosRefresh(MediaScanActives.END);
+                notifyVideosRefresh(MediaScanActives.END);
                 // Notify REFRESH
-                notifyAudiosRefresh(ScanActives.REFRESH);
-                notifyVideosRefresh(ScanActives.REFRESH);
+                notifyAudiosRefresh(MediaScanActives.REFRESH);
+                notifyVideosRefresh(MediaScanActives.REFRESH);
                 // Start System Scanner
                 startScanMusics();
                 startScanVideos();
@@ -312,10 +303,10 @@ public class MediaScanReceiver extends BroadcastReceiver {
                     renameFileWithSpecialName(cf);
                     if (mmMapDbAudios.containsKey(path)) {
                         mListMusics.add(mmMapDbAudios.get(path));
-                    } else if (mmMapSysDbAudios.containsKey(path)) {
-                        ProAudio program = new ProAudio(mmMapSysDbAudios.get(path));
-                        mListNewMusics.add(program);
-                        mListMusics.add(program);
+//                    } else if (mmMapSysDbAudios.containsKey(path)) {
+//                        ProAudio program = new ProAudio(mmMapSysDbAudios.get(path));
+//                        mListNewMusics.add(program);
+//                        mListMusics.add(program);
                     } else {
                         ProAudio program = new ProAudio(path, PlayerFileUtils.getFileName(cf, false));
                         mListNewMusics.add(program);
@@ -329,10 +320,10 @@ public class MediaScanReceiver extends BroadcastReceiver {
                     renameFileWithSpecialName(cf);
                     if (mmMapDbVideos.containsKey(path)) {
                         mlistVideos.add(mmMapDbVideos.get(path));
-                    } else if (mmMapSysDbVideos.containsKey(path)) {
-                        ProVideo program = new ProVideo(mmMapSysDbVideos.get(path));
-                        mListNewVideos.add(program);
-                        mlistVideos.add(program);
+//                    } else if (mmMapSysDbVideos.containsKey(path)) {
+//                        ProVideo program = new ProVideo(mmMapSysDbVideos.get(path));
+//                        mListNewVideos.add(program);
+//                        mlistVideos.add(program);
                     } else {
                         ProVideo program = new ProVideo(path, cf.getName());
                         mListNewVideos.add(program);
@@ -367,107 +358,107 @@ public class MediaScanReceiver extends BroadcastReceiver {
      * Scan Musics to System DataBase
      */
     private static void startScanMusics() {
-        Log.i(TAG, "startScanMusics()");
-        Log.i(TAG, "mListToSysScanAudios.size()" + mListToSysScanAudios.size());
-        if (mListToSysScanAudios.size() <= 0) {
-            return;
-        }
-
-        // Scan Audio
-        final Object[] objArrAudioPaths = mListToSysScanAudios.toArray();
-        if (objArrAudioPaths != null && objArrAudioPaths.length > 0) {
-            Logs.i(TAG, "startScanMusics() ----|> START <|----");
-            final String[] toScanArr = new String[objArrAudioPaths.length];
-            for (int idx = 0; idx < objArrAudioPaths.length; idx++) {
-                toScanArr[idx] = (String) objArrAudioPaths[idx];
-            }
-
-            AudioUtils.scanAudios(mContext, toScanArr, new OnScanCompletedListener() {
-
-                @Override
-                public void onScanCompleted(String path, Uri uri) {
-                    mHandler.removeCallbacks(mScannedCompletedRunnable);
-                    if (uri != null) {
-                        mHandler.postDelayed(mScannedCompletedRunnable, 1000);
-                    }
-                }
-
-                private Runnable mScannedCompletedRunnable = new Runnable() {
-
-                    @Override
-                    public void run() {
-                        Toast.makeText(mContext, "onScanCompleted :: " + toScanArr.toString(), Toast.LENGTH_LONG).show();
-                        ArrayList<ProAudio> listToSaveMusics = new ArrayList<>();
-                        List<AudioInfo> listAudioInfos = AudioUtils.queryListAudioInfos(mListToSysScanAudios);
-                        for (AudioInfo audio : listAudioInfos) {
-                            if (AudioUtils.isExist(audio.path)) {
-                                listToSaveMusics.add(new ProAudio(audio));
-                            }
-                        }
-                        if (!EmptyUtil.isEmpty(listToSaveMusics)) {
-                            AudioDBManager.instance().updateListMusics(listToSaveMusics);
-                        }
-                        notifyAudiosRefresh(ScanActives.SYS_SCANED);
-                        Logs.i(TAG, "startScanMusics() ----|> END <|----");
-                    }
-                };
-            });
-        }
+//        Log.i(TAG, "startScanMusics()");
+//        Log.i(TAG, "mListToSysScanAudios.size()" + mListToSysScanAudios.size());
+//        if (mListToSysScanAudios.size() <= 0) {
+//            return;
+//        }
+//
+//        // Scan Audio
+//        final Object[] objArrAudioPaths = mListToSysScanAudios.toArray();
+//        if (objArrAudioPaths != null && objArrAudioPaths.length > 0) {
+//            Logs.i(TAG, "startScanMusics() ----|> START <|----");
+//            final String[] toScanArr = new String[objArrAudioPaths.length];
+//            for (int idx = 0; idx < objArrAudioPaths.length; idx++) {
+//                toScanArr[idx] = (String) objArrAudioPaths[idx];
+//            }
+//
+//            AudioUtils.scanAudios(mContext, toScanArr, new OnScanCompletedListener() {
+//
+//                @Override
+//                public void onScanCompleted(String path, Uri uri) {
+//                    mHandler.removeCallbacks(mScannedCompletedRunnable);
+//                    if (uri != null) {
+//                        mHandler.postDelayed(mScannedCompletedRunnable, 1000);
+//                    }
+//                }
+//
+//                private Runnable mScannedCompletedRunnable = new Runnable() {
+//
+//                    @Override
+//                    public void run() {
+////                        Toast.makeText(mContext, "onScanCompleted :: " + toScanArr.toString(), Toast.LENGTH_LONG).show();
+//                        ArrayList<ProAudio> listToSaveMusics = new ArrayList<>();
+//                        List<AudioInfo> listAudioInfos = AudioUtils.queryListAudioInfos(mListToSysScanAudios);
+//                        for (AudioInfo audio : listAudioInfos) {
+//                            if (AudioUtils.isExist(audio.path)) {
+//                                listToSaveMusics.add(new ProAudio(audio));
+//                            }
+//                        }
+//                        if (!EmptyUtil.isEmpty(listToSaveMusics)) {
+//                            AudioDBManager.instance().updateListMusics(listToSaveMusics);
+//                        }
+//                        notifyAudiosRefresh(ScanActives.SYS_SCANED);
+//                        Logs.i(TAG, "startScanMusics() ----|> END <|----");
+//                    }
+//                };
+//            });
+//        }
     }
 
     /**
      * Scan Videos to System DataBase
      */
     private static void startScanVideos() {
-        if (mListToSysScanVideos.size() <= 0) {
-            return;
-        }
-
-        // Scan Audio
-        final Object[] objArrVideoPaths = mListToSysScanVideos.toArray();
-        if (objArrVideoPaths != null && objArrVideoPaths.length > 0) {
-            Logs.i(TAG, "startScanVideos() ----|> START <|----");
-            String[] toScanArr = new String[objArrVideoPaths.length];
-            for (int idx = 0; idx < objArrVideoPaths.length; idx++) {
-                toScanArr[idx] = (String) objArrVideoPaths[idx];
-            }
-
-            VideoUtils.scanVideos(mContext, toScanArr, new OnScanCompletedListener() {
-
-                @Override
-                public void onScanCompleted(String path, Uri uri) {
-                    mHandler.removeCallbacks(mScannedCompletedRunnable);
-                    if (uri != null) {
-                        mHandler.postDelayed(mScannedCompletedRunnable, 1000);
-                    }
-                }
-
-                private Runnable mScannedCompletedRunnable = new Runnable() {
-
-                    @Override
-                    public void run() {
-                        ArrayList<ProVideo> listToSaveVideos = new ArrayList<ProVideo>();
-                        List<VideoInfo> listVideoInfos = VideoUtils.queryListVideoInfos(mListToSysScanVideos);
-                        for (VideoInfo video : listVideoInfos) {
-                            if (AudioUtils.isExist(video.path)) {
-                                listToSaveVideos.add(new ProVideo(video));
-                            }
-                        }
-                        if (!EmptyUtil.isEmpty(listToSaveVideos)) {
-                            VideoDBManager.instance().updateListVideos(listToSaveVideos);
-                        }
-                        notifyVideosRefresh(ScanActives.SYS_SCANED);
-                        Logs.i(TAG, "startScanVideos() ----|> End <|----");
-                    }
-                };
-            });
-        }
+//        if (mListToSysScanVideos.size() <= 0) {
+//            return;
+//        }
+//
+//        // Scan Audio
+//        final Object[] objArrVideoPaths = mListToSysScanVideos.toArray();
+//        if (objArrVideoPaths != null && objArrVideoPaths.length > 0) {
+//            Logs.i(TAG, "startScanVideos() ----|> START <|----");
+//            String[] toScanArr = new String[objArrVideoPaths.length];
+//            for (int idx = 0; idx < objArrVideoPaths.length; idx++) {
+//                toScanArr[idx] = (String) objArrVideoPaths[idx];
+//            }
+//
+//            VideoUtils.scanVideos(mContext, toScanArr, new OnScanCompletedListener() {
+//
+//                @Override
+//                public void onScanCompleted(String path, Uri uri) {
+//                    mHandler.removeCallbacks(mScannedCompletedRunnable);
+//                    if (uri != null) {
+//                        mHandler.postDelayed(mScannedCompletedRunnable, 1000);
+//                    }
+//                }
+//
+//                private Runnable mScannedCompletedRunnable = new Runnable() {
+//
+//                    @Override
+//                    public void run() {
+//                        ArrayList<ProVideo> listToSaveVideos = new ArrayList<ProVideo>();
+//                        List<VideoInfo> listVideoInfos = VideoUtils.queryListVideoInfos(mListToSysScanVideos);
+//                        for (VideoInfo video : listVideoInfos) {
+//                            if (AudioUtils.isExist(video.path)) {
+//                                listToSaveVideos.add(new ProVideo(video));
+//                            }
+//                        }
+//                        if (!EmptyUtil.isEmpty(listToSaveVideos)) {
+//                            VideoDBManager.instance().updateListVideos(listToSaveVideos);
+//                        }
+//                        notifyVideosRefresh(ScanActives.SYS_SCANED);
+//                        Logs.i(TAG, "startScanVideos() ----|> End <|----");
+//                    }
+//                };
+//            });
+//        }
     }
 
     /**
      * Broadcast Refresh Musics
      */
-    private static void notifyAudiosRefresh(int flag) {
+    private static void notifyAudiosRefresh(MediaScanActives flag) {
         Logs.i(TAG, "notifyAudiosRefresh(" + flag + ") -> [AuidoSize:" + mListMusics.size());
         // Notify Player
         if (PlayerType.isMusic()) {
@@ -488,7 +479,7 @@ public class MediaScanReceiver extends BroadcastReceiver {
     /**
      * Broadcast Refresh Videos
      */
-    private static void notifyVideosRefresh(int flag) {
+    private static void notifyVideosRefresh(MediaScanActives flag) {
         Logs.i(TAG, "notifyVideosRefresh(" + flag + ") -> [VideoSize:" + mlistVideos.size());
         // Notify Player
         if (PlayerType.isVideo()) {

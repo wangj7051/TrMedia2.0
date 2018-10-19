@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.tri.lib.receiver.ActionEnum;
+import com.tri.lib.utils.TrVideoPreferUtils;
 import com.tricheer.player.App;
 import com.tricheer.player.MusicPlayerActivity;
 import com.tricheer.player.VideoPlayerActivity;
@@ -72,7 +73,7 @@ public class PlayerReceiver extends BroadcastReceiver {
          * @param flag        : Scan Flag
          * @param listPrgrams : Medias list
          */
-        void onNotifyScanAudios(int flag, List<ProAudio> listPrgrams, Set<String> allSdMountedPaths);
+        void onNotifyScanAudios(MediaScanReceiver.MediaScanActives flag, List<ProAudio> listPrgrams, Set<String> allSdMountedPaths);
 
         /**
          * Notify Scan Medias
@@ -80,7 +81,7 @@ public class PlayerReceiver extends BroadcastReceiver {
          * @param flag        : Scan Flag
          * @param listPrgrams : Medias list
          */
-        void onNotifyScanVideos(int flag, List<ProVideo> listPrgrams, Set<String> allSdMountedPaths);
+        void onNotifyScanVideos(MediaScanReceiver.MediaScanActives flag, List<ProVideo> listPrgrams, Set<String> allSdMountedPaths);
     }
 
     public static void init(Context context) {
@@ -102,6 +103,11 @@ public class PlayerReceiver extends BroadcastReceiver {
                     break;
                 case PLAY_VIDEO_BY_FILEMANAGER:
                     doPlayVideoFromFileManager(intent);
+                    break;
+
+                // ### System broadcast ###
+                case BOOT_COMPLETED:
+                    TrVideoPreferUtils.getVideoWarningFlag(true, 1);
                     break;
 
                 // ### Open Logs ###

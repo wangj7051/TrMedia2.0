@@ -48,7 +48,7 @@ public class SclLc2010VdcVideoFoldersAdapter<T> extends BaseArrayAdapter<T> impl
 
     public void refreshDatas(int pos) {
         T item = getItem(pos);
-        if (item != null && item instanceof ProVideo) {
+        if (item instanceof ProVideo) {
             ProVideo media = (ProVideo) item;
             refreshDatas(media.mediaUrl);
         }

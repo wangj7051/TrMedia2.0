@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
@@ -23,8 +24,9 @@ import com.tri.lib.radio.engine.BandCategoryEnum;
 import com.tri.lib.receiver.AccReceiver;
 import com.tri.lib.receiver.ReverseReceiver;
 import com.tri.lib.utils.SettingsSysUtil;
-import com.tricheer.radio.activity.BaseAudioFocusActivity;
+import com.tricheer.radio.activity.BaseKeyEventActivity;
 import com.tricheer.radio.frags.TabFreqCollectFragment;
+import com.tricheer.radio.service.RadioPlayerService;
 import com.tricheer.radio.utils.FreqFormatUtil;
 import com.tricheer.radio.utils.TrRadioPreferUtils;
 import com.tricheer.radio.view.ToastView;
@@ -36,6 +38,8 @@ import java.util.Set;
 
 import js.lib.android.adapter.VPFragStateAdapter;
 import js.lib.android.fragment.BaseAppV4Fragment;
+import js.lib.android.media.engine.mediabtn.MediaBtnController;
+import js.lib.android.media.engine.mediabtn.MediaBtnReceiver;
 import js.lib.android.view.SeekBarImpl;
 import js.lib.android.view.ViewPagerImpl;
 
@@ -44,8 +48,9 @@ import js.lib.android.view.ViewPagerImpl;
  *
  * @author Jun.Wang
  */
-public class MainActivity extends BaseAudioFocusActivity
-        implements AccReceiver.AccDelegate, ReverseReceiver.ReverseDelegate {
+public class MainActivity extends BaseKeyEventActivity
+        implements AccReceiver.AccDelegate, ReverseReceiver.ReverseDelegate,
+        MediaBtnReceiver.MediaBtnListener {
     // TAG
     private static final String TAG = "RadioMain";
 
@@ -81,6 +86,11 @@ public class MainActivity extends BaseAudioFocusActivity
     private ScanningController mScanningController;
     private FmStateController mFmStateController;
 
+    private RadioPlayerService mRadioService;
+
+    // Media Button Controller
+    private MediaBtnController mMediaBtnController;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,10 +105,14 @@ public class MainActivity extends BaseAudioFocusActivity
 
         //
         AccReceiver.register(this);
+        MediaBtnReceiver.setListener(this);
         init();
     }
 
     private void init() {
+        //---- Variables ----
+        mMediaBtnController = new MediaBtnController(this);
+
         //---- Widgets ----
         //Top
         vPointsContainer = (RelativeLayout) findViewById(R.id.v_points_container);
@@ -145,6 +159,10 @@ public class MainActivity extends BaseAudioFocusActivity
     @Override
     protected void onResume() {
         super.onResume();
+        mMediaBtnController.register();
+        if (mRadioService != null && !isRadioOpened()) {
+            execOpenRadio();
+        }
     }
 
     @Override
@@ -200,7 +218,8 @@ public class MainActivity extends BaseAudioFocusActivity
     @Override
     protected void onServiceStatusChanged(Service service, boolean isConnected) {
         super.onServiceStatusChanged(service, isConnected);
-        if (isConnected) {
+        if (service != null) {
+            mRadioService = (RadioPlayerService) service;
             refreshCollectViews();
             register(this);
             openRadioOnInit();
@@ -305,11 +324,15 @@ public class MainActivity extends BaseAudioFocusActivity
         switch (band) {
             case FM:
                 txtBand = getString(R.string.band_fm);
-                txtFreq = txtBand + FreqFormatUtil.getFmFreqStr(freq);
+//                txtFreq = txtBand + FreqFormatUtil.getFmFreqStr(freq);
+                //TODO ???
+                txtFreq = txtBand + FreqFormatUtil.getFmFreqStr(freq >= 10790 ? 10800 : freq);
                 break;
             case AM:
                 txtBand = getString(R.string.band_am);
-                txtFreq = txtBand + FreqFormatUtil.getAmFreqStr(freq);
+//                txtFreq = txtBand + FreqFormatUtil.getAmFreqStr(freq);
+                //TODO ???
+                txtFreq = txtBand + FreqFormatUtil.getAmFreqStr(freq >= 1611 ? 1620 : freq);
                 break;
         }
         tvBand.setText(txtBand);
@@ -334,7 +357,11 @@ public class MainActivity extends BaseAudioFocusActivity
                     finish();
                 }
             } else if (v == tvUpdate) {
-                mSearchingController.start();
+                if (mSearchingController.isSearching()) {
+                    mSearchingController.resumeOrigin();
+                } else {
+                    mSearchingController.start();
+                }
             }
         }
     };
@@ -398,22 +425,22 @@ public class MainActivity extends BaseAudioFocusActivity
     }
 
     @Override
-    public void onSeachFreqStart(BandCategoryEnum band) {
-        super.onSeachFreqStart(band);
-        Log.i(TAG, "onSeachFreqStart(" + band + ")");
+    public void onSearchFreqStart(BandCategoryEnum band) {
+        super.onSearchFreqStart(band);
+        Log.i(TAG, "onSearchFreqStart(" + band + ")");
     }
 
     @Override
-    public void onSeachFreqEnd(BandCategoryEnum band) {
-        super.onSeachFreqEnd(band);
+    public void onSearchFreqEnd(BandCategoryEnum band) {
+        super.onSearchFreqEnd(band);
         Log.i(TAG, "onSeachFreqEnd(" + band + ")");
         TrRadioPreferUtils.saveSearchedFreqs(band, getAllAvailableFreqs());
         mSearchingController.onLastSearched(band);
     }
 
     @Override
-    public void onSeachFreqFail(BandCategoryEnum band, int reason) {
-        super.onSeachFreqFail(band, reason);
+    public void onSearchFreqFail(BandCategoryEnum band, int reason) {
+        super.onSearchFreqFail(band, reason);
         Log.i(TAG, "onSeachFreqFail(" + band + "," + reason + ")");
         mSearchingController.onSearchFailed();
     }
@@ -469,10 +496,40 @@ public class MainActivity extends BaseAudioFocusActivity
         ivNext.setEnabled(!isScanning);
         ivNext.setImageResource(isScanning ? R.drawable.op_next_disable : R.drawable.btn_op_next_selector);
 
-        tvUpdate.setEnabled(!isScanning);
+//        tvUpdate.setEnabled(!isScanning);
         tvUpdate.setText(isScanning ? R.string.cancel_update : R.string.radio_update);
         tvUpdate.setTextColor(isScanning ? getResources().getColor(R.color.red) : getResources().getColor(R.color.white));
         tvUpdate.setBackgroundResource(isScanning ? R.drawable.bg_border_red : R.drawable.bg_border_white);
+    }
+
+    @Override
+    public void onAudioFocusDuck() {
+        Log.i(TAG, "onAudioFocusGain()");
+    }
+
+    @Override
+    public void onAudioFocusTransient() {
+        Log.i(TAG, "onAudioFocusGain()");
+    }
+
+    @Override
+    public void onAudioFocusGain() {
+        Log.i(TAG, "onAudioFocusGain()");
+        // closeFm() executed in service
+        // Call back in activity
+        if (mSearchingController.isSearching()) {
+            Log.i(TAG, "onAudioFocusGain() -Resume-");
+            mSearchingController.resumeOrigin();
+        } else if (!isRadioOpened()) {
+            Log.i(TAG, "onAudioFocusGain() -Open-");
+            execOpenRadio();
+        }
+    }
+
+    @Override
+    public void onAudioFocusLoss() {
+        Log.i(TAG, "onAudioFocusLoss()");
+        mMediaBtnController.unregister();
     }
 
     @Override
@@ -505,6 +562,25 @@ public class MainActivity extends BaseAudioFocusActivity
     }
 
     @Override
+    public void onGotMediaKeyCode(KeyEvent event) {
+        if (event.getAction() == KeyEvent.ACTION_UP) {
+            KeyEnum key = KeyEnum.getKey(event.getKeyCode());
+            switch (key) {
+                case KEYCODE_MEDIA_PREVIOUS:
+                    if (!isForeground()) {
+                        scanAndPlayPrev();
+                    }
+                    break;
+                case KEYCODE_MEDIA_NEXT:
+                    if (!isForeground()) {
+                        scanAndPlayNext();
+                    }
+                    break;
+            }
+        }
+    }
+
+    @Override
     protected void onGetKeyCode(int keyCode) {
         //super.onGetKeyCode(keyCode);
         KeyEnum ke = KeyEnum.getKey(keyCode);
@@ -525,11 +601,15 @@ public class MainActivity extends BaseAudioFocusActivity
                 }
                 break;
 
-            case KEYCODE_PREV:
-                scanAndPlayPrev();
+            case KEYCODE_MEDIA_PREVIOUS:
+                if (isForeground()) {
+                    scanAndPlayPrev();
+                }
                 break;
-            case KEYCODE_NEXT:
-                scanAndPlayNext();
+            case KEYCODE_MEDIA_NEXT:
+                if (isForeground()) {
+                    scanAndPlayNext();
+                }
                 break;
 
             case KEYCODE_DPAD_LEFT:
@@ -557,6 +637,8 @@ public class MainActivity extends BaseAudioFocusActivity
     @Override
     protected void onDestroy() {
         //
+        MediaBtnReceiver.setListener(null);
+        mMediaBtnController.unregister();
         if (mAnimTowerRoate != null) {
             if (mAnimTowerRoate.isRunning()) {
                 mAnimTowerRoate.cancel();
@@ -689,7 +771,15 @@ public class MainActivity extends BaseAudioFocusActivity
 
         void resumeOrigin() {
             refreshPageOnScanning(false);
-            openRadioAfterSearchedAll(mmOriginBand, mmOriginFreq);
+            //TODO 需求: 定位到搜索到的第一个频率
+            int firstCollectedFreq = TrRadioPreferUtils.getCollect(false, mmOriginBand, 0, 0, 0);
+            if (firstCollectedFreq == -1) {
+                Log.i(TAG, "mmOriginFreq : " + mmOriginFreq);
+                openRadioAfterSearchedAll(mmOriginBand, mmOriginFreq);
+            } else {
+                Log.i(TAG, "firstCollectedFreq : " + firstCollectedFreq);
+                openRadioAfterSearchedAll(mmOriginBand, firstCollectedFreq);
+            }
 
             //Reset origin
             mmOriginBand = BandCategoryEnum.NONE;

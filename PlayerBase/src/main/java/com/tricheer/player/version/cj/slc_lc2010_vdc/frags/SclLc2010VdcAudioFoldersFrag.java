@@ -18,8 +18,8 @@ import android.widget.ListView;
 import com.js.sidebar.LetterSideBar;
 import com.tricheer.player.R;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.activity.SclLc2010VdcAudioListActivity;
+import com.tricheer.player.version.cj.slc_lc2010_vdc.adapter.BaseAudioAdapter;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.adapter.SclLc2010VdcAudioFoldersAdapter;
-import com.tricheer.player.version.cj.slc_lc2010_vdc.adapter.SclLc2010VdcAudioNamesAdapter;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.bean.AudioFilter;
 
 import java.io.File;
@@ -28,8 +28,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import js.lib.android.media.engine.audio.db.AudioDBManager;
 import js.lib.android.media.bean.ProAudio;
+import js.lib.android.media.engine.audio.db.AudioDBManager;
+import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.Logs;
 
 /**
@@ -49,7 +50,6 @@ public class SclLc2010VdcAudioFoldersFrag extends BaseAudioListFrag {
 
     //==========Variables in this Fragment==========
     private SclLc2010VdcAudioListActivity mAttachedActivity;
-    private static Handler mHandler = new Handler();
 
     /**
      * Is ListView Item is Clicking
@@ -60,6 +60,7 @@ public class SclLc2010VdcAudioFoldersFrag extends BaseAudioListFrag {
      * Media list
      */
     private List<?> mListDatas;
+    private List<AudioFilter> mListFilters;
 
     /**
      * Data adapter
@@ -144,11 +145,18 @@ public class SclLc2010VdcAudioFoldersFrag extends BaseAudioListFrag {
             }
 
             //Refresh UI
-            mListDatas = new ArrayList<>(mapDatas.values());
-            AudioFilter.sortByFolder((List<AudioFilter>) mListDatas);
-            mDataAdapter.refreshDatas(mListDatas, targetMediaUrl);
+            refreshFilters((mListFilters = new ArrayList<>(mapDatas.values())));
         }
     }
+
+    private void refreshFilters(List<AudioFilter> listFilters) {
+        if (!EmptyUtil.isEmpty(listFilters)) {
+            mListDatas = listFilters;
+            AudioFilter.sortByFolder((List<AudioFilter>) mListDatas);
+        }
+        mDataAdapter.refreshDatas(mListDatas, mAttachedActivity.getLastMediaPath());
+    }
+
 
     @Override
     public void refreshDatas(String targetMediaUrl) {
@@ -214,27 +222,36 @@ public class SclLc2010VdcAudioFoldersFrag extends BaseAudioListFrag {
      */
     private class LvItemClick implements AdapterView.OnItemClickListener {
 
+        private Handler mmHandler = new Handler();
+
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            if (!mIsLvItemClicking) {
-                mIsLvItemClicking = true;
-                mHandler.removeCallbacksAndMessages(null);
-                mHandler.postDelayed(mmDelayResetClickingFlagRunnable, 1000);
+            Logs.i(TAG, "LvItemClick -> onItemClick(AdapterView," + position + ",id)");
+            final Object objItem = parent.getItemAtPosition(position);
+            if (objItem == null) {
+                return;
+            }
 
-                // Play Select MediaUrl
-                Logs.i(TAG, "LvItemClick -> onItemClick(AdapterView," + position + ",id)");
-                final Object objItem = parent.getItemAtPosition(position);
-                if (objItem == null) {
+            // Play Select MediaUrl
+            if (objItem instanceof AudioFilter) {
+                AudioFilter item = (AudioFilter) objItem;
+                mListDatas = item.listMedias;
+                mDataAdapter.refreshDatas(mListDatas);
+
+                //Click Media
+            } else if (objItem instanceof ProAudio) {
+                if (mIsLvItemClicking) {
+                    mIsLvItemClicking = false;
+                    Logs.i(TAG, "##### ---Forbidden click because of frequency !!!--- #####");
                     return;
+                } else {
+                    mIsLvItemClicking = true;
+                    mmHandler.removeCallbacksAndMessages(null);
+                    mmHandler.postDelayed(mmDelayResetClickingFlagRunnable, 1000);
                 }
-                if (objItem instanceof AudioFilter) {
-                    AudioFilter item = (AudioFilter) objItem;
-                    mListDatas = item.listMedias;
-                    mDataAdapter.refreshDatas(mListDatas);
-                } else if (objItem instanceof ProAudio) {
-                    ProAudio program = (ProAudio) objItem;
-                    mAttachedActivity.openPlayerActivity(program.mediaUrl, mListDatas);
-                }
+
+                ProAudio program = (ProAudio) objItem;
+                mAttachedActivity.openPlayerActivity(program.mediaUrl, mListDatas);
             }
         }
 
@@ -247,11 +264,11 @@ public class SclLc2010VdcAudioFoldersFrag extends BaseAudioListFrag {
         };
     }
 
-    private class CollectBtnCallback implements SclLc2010VdcAudioNamesAdapter.CollectListener {
+    private class CollectBtnCallback implements BaseAudioAdapter.CollectListener {
         @Override
         public void onClickCollectBtn(ImageView ivCollect, int pos) {
             Object item = mDataAdapter.getItem(pos);
-            if (item != null && item instanceof ProAudio) {
+            if (item instanceof ProAudio) {
                 ProAudio media = (ProAudio) item;
                 switch (media.isCollected) {
                     case 0:
@@ -274,5 +291,20 @@ public class SclLc2010VdcAudioFoldersFrag extends BaseAudioListFrag {
         super.onActivityResult(requestCode, resultCode, data);
         mAttachedActivity.onActivityResult(requestCode, resultCode, data);
         mDataAdapter.refreshDatas(mAttachedActivity.getLastMediaPath());
+    }
+
+    @Override
+    public int onBackPressed() {
+        if (EmptyUtil.isEmpty(mListDatas)) {
+            return 0;
+        }
+
+        Object objItem = mListDatas.get(0);
+        if (objItem instanceof ProAudio) {
+            refreshFilters(mListFilters);
+            return 1;
+        } else {
+            return 0;
+        }
     }
 }

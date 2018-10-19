@@ -114,29 +114,34 @@ public class SclLc2010VdcVideoNamesFrag extends BaseVideoListFrag {
         if (isAdded()) {
             mListMedias = listMedias;
             mDataAdapter.refreshDatas(mListMedias, targetMediaUrl);
-            if (EmptyUtil.isEmpty(listMedias)) {
-                mDataAdapter.refreshDatas();
-            } else {
-                if (TextUtils.isEmpty(targetMediaUrl)) {
-                    ProVideo first = listMedias.get(0);
-                    mDataAdapter.refreshDatas((mListMedias = listMedias), first.mediaUrl);
-                    delayPlay();
-                } else {
-                    mDataAdapter.refreshDatas((mListMedias = listMedias), targetMediaUrl);
-                    delayPlay();
-                }
-            }
+            autoPlayHistory();
         }
     }
 
-    private void delayPlay() {
+    public void autoPlayHistory() {
         mHandler.removeCallbacksAndMessages(null);
-        mHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                play();
+        if (isAdded()) {
+            if (EmptyUtil.isEmpty(mListMedias) || !mAttachedActivity.isAutoPlay()) {
+                return;
             }
-        }, 500);
+
+            //Refresh ListView
+            String targetMediaPath = mAttachedActivity.getLastTargetMediaPath();
+            if (TextUtils.isEmpty(targetMediaPath)) {
+                ProVideo first = mListMedias.get(0);
+                mDataAdapter.refreshDatas(mListMedias, first.mediaUrl);
+            } else {
+                mDataAdapter.refreshDatas(mListMedias, targetMediaPath);
+            }
+
+            //Delay Play
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    play();
+                }
+            }, 500);
+        }
     }
 
     @Override
@@ -187,6 +192,9 @@ public class SclLc2010VdcVideoNamesFrag extends BaseVideoListFrag {
 
     protected void openVideoPlayerActivity(String mediaUrl, List<ProVideo> listPrograms) {
         try {
+            if (EmptyUtil.isEmpty(listPrograms)) {
+                return;
+            }
             Intent playerIntent = new Intent(mAttachedActivity, SclLc2010VdcVideoPlayerActivity.class);
             playerIntent.putExtra("SELECT_MEDIA_URL", mediaUrl);
             playerIntent.putExtra("MEDIA_LIST", (Serializable) listPrograms);
@@ -215,6 +223,11 @@ public class SclLc2010VdcVideoNamesFrag extends BaseVideoListFrag {
     @Override
     public void next() {
         mDataAdapter.refreshDatas(mDataAdapter.getNextPos());
+    }
+
+    @Override
+    public int onBackPressed() {
+        return 0;
     }
 
     @Override

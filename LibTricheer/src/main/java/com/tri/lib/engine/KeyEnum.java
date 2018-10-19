@@ -10,7 +10,7 @@ import android.util.SparseArray;
 public enum KeyEnum {
     KEYCODE_VOLUME_UP(24), KEYCODE_VOLUME_DOWN(25), KEYCODE_VOLUME_MUTE(164),
     KEYCODE_RADIO(284),
-    KEYCODE_PREV(88), KEYCODE_NEXT(87),
+    KEYCODE_MEDIA_PREVIOUS(88), KEYCODE_MEDIA_NEXT(87),
     KEYCODE_DPAD_LEFT(21), KEYCODE_DPAD_RIGHT(22),
     KEYCODE_ENTER(66), KEYCODE_HOME(3), KEYCODE_BACK(4);
 
@@ -34,8 +34,8 @@ public enum KeyEnum {
             mSaKeys.put(KEYCODE_VOLUME_MUTE.getKeyVal(), KEYCODE_VOLUME_MUTE);
 
             mSaKeys.put(KEYCODE_RADIO.getKeyVal(), KEYCODE_RADIO);
-            mSaKeys.put(KEYCODE_PREV.getKeyVal(), KEYCODE_PREV);
-            mSaKeys.put(KEYCODE_NEXT.getKeyVal(), KEYCODE_NEXT);
+            mSaKeys.put(KEYCODE_MEDIA_PREVIOUS.getKeyVal(), KEYCODE_MEDIA_PREVIOUS);
+            mSaKeys.put(KEYCODE_MEDIA_NEXT.getKeyVal(), KEYCODE_MEDIA_NEXT);
             mSaKeys.put(KEYCODE_DPAD_LEFT.getKeyVal(), KEYCODE_DPAD_LEFT);
             mSaKeys.put(KEYCODE_DPAD_RIGHT.getKeyVal(), KEYCODE_DPAD_RIGHT);
 

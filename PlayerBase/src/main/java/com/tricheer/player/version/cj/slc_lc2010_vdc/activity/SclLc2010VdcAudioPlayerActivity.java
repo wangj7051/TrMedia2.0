@@ -3,12 +3,15 @@ package com.tricheer.player.version.cj.slc_lc2010_vdc.activity;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.tri.lib.engine.KeyEnum;
 import com.tri.lib.utils.TrAudioPreferUtils;
@@ -22,6 +25,8 @@ import java.util.List;
 
 import js.lib.android.media.bean.ProAudio;
 import js.lib.android.media.engine.audio.db.AudioDBManager;
+import js.lib.android.media.engine.audio.utils.AudioInfo;
+import js.lib.android.media.engine.audio.utils.AudioUtils;
 import js.lib.android.media.player.PlayMode;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.Logs;
@@ -217,23 +222,50 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseAudioPlayerActivity {
     @Override
     protected void refreshCurrMediaInfo() {
         final ProAudio media = getCurrProgram();
-        if (media != null) {
-            // Media Cover
-            PlayerLogicUtils.setMediaCover(ivMusicCover, media, getImageLoader());
-            // Title / Artist/ Album
-            tvName.setText(PlayerLogicUtils.getMediaTitle(mContext, -1, media, true));
-            tvArtist.setText(PlayerLogicUtils.getUnKnowOnNull(mContext, media.artist));
-            tvAlbum.setText(media.album);
+        if (media == null) {
+            return;
+        } else {
+            setMediaInformation(media);
+        }
 
-            //Collect status
-            switch (media.isCollected) {
-                case 0:
-                    ivCollect.setImageResource(R.drawable.btn_op_favor_selector);
-                    break;
-                case 1:
-                    ivCollect.setImageResource(R.drawable.btn_op_favored_selector);
-                    break;
-            }
+        //Check if stored in system database.
+        AudioInfo info = AudioUtils.queryAudioInfo(media.mediaUrl);
+        if (info == null) {
+            AudioUtils.scanAudio(mContext, media.mediaUrl, new MediaScannerConnection.MediaScannerConnectionClient() {
+                @Override
+                public void onMediaScannerConnected() {
+                    Toast.makeText(mContext, "onMediaScannerConnected", Toast.LENGTH_LONG).show();
+                    Log.i(TAG, "onMediaScannerConnected()");
+                }
+
+                @Override
+                public void onScanCompleted(String path, Uri uri) {
+                    Log.i(TAG, "onScanCompleted(" + path + ",Uri)");
+                    Toast.makeText(mContext, "onScanCompleted", Toast.LENGTH_LONG).show();
+                    ProAudio.copy(media, new ProAudio(AudioUtils.queryAudioInfo(media.mediaUrl)));
+                    AudioDBManager.instance().updateMusicInfo(media);
+                    setMediaInformation(media);
+                }
+            });
+        }
+    }
+
+    private void setMediaInformation(ProAudio media) {
+        // Media Cover
+        PlayerLogicUtils.setMediaCover(ivMusicCover, media, getImageLoader());
+        // Title / Artist/ Album
+        tvName.setText(PlayerLogicUtils.getMediaTitle(mContext, -1, media, true));
+        tvArtist.setText(PlayerLogicUtils.getUnKnowOnNull(mContext, media.artist));
+        tvAlbum.setText(media.album);
+
+        //Collect status
+        switch (media.isCollected) {
+            case 0:
+                ivCollect.setImageResource(R.drawable.btn_op_favor_selector);
+                break;
+            case 1:
+                ivCollect.setImageResource(R.drawable.btn_op_favored_selector);
+                break;
         }
     }
 
@@ -337,10 +369,10 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseAudioPlayerActivity {
     @Override
     public void onGetKeyCode(KeyEnum key) {
         switch (key) {
-            case KEYCODE_PREV:
+            case KEYCODE_MEDIA_PREVIOUS:
                 playPrevBySecurity();
                 break;
-            case KEYCODE_NEXT:
+            case KEYCODE_MEDIA_NEXT:
                 playNextBySecurity();
                 break;
             case KEYCODE_DPAD_LEFT:

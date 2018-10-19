@@ -23,6 +23,18 @@ public class RadioPreferUtils extends PreferenceHelper {
     }
 
     /**
+     * First execute searchAll().
+     */
+    public static boolean isFirstExecSearchAll() {
+        final String PREFER_KEY = "com.tricheer.radio.FIST_EXEC_SEARCH_ALL";
+        boolean isFirst = getBoolean(PREFER_KEY, true);
+        if (isFirst) {
+            saveBoolean(PREFER_KEY, false);
+        }
+        return isFirst;
+    }
+
+    /**
      * Get last band.
      *
      * @param isSave true - save; false - not save

@@ -25,6 +25,9 @@ public abstract class BaseFragActivity extends FragmentActivity {
     private final String TAG = "BaseFragActivity";
 
     //==========Variable in this Activity==========
+    // Flag :: is activity in foreground.
+    private boolean mIsActForeground = false;
+
     /**
      * Context
      */
@@ -84,6 +87,7 @@ public abstract class BaseFragActivity extends FragmentActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        mIsActForeground = true;
         mIsHomeClicked = false;
     }
 
@@ -191,5 +195,23 @@ public abstract class BaseFragActivity extends FragmentActivity {
     @SuppressWarnings("unchecked")
     public <T> T findView(int vResID) {
         return (T) findViewById(vResID);
+    }
+
+    @Override
+    protected void onPause() {
+        mIsActForeground = false;
+        super.onPause();
+    }
+
+    /**
+     * Check if this activity is in foreground.
+     */
+    protected boolean isForeground() {
+        return mIsActForeground;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 }

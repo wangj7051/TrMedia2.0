@@ -13,6 +13,7 @@
     <string name="band_am">AM</string>
     <string name="no_img">NO IMAGE</string>
     <string name="click_collect">长按收藏</string>
+    <string name="click_collect_toast">长按收藏当前电台</string>
     <string name="radio_update">电台更新</string>
     <string name="cancel_update">取消更新</string>
     <string name="first_time_searching_toast">电台出厂扫描中，请稍后</string>

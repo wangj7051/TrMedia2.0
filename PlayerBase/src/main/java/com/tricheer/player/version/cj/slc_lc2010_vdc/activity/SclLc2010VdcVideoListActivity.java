@@ -13,6 +13,7 @@ import com.tri.lib.utils.TrVideoPreferUtils;
 import com.tricheer.player.R;
 import com.tricheer.player.engine.PlayerAppManager;
 import com.tricheer.player.engine.PlayerAppManager.PlayerCxtFlag;
+import com.tricheer.player.receiver.MediaScanReceiver;
 import com.tricheer.player.version.base.activity.video.BaseVideoKeyEventActivity;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.frags.BaseVideoListFrag;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.frags.SclLc2010VdcVideoFoldersFrag;
@@ -43,6 +44,12 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
 
 
     //==========Variables in this Activity==========
+    /**
+     * Flag :: If open player automatically
+     * <p>Only execute once in this activity.</p>
+     */
+    private boolean mIsAutoPlay = true;
+
     // Request Current Playing Media Url
     private BaseVideoListFrag mFragMedias;
 
@@ -73,9 +80,14 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
         vItems[1].setOnClickListener(mFilterViewOnClick);
 
         //
-        showWarning();
         loadFragment(0);
         loadLocalMedias();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        showWarning();
     }
 
     private void showWarning() {
@@ -87,6 +99,8 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
                 startActivityForResult(warningIntent, M_REQ_WARNING);
                 break;
             case 2:
+                break;
+            default:
                 break;
         }
     }
@@ -183,7 +197,7 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
     }
 
     @Override
-    protected void refreshOnNotifyLoading(int loadingFlag) {
+    protected void refreshOnNotifyLoading(MediaScanReceiver.MediaScanActives loadingFlag) {
         super.refreshOnNotifyLoading(loadingFlag);
 //        if (loadingFlag == MediaScanReceiver.ScanActives.START) {
         //showLctLm8917Loading(true);
@@ -197,11 +211,7 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
         super.refreshPageOnScan(listScannedVideos, isScaned);
         if (!EmptyUtil.isEmpty(listScannedVideos)) {
             Logs.i(TAG, "refreshPageOnScan() -> [VideoSize:" + listScannedVideos.size() + " ; isScaned:" + isScaned);
-            if (isScaned) {
-                loadLocalMedias();
-            } else {
-                refreshDatas();
-            }
+            loadLocalMedias();
         }
     }
 
@@ -234,16 +244,14 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
     };
 
     private void switchTab(View v, boolean isFromUser) {
-        //Load new data
-        if (isFromUser) {
-            notifyScanMedias(true);
-        }
-
         //Switch TAB
         final int loop = vItems.length;
         for (int idx = 0; idx < loop; idx++) {
             View item = vItems[idx];
             if (item == v) {
+                if (idx == 1) {
+                    notifyScanMedias(true);
+                }
                 item.requestFocus();
                 setBg(item, true);
                 loadFragment(idx);
@@ -265,12 +273,12 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
     @Override
     public void onGetKeyCode(KeyEnum key) {
         switch (key) {
-            case KEYCODE_PREV:
+            case KEYCODE_MEDIA_PREVIOUS:
                 if (mFragMedias != null) {
                     mFragMedias.prev();
                 }
                 break;
-            case KEYCODE_NEXT:
+            case KEYCODE_MEDIA_NEXT:
                 if (mFragMedias != null) {
                     mFragMedias.next();
                 }
@@ -313,7 +321,22 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        if (mFragMedias != null) {
+            int backRes = mFragMedias.onBackPressed();
+            switch (backRes) {
+                case 1:
+                    break;
+                default:
+                    super.onBackPressed();
+                    break;
+            }
+        }
+    }
+
+    @Override
     protected void onDestroy() {
+        Log.i(TAG, "onDestroy()");
         mHandler.removeCallbacksAndMessages(null);
         PlayerAppManager.removeCxt(PlayerCxtFlag.VIDEO_LIST);
         super.onDestroy();
@@ -330,21 +353,25 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
 
     @Override
     public void onAudioFocusDuck() {
-
     }
 
     @Override
     public void onAudioFocusTransient() {
-
     }
 
     @Override
     public void onAudioFocusGain() {
-
     }
 
     @Override
     public void onAudioFocusLoss() {
+    }
 
+    public boolean isAutoPlay() {
+        if (mIsAutoPlay) {
+            mIsAutoPlay = false;
+            return true;
+        }
+        return false;
     }
 }

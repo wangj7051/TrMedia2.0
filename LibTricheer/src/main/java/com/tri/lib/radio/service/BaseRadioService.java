@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
+import android.util.Log;
 
 import com.tri.lib.radio.engine.BandCategoryEnum;
 import com.tri.lib.radio.engine.FmDelegate;
@@ -25,6 +26,8 @@ import js.lib.android.media.player.audio.service.BaseAudioFocusService;
  * @author Jun.Wang
  */
 public abstract class BaseRadioService extends BaseAudioFocusService implements FmDelegate, FmListener {
+    //TAG
+    private final String TAG = "BaseRadioService";
 
     private static Handler mHandler;
     private Set<FmListener> mSetFmListeners;
@@ -75,19 +78,23 @@ public abstract class BaseRadioService extends BaseAudioFocusService implements 
 
     @Override
     public void onAudioFocusDuck() {
+        Log.i(TAG, "onAudioFocusDuck()");
     }
 
     @Override
     public void onAudioFocusTransient() {
+        Log.i(TAG, "onAudioFocusTransient()");
         closeFm();
     }
 
     @Override
     public void onAudioFocusGain() {
+        Log.i(TAG, "onAudioFocusGain()");
     }
 
     @Override
     public void onAudioFocusLoss() {
+        Log.i(TAG, "onAudioFocusLoss()");
         closeFm();
     }
 
@@ -104,9 +111,9 @@ public abstract class BaseRadioService extends BaseAudioFocusService implements 
     }
 
     @Override
-    public void onSeachAvailableFreq(int currentSeachfreq, int count, int[] freqs, BandCategoryEnum band) {
+    public void onSearchAvailableFreq(int currentSeachfreq, int count, int[] freqs, BandCategoryEnum band) {
         for (FmListener l : mSetFmListeners) {
-            l.onSeachAvailableFreq(currentSeachfreq, count, freqs, band);
+            l.onSearchAvailableFreq(currentSeachfreq, count, freqs, band);
         }
     }
 
@@ -118,24 +125,24 @@ public abstract class BaseRadioService extends BaseAudioFocusService implements 
     }
 
     @Override
-    public void onSeachFreqStart(final BandCategoryEnum band) {
+    public void onSearchFreqStart(final BandCategoryEnum band) {
         mHandler.post(new Runnable() {
             @Override
             public void run() {
                 for (FmListener l : mSetFmListeners) {
-                    l.onSeachFreqStart(band);
+                    l.onSearchFreqStart(band);
                 }
             }
         });
     }
 
     @Override
-    public void onSeachFreqEnd(final BandCategoryEnum band) {
+    public void onSearchFreqEnd(final BandCategoryEnum band) {
         mHandler.post(new Runnable() {
             @Override
             public void run() {
                 for (FmListener l : mSetFmListeners) {
-                    l.onSeachFreqEnd(band);
+                    l.onSearchFreqEnd(band);
                 }
             }
         });
@@ -143,12 +150,12 @@ public abstract class BaseRadioService extends BaseAudioFocusService implements 
 
 
     @Override
-    public void onSeachFreqFail(final BandCategoryEnum band, final int reason) {
+    public void onSearchFreqFail(final BandCategoryEnum band, final int reason) {
         mHandler.post(new Runnable() {
             @Override
             public void run() {
                 for (FmListener l : mSetFmListeners) {
-                    l.onScanFreqFail(band, reason);
+                    l.onSearchFreqFail(band, reason);
                 }
             }
         });

@@ -58,7 +58,7 @@ public abstract class BaseRadioActivity extends BaseFragActivity implements FmDe
      * Callback by {@link FmListener}
      */
     @Override
-    public void onSeachAvailableFreq(int currentSeachfreq, int count, int[] freqs, BandCategoryEnum band) {
+    public void onSearchAvailableFreq(int currentSeachfreq, int count, int[] freqs, BandCategoryEnum band) {
     }
 
     /**
@@ -72,18 +72,18 @@ public abstract class BaseRadioActivity extends BaseFragActivity implements FmDe
      * Callback by {@link FmListener}
      */
     @Override
-    public void onSeachFreqEnd(BandCategoryEnum band) {
+    public void onSearchFreqEnd(BandCategoryEnum band) {
     }
 
     /**
      * Callback by {@link FmListener}
      */
     @Override
-    public void onSeachFreqStart(BandCategoryEnum band) {
+    public void onSearchFreqStart(BandCategoryEnum band) {
     }
 
     @Override
-    public void onSeachFreqFail(BandCategoryEnum band, int reason) {
+    public void onSearchFreqFail(BandCategoryEnum band, int reason) {
     }
 
     /**

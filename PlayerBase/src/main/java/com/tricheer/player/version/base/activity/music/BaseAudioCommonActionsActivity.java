@@ -15,8 +15,8 @@ import com.tricheer.player.version.base.activity.BasePlayerActivity;
 
 import java.util.List;
 
+import js.lib.android.media.bean.MediaBase;
 import js.lib.android.media.bean.ProAudio;
-import js.lib.android.media.bean.Program;
 import js.lib.android.media.player.PlayListener;
 import js.lib.android.media.player.PlayMode;
 import js.lib.android.utils.Logs;
@@ -66,12 +66,6 @@ public abstract class BaseAudioCommonActionsActivity extends BasePlayerActivity 
     protected void onPlayServiceConnected(Service service) {
     }
 
-    public void registerAudioFocus(int flag) {
-        if (mPlayService != null) {
-            mPlayService.registerAudioFocus(flag);
-        }
-    }
-
     @Override
     public void setPlayMode(PlayMode mode) {
         Logs.i(TAG, "^^ setPlayMode(" + mode + ") ^^");
@@ -89,7 +83,7 @@ public abstract class BaseAudioCommonActionsActivity extends BasePlayerActivity 
     }
 
     @Override
-    public void setPlayList(List<? extends Program> listPros) {
+    public void setPlayList(List<? extends MediaBase> listPros) {
         Logs.i(TAG, "^^ setPlayList() ^^");
         if (mPlayService != null) {
             mPlayService.setPlayList(listPros);
@@ -118,7 +112,7 @@ public abstract class BaseAudioCommonActionsActivity extends BasePlayerActivity 
     }
 
     @Override
-    public Program getCurrMedia() {
+    public MediaBase getCurrMedia() {
         if (mPlayService != null) {
             return mPlayService.getCurrMedia();
         }

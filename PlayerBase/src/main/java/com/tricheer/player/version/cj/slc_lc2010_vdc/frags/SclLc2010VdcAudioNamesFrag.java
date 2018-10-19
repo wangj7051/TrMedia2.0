@@ -17,12 +17,13 @@ import android.widget.ListView;
 import com.js.sidebar.LetterSideBar;
 import com.tricheer.player.R;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.activity.SclLc2010VdcAudioListActivity;
+import com.tricheer.player.version.cj.slc_lc2010_vdc.adapter.BaseAudioAdapter;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.adapter.SclLc2010VdcAudioNamesAdapter;
 
 import java.util.List;
 
-import js.lib.android.media.engine.audio.db.AudioDBManager;
 import js.lib.android.media.bean.ProAudio;
+import js.lib.android.media.engine.audio.db.AudioDBManager;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.Logs;
 
@@ -114,17 +115,19 @@ public class SclLc2010VdcAudioNamesFrag extends BaseAudioListFrag {
     }
 
     private void delayPlay(final String targetMediaUrl) {
-        if (mAttachedActivity.isPlaying()) {
-            lvDatas.setSelection(mAttachedActivity.getCurrIdx());
-        } else if (!mAttachedActivity.isPauseByUser()) {
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mAttachedActivity.setPlayList(mListDatas);
-                    mAttachedActivity.play(targetMediaUrl);
-                    lvDatas.setSelection(mAttachedActivity.getCurrIdx());
-                }
-            }, 500);
+        if (isAdded()) {
+            if (mAttachedActivity.isPlaying()) {
+                lvDatas.setSelection(mAttachedActivity.getCurrIdx());
+            } else if (!mAttachedActivity.isPauseByUser()) {
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mAttachedActivity.setPlayList(mListDatas);
+                        mAttachedActivity.play(targetMediaUrl);
+                        lvDatas.setSelection(mAttachedActivity.getCurrIdx());
+                    }
+                }, 500);
+            }
         }
     }
 
@@ -195,7 +198,7 @@ public class SclLc2010VdcAudioNamesFrag extends BaseAudioListFrag {
         };
     }
 
-    private class CollectBtnCallback implements SclLc2010VdcAudioNamesAdapter.CollectListener {
+    private class CollectBtnCallback implements BaseAudioAdapter.CollectListener {
         @Override
         public void onClickCollectBtn(ImageView ivCollect, int pos) {
             ProAudio item = mDataAdapter.getItem(pos);
@@ -227,5 +230,10 @@ public class SclLc2010VdcAudioNamesFrag extends BaseAudioListFrag {
                 mDataAdapter.refreshDatas(mAttachedActivity.getLastMediaPath());
             }
         }
+    }
+
+    @Override
+    public int onBackPressed() {
+        return 0;
     }
 }

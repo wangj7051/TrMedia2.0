@@ -3,16 +3,18 @@ package js.lib.android.media.player.audio.service;
 import android.text.TextUtils;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import js.lib.android.media.player.audio.utils.AudioPreferUtils;
-import js.lib.android.media.bean.ProAudio;
-import js.lib.android.media.bean.Program;
+import js.lib.android.media.bean.MediaBase;
 import js.lib.android.media.player.PlayEnableController;
 import js.lib.android.media.player.PlayMode;
 import js.lib.android.media.player.PlayState;
 import js.lib.android.media.player.audio.IAudioPlayer;
 import js.lib.android.media.player.audio.MusicPlayerFactory;
+import js.lib.android.media.player.audio.utils.AudioPreferUtils;
 import js.lib.android.utils.CommonUtil;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.JsFileUtils;
@@ -60,7 +62,7 @@ public abstract class AudioPlayService extends BaseAudioService {
     /**
      * Media list
      */
-    private List<? extends Program> mListMedias;
+    private List<? extends MediaBase> mListMedias;
     /**
      * Current Play Position
      */
@@ -71,16 +73,50 @@ public abstract class AudioPlayService extends BaseAudioService {
      */
     private Runnable mPlayPrevSecRunnable, mPlayNextSecRunnable;
 
+    /**
+     * 媒体源数据
+     * <p>所有播放列表的数据都应当来自此对象</p>
+     * <p>Key:{@link MediaBase#mediaUrl}, Value:{@link MediaBase}</p>
+     */
+    private Map<String, ? extends MediaBase> mMapSrcMedias;
+
+    /**
+     * 设置媒体源数据
+     * <p>
+     * 请注意，为了保证播放的正常运行，此方法必须在数据获取到以后就设置进来，因为所有的播放数据源都来自 {@link #mMapSrcMedias}
+     * </p>
+     */
+    public void setMapSrcMedias(Map<String, ? extends MediaBase> mapSrcMedias) {
+        if (EmptyUtil.isEmpty(mapSrcMedias)) {
+            mMapSrcMedias = new HashMap<>();
+        } else {
+            mMapSrcMedias = mapSrcMedias;
+        }
+    }
+
+    /**
+     * 获取媒体源数据
+     */
+    public List<MediaBase> getListSrcMedias() {
+        List<MediaBase> listSrcMedias = new ArrayList<>();
+        if (mMapSrcMedias != null) {
+            listSrcMedias.addAll(mMapSrcMedias.values());
+        }
+        return listSrcMedias;
+    }
+
     @Override
-    public void setPlayList(List<? extends Program> listMedias) {
-        Logs.i(TAG, "^^ List<? extends Program> ^^");
-        if (listMedias != null) {
-            this.mListMedias = listMedias;
+    public void setPlayList(List<? extends MediaBase> listMedias) {
+        Logs.i(TAG, "setPlayList(List<? extends Program>)");
+        if (listMedias == null) {
+            mListMedias = new ArrayList<>();
+        } else {
+            mListMedias = listMedias;
         }
     }
 
     @Override
-    public List<? extends Program> getListMedias() {
+    public List<? extends MediaBase> getListMedias() {
         return mListMedias;
     }
 
@@ -103,7 +139,7 @@ public abstract class AudioPlayService extends BaseAudioService {
     }
 
     @Override
-    public Program getCurrMedia() {
+    public MediaBase getCurrMedia() {
         try {
             return mListMedias.get(getCurrIdx());
         } catch (Exception e) {
@@ -135,11 +171,9 @@ public abstract class AudioPlayService extends BaseAudioService {
     @Override
     public void play() {
         Logs.i(TAG, "play()");
-        PlayEnableController.pauseByUser(false);
-        Program media = getCurrMedia();
+        MediaBase media = getCurrMedia();
         if (media != null) {
-            ProAudio proAudio = (ProAudio) media;
-            playFixedMedia(proAudio.mediaUrl);
+            playFixedMedia(media.mediaUrl);
         }
     }
 
@@ -178,8 +212,8 @@ public abstract class AudioPlayService extends BaseAudioService {
         if (!EmptyUtil.isEmpty(mListMedias)) {
             int loop = mListMedias.size();
             for (int idx = 0; idx < loop; idx++) {
-                Program program = mListMedias.get(idx);
-                if (TextUtils.equals(program.mediaUrl, mediaPath)) {
+                MediaBase media = mListMedias.get(idx);
+                if (TextUtils.equals(media.mediaUrl, mediaPath)) {
                     pos = idx;
                     break;
                 }
@@ -379,6 +413,7 @@ public abstract class AudioPlayService extends BaseAudioService {
     @Override
     public void resumeByUser() {
         Logs.i(TAG, "^^ resumeByUser() ^^");
+        PlayEnableController.pauseByUser(false);
         clearAllRunables();
         if (!EmptyUtil.isEmpty(mListMedias)) {
             if (mAudioPlayer == null) {
@@ -602,14 +637,14 @@ public abstract class AudioPlayService extends BaseAudioService {
     public void onAudioFocusGain() {
         super.onAudioFocusGain();
         Logs.i(TAG, "----$$ onAudioFocusGain() $$----");
-        resumeByUser();
+        resume();
     }
 
     @Override
     public void onAudioFocusLoss() {
         super.onAudioFocusLoss();
         Logs.i(TAG, "----$$ onAudioFocusLoss() $$----");
-        pauseByUser();
+        pause();
     }
 
     @Override

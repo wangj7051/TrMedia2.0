@@ -16,11 +16,10 @@ import com.tricheer.player.version.cj.slc_lc2010_vdc.bean.AudioFilter;
 
 import java.util.List;
 
-import js.lib.android.adapter.BaseArrayAdapter;
 import js.lib.android.media.bean.ProAudio;
 import js.lib.android.utils.EmptyUtil;
 
-public class SclLc2010VdcAudioAlbumsAdapter<T> extends BaseArrayAdapter<T> implements SectionIndexer {
+public class SclLc2010VdcAudioAlbumsAdapter<T> extends BaseAudioAdapter<T> implements SectionIndexer {
     // TAG
     private final String TAG = "SlcLc2010VdcMusicListAdapter";
 
@@ -32,13 +31,9 @@ public class SclLc2010VdcAudioAlbumsAdapter<T> extends BaseArrayAdapter<T> imple
     private int mSelectFontColor, mNotSelectedColor;
 
     /**
-     * {@link SclLc2010VdcAudioNamesAdapter.CollectListener} object
+     * {@link CollectListener} object
      */
-    private SclLc2010VdcAudioNamesAdapter.CollectListener mCollectListener;
-
-    public interface CollectListener {
-        void onClickCollectBtn(ImageView ivCollect, int pos);
-    }
+    private CollectListener mCollectListener;
 
     public SclLc2010VdcAudioAlbumsAdapter(Context context, int resource) {
         super(context, resource);
@@ -47,7 +42,7 @@ public class SclLc2010VdcAudioAlbumsAdapter<T> extends BaseArrayAdapter<T> imple
         mSelectFontColor = context.getResources().getColor(R.color.music_item_selected);
     }
 
-    public void setCollectListener(SclLc2010VdcAudioNamesAdapter.CollectListener l) {
+    public void setCollectListener(CollectListener l) {
         mCollectListener = l;
     }
 
@@ -145,6 +140,7 @@ public class SclLc2010VdcAudioAlbumsAdapter<T> extends BaseArrayAdapter<T> imple
                 }
 
                 //Collect
+                holder.ivEnd.setVisibility(View.VISIBLE);
                 switch (item.isCollected) {
                     case 1:
                         holder.ivEnd.setImageResource(R.drawable.favor_c);

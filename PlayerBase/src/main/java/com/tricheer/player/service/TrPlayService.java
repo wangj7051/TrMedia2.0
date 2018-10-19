@@ -8,11 +8,11 @@ import com.tri.lib.utils.SettingsSysUtil;
 
 import java.util.List;
 
-import js.lib.android.media.player.audio.service.AudioPlayService;
-import js.lib.android.media.bean.Program;
+import js.lib.android.media.bean.MediaBase;
 import js.lib.android.media.player.PlayMode;
 import js.lib.android.media.player.PlayState;
 import js.lib.android.media.player.audio.MusicPlayerFactory;
+import js.lib.android.media.player.audio.service.AudioPlayService;
 import js.lib.android.utils.Logs;
 
 /**
@@ -56,12 +56,12 @@ public class TrPlayService extends AudioPlayService {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void setPlayList(List<? extends Program> listPros) {
+    public void setPlayList(List<? extends MediaBase> listPros) {
         super.setPlayList(listPros);
     }
 
     @Override
-    public List<? extends Program> getListMedias() {
+    public List<? extends MediaBase> getListMedias() {
         return super.getListMedias();
     }
 
@@ -81,7 +81,7 @@ public class TrPlayService extends AudioPlayService {
     }
 
     @Override
-    public Program getCurrMedia() {
+    public MediaBase getCurrMedia() {
         return super.getCurrMedia();
     }
 

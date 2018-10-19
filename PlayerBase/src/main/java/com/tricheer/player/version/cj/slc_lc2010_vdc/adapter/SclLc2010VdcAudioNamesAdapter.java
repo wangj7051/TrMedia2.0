@@ -14,11 +14,10 @@ import com.tricheer.player.utils.PlayerLogicUtils;
 
 import java.util.List;
 
-import js.lib.android.adapter.BaseArrayAdapter;
 import js.lib.android.media.bean.ProAudio;
 import js.lib.android.utils.EmptyUtil;
 
-public class SclLc2010VdcAudioNamesAdapter extends BaseArrayAdapter<ProAudio> implements SectionIndexer {
+public class SclLc2010VdcAudioNamesAdapter extends BaseAudioAdapter<ProAudio> implements SectionIndexer {
     // TAG
     private final String TAG = "SlcLc2010VdcMusicListAdapter";
 
@@ -33,10 +32,6 @@ public class SclLc2010VdcAudioNamesAdapter extends BaseArrayAdapter<ProAudio> im
      * {@link CollectListener} object
      */
     private CollectListener mCollectListener;
-
-    public interface CollectListener {
-        void onClickCollectBtn(ImageView ivCollect, int pos);
-    }
 
     public SclLc2010VdcAudioNamesAdapter(Context context, int resource) {
         super(context, resource);

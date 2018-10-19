@@ -309,7 +309,9 @@
         </receiver>
 
         <!-- ACC -->
-        <receiver android:name="com.tri.lib.receiver.AccReceiver">
+        <receiver
+            android:name="com.tri.lib.receiver.AccReceiver"
+            tools:ignore="ExportedReceiver">
             <intent-filter>
                 <action android:name="tricheer.intent.action.ACC_OFF" />
                 <action android:name="tricheer.intent.action.SLEEP" />
@@ -317,10 +319,18 @@
             </intent-filter>
         </receiver>
         <!-- ACC -->
-        <receiver android:name="com.tri.lib.receiver.ReverseReceiver">
+        <receiver
+            android:name="com.tri.lib.receiver.ReverseReceiver"
+            tools:ignore="ExportedReceiver">
             <intent-filter>
                 <action android:name="com.tricheer.carback.on" />
                 <action android:name="com.tricheer.carback.off" />
+            </intent-filter>
+        </receiver>
+        <!-- Media Button -->
+        <receiver android:name="js.lib.android.media.engine.mediabtn.MediaBtnReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
         </receiver>
     </application>

@@ -5,7 +5,7 @@ import android.os.AsyncTask;
 import android.os.Handler;
 
 import com.tricheer.player.engine.VersionController;
-import com.tricheer.player.receiver.MediaScanReceiver.ScanActives;
+import com.tricheer.player.receiver.MediaScanReceiver.MediaScanActives;
 import com.tricheer.player.utils.PlayerFileUtils;
 import com.tricheer.player.utils.PlayerLogicUtils;
 
@@ -17,12 +17,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import js.lib.android.media.player.audio.utils.AudioSortUtils;
+import js.lib.android.media.bean.ProAudio;
 import js.lib.android.media.engine.audio.db.AudioDBManager;
 import js.lib.android.media.engine.audio.utils.AudioImgUtils;
 import js.lib.android.media.engine.audio.utils.AudioInfo;
-import js.lib.android.media.engine.audio.utils.AudioUtils;
-import js.lib.android.media.bean.ProAudio;
+import js.lib.android.media.player.audio.utils.AudioSortUtils;
 import js.lib.android.utils.CommonUtil;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.Logs;
@@ -86,25 +85,30 @@ public abstract class BaseAudioExtendActionsActivity extends BaseAudioCommonActi
     }
 
     @Override
-    public void onNotifyScanAudios(int flag, List<ProAudio> listPrgrams, Set<String> allSdMountedPaths) {
+    public void onNotifyScanAudios(MediaScanActives flag, List<ProAudio> listPrgrams, Set<String> allSdMountedPaths) {
         super.onNotifyScanAudios(flag, listPrgrams, allSdMountedPaths);
-        if (flag == ScanActives.REFRESH) {
-            startMergeDatasTask(listPrgrams, false);
-        } else if (flag == ScanActives.SYS_SCANED) {
-            startMergeDatasTask(listPrgrams, true);
-        } else if (flag == ScanActives.CLEAR) {
-            refreshPageOnClear(allSdMountedPaths);
-        } else {
-            refreshOnNotifyLoading(flag);
+        switch (flag) {
+            case REFRESH:
+                startMergeDatasTask(listPrgrams, false);
+                break;
+            case SYS_SCANNED:
+                startMergeDatasTask(listPrgrams, true);
+                break;
+            case CLEAR:
+                refreshPageOnClear(allSdMountedPaths);
+                break;
+            default:
+                refreshOnNotifyLoading(flag);
+                break;
         }
     }
 
     /**
      * Refresh Page On Loading
      *
-     * @param loadingFlag : {@link ScanActives#START} or {@link ScanActives#END}
+     * @param flag : {@link MediaScanActives#START} or {@link MediaScanActives#END}
      */
-    protected void refreshOnNotifyLoading(int loadingFlag) {
+    protected void refreshOnNotifyLoading(MediaScanActives flag) {
     }
 
     /**
@@ -255,7 +259,8 @@ public abstract class BaseAudioExtendActionsActivity extends BaseAudioCommonActi
         @Override
         protected Void doInBackground(Void... params) {
             // Refresh & Save Medias
-            parseMediaInfos(AudioUtils.queryMapAudioInfos(null));
+//            parseMediaInfos(AudioUtils.queryMapAudioInfos(null));
+            mListPrograms = AudioDBManager.instance().getListMusics();
             AudioDBManager.instance().insertListMusics(mmListNewPrograms);
             AudioDBManager.instance().updateListMusics(mmListExistPrograms);
             // Sort & Notify load end

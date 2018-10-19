@@ -12,8 +12,8 @@ import com.tricheer.player.utils.PlayerLogicUtils;
 import java.io.File;
 import java.util.List;
 
-import js.lib.android.media.engine.audio.online.PlayerDelegate;
 import js.lib.android.media.bean.ProAudio;
+import js.lib.android.media.engine.audio.online.PlayerDelegate;
 import js.lib.android.media.player.PlayState;
 import js.lib.android.utils.CommonUtil;
 import js.lib.android.utils.Logs;
@@ -24,7 +24,7 @@ import js.lib.http.IResponse;
  *
  * @author Jun.Wang
  */
-public abstract class BaseAudioPlayerActivity extends BaseAudioFocusActivity implements PlayerDelegate {
+public abstract class BaseAudioPlayerActivity extends BaseAudioKeyEventActivity implements PlayerDelegate {
 
     // LOG TAG
     private final String TAG = "BaseAudioPlayerActivity";
@@ -37,6 +37,7 @@ public abstract class BaseAudioPlayerActivity extends BaseAudioFocusActivity imp
     @Override
     protected void onResume() {
         super.onResume();
+        resumeByUser();
     }
 
     @Override

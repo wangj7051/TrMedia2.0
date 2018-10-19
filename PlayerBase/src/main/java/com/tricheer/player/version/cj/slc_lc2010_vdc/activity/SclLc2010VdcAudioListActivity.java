@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -19,6 +20,7 @@ import com.tri.lib.utils.SettingsSysUtil;
 import com.tricheer.player.R;
 import com.tricheer.player.engine.PlayerAppManager;
 import com.tricheer.player.engine.PlayerAppManager.PlayerCxtFlag;
+import com.tricheer.player.receiver.MediaScanReceiver;
 import com.tricheer.player.version.base.activity.music.BaseAudioKeyEventActivity;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.frags.BaseAudioListFrag;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.frags.SclLc2010VdcAudioAlbumsFrag;
@@ -31,8 +33,10 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
-import js.lib.android.media.player.PlayState;
 import js.lib.android.media.bean.ProAudio;
+import js.lib.android.media.engine.mediabtn.MediaBtnController;
+import js.lib.android.media.engine.mediabtn.MediaBtnReceiver;
+import js.lib.android.media.player.PlayState;
 import js.lib.android.utils.CommonUtil;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.FragUtil;
@@ -44,13 +48,15 @@ import js.lib.android.utils.Logs;
  * @author Jun.Wang
  */
 public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
-        implements AccReceiver.AccDelegate, ReverseReceiver.ReverseDelegate {
+        implements AccReceiver.AccDelegate, ReverseReceiver.ReverseDelegate,
+        MediaBtnReceiver.MediaBtnListener {
 
     // TAG
     private static final String TAG = "MusicListActivity";
 
     //==========Widgets in this Activity==========
     private ImageView ivRhythmAnim;
+    private View[] vItems = new View[5];
 
     //==========Variables in this Activity==========
     // -- Variables --
@@ -59,17 +65,15 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
     // Request Current Playing Media Url
     private BaseAudioListFrag mFragMedias;
 
-    // If true, MENU keyevent should not get response.
-    private boolean mIsMenuFrozenTime = false;
-
-    // -- Widgets --
-    private View[] vItems = new View[5];
+    // Media Button Controller
+    private MediaBtnController mMediaBtnController;
 
     @Override
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         ReverseReceiver.register(this);
         AccReceiver.register(this);
+        MediaBtnReceiver.setListener(this);
         SettingsSysUtil.setAudioState(this, 1);
         setContentView(R.layout.scl_lc2010_vdc_activity_audio_list);
         PlayerAppManager.putCxt(PlayerCxtFlag.MUSIC_LIST, this);
@@ -79,6 +83,9 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
     @Override
     protected void init() {
         super.init();
+        //Variables
+        mMediaBtnController = new MediaBtnController(this);
+
         // -- Widgets --
         // Switch items
         vItems[0] = findViewById(R.id.v_my_favorite);
@@ -134,8 +141,12 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
     @Override
     protected void onResume() {
         super.onResume();
-        registerAudioFocus(1);
-        activeAnimRhythm(isPlaying());
+        mMediaBtnController.register();
+        if (isPlaying()) {
+            activeAnimRhythm(true);
+        } else if (!isPauseByUser()) {
+            resume();
+        }
     }
 
     @Override
@@ -205,7 +216,7 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
     }
 
     @Override
-    protected void refreshOnNotifyLoading(int loadingFlag) {
+    protected void refreshOnNotifyLoading(MediaScanReceiver.MediaScanActives loadingFlag) {
         super.refreshOnNotifyLoading(loadingFlag);
 //        if (loadingFlag == MediaScanReceiver.ScanActives.START) {
 //			showLctLm8917Loading(true);
@@ -215,15 +226,13 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
     }
 
     @Override
-    protected void refreshPageOnScan(List<ProAudio> listScannedAudios, boolean isScaned) {
-        super.refreshPageOnScan(listScannedAudios, isScaned);
+    protected void refreshPageOnScan(List<ProAudio> listScannedAudios, boolean isScanned) {
+        super.refreshPageOnScan(listScannedAudios, isScanned);
 //        if (EmptyUtil.isEmpty(mListPrograms)) {
         //showLctLm8917Loading(false);
 //        } else {
-        Logs.i(TAG, "refreshPageOnScan() -> [Size:" + mListPrograms.size() + " ; isScanEnd:" + isScaned);
-        if (isScaned) {
-            loadLocalMedias();
-        }
+        Logs.i(TAG, "refreshPageOnScan() -> [Size:" + mListPrograms.size() + " ; isScanEnd:" + isScanned);
+        loadLocalMedias();
 //        }
     }
 
@@ -294,16 +303,14 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
     }
 
     private void switchTab(View v, boolean isFromUser) {
-        //Load new data
-        if (isFromUser) {
-            notifyScanMedias(true);
-        }
-
         //Switch
         final int loop = vItems.length;
         for (int idx = 0; idx < loop; idx++) {
             View item = vItems[idx];
             if (item == v) {
+                if (idx == 2) {
+                    notifyScanMedias(true);
+                }
                 item.setFocusable(true);
                 item.requestFocus();
                 setBg(item, true);
@@ -325,18 +332,47 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
     }
 
     @Override
+    public void onGotMediaKeyCode(KeyEvent event) {
+        if (event.getAction() == KeyEvent.ACTION_UP) {
+            KeyEnum key = KeyEnum.getKey(event.getKeyCode());
+            switch (key) {
+                case KEYCODE_MEDIA_PREVIOUS:
+                    if (!isForeground()) {
+                        playPrevBySecurity();
+                        if (mFragMedias != null) {
+                            mFragMedias.prev();
+                        }
+                    }
+                    break;
+                case KEYCODE_MEDIA_NEXT:
+                    if (!isForeground()) {
+                        playNextBySecurity();
+                        if (mFragMedias != null) {
+                            mFragMedias.next();
+                        }
+                    }
+                    break;
+            }
+        }
+    }
+
+    @Override
     public void onGetKeyCode(KeyEnum key) {
         switch (key) {
-            case KEYCODE_PREV:
-                playPrevBySecurity();
-                if (mFragMedias != null) {
-                    mFragMedias.prev();
+            case KEYCODE_MEDIA_PREVIOUS:
+                if (isForeground()) {
+                    playPrevBySecurity();
+                    if (mFragMedias != null) {
+                        mFragMedias.prev();
+                    }
                 }
                 break;
-            case KEYCODE_NEXT:
-                playNextBySecurity();
-                if (mFragMedias != null) {
-                    mFragMedias.next();
+            case KEYCODE_MEDIA_NEXT:
+                if (isForeground()) {
+                    playNextBySecurity();
+                    if (mFragMedias != null) {
+                        mFragMedias.next();
+                    }
                 }
                 break;
 
@@ -376,6 +412,12 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
     }
 
     @Override
+    public List<ProAudio> getListMedias() {
+//        return super.getListMedias();
+        return mListPrograms;
+    }
+
+    @Override
     public void onAccOn() {
         resume();
     }
@@ -402,8 +444,17 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
     @Override
     public void onBackPressed() {
 //        super.onBackPressed();
-        cancelOpenPlayer();
-        moveTaskToBack(true);
+        if (mFragMedias != null) {
+            int backRes = mFragMedias.onBackPressed();
+            switch (backRes) {
+                case 1:
+                    break;
+                default:
+                    cancelOpenPlayer();
+                    moveTaskToBack(true);
+                    break;
+            }
+        }
     }
 
     @Override
@@ -442,6 +493,11 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
 
     @Override
     protected void onDestroy() {
+        //
+        mMediaBtnController.unregister();
+        MediaBtnReceiver.setListener(null);
+
+        //
         removePlayListener(this);
         AccReceiver.unregister(this);
         ReverseReceiver.unregister(this);
@@ -460,8 +516,6 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
         if (isPlaying()) {
             cancelOpenPlayer();
             Log.i(TAG, "autoOpenPlayer() -EXEC-");
-            mIsMenuFrozenTime = true;
-            mHandler.postDelayed(mmMenuFrozenRunnable, 3000);
             mHandler.postDelayed(mmDelayOpenAudioRunnable, 5000);
         }
     }
@@ -470,13 +524,6 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
         Log.i(TAG, "autoOpenPlayer() -CANCEL-");
         mHandler.removeCallbacks(mmDelayOpenAudioRunnable);
     }
-
-    private Runnable mmMenuFrozenRunnable = new Runnable() {
-        @Override
-        public void run() {
-            mIsMenuFrozenTime = false;
-        }
-    };
 
     private Runnable mmDelayOpenAudioRunnable = new Runnable() {
         @Override
@@ -513,6 +560,6 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
 
     @Override
     public void onAudioFocusLoss() {
-
+        mMediaBtnController.unregister();
     }
 }

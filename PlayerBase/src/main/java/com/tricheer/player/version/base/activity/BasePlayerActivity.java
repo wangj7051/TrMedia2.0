@@ -8,8 +8,7 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.tri.lib.utils.PlayerPowerManager;
-import com.tricheer.player.engine.VersionController;
+import com.tri.lib.utils.PowerManagerUtil;
 import com.tricheer.player.receiver.MediaScanReceiver;
 import com.tricheer.player.receiver.PlayerReceiver.PlayerReceiverListener;
 
@@ -19,6 +18,7 @@ import java.net.URLEncoder;
 import java.util.List;
 import java.util.Set;
 
+import js.lib.android.media.bean.MediaBase;
 import js.lib.android.media.bean.ProAudio;
 import js.lib.android.media.bean.ProVideo;
 import js.lib.android.media.bean.Program;
@@ -47,7 +47,7 @@ public abstract class BasePlayerActivity extends BaseFragActivity implements Pla
     /**
      * Manager Player Power
      */
-    private PlayerPowerManager mPlayerPowerManager;
+    private PowerManagerUtil mPlayerPowerManager;
 
     /**
      * Program Name PinYin Comparator
@@ -73,7 +73,7 @@ public abstract class BasePlayerActivity extends BaseFragActivity implements Pla
      */
     protected void init() {
         this.mComparator = new ProgramPinyinComparator();
-        this.mPlayerPowerManager = new PlayerPowerManager(mContext);
+        this.mPlayerPowerManager = new PowerManagerUtil(mContext);
     }
 
     /**
@@ -81,9 +81,7 @@ public abstract class BasePlayerActivity extends BaseFragActivity implements Pla
      */
     protected void makeScreenOn(boolean isMakeOn) {
         if (mPlayerPowerManager != null) {
-            if (VersionController.isCjVersion()) {
-                mPlayerPowerManager.keepScreenOn(this, isMakeOn);
-            }
+            mPlayerPowerManager.keepScreenOn(this, isMakeOn);
         }
     }
 
@@ -159,12 +157,12 @@ public abstract class BasePlayerActivity extends BaseFragActivity implements Pla
 
     // {@link PlayerReceiverListener} Implements Method
     @Override
-    public void onNotifyScanAudios(int flag, List<ProAudio> listPrgrams, Set<String> allSdMountedPaths) {
+    public void onNotifyScanAudios(MediaScanReceiver.MediaScanActives flag, List<ProAudio> listPrgrams, Set<String> allSdMountedPaths) {
     }
 
     // {@link PlayerReceiverListener} Implements Method
     @Override
-    public void onNotifyScanVideos(int flag, List<ProVideo> listPrgrams, Set<String> allSdMountedPaths) {
+    public void onNotifyScanVideos(MediaScanReceiver.MediaScanActives flag, List<ProVideo> listPrgrams, Set<String> allSdMountedPaths) {
     }
 
     // {@link IPlayerListener} Implements Method
@@ -189,13 +187,13 @@ public abstract class BasePlayerActivity extends BaseFragActivity implements Pla
 
     // {@link PlayerActionsListener} Implements Method
     @Override
-    public Program getCurrMedia() {
+    public MediaBase getCurrMedia() {
         return null;
     }
 
     // {@link PlayerActionsListener} Implements Method
     @Override
-    public void setPlayList(List<? extends Program> listMedias) {
+    public void setPlayList(List<? extends MediaBase> listMedias) {
     }
 
     // {@link PlayerActionsListener} Implements Method
@@ -204,7 +202,7 @@ public abstract class BasePlayerActivity extends BaseFragActivity implements Pla
     }
 
     @Override
-    public List<? extends Program> getListMedias() {
+    public List<? extends MediaBase> getListMedias() {
         return null;
     }
 

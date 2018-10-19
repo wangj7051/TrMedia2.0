@@ -29,9 +29,22 @@ public class FmUtilV2 implements FmDelegate {
     // private Context mContext;
     private IFmManager mFmManager;
     private FmListener mFmListener;
+
+    /**
+     * LOC status
+     */
     private boolean mLocOpen = false;
+
+    /**
+     * Radio open status
+     */
     private boolean mIsRadioOpened = false;
 
+    /**
+     * Constructor
+     *
+     * @param context-{@link Context}
+     */
     public FmUtilV2(Context context) {
         // mContext = context;
         try {
@@ -63,7 +76,7 @@ public class FmUtilV2 implements FmDelegate {
             try {
                 Log.i(TAG, "onSeachAvailableFreq(" + currentSeachfreq + "," + count + "," + Arrays.toString(freqs) + "," + type + ")");
                 if (mFmListener != null) {
-                    mFmListener.onSeachAvailableFreq(currentSeachfreq, count, freqs, BandCategoryEnum.get(type));
+                    mFmListener.onSearchAvailableFreq(currentSeachfreq, count, freqs, BandCategoryEnum.get(type));
                 }
             } catch (Exception e) {
                 Log.i(TAG, "onSeachAvailableFreq(currentSeachfreq,count,freqs,type) > " + e.getMessage());
@@ -87,7 +100,7 @@ public class FmUtilV2 implements FmDelegate {
             try {
                 Log.i(TAG, "onSeachFreqStart(" + type + ")");
                 if (mFmListener != null) {
-                    mFmListener.onSeachFreqStart(BandCategoryEnum.get(type));
+                    mFmListener.onSearchFreqStart(BandCategoryEnum.get(type));
                 }
             } catch (Exception e) {
                 Log.i(TAG, "onSeachFreqStart(type) > " + e.getMessage());
@@ -99,7 +112,7 @@ public class FmUtilV2 implements FmDelegate {
             try {
                 Log.i(TAG, "onSeachFreqEnd(" + type + ")");
                 if (mFmListener != null) {
-                    mFmListener.onSeachFreqEnd(BandCategoryEnum.get(type));
+                    mFmListener.onSearchFreqEnd(BandCategoryEnum.get(type));
                 }
             } catch (Exception e) {
                 Log.i(TAG, "onSeachFreqEnd(type) > " + e.getMessage());
@@ -111,7 +124,7 @@ public class FmUtilV2 implements FmDelegate {
             try {
                 Log.i(TAG, "onSeachFreqFail(" + type + "," + reason + ")");
                 if (mFmListener != null) {
-                    mFmListener.onSeachFreqFail(BandCategoryEnum.get(type), reason);
+                    mFmListener.onSearchFreqFail(BandCategoryEnum.get(type), reason);
                 }
             } catch (Exception e) {
                 Log.i(TAG, "onSeachFreqFail(type,reason) > " + e.getMessage());
@@ -203,10 +216,10 @@ public class FmUtilV2 implements FmDelegate {
     @Override
     public boolean searchAll() {
         try {
-            Log.i(TAG, "scanAll()");
+            Log.i(TAG, "searchAll()");
             return mFmManager.startSearchAvailableFreq();
         } catch (Exception e) {
-            Log.i(TAG, "scanAll() > " + e.getMessage());
+            Log.i(TAG, "searchAll() > " + e.getMessage());
             return false;
         }
     }

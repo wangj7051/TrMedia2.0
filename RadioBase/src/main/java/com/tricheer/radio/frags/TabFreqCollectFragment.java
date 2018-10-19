@@ -4,11 +4,13 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.tri.lib.radio.engine.BandCategoryEnum;
 import com.tricheer.radio.MainActivity;
@@ -115,22 +117,24 @@ public class TabFreqCollectFragment extends BaseAppV4Fragment {
     }
 
     public void refreshItemsBgByCurrFreq() {
-        //Flag first position that has the same frequency as current.
-        boolean isCollectedBgSelected = false;
-        int currFreq = getCurrFreq();
-        for (TextView tv : tvItems) {
-            if (tv == null) {
-                continue;
-            }
-            if (isCollectedBgSelected) {
-                setBg(tv, false);
-            } else {
-                Object objTag = tv.getTag();
-                if (objTag != null) {
-                    isCollectedBgSelected = ((int) objTag == currFreq);
-                    setBg(tv, isCollectedBgSelected);
-                } else {
+        if (isAdded()) {
+            //Flag first position that has the same frequency as current.
+            boolean isCollectedBgSelected = false;
+            int currFreq = getCurrFreq();
+            for (TextView tv : tvItems) {
+                if (tv == null) {
+                    continue;
+                }
+                if (isCollectedBgSelected) {
                     setBg(tv, false);
+                } else {
+                    Object objTag = tv.getTag();
+                    if (objTag != null) {
+                        isCollectedBgSelected = ((int) objTag == currFreq);
+                        setBg(tv, isCollectedBgSelected);
+                    } else {
+                        setBg(tv, false);
+                    }
                 }
             }
         }
@@ -142,17 +146,19 @@ public class TabFreqCollectFragment extends BaseAppV4Fragment {
      * @param isScanning true-Scanning
      */
     public void refreshPageOnScanning(boolean isScanning) {
-        //Set text color
-        int txtColor;
-        if (isScanning) {
-            txtColor = getResources().getColor(R.color.txt_on_searching);
-        } else {
-            txtColor = getResources().getColor(android.R.color.white);
-        }
+        if (isAdded()) {
+            //Set text color
+            int txtColor;
+            if (isScanning) {
+                txtColor = getResources().getColor(R.color.txt_on_searching);
+            } else {
+                txtColor = getResources().getColor(android.R.color.white);
+            }
 
-        for (TextView tv : tvItems) {
-            tv.setEnabled(!isScanning);
-            tv.setTextColor(txtColor);
+            for (TextView tv : tvItems) {
+                tv.setEnabled(!isScanning);
+                tv.setTextColor(txtColor);
+            }
         }
     }
 
@@ -204,8 +210,12 @@ public class TabFreqCollectFragment extends BaseAppV4Fragment {
             Log.i(TAG, "mFilterViewOnClick> onClick");
             for (TextView tv : tvItems) {
                 if (tv == v) {
-                    setBg(tv, true);
-                    playCollected(tv);
+                    if (TextUtils.equals(getString(R.string.click_collect), tv.getText())) {
+                        Toast.makeText(mAttachedActivity, R.string.click_collect_toast, Toast.LENGTH_SHORT).show();
+                    } else {
+                        setBg(tv, true);
+                        playCollected(tv);
+                    }
                 } else {
                     setBg(tv, false);
                 }
@@ -215,7 +225,7 @@ public class TabFreqCollectFragment extends BaseAppV4Fragment {
         private void playCollected(View v) {
             Log.i(TAG, "playCollected(View)");
             Object objTag = v.getTag();
-            if (objTag != null && objTag instanceof Integer) {
+            if (objTag instanceof Integer) {
                 int collectedFreq = (int) objTag;
                 if (collectedFreq != getCurrFreq()) {
                     if (isAdded()) {

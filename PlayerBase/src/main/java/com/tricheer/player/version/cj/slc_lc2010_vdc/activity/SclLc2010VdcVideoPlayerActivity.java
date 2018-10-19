@@ -3,6 +3,7 @@ package com.tricheer.player.version.cj.slc_lc2010_vdc.activity;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import com.tri.lib.engine.KeyEnum;
 import com.tri.lib.receiver.AccReceiver;
 import com.tri.lib.receiver.ReverseReceiver;
+import com.tri.lib.utils.PanelTouchImpl;
 import com.tri.lib.utils.TrVideoPreferUtils;
 import com.tricheer.player.R;
 import com.tricheer.player.engine.PlayerConsts;
@@ -44,6 +46,9 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
     private static final String TAG = "VdcVideoPlayerActivity";
 
     //==========Widget in this Activity==========
+    private View vCoverPanel;
+    private View vArrowRight, vArrowLeft;
+
     private View vControlPanel;
     private TextView tvFolder, tvPosition, tvName;
     private ImageView ivModeSet;
@@ -51,6 +56,9 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
     private View layoutWarning;
 
     //==========Variables in this Activity==========
+    private PanelTouchImpl mPanelTouchImpl;
+    private PanelTouchResp mPanelTouchResp;
+
     private SeekBarOnChange mSeekBarOnChange;
     private GpsImpl mGpsImpl;
 
@@ -70,8 +78,21 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
         super.init();
 
         // ----Widgets----
-        vControlPanel = findView(R.id.v_control_panel);
+        mPanelTouchImpl = new PanelTouchImpl();
+        mPanelTouchImpl.init(this);
+        mPanelTouchImpl.addCallback((mPanelTouchResp = new PanelTouchResp()));
 
+        vArrowLeft = findViewById(R.id.v_arrow_left);
+        vArrowLeft.setVisibility(View.INVISIBLE);
+
+        vArrowRight = findViewById(R.id.v_arrow_right);
+        vArrowRight.setVisibility(View.INVISIBLE);
+
+        vCoverPanel = findViewById(R.id.vv_cover);
+        vCoverPanel.setOnTouchListener(mPanelTouchImpl);
+
+        //
+        vControlPanel = findViewById(R.id.v_control_panel);
         tvFolder = (TextView) findViewById(R.id.v_folder_name);
         tvFolder.setText("");
 
@@ -85,14 +106,6 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
         vvPlayer.setPlayStateListener(this);
         vvPlayer.setKeepScreenOn(true);
         vvPlayer.setDrawingCacheEnabled(false);
-        vvPlayer.setOnTouchListener(new View.OnTouchListener() {
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switchLightMode();
-                return false;
-            }
-        });
         setCanPlayAtBg(false);
 
         tvStartTime = findView(R.id.tv_play_start_time);
@@ -245,6 +258,104 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
         savePlayInfo();
     }
 
+    private class PanelTouchResp implements PanelTouchImpl.PanelTouchCallback {
+
+        private Handler mmHandler = new Handler();
+
+        @Override
+        public void onActionDown() {
+            Log.i(TAG, "onActionDown()");
+        }
+
+        @Override
+        public void onActionUp() {
+            Log.i(TAG, "onActionUp()");
+        }
+
+        @Override
+        public void onSingleTapUp() {
+            Log.i(TAG, "onSingleTapUp()");
+            switchLightMode();
+        }
+
+        @Override
+        public void onPrepareAdjustBrightness() {
+            Log.i(TAG, "onPrepareAdjustBrightness()");
+        }
+
+        @Override
+        public void onAdjustBrightness(double rate) {
+            Log.i(TAG, "onAdjustBrightness(" + rate + ")");
+        }
+
+        @Override
+        public void onPrepareAdjustVol() {
+            Log.i(TAG, "onPrepareAdjustVol()");
+        }
+
+        @Override
+        public void onAdjustVol(int vol, int maxVol) {
+            Log.i(TAG, "onAdjustVol(" + vol + "," + maxVol + ")");
+        }
+
+        @Override
+        public void onPrepareAdjustProgress() {
+            Log.i(TAG, "onPrepareAdjustProgress()");
+        }
+
+        @Override
+        public void onAdjustProgress(int direction, int progressDelta) {
+            Log.i(TAG, "onAdjustProgress(" + direction + "," + progressDelta + ")");
+            switch (direction) {
+                case 0:
+                    vArrowLeft.setVisibility(View.INVISIBLE);
+                    vArrowRight.setVisibility(View.VISIBLE);
+                    break;
+                case 1:
+                    vArrowLeft.setVisibility(View.VISIBLE);
+                    vArrowRight.setVisibility(View.INVISIBLE);
+                    break;
+            }
+        }
+
+        @Override
+        public void seekProgress(int direction, int progressDelta) {
+            Log.i(TAG, "seekTo(" + direction + "," + progressDelta + ")");
+            switch (direction) {
+                case 0:
+                    int targetProgress = getProgress() + 15 * 1000;
+                    if (targetProgress > getDuration()) {
+                        targetProgress = getDuration();
+                    }
+                    seekTo(targetProgress);
+                    break;
+                case 1:
+                    targetProgress = getProgress() - 15 * 1000;
+                    if (targetProgress < 0) {
+                        targetProgress = 0;
+                    }
+                    seekTo(targetProgress);
+                    break;
+            }
+            delayInvisible();
+        }
+
+        void delayInvisible() {
+            cancelRunnables();
+            mmHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    vArrowLeft.setVisibility(View.INVISIBLE);
+                    vArrowRight.setVisibility(View.INVISIBLE);
+                }
+            }, 1000);
+        }
+
+        void cancelRunnables() {
+            mmHandler.removeCallbacksAndMessages(null);
+        }
+    }
+
     /**
      * View Click Event
      */
@@ -350,11 +461,11 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
     @Override
     public void onGetKeyCode(KeyEnum key) {
         switch (key) {
-            case KEYCODE_PREV:
+            case KEYCODE_MEDIA_PREVIOUS:
                 mIsPauseOnNotify = false;
                 playPrevBySecurity();
                 break;
-            case KEYCODE_NEXT:
+            case KEYCODE_MEDIA_NEXT:
                 mIsPauseOnNotify = false;
                 playNextBySecurity();
                 break;
@@ -399,14 +510,23 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
     protected void onDestroy() {
         ReverseReceiver.unregister(this);
         AccReceiver.unregister(this);
+
+        // 释放播放器
+        execRelease();
+        setCurrPlayer(false, this);
+
+        //
         if (mGpsImpl != null) {
             mGpsImpl.destroy();
             mGpsImpl = null;
         }
 
-        // 释放播放器
-        execRelease();
-        setCurrPlayer(false, this);
+        //
+        if (mPanelTouchResp != null) {
+            mPanelTouchResp.cancelRunnables();
+            mPanelTouchResp = null;
+        }
+
         super.onDestroy();
     }
 

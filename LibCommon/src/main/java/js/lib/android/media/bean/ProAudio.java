@@ -2,7 +2,10 @@ package js.lib.android.media.bean;
 
 import android.util.Log;
 
+import java.io.File;
+
 import js.lib.android.media.engine.audio.utils.AudioInfo;
+import js.lib.utils.CharacterParser;
 
 /**
  * Audio Program
@@ -68,13 +71,13 @@ public class ProAudio extends Program {
         this.title = info.title;
         this.titlePinYin = info.titlePinYin;
         this.artist = info.artist;
-        artistPinYin = info.artistPinYin;
+        this.artistPinYin = info.artistPinYin;
         this.albumID = info.albumID;
         this.album = info.album;
-        albumPinYin = info.albumPinYin;
+        this.albumPinYin = info.albumPinYin;
         this.mediaUrl = info.path;
-        mediaDirectory = info.directory;
-        mediaDirectoryPinYin = info.directoryPinYin;
+        this.mediaDirectory = info.directory;
+        this.mediaDirectoryPinYin = info.directoryPinYin;
         this.duration = info.duration;
     }
 
@@ -82,8 +85,25 @@ public class ProAudio extends Program {
      * Construct ProMusic From Media File
      */
     public ProAudio(String mediaUrl, String title) {
-        this.mediaUrl = mediaUrl;
+//        this.sysMediaID
         this.title = title;
+        this.titlePinYin = CharacterParser.getPingYin(title);
+        this.artist = "<unknown>";
+        this.artistPinYin = "<unknown>";
+//        this.albumID
+        this.album = "<unknown>";
+        this.albumPinYin = "<unknown>";
+
+        //
+        this.mediaUrl = mediaUrl;
+        File file = new File(mediaUrl);
+        File parentFile = file.getParentFile();
+        if (parentFile != null) {
+            this.mediaDirectory = parentFile.getName();
+            this.mediaDirectoryPinYin = CharacterParser.getPingYin(mediaDirectory);
+        }
+
+//        this.duration
     }
 
     /**
@@ -95,9 +115,13 @@ public class ProAudio extends Program {
             targetPro.title = srcPro.title;
             targetPro.titlePinYin = srcPro.titlePinYin;
             targetPro.artist = srcPro.artist;
+            targetPro.artistPinYin = srcPro.artistPinYin;
             targetPro.albumID = srcPro.albumID;
             targetPro.album = srcPro.album;
+            targetPro.albumPinYin = srcPro.albumPinYin;
             targetPro.mediaUrl = srcPro.mediaUrl;
+            targetPro.mediaDirectory = srcPro.mediaDirectory;
+            targetPro.mediaDirectoryPinYin = srcPro.mediaDirectoryPinYin;
             targetPro.duration = srcPro.duration;
         } catch (Exception e) {
             Log.i(TAG, "copy(targetPro,srcPro)");

@@ -14,6 +14,7 @@
         android:icon="@drawable/icon_launcher_radio"
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
+        tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:icon">
         <activity
             android:name=".MainActivity"
@@ -32,7 +33,9 @@
         <service android:name="com.tricheer.radio.service.RadioPlayerService" />
 
         <!-- ACC -->
-        <receiver android:name="com.tri.lib.receiver.AccReceiver">
+        <receiver
+            android:name="com.tri.lib.receiver.AccReceiver"
+            tools:ignore="ExportedReceiver">
             <intent-filter>
                 <action android:name="tricheer.intent.action.ACC_OFF" />
                 <action android:name="tricheer.intent.action.SLEEP" />
@@ -40,10 +43,17 @@
             </intent-filter>
         </receiver>
         <!-- Reverse -->
-        <receiver android:name="com.tri.lib.receiver.ReverseReceiver">
+        <receiver
+            android:name="com.tri.lib.receiver.ReverseReceiver"
+            tools:ignore="ExportedReceiver">
             <intent-filter>
                 <action android:name="com.tricheer.carback.on" />
                 <action android:name="com.tricheer.carback.off" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name="js.lib.android.media.engine.mediabtn.MediaBtnReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
         </receiver>
     </application>

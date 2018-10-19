@@ -17,7 +17,7 @@ import java.util.Set;
  */
 public class AccReceiver extends BroadcastReceiver {
     //TAG
-    private static final String TAG = "AccOffReceiver";
+    private static final String TAG = "AccReceiver";
 
     private static Set<AccDelegate> mSetDelegates = new HashSet<>();
 

@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 
 import com.tricheer.player.bean.VideoRecordControl;
 import com.tricheer.player.engine.VersionController;
-import com.tricheer.player.receiver.MediaScanReceiver.ScanActives;
+import com.tricheer.player.receiver.MediaScanReceiver.MediaScanActives;
 import com.tricheer.player.utils.PlayerFileUtils;
 import com.tricheer.player.utils.PlayerLogicUtils;
 
@@ -25,9 +25,9 @@ import java.util.Map;
 import java.util.Set;
 
 import js.lib.android.media.bean.ProVideo;
+import js.lib.android.media.engine.video.db.VideoDBManager;
 import js.lib.android.media.engine.video.utils.VideoInfo;
 import js.lib.android.media.engine.video.utils.VideoUtils;
-import js.lib.android.media.engine.video.db.VideoDBManager;
 import js.lib.android.media.player.PlayListener;
 import js.lib.android.utils.CommonUtil;
 import js.lib.android.utils.EmptyUtil;
@@ -136,25 +136,30 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
     }
 
     @Override
-    public void onNotifyScanVideos(int flag, List<ProVideo> listPrgrams, Set<String> allSdMountedPaths) {
+    public void onNotifyScanVideos(MediaScanActives flag, List<ProVideo> listPrgrams, Set<String> allSdMountedPaths) {
         super.onNotifyScanVideos(flag, listPrgrams, allSdMountedPaths);
-        if (flag == ScanActives.REFRESH) {
-            refreshPageOnScan(listPrgrams, false);
-        } else if (flag == ScanActives.SYS_SCANED) {
-            refreshPageOnScan(listPrgrams, true);
-        } else if (flag == ScanActives.CLEAR) {
-            refreshPageOnClear(allSdMountedPaths);
-        } else {
-            refreshOnNotifyLoading(flag);
+        switch (flag) {
+            case REFRESH:
+                refreshPageOnScan(listPrgrams, false);
+                break;
+            case SYS_SCANNED:
+                refreshPageOnScan(listPrgrams, true);
+                break;
+            case CLEAR:
+                refreshPageOnClear(allSdMountedPaths);
+                break;
+            default:
+                refreshOnNotifyLoading(flag);
+                break;
         }
     }
 
     /**
      * Refresh Page On Loading
      *
-     * @param loadingFlag : {@link ScanActives#START} or {@link ScanActives#END}
+     * @param flag : {@link MediaScanActives#START} or {@link MediaScanActives#END}
      */
-    protected void refreshOnNotifyLoading(int loadingFlag) {
+    protected void refreshOnNotifyLoading(MediaScanActives flag) {
     }
 
     /**

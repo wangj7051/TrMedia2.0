@@ -11,6 +11,47 @@
         android:layout_centerInParent="true" />
 
     <RelativeLayout
+        android:id="@+id/vv_cover"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="150dp"
+        android:paddingRight="150dp">
+
+        <TextView
+            android:id="@+id/v_arrow_left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:clickable="false"
+            android:contentDescription="@string/no_img"
+            android:drawableStart="@drawable/icon_adjust_arrow_left"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:gravity="center"
+            android:text="@string/video_backward_15s"
+            android:textColor="@android:color/white"
+            android:textSize="40sp" />
+
+        <TextView
+            android:id="@+id/v_arrow_right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:clickable="false"
+            android:contentDescription="@string/no_img"
+            android:drawableEnd="@drawable/icon_adjust_arrow_right"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:gravity="center"
+            android:text="@string/video_forward_15s"
+            android:textColor="@android:color/white"
+            android:textSize="40sp"
+            tools:ignore="RelativeOverlap" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
         android:id="@+id/v_control_panel"
         android:layout_width="match_parent"
         android:layout_height="match_parent">

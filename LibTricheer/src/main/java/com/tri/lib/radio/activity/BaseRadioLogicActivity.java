@@ -3,6 +3,7 @@ package com.tri.lib.radio.activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
 import com.tri.lib.radio.engine.BandCategoryEnum;
 import com.tri.lib.radio.utils.RadioPreferUtils;
@@ -14,7 +15,7 @@ import com.tri.lib.radio.utils.RadioPreferUtils;
  */
 public abstract class BaseRadioLogicActivity extends BaseRadioActivity {
     //TAG
-//    private final String TAG = "BaseRadioLogicActivity";
+    private final String TAG = "BaseRadioLogicActivity";
 
     private MsgHandler mMsgHandler;
 
@@ -55,7 +56,14 @@ public abstract class BaseRadioLogicActivity extends BaseRadioActivity {
             //
             setBand(band);
             if (freq == -1) {
-                searchAll();
+                Log.i(TAG, "execOpenRadio - Freq==(-1)");
+                if (RadioPreferUtils.isFirstExecSearchAll()) {
+                    Log.i(TAG, "execOpenRadio - Freq==(-1) - searchAll()");
+                    searchAll();
+                } else {
+                    Log.i(TAG, "execOpenRadio - Freq==(-1) - play(MIN)");
+                    play(getMinFreq());
+                }
             } else {
                 play(freq);
             }

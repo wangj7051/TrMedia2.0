@@ -75,7 +75,9 @@ public abstract class BaseVideoFocusActivity extends BaseVideoKeyEventActivity {
 
     @Override
     public void onAudioFocusGain() {
-        resumeByUser();
+        if (isForeground()) {
+            resumeByUser();
+        }
     }
 
     @Override

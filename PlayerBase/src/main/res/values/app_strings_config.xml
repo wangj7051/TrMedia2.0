@@ -77,6 +77,8 @@
     <string name="video_warning_op1">本次同意</string>
     <string name="video_warning_op2">本次不再提示</string>
     <string name="video_warning_op3">退出</string>
+    <string name="video_forward_15s">+15s</string>
+    <string name="video_backward_15s">-15s</string>
 
     <!-- Player Operates -->
     <string name="play_pre">上一个</string>

@@ -64,6 +64,7 @@ public class SclLc2010VdcVideoFoldersFrag extends BaseVideoListFrag {
      * Media list
      */
     private List<?> mListDatas;
+    private List<VideoFilter> mListFilters;
 
     @Override
     public void onAttach(Activity activity) {
@@ -156,10 +157,16 @@ public class SclLc2010VdcVideoFoldersFrag extends BaseVideoListFrag {
             }
 
             //Refresh UI
-            mListDatas = new ArrayList<>(mapDatas.values());
-            VideoFilter.sortByFolder((List<VideoFilter>) mListDatas);
-            mDataAdapter.refreshDatas(mListDatas, targetMediaUrl);
+            refreshFilters((mListFilters = new ArrayList<>(mapDatas.values())));
         }
+    }
+
+    private void refreshFilters(List<VideoFilter> listFilters) {
+        if (!EmptyUtil.isEmpty(listFilters)) {
+            mListDatas = listFilters;
+            VideoFilter.sortByFolder((List<VideoFilter>) mListDatas);
+        }
+        mDataAdapter.refreshDatas(mListDatas, mAttachedActivity.getLastMediaPath());
     }
 
     @Override
@@ -240,5 +247,25 @@ public class SclLc2010VdcVideoFoldersFrag extends BaseVideoListFrag {
     @Override
     public void next() {
 //        mDataAdapter.refreshDatas(mDataAdapter.getNextPos());
+    }
+
+    @Override
+    public int onBackPressed() {
+        if (EmptyUtil.isEmpty(mListDatas)) {
+            return 0;
+        }
+
+        Object objItem = mListDatas.get(0);
+        if (objItem instanceof ProVideo) {
+            refreshFilters(mListFilters);
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 }

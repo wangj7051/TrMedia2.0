@@ -6,12 +6,15 @@ import android.content.Intent;
 import com.tri.lib.radio.activity.BaseRadioLogicActivity;
 import com.tricheer.radio.service.RadioPlayerService;
 
+import js.lib.android.media.engine.IAudioFocusListener;
+
 /**
  * Radio logic implement activity
  *
  * @author Jun.Wang
  */
-public abstract class BaseRadioImplActivity extends BaseRadioLogicActivity {
+public abstract class BaseRadioImplActivity extends BaseRadioLogicActivity implements IAudioFocusListener {
+
     @Override
     protected void onServiceStatusChanged(Service service, boolean isConnected) {
     }

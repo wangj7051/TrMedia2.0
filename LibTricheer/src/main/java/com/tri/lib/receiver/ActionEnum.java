@@ -1,5 +1,7 @@
 package com.tri.lib.receiver;
 
+import android.content.Intent;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,17 +18,24 @@ public enum ActionEnum {
     // ### Click FileManager Media to Play ###
     // Parameter1 : "index" - [选中媒体所在数据列表位置]
     // Parameter2 : "fileList" - [媒体路径数据列表]
-    PLAY_MUSIC_BY_FILEMANAGER(20,"com.tricheer.music.PLAY_FROM_FILEMANAGER"),
+    PLAY_MUSIC_BY_FILEMANAGER(20, "com.tricheer.music.PLAY_FROM_FILEMANAGER"),
     // Parameter1 : "index" - [选中媒体所在数据列表位置]
     // Parameter2 : "fileList" - [媒体路径数据列表]
-    PLAY_VIDEO_BY_FILEMANAGER(21,"com.tricheer.video.PLAY_FROM_FILEMANAGER"),
+    PLAY_VIDEO_BY_FILEMANAGER(21, "com.tricheer.video.PLAY_FROM_FILEMANAGER"),
+
+    //Media Switch
+    MEDIA_SWITCH_BY_SOURCE(100, "tricheer.intent.action.SWC_SOURCE_CHANGE"),
+    MEDIA_SWITCH_BY_MEDIA(100, "tricheer.intent.action.MEDIA_SWITCH"),
+
+    // System Broadcast
+    BOOT_COMPLETED(10000, Intent.ACTION_BOOT_COMPLETED),
 
     /**
      * ### Open Logs ###
      * <p>
      * Parameter1(boolean) : "IS_OPEN"[true,false]
      */
-    OPEN_LOGS(30,"com.tricheer.app.OPEN_LOGS"),
+    OPEN_LOGS(30, "com.tricheer.app.OPEN_LOGS"),
 
     // ENUM - Test Actions
     TEST_OPEN_VIDEO_LIST(100000, "com.tri.test.OPEN_AUDIO"),
@@ -64,9 +73,20 @@ public enum ActionEnum {
             mMapEnums.put(REVERSE_ON.getAction(), REVERSE_ON);
             mMapEnums.put(REVERSE_OFF.getAction(), REVERSE_OFF);
 
+            // ENUM - Open by file manager
             mMapEnums.put(PLAY_MUSIC_BY_FILEMANAGER.getAction(), PLAY_MUSIC_BY_FILEMANAGER);
             mMapEnums.put(PLAY_VIDEO_BY_FILEMANAGER.getAction(), PLAY_VIDEO_BY_FILEMANAGER);
+
+            // ENUM - Media Switch
+            mMapEnums.put(MEDIA_SWITCH_BY_SOURCE.getAction(), MEDIA_SWITCH_BY_SOURCE);
+            mMapEnums.put(MEDIA_SWITCH_BY_MEDIA.getAction(), MEDIA_SWITCH_BY_MEDIA);
+
+            // ENUM - System broadcast
+            // Boot
             mMapEnums.put(OPEN_LOGS.getAction(), OPEN_LOGS);
+
+            // ENUM - Open Logs
+            mMapEnums.put(BOOT_COMPLETED.getAction(), BOOT_COMPLETED);
 
             // ENUM - Test Actions
             mMapEnums.put(TEST_OPEN_VIDEO_LIST.getAction(), TEST_OPEN_VIDEO_LIST);

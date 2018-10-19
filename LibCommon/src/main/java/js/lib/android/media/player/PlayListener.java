@@ -2,7 +2,7 @@ package js.lib.android.media.player;
 
 import java.util.List;
 
-import js.lib.android.media.bean.Program;
+import js.lib.android.media.bean.MediaBase;
 import js.lib.android.media.engine.IAudioFocusListener;
 
 /**
@@ -31,12 +31,12 @@ public interface PlayListener extends IPlayStateLitener, IPlayProgressListener, 
      *
      * @param listMedias Media list set
      */
-    void setPlayList(List<? extends Program> listMedias);
+    void setPlayList(List<? extends MediaBase> listMedias);
 
     /**
      * 获取播放列表
      */
-    List<? extends Program> getListMedias();
+    List<? extends MediaBase> getListMedias();
 
     /**
      * 设置播放位置
@@ -59,7 +59,7 @@ public interface PlayListener extends IPlayStateLitener, IPlayProgressListener, 
     /**
      * 获取当前媒体
      */
-    Program getCurrMedia();
+    MediaBase getCurrMedia();
 
     /**
      * 获取当前媒体路径

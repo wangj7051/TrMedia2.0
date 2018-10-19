@@ -2,8 +2,11 @@ package js.lib.android.media.bean;
 
 import android.util.Log;
 
+import java.io.File;
+
 import js.lib.android.media.engine.video.utils.VideoInfo;
 import js.lib.android.utils.Logs;
+import js.lib.utils.CharacterParser;
 
 /**
  * Video Program
@@ -19,10 +22,10 @@ public class ProVideo extends Program {
 
     public ProVideo(VideoInfo video) {
         this.title = video.title;
-        titlePinYin = video.titlePinYin;
+        this.titlePinYin = video.titlePinYin;
         this.mediaUrl = video.path;
-        mediaDirectory = video.directory;
-        mediaDirectoryPinYin = video.directoryPinYin;
+        this.mediaDirectory = video.directory;
+        this.mediaDirectoryPinYin = video.directoryPinYin;
         this.duration = video.duration;
     }
 
@@ -41,8 +44,17 @@ public class ProVideo extends Program {
      * Construct From Media File
      */
     public ProVideo(String mediaUrl, String title) {
-        this.mediaUrl = mediaUrl;
         this.title = title;
+        this.titlePinYin = CharacterParser.getPingYin(title);
+
+        //
+        this.mediaUrl = mediaUrl;
+        File file = new File(mediaUrl);
+        File parentFile = file.getParentFile();
+        if (parentFile != null) {
+            this.mediaDirectory = parentFile.getName();
+            this.mediaDirectoryPinYin = CharacterParser.getPingYin(this.mediaDirectory);
+        }
     }
 
     /**

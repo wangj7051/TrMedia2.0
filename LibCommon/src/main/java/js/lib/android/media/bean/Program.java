@@ -1,19 +1,11 @@
 package js.lib.android.media.bean;
 
-import js.lib.bean.BaseBean;
-
 /**
  * Program
  *
  * @author Jun.Wang
  */
-public class Program extends BaseBean {
-
-    /**
-     * Serialization
-     */
-    private static final long serialVersionUID = 1L;
-
+public class Program extends MediaBase {
     /**
      * Program ID
      */
@@ -28,11 +20,12 @@ public class Program extends BaseBean {
      */
     public String titlePinYin = "";
 
-    /**
-     * Media Play URL
-     * <p>e.g. "/sdcard/媒体/test.mp4"</p>
-     */
-    public String mediaUrl = "";
+//    /**
+//     * Media Play URL
+//     * <p>e.g. "/sdcard/music/test.mp4"</p>
+//     */
+//    public String mediaUrl = "";
+
     /**
      * Media Play URL
      * <p>e.g. mediaUrl="/sdcard/媒体/test.mp3" ; mediaDirectory="媒体"</p>
