@@ -59,188 +59,152 @@
         <LinearLayout
             android:id="@+id/layout_top"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/audio_top_layout_h"
             android:background="@drawable/bg_title"
             android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingLeft="15dp"
-            android:paddingRight="15dp">
+            android:orientation="horizontal">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="50dp"
                 android:text="@string/video_local"
                 android:textColor="@android:color/white"
-                android:textSize="25sp" />
+                android:textSize="@dimen/video_top_item_font_size" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/layout_top"
-            android:orientation="vertical">
+            android:background="@color/color_black_030"
+            android:orientation="vertical"
+            android:paddingStart="80dp"
+            android:paddingEnd="80dp">
 
             <TextView
                 android:id="@+id/v_folder_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="50dp"
-                android:layout_marginTop="50dp"
+                android:layout_marginTop="10dp"
                 android:text="@string/file_name"
                 android:textColor="@android:color/white"
-                android:textSize="25sp" />
+                android:textSize="@dimen/video_player_folder_font_size" />
 
             <TextView
                 android:id="@+id/v_sort"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="50dp"
-                android:layout_marginTop="50dp"
+                android:layout_marginTop="10dp"
                 android:text="@string/file_name"
                 android:textColor="@android:color/white"
-                android:textSize="25sp" />
+                android:textSize="@dimen/video_player_sort_font_size" />
 
             <js.lib.android.view.AlwaysMarqueeTextView
                 android:id="@+id/v_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="50dp"
-                android:layout_marginTop="50dp"
+                android:layout_marginTop="10dp"
                 android:ellipsize="marquee"
                 android:singleLine="true"
                 android:text="@string/file_name"
                 android:textColor="@android:color/white"
-                android:textSize="25sp" />
+                android:textSize="@dimen/video_player_title_font_size" />
 
         </LinearLayout>
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/layout_bottom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:background="@color/color_black_070"
             android:baselineAligned="false"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/audio_player_space_to_left"
+            android:paddingTop="30dp"
+            android:paddingEnd="@dimen/audio_player_space_to_right"
+            android:paddingBottom="30dp">
 
-            <RelativeLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="10"
-                android:paddingTop="3dp"
-                android:paddingBottom="3dp"
-                tools:ignore="NestedWeights">
+            <ImageView
+                android:id="@+id/iv_play_pre"
+                android:layout_width="@dimen/video_player_op_w"
+                android:layout_height="@dimen/video_player_op_h"
+                android:clickable="true"
+                android:contentDescription="@string/no_img"
+                android:focusable="true"
+                android:padding="6dp"
+                android:src="@drawable/btn_op_prev_selector" />
 
-                <ImageView
-                    android:id="@+id/iv_play_pre"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:clickable="true"
-                    android:contentDescription="@string/no_img"
-                    android:focusable="true"
-                    android:padding="6dp"
-                    android:src="@drawable/btn_op_prev_selector" />
-            </RelativeLayout>
+            <ImageView
+                android:id="@+id/iv_play"
+                android:layout_width="@dimen/video_player_op_w"
+                android:layout_height="@dimen/video_player_op_h"
+                android:layout_marginStart="@dimen/video_player_op_period"
+                android:layout_toEndOf="@id/iv_play_pre"
+                android:clickable="true"
+                android:contentDescription="@string/no_img"
+                android:focusable="true"
+                android:padding="6dp"
+                android:src="@drawable/btn_op_play_selector" />
 
-            <RelativeLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="10"
-                android:paddingTop="3dp"
-                android:paddingBottom="3dp">
+            <ImageView
+                android:id="@+id/iv_play_next"
+                android:layout_width="@dimen/video_player_op_w"
+                android:layout_height="@dimen/video_player_op_h"
+                android:layout_marginStart="@dimen/video_player_op_period"
+                android:layout_toEndOf="@id/iv_play"
+                android:clickable="true"
+                android:contentDescription="@string/no_img"
+                android:focusable="true"
+                android:padding="6dp"
+                android:src="@drawable/btn_op_next_selector" />
 
-                <ImageView
-                    android:id="@+id/iv_play"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:clickable="true"
-                    android:contentDescription="@string/no_img"
-                    android:focusable="true"
-                    android:padding="6dp"
-                    android:src="@drawable/btn_op_play_selector" />
-            </RelativeLayout>
+            <ImageView
+                android:id="@+id/v_list"
+                android:layout_width="@dimen/video_player_op_w"
+                android:layout_height="@dimen/video_player_op_h"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="@dimen/video_player_op_period"
+                android:clickable="true"
+                android:contentDescription="@string/no_img"
+                android:focusable="true"
+                android:padding="6dp"
+                android:src="@drawable/btn_op_list_selector" />
 
-            <RelativeLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="10"
-                android:paddingTop="3dp"
-                android:paddingBottom="3dp">
-
-                <ImageView
-                    android:id="@+id/iv_play_next"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:clickable="true"
-                    android:contentDescription="@string/no_img"
-                    android:focusable="true"
-                    android:padding="6dp"
-                    android:src="@drawable/btn_op_next_selector" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="15"
-                android:paddingTop="3dp"
-                android:paddingBottom="3dp" />
-
-            <RelativeLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="10"
-                android:paddingTop="3dp"
-                android:paddingBottom="3dp">
-
-                <ImageView
-                    android:id="@+id/iv_play_mode_set"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:clickable="true"
-                    android:contentDescription="@string/no_img"
-                    android:focusable="true"
-                    android:padding="6dp"
-                    android:src="@drawable/btn_op_mode_loop_selector" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="10"
-                android:paddingTop="3dp"
-                android:paddingBottom="3dp">
-
-                <ImageView
-                    android:id="@+id/v_list"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:clickable="true"
-                    android:contentDescription="@string/no_img"
-                    android:focusable="true"
-                    android:padding="6dp"
-                    android:src="@drawable/btn_op_list_selector" />
-            </RelativeLayout>
-        </LinearLayout>
+            <ImageView
+                android:id="@+id/iv_play_mode_set"
+                android:layout_width="@dimen/video_player_op_w"
+                android:layout_height="@dimen/video_player_op_h"
+                android:layout_toStartOf="@id/v_list"
+                android:clickable="true"
+                android:contentDescription="@string/no_img"
+                android:focusable="true"
+                android:padding="6dp"
+                android:src="@drawable/btn_op_mode_loop_selector" />
+        </RelativeLayout>
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_above="@id/layout_bottom"
-            android:gravity="center">
+            android:layout_marginStart="@dimen/audio_player_space_to_left"
+            android:layout_marginEnd="@dimen/audio_player_space_to_right"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/bg_corners_gray"
+            android:gravity="center"
+            android:padding="5dp">
 
             <TextView
                 android:id="@+id/tv_play_start_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
                 android:text="@string/fillstr_time_1"
                 android:textColor="@android:color/white"
-                android:textSize="16sp" />
+                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/tv_play_end_time"
@@ -248,9 +212,11 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
                 android:text="@string/fillstr_time_1"
                 android:textColor="@android:color/white"
-                android:textSize="16sp" />
+                android:textSize="18sp" />
 
             <SeekBar
                 android:id="@+id/seekbar"
@@ -258,8 +224,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
                 android:layout_toStartOf="@id/tv_play_end_time"
                 android:layout_toEndOf="@id/tv_play_start_time"
                 android:max="100" />

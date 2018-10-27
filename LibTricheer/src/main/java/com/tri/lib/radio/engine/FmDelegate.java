@@ -23,17 +23,65 @@ public interface FmDelegate {
 
         void onStChange(boolean show);
 
+        /**
+         * 搜索所有可以播放的电台-Start
+         */
         void onSearchFreqStart(BandCategoryEnum band);
 
+        /**
+         * 搜索所有可以播放的电台-END
+         */
         void onSearchFreqEnd(BandCategoryEnum band);
 
+        /**
+         * 搜索所有可以播放的电台-FAIL
+         */
         void onSearchFreqFail(BandCategoryEnum band, int reason);
 
+        /**
+         * 扫描预览-Start
+         */
         void onScanFreqStart(BandCategoryEnum band);
 
+        /**
+         * 扫描预览-END
+         */
         void onScanFreqEnd(BandCategoryEnum band);
 
+        /**
+         * 扫描预览-FAIL
+         */
         void onScanFreqFail(BandCategoryEnum band, int reason);
+
+        /**
+         * 搜索上一个可以播放的电台并播放-START
+         */
+        void onScanStrongFreqLeftStart(BandCategoryEnum band);
+
+        /**
+         * 搜索上一个可以播放的电台并播放-END
+         */
+        void onScanStrongFreqLeftEnd(BandCategoryEnum band);
+
+        /**
+         * 搜索上一个可以播放的电台并播放-FAIL
+         */
+        void onScanStrongFreqLeftFail(BandCategoryEnum band, int reason);
+
+        /**
+         * 搜索下一个可以播放的电台并播放-START
+         */
+        void onScanStrongFreqRightStart(BandCategoryEnum band);
+
+        /**
+         * 搜索下一个可以播放的电台并播放-END
+         */
+        void onScanStrongFreqRightEnd(BandCategoryEnum band);
+
+        /**
+         * 搜索下一个可以播放的电台并播放-FAIL
+         */
+        void onScanStrongFreqRightFail(BandCategoryEnum band, int reason);
     }
 
     /**

@@ -3,7 +3,6 @@ package com.tricheer.player;
 import android.os.Bundle;
 
 import com.tricheer.player.engine.PlayerAppManager;
-import com.tricheer.player.utils.PlayerFileUtils;
 import com.tricheer.player.version.base.activity.BaseUsbLogicActivity;
 
 import js.lib.android.utils.Logs;
@@ -25,11 +24,11 @@ public class MusicPlayerActivity extends BaseUsbLogicActivity {
 
     private void init() {
         Logs.i(TAG, "^^ init() ^^");
-        if (isTest() || PlayerFileUtils.isHasSupportStorage()) {
-            openPlayer();
-        } else {
-            toastMsg();
-        }
+//        if (isTest() || PlayerFileUtils.isHasSupportStorage()) {
+        openPlayer();
+//        } else {
+//            toastMsg();
+//        }
     }
 
     private boolean isTest() {

@@ -4,9 +4,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import js.lib.android.media.bean.MediaBase;
 import js.lib.android.media.player.PlayEnableController;
@@ -76,33 +74,30 @@ public abstract class AudioPlayService extends BaseAudioService {
     /**
      * 媒体源数据
      * <p>所有播放列表的数据都应当来自此对象</p>
-     * <p>Key:{@link MediaBase#mediaUrl}, Value:{@link MediaBase}</p>
      */
-    private Map<String, ? extends MediaBase> mMapSrcMedias;
+    private List<? extends MediaBase> mListSrcMedias;
 
     /**
      * 设置媒体源数据
      * <p>
-     * 请注意，为了保证播放的正常运行，此方法必须在数据获取到以后就设置进来，因为所有的播放数据源都来自 {@link #mMapSrcMedias}
+     * 请注意，为了保证播放的正常运行，此方法必须在数据获取到以后就设置进来，因为所有的播放数据源都来自 {@link #mListSrcMedias}
      * </p>
      */
-    public void setMapSrcMedias(Map<String, ? extends MediaBase> mapSrcMedias) {
-        if (EmptyUtil.isEmpty(mapSrcMedias)) {
-            mMapSrcMedias = new HashMap<>();
+    @Override
+    public void setListSrcMedias(List<? extends MediaBase> listSrcMedias) {
+        if (EmptyUtil.isEmpty(listSrcMedias)) {
+            mListSrcMedias = new ArrayList<>();
         } else {
-            mMapSrcMedias = mapSrcMedias;
+            mListSrcMedias = listSrcMedias;
         }
     }
 
     /**
      * 获取媒体源数据
      */
-    public List<MediaBase> getListSrcMedias() {
-        List<MediaBase> listSrcMedias = new ArrayList<>();
-        if (mMapSrcMedias != null) {
-            listSrcMedias.addAll(mMapSrcMedias.values());
-        }
-        return listSrcMedias;
+    @Override
+    public List<? extends MediaBase> getListSrcMedias() {
+        return mListSrcMedias;
     }
 
     @Override

@@ -191,6 +191,15 @@ public abstract class BasePlayerActivity extends BaseFragActivity implements Pla
         return null;
     }
 
+    @Override
+    public void setListSrcMedias(List<? extends MediaBase> listSrcMedias) {
+    }
+
+    @Override
+    public List<? extends MediaBase> getListSrcMedias() {
+        return null;
+    }
+
     // {@link PlayerActionsListener} Implements Method
     @Override
     public void setPlayList(List<? extends MediaBase> listMedias) {

@@ -1,5 +1,6 @@
 package com.tricheer.player.version.cj.slc_lc2010_vdc.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -45,6 +46,11 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
 
     //==========Variables in this Activity==========
     /**
+     * Context
+     */
+    private Context mContext;
+
+    /**
      * Flag :: If open player automatically
      * <p>Only execute once in this activity.</p>
      */
@@ -58,8 +64,9 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
      */
     protected final int M_REQ_WARNING = 2;
 
-    private boolean mIsWarningShowing = false;
     private static Handler mHandler = new Handler();
+
+    private WarningController mWarningController;
 
     @Override
     protected void onCreate(@Nullable Bundle bundle) {
@@ -72,6 +79,10 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
     @Override
     protected void init() {
         super.init();
+        //
+        mContext = this;
+        mWarningController = new WarningController();
+
         //
         vItems[0] = findViewById(R.id.v_media_name);
         vItems[0].setOnClickListener(mFilterViewOnClick);
@@ -87,22 +98,7 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        showWarning();
-    }
-
-    private void showWarning() {
-        int flag = TrVideoPreferUtils.getVideoWarningFlag(false, 0);
-        switch (flag) {
-            case 1:
-                mIsWarningShowing = true;
-                Intent warningIntent = new Intent(this, SclLc2010VdcVideoWarningActivity.class);
-                startActivityForResult(warningIntent, M_REQ_WARNING);
-                break;
-            case 2:
-                break;
-            default:
-                break;
-        }
+        mWarningController.onResume();
     }
 
     private void loadFragment(int idx) {
@@ -207,10 +203,10 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
     }
 
     @Override
-    protected void refreshPageOnScan(List<ProVideo> listScannedVideos, boolean isScaned) {
-        super.refreshPageOnScan(listScannedVideos, isScaned);
+    protected void refreshPageOnScan(List<ProVideo> listScannedVideos, boolean isScanned) {
+        super.refreshPageOnScan(listScannedVideos, isScanned);
         if (!EmptyUtil.isEmpty(listScannedVideos)) {
-            Logs.i(TAG, "refreshPageOnScan() -> [VideoSize:" + listScannedVideos.size() + " ; isScaned:" + isScaned);
+            Logs.i(TAG, "refreshPageOnScan() -> [VideoSize:" + listScannedVideos.size() + " ; isScanned:" + isScanned);
             loadLocalMedias();
         }
     }
@@ -239,7 +235,12 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
     private View.OnClickListener mFilterViewOnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            switchTab(v, true);
+            if (v == vItems[0]) {
+                notifyScanMedias(true);
+                switchTab(v, true);
+            } else {
+                switchTab(v, true);
+            }
         }
     };
 
@@ -249,13 +250,12 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
         for (int idx = 0; idx < loop; idx++) {
             View item = vItems[idx];
             if (item == v) {
-                if (idx == 1) {
-                    notifyScanMedias(true);
-                }
+                item.setFocusable(true);
                 item.requestFocus();
                 setBg(item, true);
                 loadFragment(idx);
             } else {
+                item.setFocusable(false);
                 item.clearFocus();
                 setBg(item, false);
             }
@@ -266,7 +266,7 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
         if (selected) {
             v.setBackgroundResource(R.drawable.bg_title_item_c);
         } else {
-            v.setBackgroundResource(R.drawable.btn_collect_selector);
+            v.setBackgroundResource(R.drawable.btn_filter_tab_selector);
         }
     }
 
@@ -293,6 +293,11 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
                     mFragMedias.next();
                 }
                 break;
+            case KEYCODE_ENTER:
+                if (mFragMedias != null) {
+//                    mFragMedias.playSelected();
+                }
+                break;
         }
     }
 
@@ -302,7 +307,7 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
         if (data != null) {
             String flag = data.getStringExtra("flag");
             if ("EXIT_WARNING".equals(flag)) {
-                mIsWarningShowing = false;
+                mWarningController.exit();
                 if (mFragMedias instanceof SclLc2010VdcVideoNamesFrag) {
                     mHandler.removeCallbacksAndMessages(null);
                     mHandler.postDelayed(new Runnable() {
@@ -317,7 +322,7 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
     }
 
     public boolean isWarningShowing() {
-        return mIsWarningShowing;
+        return mWarningController.isWarningShowing();
     }
 
     @Override
@@ -373,5 +378,50 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Warning Page Controller
+     */
+    private class WarningController {
+        private boolean mmIsFirstOpen = true;
+        private boolean mmIsWarningShowing = false;
+
+        void onResume() {
+            if (mmIsFirstOpen) {
+                mmIsFirstOpen = false;
+                checkAndShowWarning();
+
+            } else if (mmIsWarningShowing) {
+                openWarningPage();
+            }
+        }
+
+        void exit() {
+            mmIsWarningShowing = false;
+        }
+
+        private void checkAndShowWarning() {
+            int flag = TrVideoPreferUtils.getVideoWarningFlag(false, 0);
+            switch (flag) {
+                case 1:
+                    mmIsWarningShowing = true;
+                    openWarningPage();
+                    break;
+                case 2:
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void openWarningPage() {
+            Intent warningIntent = new Intent(mContext, SclLc2010VdcVideoWarningActivity.class);
+            startActivityForResult(warningIntent, M_REQ_WARNING);
+        }
+
+        boolean isWarningShowing() {
+            return mmIsWarningShowing;
+        }
     }
 }

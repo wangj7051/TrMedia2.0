@@ -22,5 +22,7 @@ public abstract class BaseVideoListFrag extends BaseAppV4Fragment {
 
     public abstract void prev();
 
+    public abstract void playSelected();
+
     public abstract void play();
 }

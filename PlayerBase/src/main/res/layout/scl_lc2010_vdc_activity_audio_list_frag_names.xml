@@ -1,21 +1,33 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/layout_bottom"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal">
 
-    <com.js.sidebar.LetterSideBar
-        android:id="@+id/lsb"
-        android:layout_width="180dp"
-        android:layout_height="match_parent" />
-
-    <ListView
-        android:id="@+id/lv_datas"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginStart="10dp"
-        android:cacheColorHint="@android:color/transparent"
-        android:listSelector="@android:color/transparent"
-        android:overScrollMode="never"
-        android:scrollbars="none" />
-</LinearLayout>
+        android:layout_marginStart="@dimen/audio_left_layout_w"
+        android:background="@color/color_black_020">
+
+        <ListView
+            android:id="@+id/lv_datas"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/audio_lv_com_ui_space"
+            android:cacheColorHint="@android:color/transparent"
+            android:divider="@drawable/separate_line_h"
+            android:dividerHeight="2dp"
+            android:listSelector="@drawable/bg_audio_item_selector"
+            android:overScrollMode="never"
+            android:scrollbars="none" />
+    </RelativeLayout>
+
+    <com.js.sidebar.LetterSideBar
+        android:id="@+id/lsb"
+        android:layout_width="@dimen/audio_left_layout_w"
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp" />
+
+</RelativeLayout>

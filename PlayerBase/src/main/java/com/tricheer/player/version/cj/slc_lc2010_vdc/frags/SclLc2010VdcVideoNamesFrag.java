@@ -216,13 +216,25 @@ public class SclLc2010VdcVideoNamesFrag extends BaseVideoListFrag {
     }
 
     @Override
-    public void prev() {
-        mDataAdapter.refreshDatas(mDataAdapter.getPrevPos());
+    public void next() {
+        if (isAdded()) {
+            int nextPos = mDataAdapter.getNextPos();
+            mDataAdapter.refreshDatas(nextPos);
+            gvDatas.setSelection(nextPos);
+        }
     }
 
     @Override
-    public void next() {
-        mDataAdapter.refreshDatas(mDataAdapter.getNextPos());
+    public void prev() {
+        if (isAdded()) {
+            int prevPos = mDataAdapter.getPrevPos();
+            mDataAdapter.refreshDatas(prevPos);
+            gvDatas.setSelection(prevPos);
+        }
+    }
+
+    @Override
+    public void playSelected() {
     }
 
     @Override

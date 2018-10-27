@@ -107,7 +107,7 @@ public class MediaScanReceiver extends BroadcastReceiver {
      */
     public static void init(Context context) {
         mContext = context;
-        refreshMountStatus();
+//        refreshMountStatus();
     }
 
     @Override
@@ -289,7 +289,7 @@ public class MediaScanReceiver extends BroadcastReceiver {
         private void parseFileToMedia(File cf) {
             try {
                 String path = cf.getPath();
-                Logs.debugI(TAG, "ListMediaTask-> parseFileToMedia(" + path + ")");
+//                Logs.debugI(TAG, "ListMediaTask-> parseFileToMedia(" + path + ")");
                 int lastIdxOfDot = path.lastIndexOf(".");
                 if (lastIdxOfDot == -1) {
                     return;
@@ -358,101 +358,14 @@ public class MediaScanReceiver extends BroadcastReceiver {
      * Scan Musics to System DataBase
      */
     private static void startScanMusics() {
-//        Log.i(TAG, "startScanMusics()");
-//        Log.i(TAG, "mListToSysScanAudios.size()" + mListToSysScanAudios.size());
-//        if (mListToSysScanAudios.size() <= 0) {
-//            return;
-//        }
-//
-//        // Scan Audio
-//        final Object[] objArrAudioPaths = mListToSysScanAudios.toArray();
-//        if (objArrAudioPaths != null && objArrAudioPaths.length > 0) {
-//            Logs.i(TAG, "startScanMusics() ----|> START <|----");
-//            final String[] toScanArr = new String[objArrAudioPaths.length];
-//            for (int idx = 0; idx < objArrAudioPaths.length; idx++) {
-//                toScanArr[idx] = (String) objArrAudioPaths[idx];
-//            }
-//
-//            AudioUtils.scanAudios(mContext, toScanArr, new OnScanCompletedListener() {
-//
-//                @Override
-//                public void onScanCompleted(String path, Uri uri) {
-//                    mHandler.removeCallbacks(mScannedCompletedRunnable);
-//                    if (uri != null) {
-//                        mHandler.postDelayed(mScannedCompletedRunnable, 1000);
-//                    }
-//                }
-//
-//                private Runnable mScannedCompletedRunnable = new Runnable() {
-//
-//                    @Override
-//                    public void run() {
-////                        Toast.makeText(mContext, "onScanCompleted :: " + toScanArr.toString(), Toast.LENGTH_LONG).show();
-//                        ArrayList<ProAudio> listToSaveMusics = new ArrayList<>();
-//                        List<AudioInfo> listAudioInfos = AudioUtils.queryListAudioInfos(mListToSysScanAudios);
-//                        for (AudioInfo audio : listAudioInfos) {
-//                            if (AudioUtils.isExist(audio.path)) {
-//                                listToSaveMusics.add(new ProAudio(audio));
-//                            }
-//                        }
-//                        if (!EmptyUtil.isEmpty(listToSaveMusics)) {
-//                            AudioDBManager.instance().updateListMusics(listToSaveMusics);
-//                        }
-//                        notifyAudiosRefresh(ScanActives.SYS_SCANED);
-//                        Logs.i(TAG, "startScanMusics() ----|> END <|----");
-//                    }
-//                };
-//            });
-//        }
+        //        Log.i(TAG, "startScanMusics()");
     }
 
     /**
      * Scan Videos to System DataBase
      */
     private static void startScanVideos() {
-//        if (mListToSysScanVideos.size() <= 0) {
-//            return;
-//        }
-//
-//        // Scan Audio
-//        final Object[] objArrVideoPaths = mListToSysScanVideos.toArray();
-//        if (objArrVideoPaths != null && objArrVideoPaths.length > 0) {
-//            Logs.i(TAG, "startScanVideos() ----|> START <|----");
-//            String[] toScanArr = new String[objArrVideoPaths.length];
-//            for (int idx = 0; idx < objArrVideoPaths.length; idx++) {
-//                toScanArr[idx] = (String) objArrVideoPaths[idx];
-//            }
-//
-//            VideoUtils.scanVideos(mContext, toScanArr, new OnScanCompletedListener() {
-//
-//                @Override
-//                public void onScanCompleted(String path, Uri uri) {
-//                    mHandler.removeCallbacks(mScannedCompletedRunnable);
-//                    if (uri != null) {
-//                        mHandler.postDelayed(mScannedCompletedRunnable, 1000);
-//                    }
-//                }
-//
-//                private Runnable mScannedCompletedRunnable = new Runnable() {
-//
-//                    @Override
-//                    public void run() {
-//                        ArrayList<ProVideo> listToSaveVideos = new ArrayList<ProVideo>();
-//                        List<VideoInfo> listVideoInfos = VideoUtils.queryListVideoInfos(mListToSysScanVideos);
-//                        for (VideoInfo video : listVideoInfos) {
-//                            if (AudioUtils.isExist(video.path)) {
-//                                listToSaveVideos.add(new ProVideo(video));
-//                            }
-//                        }
-//                        if (!EmptyUtil.isEmpty(listToSaveVideos)) {
-//                            VideoDBManager.instance().updateListVideos(listToSaveVideos);
-//                        }
-//                        notifyVideosRefresh(ScanActives.SYS_SCANED);
-//                        Logs.i(TAG, "startScanVideos() ----|> End <|----");
-//                    }
-//                };
-//            });
-//        }
+        //        Log.i(TAG, "startScanVideos()");
     }
 
     /**

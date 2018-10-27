@@ -267,7 +267,7 @@ public class VideoDBManager {
     }
 
     public List<ProVideo> getListVideos(boolean isContainError, boolean isContainDrivingRecord) {
-        List<ProVideo> listVideos = new ArrayList<ProVideo>();
+        List<ProVideo> listVideos = new ArrayList<>();
         if (openDB()) {
             Throwable throwable = null;
             Cursor cur = null;
@@ -277,8 +277,8 @@ public class VideoDBManager {
                     for (cur.moveToFirst(); !cur.isAfterLast(); cur.moveToNext()) {
                         // Filter Program that not exist
                         String mediaUrl = cur.getString(cur.getColumnIndex(VideoCacheInfo.MEDIA_URL));
-                        File musicFile = new File(mediaUrl);
-                        if (!musicFile.exists()) {
+                        File mediaFile = new File(mediaUrl);
+                        if (!mediaFile.exists()) {
                             continue;
                         }
 
@@ -303,7 +303,7 @@ public class VideoDBManager {
      * Get Map Videos
      */
     public Map<String, ProVideo> getMapVideos(boolean isContainError, boolean isContainDrivingRecord) {
-        Map<String, ProVideo> mapVideos = new HashMap<String, ProVideo>();
+        Map<String, ProVideo> mapVideos = new HashMap<>();
         if (openDB()) {
             Throwable throwable = null;
             Cursor cur = null;

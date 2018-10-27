@@ -51,6 +51,14 @@
                 <action android:name="com.tricheer.carback.off" />
             </intent-filter>
         </receiver>
+        <!--Screen State-->
+        <receiver android:name="com.tri.lib.receiver.ScreenStateReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.SCREEN_ON" />
+                <action android:name="android.intent.action.SCREEN_OFF" />
+            </intent-filter>
+        </receiver>
+        <!--MediaButton Receiver-->
         <receiver android:name="js.lib.android.media.engine.mediabtn.MediaBtnReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />

@@ -37,8 +37,8 @@ LOCAL_RESOURCE_DIR := $(LOCAL_PATH)/res
 SRC_DIRS := java
 LOCAL_SRC_FILES := $(call all-java-files-under, $(SRC_DIRS))
 #AIDL
-AIDL_DIRS := aidl
-LOCAL_SRC_FILES += $(call all-Iaidl-files-under, $(AIDL_DIRS))
+#AIDL_DIRS := aidl
+#LOCAL_SRC_FILES += $(call all-Iaidl-files-under, $(AIDL_DIRS))
 
 ## current 编译时会忽略源码隐藏的API
 ## LOCAL_JAVA_LIBRARIES=true时，Android.mk中不能定义LOCAL_SDK_VERSION

@@ -1,5 +1,4 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_main">
@@ -7,7 +6,7 @@
     <LinearLayout
         android:id="@+id/layout_top"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="@dimen/video_top_layout_h"
         android:background="@drawable/bg_title"
         android:gravity="center_vertical"
         android:orientation="horizontal">
@@ -15,11 +14,11 @@
         <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="12"
-            android:paddingBottom="15dp"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
-            android:paddingTop="15dp">
+            android:layout_weight="1"
+            android:paddingStart="20dp"
+            android:paddingTop="15dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="15dp">
 
             <TextView
                 android:id="@+id/v_media_name"
@@ -32,7 +31,7 @@
                 android:gravity="center"
                 android:text="@string/file_name"
                 android:textColor="@android:color/white"
-                android:textSize="25sp" />
+                android:textSize="@dimen/video_top_item_font_size" />
         </RelativeLayout>
 
         <ImageView
@@ -44,24 +43,24 @@
         <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="12"
-            android:paddingBottom="15dp"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
-            android:paddingTop="15dp">
+            android:layout_weight="1"
+            android:paddingStart="20dp"
+            android:paddingTop="15dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="15dp">
 
             <TextView
                 android:id="@+id/v_folder"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerInParent="true"
-                android:background="@drawable/btn_collect_selector"
+                android:background="@drawable/btn_filter_tab_selector"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center"
                 android:text="@string/folder"
                 android:textColor="@android:color/white"
-                android:textSize="25sp" />
+                android:textSize="@dimen/video_top_item_font_size" />
         </RelativeLayout>
     </LinearLayout>
 

@@ -5,19 +5,17 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.widget.ImageView;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
 import com.tricheer.player.R;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import js.lib.android.media.engine.MediaUtils;
 import js.lib.android.media.bean.ProAudio;
 import js.lib.android.media.bean.ProVideo;
 import js.lib.android.media.bean.Program;
+import js.lib.android.media.engine.MediaUtils;
 import js.lib.android.utils.EmptyUtil;
-import js.lib.android.utils.ImageLoaderUtils;
 import js.lib.android.utils.Logs;
 
 /**
@@ -76,15 +74,9 @@ public class PlayerLogicUtils {
     /**
      * Set media cover Image
      */
-    public static void setMediaCover(ImageView ivCover, ProAudio program, ImageLoader imgLoader) {
+    public static void setMediaCover(ImageView ivCover, ProAudio program) {
         if (EmptyUtil.isEmpty(program.coverUrl)) {
-            ivCover.setImageResource(R.drawable.bg_cover_music);
-        } else if (isHttpUrl(program.coverUrl)) {
-            if (imgLoader != null) {
-                ImageLoaderUtils.displayImage(imgLoader, program.coverUrl, ivCover);
-            } else {
-                ivCover.setImageResource(R.drawable.bg_cover_music);
-            }
+            ivCover.setImageResource(R.drawable.bg_cover_music_udisk);
         } else {
             ivCover.setImageURI(Uri.parse(program.coverUrl));
         }

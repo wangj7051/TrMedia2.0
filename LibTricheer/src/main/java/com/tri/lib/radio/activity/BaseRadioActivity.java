@@ -105,6 +105,30 @@ public abstract class BaseRadioActivity extends BaseFragActivity implements FmDe
     }
 
     @Override
+    public void onScanStrongFreqLeftStart(BandCategoryEnum band) {
+    }
+
+    @Override
+    public void onScanStrongFreqLeftEnd(BandCategoryEnum band) {
+    }
+
+    @Override
+    public void onScanStrongFreqLeftFail(BandCategoryEnum band, int reason) {
+    }
+
+    @Override
+    public void onScanStrongFreqRightStart(BandCategoryEnum band) {
+    }
+
+    @Override
+    public void onScanStrongFreqRightEnd(BandCategoryEnum band) {
+    }
+
+    @Override
+    public void onScanStrongFreqRightFail(BandCategoryEnum band, int reason) {
+    }
+
+    @Override
     public void register(FmListener l) {
         if (mControlService != null) {
             mControlService.register(l);
@@ -249,6 +273,10 @@ public abstract class BaseRadioActivity extends BaseFragActivity implements FmDe
     @Override
     public boolean isLocOpen() {
         return mControlService != null && mControlService.isLocOpen();
+    }
+
+    public boolean isAudioFocusRegistered() {
+        return mControlService != null && mControlService.isAudioFocusRegistered();
     }
 
     @Override

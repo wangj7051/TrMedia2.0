@@ -18,7 +18,7 @@ import java.util.List;
 
 import js.lib.android.adapter.BaseArrayAdapter;
 import js.lib.android.media.bean.ProVideo;
-import js.lib.android.utils.EmptyUtil;
+import js.lib.android.utils.Logs;
 
 public class SclLc2010VdcVideoFoldersAdapter<T> extends BaseArrayAdapter<T> implements SectionIndexer {
     // TAG
@@ -26,7 +26,7 @@ public class SclLc2010VdcVideoFoldersAdapter<T> extends BaseArrayAdapter<T> impl
 
     private int mSelectedPos = 0;
     private String mSelectedMediaUrl = "";
-    private List<T> mListDatas;
+    private List<T> mListData;
 
     public SclLc2010VdcVideoFoldersAdapter(Context context, int resource) {
         super(context, resource);
@@ -34,7 +34,7 @@ public class SclLc2010VdcVideoFoldersAdapter<T> extends BaseArrayAdapter<T> impl
     }
 
     public void setListDatas(List<T> listDatas) {
-        this.mListDatas = listDatas;
+        this.mListData = listDatas;
     }
 
     public void setSelect(String mediaUrl) {
@@ -42,7 +42,7 @@ public class SclLc2010VdcVideoFoldersAdapter<T> extends BaseArrayAdapter<T> impl
     }
 
     public void refreshDatas(List<T> listDatas) {
-        this.mListDatas = listDatas;
+        this.mListData = listDatas;
         refreshDatas();
     }
 
@@ -60,7 +60,7 @@ public class SclLc2010VdcVideoFoldersAdapter<T> extends BaseArrayAdapter<T> impl
     }
 
     public void refreshDatas(List<T> listDatas, String selectMediaUrl) {
-        this.mListDatas = listDatas;
+        this.mListData = listDatas;
         this.mSelectedMediaUrl = selectMediaUrl;
         notifyDataSetChanged();
     }
@@ -71,18 +71,19 @@ public class SclLc2010VdcVideoFoldersAdapter<T> extends BaseArrayAdapter<T> impl
 
     @Override
     public int getCount() {
-        if (mListDatas == null) {
+        if (mListData == null) {
             return 0;
         }
-        return mListDatas.size();
+        return mListData.size();
     }
 
     @Override
     public T getItem(int position) {
-        if (EmptyUtil.isEmpty(mListDatas)) {
+        try {
+            return mListData.get(position);
+        } catch (Exception e) {
             return null;
         }
-        return mListDatas.get(position);
     }
 
     @NonNull
@@ -92,7 +93,6 @@ public class SclLc2010VdcVideoFoldersAdapter<T> extends BaseArrayAdapter<T> impl
         if (convertView == null) {
             holder = new ViewHolder();
             convertView = mInflater.inflate(mResID, null);
-            holder.vCoverBg = convertView.findViewById(R.id.rl_cover);
             holder.vCover = (ImageView) convertView.findViewById(R.id.v_cover);
             holder.vOpPlay = (ImageView) convertView.findViewById(R.id.iv_op_play);
             holder.vName = (TextView) convertView.findViewById(R.id.v_name);
@@ -115,10 +115,10 @@ public class SclLc2010VdcVideoFoldersAdapter<T> extends BaseArrayAdapter<T> impl
                 //Selected
                 if (TextUtils.equals(mSelectedMediaUrl, item.mediaUrl)) {
                     mSelectedPos = position;
-                    holder.vCoverBg.setBackgroundResource(R.color.video_item_bg);
+                    convertView.setBackgroundResource(R.color.video_item_bg);
                     //Not selected
                 } else {
-                    holder.vCoverBg.setBackgroundResource(android.R.color.transparent);
+                    convertView.setBackgroundResource(android.R.color.transparent);
                 }
             } else if (tItem instanceof VideoFilter) {
                 holder.vOpPlay.setVisibility(View.INVISIBLE);
@@ -127,7 +127,7 @@ public class SclLc2010VdcVideoFoldersAdapter<T> extends BaseArrayAdapter<T> impl
                 File file = new File(item.folderPath);
                 holder.vName.setText(file.getName());
                 holder.vCover.setImageResource(R.drawable.bg_cover_video);
-                holder.vCoverBg.setBackgroundResource(android.R.color.transparent);
+                convertView.setBackgroundResource(android.R.color.transparent);
             }
         }
         return convertView;
@@ -144,7 +144,7 @@ public class SclLc2010VdcVideoFoldersAdapter<T> extends BaseArrayAdapter<T> impl
 
     public int getPrevPos() {
         int prevPos = mSelectedPos - 1;
-        if (prevPos <= 0) {
+        if (prevPos < 0) {
             prevPos = getCount() - 1;
         }
         return prevPos;
@@ -157,7 +157,35 @@ public class SclLc2010VdcVideoFoldersAdapter<T> extends BaseArrayAdapter<T> impl
 
     @Override
     public int getPositionForSection(int sectionIndex) {
-        return 0;
+        int position = -1;
+        try {
+            for (int idx = 0; idx < getCount(); idx++) {
+                T item = getItem(idx);
+                if (item == null) {
+                    continue;
+                }
+
+                //
+                if (item instanceof ProVideo) {
+                    ProVideo media = (ProVideo) item;
+                    char firstChar = media.sortLetter.toUpperCase().charAt(0);
+                    if (firstChar == sectionIndex) {
+                        position = idx;
+                        break;
+                    }
+                } else if (item instanceof VideoFilter) {
+                    VideoFilter filter = (VideoFilter) item;
+                    char firstChar = filter.sortLetter.toUpperCase().charAt(0);
+                    if (firstChar == sectionIndex) {
+                        position = idx;
+                        break;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Logs.printStackTrace(TAG + "getPositionForSection()", e);
+        }
+        return position;
     }
 
     @Override
@@ -166,7 +194,6 @@ public class SclLc2010VdcVideoFoldersAdapter<T> extends BaseArrayAdapter<T> impl
     }
 
     private final class ViewHolder {
-        View vCoverBg;
         ImageView vCover, vOpPlay;
         TextView vName;
     }

@@ -172,24 +172,16 @@
             android:exported="true"
             tools:ignore="ExportedReceiver">
 
-            <!--Test Broadcast-->
+            <!-- System Boot -->
             <intent-filter android:priority="1000">
-                <action android:name="com.tri.test.OPEN_SELECTED_VIDEOLIST" />
-                <action android:name="com.tri.test.OPEN_AUDIO" />
-                <action android:name="com.tri.test.OPEN_VIDEO" />
-                <action android:name="com.tri.test.EXIT_PLAYER" />
+                <action android:name="android.intent.action.ACTION_SHUTDOWN" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
 
-            <!-- Media Action -->
+            <!-- Music / Video -->
             <intent-filter android:priority="1000">
-                <action android:name="com.tricheer.media.action" />
-            </intent-filter>
-
-            <!--ACC Broadcast-->
-            <intent-filter android:priority="1000">
-                <action android:name="tricheer.intent.action.ACC_OFF" />
-                <action android:name="tricheer.intent.action.SLEEP" />
-                <action android:name="tricheer.intent.action.ACC_ON" />
+                <action android:name="com.tricheer.music.PLAY_FROM_FILEMANAGER" />
+                <action android:name="com.tricheer.video.PLAY_FROM_FILEMANAGER" />
             </intent-filter>
 
             <!-- Open Player Logs -->
@@ -197,114 +189,12 @@
                 <action android:name="com.tricheer.app.OPEN_LOGS" />
             </intent-filter>
 
-            <!-- Play Music At Launcher -->
+            <!--Test Broadcast-->
             <intent-filter android:priority="1000">
-                <action android:name="com.tricheer.music.PLAY_FROM_LAUNCHER" />
-                <action android:name="com.tricheer.player.OPEN_MUSIC_PLAYER" />
-                <action android:name="com.tricheer.player.OPEN_VIDEO_PLAYER" />
-            </intent-filter>
-
-            <!-- System Boot Completed -->
-            <intent-filter android:priority="1000">
-                <action android:name="com.tricheer.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.ACTION_SHUTDOWN" />
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-            <intent-filter android:priority="1000">
-                <action android:name="android.media.AUDIO_BECOMING_NOISY" />
-            </intent-filter>
-
-            <!-- Device Screen ON/OFF -->
-            <intent-filter android:priority="1000">
-                <action android:name="com.tricheer.screen_on" />
-                <action android:name="com.tricheer.screen_off" />
-                <action android:name="com.tricheer.screen_sleep" />
-                <action android:name="action.maskapp.EXIT" />
-                <action android:name="action.maskapp.CLICK" />
-                <!-- <action android:name="android.intent.action.SCREEN_ON" /> -->
-                <!-- <action android:name="android.intent.action.SCREEN_OFF" /> -->
-            </intent-filter>
-
-            <!-- System Temperature -->
-            <intent-filter android:priority="1000">
-                <action android:name="com.tricheer.hightemp1" />
-                <action android:name="com.tricheer.lowtemp1" />
-            </intent-filter>
-
-            <!-- Record State -->
-            <intent-filter android:priority="1000">
-                <action android:name="action.camera.STATE_CHANGE" />
-            </intent-filter>
-
-            <!-- E-Dog -->
-            <intent-filter android:priority="1000">
-                <action android:name="com.tricheer.detector.playsound.start" />
-                <action android:name="com.tricheer.detector.playsound.end" />
-            </intent-filter>
-
-            <!-- Cannot coexist -->
-            <intent-filter android:priority="1000">
-                <action android:name="com.tricheer.bluetooth.music.open" />
-                <action android:name="com.tricheer.kuwo.music.open" />
-            </intent-filter>
-
-            <!-- BlueTooth -->
-            <intent-filter android:priority="1000">
-                <action android:name="com.tricheer.bluetoothcarkit.a2dp_sink.CONNECTED" />
-                <action android:name="action.intent.TRICHEER_PHONE_DIAL" />
-                <action android:name="com.tricheer.bluetoothcarkit.INCOMING_RINGING_FOR_PLAYER" />
-                <action android:name="action.bluetooth.TRICHEER_INCOMING_RINGING" />
-                <action android:name="action.bluetooth.TRICHEER_OUTGOING_RINGING" />
-                <action android:name="action.bluetooth.TRICHEER_INCOMING_IDLE" />
-                <action android:name="action.bluetooth.TRICHEER_OUTGOING_IDLE" />
-                <action android:name="android.bluetooth.device.action.ACL_DISCONNECTED" />
-                <action android:name="android.bluetooth.headsetclient.profile.action.AG_CALL_CHANGED" />
-                <action android:name="android.bluetooth.headsetclient.profile.action.CONNECTION_STATE_CHANGED" />
-            </intent-filter>
-
-            <!-- AiSpeech Open Or Close -->
-            <intent-filter android:priority="1000">
-                <action android:name="com.tricheer.AIOS_WINDOW" />
-            </intent-filter>
-
-            <!-- Music / Video / Radio -->
-            <intent-filter android:priority="1000">
-
-                <!-- Music -->
-                <action android:name="com.tricheer.music.PLAY_FROM_FILEMANAGER" />
-                <action android:name="com.tricheer.video.PLAY_FROM_VIDEO_VIEW" />
-                <action android:name="com.tricheer.music.ACTION_MUSIC_EXIT" />
-                <!-- Music AiSpeech Actions -->
-                <action android:name="com.tricheer.MUSIC.MODE" />
-                <action android:name="com.aispeech.aios.music.ACTION_MUSIC_PAUSE" />
-                <action android:name="com.aispeech.aios.music.ACTION_MUSIC_RESUME" />
-                <action android:name="com.aispeech.aios.adapter.ACTION_RANDOM" />
-                <action android:name="com.aispeech.aios.music.ACTION_MUSIC_PREVIOUS" />
-                <action android:name="com.aispeech.aios.music.ACTION_MUSIC_NEXT" />
-                <action android:name="com.aispeech.aios.music.AICTION_SONG_SELECTED" />
-                <action android:name="com.aispeech.aios.music.AICTION_SEARCH_BY_TITLE" />
-
-                <!-- Video -->
-                <action android:name="com.tricheer.video.PLAY_FROM_FILEMANAGER" />
-                <!-- Video AiSpeech Actions -->
-                <action android:name="com.tricheer.video.close" />
-                <action android:name="com.tricheer.show.VIDEO_LIST" />
-                <action android:name="com.tricheer.close.VIDEO_LIST" />
-                <action android:name="com.tricheer.video.PLAY" />
-                <action android:name="com.tricheer.video.PAUSE" />
-                <action android:name="com.tricheer.VIDEO.PLAY_PRE" />
-                <action android:name="com.tricheer.VIDEO.PLAY_NEXT" />
-                <action android:name="com.tricheer.video.FAST_FORWARD" />
-                <action android:name="com.tricheer.video.FAST_REWIND" />
-                <action android:name="com.tricheer.video.PLAY_NORMAL" />
-                <action android:name="com.tricheer.video.VIEW_CHENGED" />
-                <action android:name="com.tricheer.video.FULL_SCREEN" />
-
-                <!-- Radio AiSpeech Actions -->
-                <action android:name="com.tricheer.QINGTING_FM.CLOSE" />
-            </intent-filter>
-            <intent-filter android:priority="1000">
-                <action android:name="com.tricheer.bt.CALL_END" />
+                <action android:name="com.tri.test.OPEN_SELECTED_VIDEOLIST" />
+                <action android:name="com.tri.test.OPEN_AUDIO" />
+                <action android:name="com.tri.test.OPEN_VIDEO" />
+                <action android:name="com.tri.test.EXIT_PLAYER" />
             </intent-filter>
         </receiver>
 
@@ -318,13 +208,20 @@
                 <action android:name="tricheer.intent.action.ACC_ON" />
             </intent-filter>
         </receiver>
-        <!-- ACC -->
+        <!-- Reverse -->
         <receiver
             android:name="com.tri.lib.receiver.ReverseReceiver"
             tools:ignore="ExportedReceiver">
             <intent-filter>
                 <action android:name="com.tricheer.carback.on" />
                 <action android:name="com.tricheer.carback.off" />
+            </intent-filter>
+        </receiver>
+        <!--Screen State-->
+        <receiver android:name="com.tri.lib.receiver.ScreenStateReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.SCREEN_ON" />
+                <action android:name="android.intent.action.SCREEN_OFF" />
             </intent-filter>
         </receiver>
         <!-- Media Button -->

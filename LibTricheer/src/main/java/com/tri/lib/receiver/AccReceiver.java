@@ -7,8 +7,10 @@ import android.util.Log;
 
 import com.tri.lib.utils.TrVideoPreferUtils;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
+
+import js.lib.android.media.player.PlayEnableController;
 
 /**
  * ACC Logic Receiver
@@ -19,7 +21,7 @@ public class AccReceiver extends BroadcastReceiver {
     //TAG
     private static final String TAG = "AccReceiver";
 
-    private static Set<AccDelegate> mSetDelegates = new HashSet<>();
+    private static Set<AccDelegate> mSetDelegates = new LinkedHashSet<>();
 
     public interface AccDelegate {
         void onAccOff();
@@ -61,18 +63,21 @@ public class AccReceiver extends BroadcastReceiver {
     }
 
     void notifyOn() {
+        PlayEnableController.onAccStateChanged(1);
         for (AccDelegate delegate : mSetDelegates) {
             delegate.onAccOn();
         }
     }
 
     void notifyOff() {
+        PlayEnableController.onAccStateChanged(2);
         for (AccDelegate delegate : mSetDelegates) {
             delegate.onAccOff();
         }
     }
 
     void notifyTrue() {
+        PlayEnableController.onAccStateChanged(3);
         TrVideoPreferUtils.getVideoWarningFlag(true, 1);
         for (AccDelegate delegate : mSetDelegates) {
             delegate.onAccOffTrue();

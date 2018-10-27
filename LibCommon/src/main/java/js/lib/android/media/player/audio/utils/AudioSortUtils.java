@@ -6,12 +6,20 @@ import java.util.List;
 import js.lib.android.media.bean.ProAudio;
 import js.lib.android.media.bean.Program;
 import js.lib.android.media.bean.ProgramPinyinComparator;
+import js.lib.android.media.bean.ProgramUpdateTimeComparator;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.Logs;
 
 public class AudioSortUtils {
     //TAG
     private static final String TAG = "AudioSortUtils";
+
+    public static void sortByUpdateTime(List<? extends Program> listPrograms) {
+        if (EmptyUtil.isEmpty(listPrograms)) {
+            return;
+        }
+        Collections.sort(listPrograms, new ProgramUpdateTimeComparator());
+    }
 
     public static void sortByTitle(List<? extends Program> listPrograms) {
         if (EmptyUtil.isEmpty(listPrograms)) {

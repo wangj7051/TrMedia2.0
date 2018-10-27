@@ -16,7 +16,6 @@ import com.tricheer.player.utils.PlayerLogicUtils;
 import java.util.List;
 
 import js.lib.android.media.bean.ProAudio;
-import js.lib.android.utils.EmptyUtil;
 
 public class SclLc2010VdcAudioCollectsAdapter extends BaseAudioAdapter<ProAudio> implements SectionIndexer {
     // TAG
@@ -24,7 +23,7 @@ public class SclLc2010VdcAudioCollectsAdapter extends BaseAudioAdapter<ProAudio>
 
     private int mSelectedPos = 0;
     private String mSelectedMediaUrl = "";
-    private List<ProAudio> mListDatas;
+    private List<ProAudio> mListData;
 
     @IdRes
     private int mSelectFontColor, mNotSelectedColor;
@@ -38,7 +37,7 @@ public class SclLc2010VdcAudioCollectsAdapter extends BaseAudioAdapter<ProAudio>
         super(context, resource);
         this.mResID = R.layout.scl_lc2010_vdc_activity_audio_list_item;
         mNotSelectedColor = context.getResources().getColor(android.R.color.white);
-        mSelectFontColor = context.getResources().getColor(R.color.music_item_selected);
+        mSelectFontColor = context.getResources().getColor(R.color.music_item_selected_font);
     }
 
     public void setCollectListener(CollectListener l) {
@@ -46,7 +45,7 @@ public class SclLc2010VdcAudioCollectsAdapter extends BaseAudioAdapter<ProAudio>
     }
 
     public void setListDatas(List<ProAudio> listDatas) {
-        this.mListDatas = listDatas;
+        this.mListData = listDatas;
     }
 
     public void setSelect(String mediaUrl) {
@@ -61,7 +60,7 @@ public class SclLc2010VdcAudioCollectsAdapter extends BaseAudioAdapter<ProAudio>
     }
 
     public void refreshDatas(List<ProAudio> listDatas) {
-        this.mListDatas = listDatas;
+        this.mListData = listDatas;
         refreshDatas();
     }
 
@@ -71,7 +70,7 @@ public class SclLc2010VdcAudioCollectsAdapter extends BaseAudioAdapter<ProAudio>
     }
 
     public void refreshDatas(List<ProAudio> listDatas, String selectedMediaUrl) {
-        this.mListDatas = listDatas;
+        this.mListData = listDatas;
         this.mSelectedMediaUrl = selectedMediaUrl;
         refreshDatas();
     }
@@ -80,20 +79,25 @@ public class SclLc2010VdcAudioCollectsAdapter extends BaseAudioAdapter<ProAudio>
         notifyDataSetChanged();
     }
 
+    public int getSelectPos() {
+        return mSelectedPos;
+    }
+
     @Override
     public int getCount() {
-        if (mListDatas == null) {
+        if (mListData == null) {
             return 0;
         }
-        return mListDatas.size();
+        return mListData.size();
     }
 
     @Override
     public ProAudio getItem(int position) {
-        if (EmptyUtil.isEmpty(mListDatas)) {
+        try {
+            return mListData.get(position);
+        } catch (Exception e) {
             return null;
         }
-        return mListDatas.get(position);
     }
 
     @NonNull
@@ -104,7 +108,7 @@ public class SclLc2010VdcAudioCollectsAdapter extends BaseAudioAdapter<ProAudio>
             holder = new ViewHolder();
             convertView = mInflater.inflate(mResID, null);
             holder.ivSelected = (ImageView) convertView.findViewById(R.id.iv_start);
-            holder.tvSongName = (TextView) convertView.findViewById(R.id.tv_item);
+            holder.tvSongName = (TextView) convertView.findViewById(R.id.tv_desc);
             holder.ivCollect = (ImageView) convertView.findViewById(R.id.iv_end);
             convertView.setTag(holder);
 
@@ -160,7 +164,7 @@ public class SclLc2010VdcAudioCollectsAdapter extends BaseAudioAdapter<ProAudio>
 
     public int getPrevPos() {
         int prevPos = mSelectedPos - 1;
-        if (prevPos <= 0) {
+        if (prevPos < 0) {
             prevPos = getCount() - 1;
         }
         return prevPos;

@@ -3,15 +3,12 @@ package com.tricheer.player.version.cj.slc_lc2010_vdc.activity;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.media.MediaScannerConnection;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.tri.lib.engine.KeyEnum;
 import com.tri.lib.utils.TrAudioPreferUtils;
@@ -19,16 +16,11 @@ import com.tricheer.player.R;
 import com.tricheer.player.utils.PlayerLogicUtils;
 import com.tricheer.player.version.base.activity.music.BaseAudioPlayerActivity;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import js.lib.android.media.bean.ProAudio;
 import js.lib.android.media.engine.audio.db.AudioDBManager;
-import js.lib.android.media.engine.audio.utils.AudioInfo;
-import js.lib.android.media.engine.audio.utils.AudioUtils;
 import js.lib.android.media.player.PlayMode;
-import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.Logs;
 import js.lib.utils.date.DateFormatUtil;
 
@@ -122,29 +114,9 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseAudioPlayerActivity {
 
     @Override
     protected void loadLocalMedias() {
-        playByIntent();
-    }
-
-    private void playByIntent() {
-        String mediaUrl = getIntent().getStringExtra("SELECT_MEDIA_URL");
-        Serializable serialListPros = getIntent().getSerializableExtra("MEDIA_LIST");
-        if (mediaUrl != null && serialListPros != null) {
-            // Play
-            mListPrograms = (ArrayList<ProAudio>) serialListPros;
-            if (!EmptyUtil.isEmpty(mListPrograms)) {
-                //Show playing information
-                if (isPlaying() && isPlayingSameMedia(mediaUrl)) {
-                    refreshCurrMediaInfo();
-                    refreshUIOfPlayBtn(1);
-                    refreshSeekBar(true);
-
-                    //Play selected media
-                } else {
-                    setPlayList(mListPrograms);
-                    execPlay(mediaUrl);
-                }
-            }
-        }
+        refreshCurrMediaInfo();
+        refreshUIOfPlayBtn(1);
+        refreshSeekBar(true);
     }
 
     @Override
@@ -224,35 +196,35 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseAudioPlayerActivity {
         final ProAudio media = getCurrProgram();
         if (media == null) {
             return;
-        } else {
-            setMediaInformation(media);
         }
 
+        //
+        setMediaInformation(media);
         //Check if stored in system database.
-        AudioInfo info = AudioUtils.queryAudioInfo(media.mediaUrl);
-        if (info == null) {
-            AudioUtils.scanAudio(mContext, media.mediaUrl, new MediaScannerConnection.MediaScannerConnectionClient() {
-                @Override
-                public void onMediaScannerConnected() {
-                    Toast.makeText(mContext, "onMediaScannerConnected", Toast.LENGTH_LONG).show();
-                    Log.i(TAG, "onMediaScannerConnected()");
-                }
-
-                @Override
-                public void onScanCompleted(String path, Uri uri) {
-                    Log.i(TAG, "onScanCompleted(" + path + ",Uri)");
-                    Toast.makeText(mContext, "onScanCompleted", Toast.LENGTH_LONG).show();
-                    ProAudio.copy(media, new ProAudio(AudioUtils.queryAudioInfo(media.mediaUrl)));
-                    AudioDBManager.instance().updateMusicInfo(media);
-                    setMediaInformation(media);
-                }
-            });
-        }
+//        AudioInfo info = AudioUtils.queryAudioInfo(media.mediaUrl);
+//        if (info == null) {
+//            AudioUtils.scanAudio(mContext, media.mediaUrl, new MediaScannerConnection.MediaScannerConnectionClient() {
+//                @Override
+//                public void onMediaScannerConnected() {
+//                    Toast.makeText(mContext, "onMediaScannerConnected", Toast.LENGTH_LONG).show();
+//                    Log.i(TAG, "onMediaScannerConnected()");
+//                }
+//
+//                @Override
+//                public void onScanCompleted(String path, Uri uri) {
+//                    Log.i(TAG, "onScanCompleted(" + path + ",Uri)");
+//                    Toast.makeText(mContext, "onScanCompleted", Toast.LENGTH_LONG).show();
+//                    ProAudio.copy(media, new ProAudio(AudioUtils.queryAudioInfo(media.mediaUrl)));
+//                    AudioDBManager.instance().updateMusicInfo(media);
+//                    setMediaInformation(media);
+//                }
+//            });
+//        }
     }
 
     private void setMediaInformation(ProAudio media) {
         // Media Cover
-        PlayerLogicUtils.setMediaCover(ivMusicCover, media, getImageLoader());
+        PlayerLogicUtils.setMediaCover(ivMusicCover, media);
         // Title / Artist/ Album
         tvName.setText(PlayerLogicUtils.getMediaTitle(mContext, -1, media, true));
         tvArtist.setText(PlayerLogicUtils.getUnKnowOnNull(mContext, media.artist));
@@ -285,11 +257,9 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseAudioPlayerActivity {
     protected void refreshSeekBar(boolean isInit) {
         Log.i(TAG, "refreshSeekBar(" + isInit + ")");
         seekBar.setMax(getDuration());
+        seekBar.setProgress(getProgress());
         if (isInit) {
             seekBar.setEnabled(true);
-            seekBar.setProgress(0);
-        } else {
-            seekBar.setProgress(getProgress());
         }
     }
 

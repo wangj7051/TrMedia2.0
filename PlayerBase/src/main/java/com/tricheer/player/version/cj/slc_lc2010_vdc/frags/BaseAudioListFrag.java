@@ -1,26 +1,48 @@
 package com.tricheer.player.version.cj.slc_lc2010_vdc.frags;
 
-import java.util.List;
-
 import js.lib.android.fragment.BaseAppV4Fragment;
-import js.lib.android.media.bean.ProAudio;
 
+/**
+ * Base audio list fragment.
+ *
+ * @author Jun.Wang
+ */
 public abstract class BaseAudioListFrag extends BaseAppV4Fragment {
-    public final int M_REQ_PLAYING_MEDIA_URL = 1;
-
     /**
      * @return <p>0-Frag is in base page.</p>
      * <p>1-Frag back from 1`st page to base page.</p>
      */
     public abstract int onBackPressed();
 
-    public abstract void refreshDatas(List<ProAudio> listMedias, String targetMediaUrl);
+    /**
+     * Load data list
+     */
+    public abstract void loadDataList();
 
-    public abstract void refreshDatas(String targetMediaUrl);
+    /**
+     * Refresh playing
+     *
+     * @param mediaUrl Media url that is playing.
+     */
+    public abstract void refreshPlaying(String mediaUrl);
 
-    public abstract void next();
+    /**
+     * Select next
+     */
+    public abstract void selectNext();
 
-    public abstract void prev();
+    /**
+     * Select previous
+     */
+    public abstract void selectPrev();
 
-    public abstract void playSelectMedia(String mediaUrl);
+    /**
+     * Play selected
+     */
+    public abstract void playSelected();
+
+    /**
+     * Play selected media url
+     */
+    public abstract void playSelected(String mediaUrl);
 }

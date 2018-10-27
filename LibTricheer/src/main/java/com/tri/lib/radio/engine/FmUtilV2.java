@@ -158,6 +158,93 @@ public class FmUtilV2 implements FmDelegate {
 
         @Override
         public void onScanFreqFail(int type, int reason) {
+            try {
+                BandCategoryEnum bce = BandCategoryEnum.get(type);
+                Log.i(TAG, "onScanFreqFail(" + bce + "," + reason + ")");
+                if (mFmListener != null) {
+                    mFmListener.onScanFreqFail(bce, reason);
+                }
+            } catch (Exception e) {
+                Log.i(TAG, "onScanFreqFail(type,reason) > " + e.getMessage());
+            }
+        }
+
+        @Override
+        public void onScanStrongFreqLeftStart(int type) {
+            try {
+                BandCategoryEnum bce = BandCategoryEnum.get(type);
+                Log.i(TAG, "onScanStrongFreqLeftStart(" + bce + ")");
+                if (mFmListener != null) {
+                    mFmListener.onScanStrongFreqLeftStart(bce);
+                }
+            } catch (Exception e) {
+                Log.i(TAG, "onScanStrongFreqLeftStart(type) > " + e.getMessage());
+            }
+        }
+
+        @Override
+        public void onScanStrongFreqLeftEnd(int type) {
+            try {
+                BandCategoryEnum bce = BandCategoryEnum.get(type);
+                Log.i(TAG, "onScanStrongFreqLeftEnd(" + bce + ")");
+                if (mFmListener != null) {
+                    mFmListener.onScanStrongFreqLeftEnd(bce);
+                }
+            } catch (Exception e) {
+                Log.i(TAG, "onScanStrongFreqLeftEnd(type) > " + e.getMessage());
+            }
+        }
+
+        @Override
+        public void onScanStrongFreqLeftFail(int type, int reason) {
+            try {
+                BandCategoryEnum bce = BandCategoryEnum.get(type);
+                Log.i(TAG, "onScanStrongFreqLeftFail(" + bce + "," + reason + ")");
+                if (mFmListener != null) {
+                    mFmListener.onScanStrongFreqLeftFail(bce, reason);
+                }
+            } catch (Exception e) {
+                Log.i(TAG, "onScanStrongFreqLeftFail(type) > " + e.getMessage());
+            }
+        }
+
+        @Override
+        public void onScanStrongFreqRightStart(int type) {
+            try {
+                BandCategoryEnum bce = BandCategoryEnum.get(type);
+                Log.i(TAG, "onScanStrongFreqRightStart(" + bce + ")");
+                if (mFmListener != null) {
+                    mFmListener.onScanStrongFreqRightStart(bce);
+                }
+            } catch (Exception e) {
+                Log.i(TAG, "onScanStrongFreqRightStart(type) > " + e.getMessage());
+            }
+        }
+
+        @Override
+        public void onScanStrongFreqRightEnd(int type) {
+            try {
+                BandCategoryEnum bce = BandCategoryEnum.get(type);
+                Log.i(TAG, "onScanStrongFreqRightEnd(" + bce + ")");
+                if (mFmListener != null) {
+                    mFmListener.onScanStrongFreqRightEnd(bce);
+                }
+            } catch (Exception e) {
+                Log.i(TAG, "onScanStrongFreqRightEnd(type) > " + e.getMessage());
+            }
+        }
+
+        @Override
+        public void onScanStrongFreqRightFail(int type, int reason) {
+            try {
+                BandCategoryEnum bce = BandCategoryEnum.get(type);
+                Log.i(TAG, "onScanStrongFreqRightFail(" + bce + "," + reason + ")");
+                if (mFmListener != null) {
+                    mFmListener.onScanStrongFreqRightFail(bce, reason);
+                }
+            } catch (Exception e) {
+                Log.i(TAG, "onScanStrongFreqRightFail(type) > " + e.getMessage());
+            }
         }
     };
 

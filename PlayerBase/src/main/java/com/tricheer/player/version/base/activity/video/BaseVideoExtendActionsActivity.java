@@ -297,14 +297,14 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
     }
 
     public class LoadSDCardMediasTask extends AsyncTask<Void, Integer, Void> {
-        private List<ProVideo> mmListNewPrograms = new ArrayList<ProVideo>();
-        private List<ProVideo> mmListExistPrograms = new ArrayList<ProVideo>();
+        private List<ProVideo> mmListNewPrograms = new ArrayList<>();
+        private List<ProVideo> mmListExistPrograms = new ArrayList<>();
         private WeakReference<LoadMediaListener> mmWeakReference;
         private List<String> mmListSelectPaths;
 
         public LoadSDCardMediasTask(List<String> listSelectPaths, LoadMediaListener l) {
             this.mmListSelectPaths = listSelectPaths;
-            mmWeakReference = new WeakReference<LoadMediaListener>(l);
+            mmWeakReference = new WeakReference<>(l);
         }
 
         @Override

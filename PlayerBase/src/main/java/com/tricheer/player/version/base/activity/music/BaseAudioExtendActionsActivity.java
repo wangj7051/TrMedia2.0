@@ -4,7 +4,6 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Handler;
 
-import com.tricheer.player.engine.VersionController;
 import com.tricheer.player.receiver.MediaScanReceiver.MediaScanActives;
 import com.tricheer.player.utils.PlayerFileUtils;
 import com.tricheer.player.utils.PlayerLogicUtils;
@@ -20,7 +19,6 @@ import java.util.Set;
 import js.lib.android.media.bean.ProAudio;
 import js.lib.android.media.engine.audio.db.AudioDBManager;
 import js.lib.android.media.engine.audio.utils.AudioImgUtils;
-import js.lib.android.media.engine.audio.utils.AudioInfo;
 import js.lib.android.media.player.audio.utils.AudioSortUtils;
 import js.lib.android.utils.CommonUtil;
 import js.lib.android.utils.EmptyUtil;
@@ -41,11 +39,6 @@ public abstract class BaseAudioExtendActionsActivity extends BaseAudioCommonActi
     protected Handler mHandler = new Handler();
 
     /**
-     * 媒体列表集合对象
-     */
-    protected List<ProAudio> mListPrograms;
-
-    /**
      * AsyncTask - 加载本地媒体
      */
     protected LoadLocalMediasTask mLoadLocalMediasTask;
@@ -63,13 +56,13 @@ public abstract class BaseAudioExtendActionsActivity extends BaseAudioCommonActi
     /**
      * AsyncTask - Merge 数据
      */
-    private MergeDatasTask mMergeDatasTask;
+    private MergeDataTask mMergeDataTask;
 
     /**
      * 媒体加载监听
      */
     protected interface LoadMediaListener {
-        void afterLoaded();
+        void afterLoaded(List<ProAudio> listMedias);
     }
 
     /**
@@ -89,18 +82,104 @@ public abstract class BaseAudioExtendActionsActivity extends BaseAudioCommonActi
         super.onNotifyScanAudios(flag, listPrgrams, allSdMountedPaths);
         switch (flag) {
             case REFRESH:
-                startMergeDatasTask(listPrgrams, false);
+                startMergeDataOnScanning(listPrgrams, false);
                 break;
             case SYS_SCANNED:
-                startMergeDatasTask(listPrgrams, true);
+                startMergeDataOnScanning(listPrgrams, true);
                 break;
             case CLEAR:
-                refreshPageOnClear(allSdMountedPaths);
+                startMergeDataOnClear(allSdMountedPaths);
                 break;
             default:
                 refreshOnNotifyLoading(flag);
                 break;
         }
+    }
+
+    /**
+     * 开始同步扫描数据到当前列表
+     */
+    private void startMergeDataOnScanning(List<ProAudio> listScannedAudios, boolean isScanned) {
+        CommonUtil.cancelTask(mMergeDataTask);
+        mMergeDataTask = new MergeDataTask(listScannedAudios, isScanned);
+        mMergeDataTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    private class MergeDataTask extends AsyncTask<Void, Void, List<ProAudio>> {
+        private List<ProAudio> mmListScannedAudios;
+        private boolean mmIsScanned;
+
+        MergeDataTask(List<ProAudio> listScannedAudios, boolean isScanned) {
+            mmListScannedAudios = listScannedAudios;
+            mmIsScanned = isScanned;
+        }
+
+        @Override
+        protected List<ProAudio> doInBackground(Void... params) {
+            List<ProAudio> listSrcMedias = getListSrcMedias();
+            try {
+                if (EmptyUtil.isEmpty(listSrcMedias)) {
+                    listSrcMedias = mmListScannedAudios;
+                } else {
+                    Map<String, ProAudio> mapListedPrograms = new HashMap<String, ProAudio>();
+                    for (ProAudio program : listSrcMedias) {
+                        mapListedPrograms.put(program.mediaUrl, program);
+                    }
+                    for (ProAudio program : mmListScannedAudios) {
+                        if (!mapListedPrograms.containsKey(program.mediaUrl)) {
+                            listSrcMedias.add(program);
+                        }
+                    }
+                }
+                AudioSortUtils.sortByTitle(listSrcMedias);
+            } catch (Exception e) {
+                Logs.printStackTrace(TAG + "refreshPageOnScan()", e);
+            }
+            return listSrcMedias;
+        }
+
+        @Override
+        protected void onPostExecute(List<ProAudio> listMedias) {
+            super.onPostExecute(listMedias);
+            refreshPageOnScanning(listMedias, mmIsScanned);
+        }
+    }
+
+    /**
+     * 当扫描过程中或扫描结束时,刷新页面
+     *
+     * @param listSrcMedias 新的媒体源数据
+     * @param isScanned     新的媒体文件是否扫描到系统媒体数据库
+     */
+    protected void refreshPageOnScanning(List<ProAudio> listSrcMedias, boolean isScanned) {
+    }
+
+    private void startMergeDataOnClear(Set<String> allSdMountedPaths) {
+        try {
+            List<ProAudio> oldListSrcMedias = getListSrcMedias();
+            List<ProAudio> listMountedProgram = new ArrayList<>();
+            for (ProAudio program : oldListSrcMedias) {
+                boolean isProgramMounted = false;
+                for (String mountedPath : allSdMountedPaths) {
+                    if (program.mediaUrl.startsWith(mountedPath)) {
+                        isProgramMounted = true;
+                        break;
+                    }
+                }
+                if (isProgramMounted) {
+                    listMountedProgram.add(program);
+                }
+            }
+            refreshPageOnClear(listMountedProgram);
+        } catch (Exception e) {
+            Logs.printStackTrace(TAG + "refreshPageOnClear()", e);
+        }
+    }
+
+    /**
+     * Refresh Page On Notify Clear
+     */
+    protected void refreshPageOnClear(List<ProAudio> listMedias) {
     }
 
     /**
@@ -112,121 +191,34 @@ public abstract class BaseAudioExtendActionsActivity extends BaseAudioCommonActi
     }
 
     /**
-     * Refresh Page On Notify Clear
-     */
-    protected void refreshPageOnClear(Set<String> allSdMountedPaths) {
-        if (VersionController.isCjVersion()) {
-            try {
-                ArrayList<ProAudio> listMountedProgram = new ArrayList<>();
-                for (ProAudio program : mListPrograms) {
-                    boolean isProgramMounted = false;
-                    for (String mountedPath : allSdMountedPaths) {
-                        if (program.mediaUrl.startsWith(mountedPath)) {
-                            isProgramMounted = true;
-                            break;
-                        }
-                    }
-                    if (isProgramMounted) {
-                        listMountedProgram.add(program);
-                    }
-                }
-                mListPrograms = listMountedProgram;
-            } catch (Exception e) {
-                Logs.printStackTrace(TAG + "refreshPageOnClear()", e);
-            }
-        } else {
-            release();
-        }
-    }
-
-    /**
-     * Start MergeDatas Task
-     */
-    private void startMergeDatasTask(List<ProAudio> listScannedAudios, boolean isScaned) {
-        CommonUtil.cancelTask(mMergeDatasTask);
-        mMergeDatasTask = new MergeDatasTask(listScannedAudios, isScaned);
-        mMergeDatasTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
-
-    private class MergeDatasTask extends AsyncTask<Void, Void, Void> {
-        private List<ProAudio> mmListScannedAudios;
-        private boolean mmIsScaned = false;
-
-        public MergeDatasTask(List<ProAudio> listScannedAudios, boolean isScaned) {
-            mmListScannedAudios = listScannedAudios;
-            mmIsScaned = isScaned;
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            try {
-                if (EmptyUtil.isEmpty(mListPrograms)) {
-                    mListPrograms = mmListScannedAudios;
-                } else {
-                    Map<String, ProAudio> mapListedPrograms = new HashMap<String, ProAudio>();
-                    for (ProAudio program : mListPrograms) {
-                        mapListedPrograms.put(program.mediaUrl, program);
-                    }
-                    for (ProAudio program : mmListScannedAudios) {
-                        if (!mapListedPrograms.containsKey(program.mediaUrl)) {
-                            mListPrograms.add(program);
-                        }
-                    }
-                }
-                AudioSortUtils.sortByTitle(mListPrograms);
-            } catch (Exception e) {
-                Logs.printStackTrace(TAG + "refreshPageOnScan()", e);
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
-            refreshPageOnScan(mmListScannedAudios, mmIsScaned);
-        }
-    }
-
-    /**
-     * Refresh Medias
-     */
-    protected void refreshPageOnScan(List<ProAudio> listScannedAudios, boolean isScaned) {
-    }
-
-    /**
      * 加载本地媒体
      */
     protected void loadLocalMedias() {
     }
 
     public class LoadLocalMediasTask extends AsyncTask<Void, Integer, Void> {
-        private LoadMediaListener mLoadMediaListener;
+        private List<ProAudio> mmListMedias;
+        private LoadMediaListener mmLoadMediaListener;
 
         public LoadLocalMediasTask(LoadMediaListener l) {
-            mLoadMediaListener = l;
+            mmLoadMediaListener = l;
         }
 
         @Override
         protected Void doInBackground(Void... params) {
             // Get List Medias
-            mListPrograms = AudioDBManager.instance().getListMusics();
-            AudioSortUtils.sortByTitle(mListPrograms);
+            mmListMedias = AudioDBManager.instance().getListMusics();
+            AudioSortUtils.sortByTitle(mmListMedias);
             return null;
         }
 
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
-            if (mLoadMediaListener != null) {
-                mLoadMediaListener.afterLoaded();
+            if (mmLoadMediaListener != null) {
+                mmLoadMediaListener.afterLoaded(mmListMedias);
             }
         }
-    }
-
-    /**
-     * 下拉刷新媒体
-     */
-    protected void loadMediasOnPullRefresh() {
     }
 
     /**
@@ -236,12 +228,13 @@ public abstract class BaseAudioExtendActionsActivity extends BaseAudioCommonActi
     }
 
     protected class LoadSDCardMediasTask extends AsyncTask<Void, Integer, Void> {
-        private LoadMediaListener mLoadMediaListener;
+        private List<ProAudio> mmListMedias;
+        private LoadMediaListener mmLoadMediaListener;
         private List<ProAudio> mmListNewPrograms = new ArrayList<ProAudio>();
         private List<ProAudio> mmListExistPrograms = new ArrayList<ProAudio>();
 
         public LoadSDCardMediasTask(LoadMediaListener l) {
-            mLoadMediaListener = l;
+            mmLoadMediaListener = l;
         }
 
         @Override
@@ -259,43 +252,13 @@ public abstract class BaseAudioExtendActionsActivity extends BaseAudioCommonActi
         @Override
         protected Void doInBackground(Void... params) {
             // Refresh & Save Medias
-//            parseMediaInfos(AudioUtils.queryMapAudioInfos(null));
-            mListPrograms = AudioDBManager.instance().getListMusics();
+            mmListMedias = AudioDBManager.instance().getListMusics();
             AudioDBManager.instance().insertListMusics(mmListNewPrograms);
             AudioDBManager.instance().updateListMusics(mmListExistPrograms);
             // Sort & Notify load end
-            AudioSortUtils.sortByTitle(mListPrograms);
+            AudioSortUtils.sortByTitle(mmListMedias);
             mHandler.postDelayed(mmLoadSDCardMediasRunnable, 1000);
             return null;
-        }
-
-        private void parseMediaInfos(Map<String, AudioInfo> mapMediaInfos) {
-            if (!EmptyUtil.isEmpty(mapMediaInfos)) {
-                if (EmptyUtil.isEmpty(mListPrograms)) {
-                    mListPrograms = AudioDBManager.instance().getListMusics();
-                }
-                // Remove Multiple
-                for (ProAudio program : mListPrograms) {
-                    if (isCancelled()) {
-                        break;
-                    }
-                    if (mapMediaInfos.containsKey(program.mediaUrl)) {
-                        ProAudio aiProgram = new ProAudio(mapMediaInfos.get(program.mediaUrl));
-                        mmListExistPrograms.add(aiProgram);
-                        ProAudio.copy(program, aiProgram);
-                        mapMediaInfos.remove(program.mediaUrl);
-                    }
-                }
-                // Add remaining Audio
-                for (AudioInfo audioInfo : mapMediaInfos.values()) {
-                    if (isCancelled()) {
-                        break;
-                    }
-                    ProAudio program = new ProAudio(audioInfo);
-                    mmListNewPrograms.add(program);
-                    mListPrograms.add(program);
-                }
-            }
         }
 
         private Runnable mmLoadSDCardMediasRunnable = new Runnable() {
@@ -304,7 +267,7 @@ public abstract class BaseAudioExtendActionsActivity extends BaseAudioCommonActi
             public void run() {
                 try {
                     if (!isCancelled()) {
-                        mLoadMediaListener.afterLoaded();
+                        mmLoadMediaListener.afterLoaded(mmListMedias);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -330,12 +293,13 @@ public abstract class BaseAudioExtendActionsActivity extends BaseAudioCommonActi
         @Override
         protected String doInBackground(Void... params) {
             // Parameters
-            if (EmptyUtil.isEmpty(mListPrograms)) {
+            List<ProAudio> listSrcMedias = getListSrcMedias();
+            if (EmptyUtil.isEmpty(listSrcMedias)) {
                 return null;
             }
 
             int cachedNum = 0;
-            for (ProAudio program : mListPrograms) {
+            for (ProAudio program : listSrcMedias) {
                 if (!isCancelled() && cacheProgramCover(program)) {
                     cachedNum++;
                     if (cachedNum % 5 == 0) {
@@ -437,14 +401,6 @@ public abstract class BaseAudioExtendActionsActivity extends BaseAudioCommonActi
     @Override
     public void release() {
         super.release();
-        clearPlayInfo();
-    }
-
-    /**
-     * Release
-     */
-    protected void clearPlayInfo() {
-        mListPrograms = new ArrayList<>();
     }
 
     /**
@@ -470,7 +426,7 @@ public abstract class BaseAudioExtendActionsActivity extends BaseAudioCommonActi
      */
     protected void cancelAllTasks() {
         CommonUtil.cancelTask(mLoadLocalMediasTask);
-        CommonUtil.cancelTask(mMergeDatasTask);
+        CommonUtil.cancelTask(mMergeDataTask);
         CommonUtil.cancelTask(mLoadSDCardMediasTask);
         CommonUtil.cancelTask(mLoadMediaImageTask);
     }

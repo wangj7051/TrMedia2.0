@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -320,6 +321,7 @@ public class AudioDBManager {
 
                 ContentValues cvs = new ContentValues();
                 cvs.put(MusicCacheInfo.IS_COLLECT, media.isCollected);
+                cvs.put(MusicCacheInfo.UPDATE_TIME, media.updateTime);
                 int rowsNum = mDB.update(MusicCacheInfo.T_NAME, cvs, selection, selectionArgs);
                 Log.i(TAG, "updateMediaCollect - rowsNum: " + rowsNum);
             } catch (Exception e) {
@@ -335,7 +337,7 @@ public class AudioDBManager {
      * Get Music List
      */
     public List<ProAudio> getListMusics() {
-        List<ProAudio> listMusics = new ArrayList<ProAudio>();
+        List<ProAudio> listMusics = new ArrayList<>();
         if (openDB()) {
             Throwable throwable = null;
             Cursor cur = null;
@@ -452,31 +454,34 @@ public class AudioDBManager {
      * Get Music From Cursor
      */
     private ProAudio getMusicByCursor(Cursor cur) {
-        ProAudio music;
+        ProAudio music = null;
         try {
-            music = new ProAudio();
-            music.id = cur.getInt(cur.getColumnIndex(MusicCacheInfo.ID));
-            music.sysMediaID = cur.getLong(cur.getColumnIndex(MusicCacheInfo.SYS_MEDIA_ID));
-            music.title = cur.getString(cur.getColumnIndex(MusicCacheInfo.TITLE));
-            music.titlePinYin = cur.getString(cur.getColumnIndex(MusicCacheInfo.TITLE_PINYIN));
-            music.albumID = cur.getLong(cur.getColumnIndex(MusicCacheInfo.ALBUM_ID));
-            music.album = cur.getString(cur.getColumnIndex(MusicCacheInfo.ALBUM));
-            music.albumPinYin = cur.getString(cur.getColumnIndex(MusicCacheInfo.ALBUM_PINYIN));
-            music.artist = cur.getString(cur.getColumnIndex(MusicCacheInfo.ARTIST));
-            music.artistPinYin = cur.getString(cur.getColumnIndex(MusicCacheInfo.ARTIST_PINYIN));
-            music.mediaUrl = cur.getString(cur.getColumnIndex(MusicCacheInfo.MEDIA_URL));
-            music.mediaDirectory = cur.getString(cur.getColumnIndex(MusicCacheInfo.MEDIA_DIRECTORY));
-            music.mediaDirectoryPinYin = cur.getString(cur.getColumnIndex(MusicCacheInfo.MEDIA_DIRECTORY_PINYIN));
-            music.duration = cur.getInt(cur.getColumnIndex(MusicCacheInfo.DURATION));
-            music.isCollected = cur.getInt(cur.getColumnIndex(MusicCacheInfo.IS_COLLECT));
-            music.coverUrl = cur.getString(cur.getColumnIndex(MusicCacheInfo.COVER_URL));
-            music.lyric = cur.getString(cur.getColumnIndex(MusicCacheInfo.LYRIC));
-            music.source = cur.getInt(cur.getColumnIndex(MusicCacheInfo.SOURCE));
-            music.createTime = cur.getLong(cur.getColumnIndex(MusicCacheInfo.CREATE_TIME));
-            music.updateTime = cur.getLong(cur.getColumnIndex(MusicCacheInfo.UPDATE_TIME));
+            String mediaUrl = cur.getString(cur.getColumnIndex(MusicCacheInfo.MEDIA_URL));
+            File mediaFile = new File(mediaUrl);
+            if (mediaFile.exists()) {
+                music = new ProAudio();
+                music.id = cur.getInt(cur.getColumnIndex(MusicCacheInfo.ID));
+                music.sysMediaID = cur.getLong(cur.getColumnIndex(MusicCacheInfo.SYS_MEDIA_ID));
+                music.title = cur.getString(cur.getColumnIndex(MusicCacheInfo.TITLE));
+                music.titlePinYin = cur.getString(cur.getColumnIndex(MusicCacheInfo.TITLE_PINYIN));
+                music.albumID = cur.getLong(cur.getColumnIndex(MusicCacheInfo.ALBUM_ID));
+                music.album = cur.getString(cur.getColumnIndex(MusicCacheInfo.ALBUM));
+                music.albumPinYin = cur.getString(cur.getColumnIndex(MusicCacheInfo.ALBUM_PINYIN));
+                music.artist = cur.getString(cur.getColumnIndex(MusicCacheInfo.ARTIST));
+                music.artistPinYin = cur.getString(cur.getColumnIndex(MusicCacheInfo.ARTIST_PINYIN));
+                music.mediaUrl = mediaUrl;
+                music.mediaDirectory = cur.getString(cur.getColumnIndex(MusicCacheInfo.MEDIA_DIRECTORY));
+                music.mediaDirectoryPinYin = cur.getString(cur.getColumnIndex(MusicCacheInfo.MEDIA_DIRECTORY_PINYIN));
+                music.duration = cur.getInt(cur.getColumnIndex(MusicCacheInfo.DURATION));
+                music.isCollected = cur.getInt(cur.getColumnIndex(MusicCacheInfo.IS_COLLECT));
+                music.coverUrl = cur.getString(cur.getColumnIndex(MusicCacheInfo.COVER_URL));
+                music.lyric = cur.getString(cur.getColumnIndex(MusicCacheInfo.LYRIC));
+                music.source = cur.getInt(cur.getColumnIndex(MusicCacheInfo.SOURCE));
+                music.createTime = cur.getLong(cur.getColumnIndex(MusicCacheInfo.CREATE_TIME));
+                music.updateTime = cur.getLong(cur.getColumnIndex(MusicCacheInfo.UPDATE_TIME));
+            }
         } catch (Exception e) {
             Logs.printStackTrace(TAG + "getMusicByCursor()", e);
-            music = null;
         }
         return music;
     }

@@ -22,7 +22,9 @@
     <style name="Widget.SeekBar.Normal" parent="@android:style/Widget.SeekBar">
         <item name="android:maxHeight">6dp</item>
         <item name="android:indeterminateOnly">false</item>
-        <item name="android:indeterminateDrawable">@android:drawable/progress_indeterminate_horizontal</item>
+        <item name="android:indeterminateDrawable">
+            @android:drawable/progress_indeterminate_horizontal
+        </item>
         <item name="android:progressDrawable">@drawable/bg_progressbar_2</item>
         <item name="android:minHeight">6dp</item>
         <item name="android:thumb">@drawable/seekbar_point</item>
@@ -31,11 +33,9 @@
 
     <!-- SLC_LC2010_VDC Style -->
     <style name="Widget.SeekBar.SLC_LC2010_VDC" parent="@android:style/Widget.SeekBar">
-        <item name="android:maxHeight">7dp</item>
-        <item name="android:indeterminateOnly">false</item>
-        <item name="android:indeterminateDrawable">@android:drawable/progress_indeterminate_horizontal</item>
-        <item name="android:progressDrawable">@drawable/lct_lm8917_zbk_seekbar_progressbar</item>
-        <item name="android:minHeight">7dp</item>
+        <item name="android:maxHeight">10dp</item>
+        <item name="android:minHeight">10dp</item>
+        <item name="android:progressDrawable">@drawable/bg_progressbar_1</item>
         <item name="android:thumb">@drawable/seekbar_point</item>
         <item name="android:thumbOffset">0dp</item>
     </style>

@@ -18,7 +18,7 @@ import java.io.File;
 import java.util.List;
 
 import js.lib.android.media.bean.ProAudio;
-import js.lib.android.utils.EmptyUtil;
+import js.lib.android.utils.Logs;
 
 public class SclLc2010VdcAudioArtistAdapter<T> extends BaseAudioAdapter<T> implements SectionIndexer {
     // TAG
@@ -26,7 +26,7 @@ public class SclLc2010VdcAudioArtistAdapter<T> extends BaseAudioAdapter<T> imple
 
     private int mSelectedPos = 0;
     private String mSelectedMediaUrl = "";
-    private List<T> mListDatas;
+    private List<T> mListData;
 
     @IdRes
     private int mSelectFontColor, mNotSelectedColor;
@@ -40,7 +40,7 @@ public class SclLc2010VdcAudioArtistAdapter<T> extends BaseAudioAdapter<T> imple
         super(context, resource);
         this.mResID = R.layout.scl_lc2010_vdc_activity_audio_list_item;
         mNotSelectedColor = context.getResources().getColor(android.R.color.white);
-        mSelectFontColor = context.getResources().getColor(R.color.music_item_selected);
+        mSelectFontColor = context.getResources().getColor(R.color.music_item_selected_font);
     }
 
     public void setCollectListener(CollectListener l) {
@@ -48,7 +48,7 @@ public class SclLc2010VdcAudioArtistAdapter<T> extends BaseAudioAdapter<T> imple
     }
 
     public void setListDatas(List<T> listDatas) {
-        this.mListDatas = listDatas;
+        this.mListData = listDatas;
     }
 
     public void setSelect(String mediaUrl) {
@@ -61,7 +61,7 @@ public class SclLc2010VdcAudioArtistAdapter<T> extends BaseAudioAdapter<T> imple
             refreshDatas(((ProAudio) item).mediaUrl);
         } else if (item instanceof AudioFilter) {
             AudioFilter selectedAf = (AudioFilter) item;
-            for (T t : mListDatas) {
+            for (T t : mListData) {
                 AudioFilter af = (AudioFilter) t;
                 af.isSelected = TextUtils.equals(selectedAf.artist, af.artist);
             }
@@ -70,7 +70,7 @@ public class SclLc2010VdcAudioArtistAdapter<T> extends BaseAudioAdapter<T> imple
     }
 
     public void refreshDatas(List<T> listDatas) {
-        this.mListDatas = listDatas;
+        this.mListData = listDatas;
         refreshDatas();
     }
 
@@ -80,7 +80,7 @@ public class SclLc2010VdcAudioArtistAdapter<T> extends BaseAudioAdapter<T> imple
     }
 
     public void refreshDatas(List<T> listDatas, String selectedMediaUrl) {
-        this.mListDatas = listDatas;
+        this.mListData = listDatas;
         this.mSelectedMediaUrl = selectedMediaUrl;
         refreshDatas();
     }
@@ -89,20 +89,25 @@ public class SclLc2010VdcAudioArtistAdapter<T> extends BaseAudioAdapter<T> imple
         notifyDataSetChanged();
     }
 
+    public int getSelectPos() {
+        return mSelectedPos;
+    }
+
     @Override
     public int getCount() {
-        if (mListDatas == null) {
+        if (mListData == null) {
             return 0;
         }
-        return mListDatas.size();
+        return mListData.size();
     }
 
     @Override
     public T getItem(int position) {
-        if (EmptyUtil.isEmpty(mListDatas)) {
+        try {
+            return mListData.get(position);
+        } catch (Exception e) {
             return null;
         }
-        return mListDatas.get(position);
     }
 
     @NonNull
@@ -113,7 +118,7 @@ public class SclLc2010VdcAudioArtistAdapter<T> extends BaseAudioAdapter<T> imple
             holder = new ViewHolder();
             convertView = mInflater.inflate(mResID, null);
             holder.ivStart = (ImageView) convertView.findViewById(R.id.iv_start);
-            holder.tvItem = (TextView) convertView.findViewById(R.id.tv_item);
+            holder.tvItem = (TextView) convertView.findViewById(R.id.tv_desc);
             holder.ivEnd = (ImageView) convertView.findViewById(R.id.iv_end);
             convertView.setTag(holder);
 
@@ -132,6 +137,7 @@ public class SclLc2010VdcAudioArtistAdapter<T> extends BaseAudioAdapter<T> imple
                 if (TextUtils.equals(mSelectedMediaUrl, item.mediaUrl)) {
                     mSelectedPos = position;
                     holder.tvItem.setTextColor(mSelectFontColor);
+                    holder.ivStart.setImageResource(R.drawable.icon_item_selected);
                     holder.ivStart.setVisibility(View.VISIBLE);
                     convertView.setBackgroundResource(R.drawable.bg_lv_item_selected);
                 } else {
@@ -193,7 +199,7 @@ public class SclLc2010VdcAudioArtistAdapter<T> extends BaseAudioAdapter<T> imple
 
     public int getPrevPos() {
         int prevPos = mSelectedPos - 1;
-        if (prevPos <= 0) {
+        if (prevPos < 0) {
             prevPos = getCount() - 1;
         }
         return prevPos;
@@ -206,7 +212,35 @@ public class SclLc2010VdcAudioArtistAdapter<T> extends BaseAudioAdapter<T> imple
 
     @Override
     public int getPositionForSection(int sectionIndex) {
-        return 0;
+        int position = -1;
+        try {
+            for (int idx = 0; idx < getCount(); idx++) {
+                T item = getItem(idx);
+                if (item == null) {
+                    continue;
+                }
+
+                //
+                if (item instanceof ProAudio) {
+                    ProAudio media = (ProAudio) item;
+                    char firstChar = media.sortLetter.toUpperCase().charAt(0);
+                    if (firstChar == sectionIndex) {
+                        position = idx;
+                        break;
+                    }
+                } else if (item instanceof AudioFilter) {
+                    AudioFilter filter = (AudioFilter) item;
+                    char firstChar = filter.sortLetter.toUpperCase().charAt(0);
+                    if (firstChar == sectionIndex) {
+                        position = idx;
+                        break;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Logs.printStackTrace(TAG + "getPositionForSection()", e);
+        }
+        return position;
     }
 
     @Override

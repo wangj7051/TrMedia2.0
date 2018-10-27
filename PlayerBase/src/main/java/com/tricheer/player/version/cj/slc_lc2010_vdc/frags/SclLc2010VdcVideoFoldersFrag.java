@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -118,47 +119,55 @@ public class SclLc2010VdcVideoFoldersFrag extends BaseVideoListFrag {
 
     @Override
     public void refreshDatas(List<ProVideo> listMedias, String targetMediaUrl) {
-        if (isAdded()) {
-            //Check NULL
-            if (EmptyUtil.isEmpty(listMedias)) {
+        if (!isAdded() || EmptyUtil.isEmpty(listMedias)) {
+            return;
+        }
+
+        //Check if second priority page
+        if (!EmptyUtil.isEmpty(mListDatas)) {
+            Object item = mListDatas.get(0);
+            // 防止刷新导致二级界面跳转到一级界面
+            if (item instanceof ProVideo) {
+                Log.i(TAG, "### Current page is folders-2222 list page ####");
                 return;
             }
+            Log.i(TAG, "### Current page is folders-1111 list page ####");
+        }
 
-            //Filter collected
-            Map<String, VideoFilter> mapDatas = new HashMap<>();
-            for (ProVideo media : listMedias) {
-                //Folder
-                String folderPath = "";
-                File file = new File(media.mediaUrl);
-                if (file.exists()) {
-                    File parentFile = file.getParentFile();
-                    if (parentFile != null) {
-                        folderPath = parentFile.getPath();
-                    }
-                }
-
-                //
-                VideoFilter videoFilter = mapDatas.get(folderPath);
-                if (videoFilter == null) {
-                    videoFilter = new VideoFilter();
-                    videoFilter.folderPath = folderPath;
-                    videoFilter.folderPathPinYin = media.mediaDirectoryPinYin;
-                    videoFilter.listMedias = new ArrayList<>();
-                    videoFilter.listMedias.add(media);
-                    mapDatas.put(videoFilter.folderPath, videoFilter);
-                } else {
-                    videoFilter.listMedias.add(media);
-                }
-
-                //
-                if (!videoFilter.isSelected) {
-                    videoFilter.isSelected = TextUtils.equals(targetMediaUrl, media.mediaUrl);
+        //Filter collected
+        Map<String, VideoFilter> mapDatas = new HashMap<>();
+        for (ProVideo media : listMedias) {
+            //Folder
+            String folderPath = "";
+            File file = new File(media.mediaUrl);
+            if (file.exists()) {
+                File parentFile = file.getParentFile();
+                if (parentFile != null) {
+                    folderPath = parentFile.getPath();
                 }
             }
 
-            //Refresh UI
-            refreshFilters((mListFilters = new ArrayList<>(mapDatas.values())));
+            //
+            VideoFilter videoFilter = mapDatas.get(folderPath);
+            if (videoFilter == null) {
+                videoFilter = new VideoFilter();
+                videoFilter.folderPath = folderPath;
+                videoFilter.folderPathPinYin = media.mediaDirectoryPinYin;
+                videoFilter.listMedias = new ArrayList<>();
+                videoFilter.listMedias.add(media);
+                mapDatas.put(videoFilter.folderPath, videoFilter);
+            } else {
+                videoFilter.listMedias.add(media);
+            }
+
+            //
+            if (!videoFilter.isSelected) {
+                videoFilter.isSelected = TextUtils.equals(targetMediaUrl, media.mediaUrl);
+            }
         }
+
+        //Refresh UI
+        refreshFilters((mListFilters = new ArrayList<>(mapDatas.values())));
     }
 
     private void refreshFilters(List<VideoFilter> listFilters) {
@@ -195,16 +204,13 @@ public class SclLc2010VdcVideoFoldersFrag extends BaseVideoListFrag {
                 // Play Select MediaUrl
                 Logs.i(TAG, "LvItemClick -> onItemClick(" + position + ")");
                 final Object objItem = parent.getItemAtPosition(position);
-                if (objItem != null) {
-                    if (objItem instanceof VideoFilter) {
-                        VideoFilter item = (VideoFilter) objItem;
-                        mListDatas = item.listMedias;
-                        mDataAdapter.refreshDatas(mListDatas);
-                    } else if (objItem instanceof ProVideo) {
-                        ProVideo item = (ProVideo) objItem;
-                        Logs.i(TAG, "LvItemClick -> onItemClick ----Just Play----");
-                        openVideoPlayerActivity(item.mediaUrl, (List<ProVideo>) mListDatas);
-                    }
+                if (objItem instanceof VideoFilter) {
+                    VideoFilter item = (VideoFilter) objItem;
+                    mListDatas = item.listMedias;
+                    mDataAdapter.refreshDatas(mListDatas);
+                } else if (objItem instanceof ProVideo) {
+                    ProVideo media = (ProVideo) objItem;
+                    openVideoPlayerActivity(media.mediaUrl, (List<ProVideo>) mListDatas);
                 }
             }
         }
@@ -240,13 +246,25 @@ public class SclLc2010VdcVideoFoldersFrag extends BaseVideoListFrag {
     }
 
     @Override
-    public void prev() {
-//        mDataAdapter.refreshDatas(mDataAdapter.getPrevPos());
+    public void next() {
+        if (isAdded()) {
+            int nextPos = mDataAdapter.getNextPos();
+            mDataAdapter.refreshDatas(nextPos);
+            gvDatas.setSelection(nextPos);
+        }
     }
 
     @Override
-    public void next() {
-//        mDataAdapter.refreshDatas(mDataAdapter.getNextPos());
+    public void prev() {
+        if (isAdded()) {
+            int prevPos = mDataAdapter.getPrevPos();
+            mDataAdapter.refreshDatas(prevPos);
+            gvDatas.setSelection(prevPos);
+        }
+    }
+
+    @Override
+    public void playSelected() {
     }
 
     @Override

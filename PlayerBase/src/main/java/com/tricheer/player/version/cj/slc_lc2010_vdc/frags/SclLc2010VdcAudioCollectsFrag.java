@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +26,7 @@ import java.util.List;
 
 import js.lib.android.media.bean.ProAudio;
 import js.lib.android.media.engine.audio.db.AudioDBManager;
+import js.lib.android.media.player.audio.utils.AudioSortUtils;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.Logs;
 
@@ -85,8 +88,7 @@ public class SclLc2010VdcAudioCollectsFrag extends BaseAudioListFrag {
         //----Widgets----
         //Side bar
         lsb = (LetterSideBar) contentV.findViewById(R.id.lsb);
-        lsb.refreshLetters(null);
-        lsb.addCallback(new LetterSideBarCallback());
+        lsb.setVisibility(View.INVISIBLE);
 
         layoutNoneToast = contentV.findViewById(R.id.layout_none_toast);
         layoutNoneToast.setVisibility(View.INVISIBLE);
@@ -98,64 +100,74 @@ public class SclLc2010VdcAudioCollectsFrag extends BaseAudioListFrag {
         lvDatas = (ListView) contentV.findViewById(R.id.lv_datas);
         lvDatas.setAdapter(mDataAdapter);
         lvDatas.setOnItemClickListener(new LvItemClick());
-        refreshDatas(mAttachedActivity.getListMedias(), mAttachedActivity.getLastMediaPath());
+        loadDataList();
     }
 
     @Override
-    public void refreshDatas(List<ProAudio> listMedias, String targetMediaUrl) {
-        if (isAdded()) {
-            //Check NULL
-            if (EmptyUtil.isEmpty(listMedias)) {
-                return;
-            }
-
-            //Filter collected
-            mListMedias = new ArrayList<>();
-            for (ProAudio media : listMedias) {
-                if (media.isCollected == 1) {
-                    mListMedias.add(media);
-                }
-            }
-
-            //Refresh UI
-            layoutNoneToast.setVisibility(EmptyUtil.isEmpty(mListMedias) ? View.VISIBLE : View.INVISIBLE);
-            mDataAdapter.refreshDatas(mListMedias, targetMediaUrl);
+    public void loadDataList() {
+        if (!isAdded()) {
+            return;
         }
+
+        //Check NULL
+        String targetMediaUrl = mAttachedActivity.getLastMediaPath();
+        List<ProAudio> listSrcMedias = mAttachedActivity.getListSrcMedias();
+        if (listSrcMedias == null) {
+            return;
+        }
+
+        //Filter collected
+        mListMedias = new ArrayList<>();
+        for (ProAudio media : listSrcMedias) {
+            if (media.isCollected == 1) {
+                mListMedias.add(media);
+            }
+        }
+
+        //Refresh UI
+        AudioSortUtils.sortByUpdateTime(mListMedias);
+        for (ProAudio media : mListMedias) {
+            Log.i(TAG, media.title + " - " + media.isCollected + " - " + media.updateTime);
+        }
+
+        layoutNoneToast.setVisibility(EmptyUtil.isEmpty(mListMedias) ? View.VISIBLE : View.INVISIBLE);
+        mDataAdapter.refreshDatas(mListMedias, targetMediaUrl);
     }
 
     @Override
-    public void refreshDatas(String targetMediaUrl) {
+    public void refreshPlaying(String targetMediaUrl) {
         if (isAdded()) {
             mDataAdapter.refreshDatas(targetMediaUrl);
         }
     }
 
     @Override
-    public void next() {
+    public void selectNext() {
         if (isAdded()) {
-            mDataAdapter.refreshDatas(mDataAdapter.getNextPos());
+            int nextPos = mDataAdapter.getNextPos();
+            mDataAdapter.refreshDatas(nextPos);
+            lvDatas.setSelection(nextPos);
         }
     }
 
     @Override
-    public void prev() {
+    public void selectPrev() {
         if (isAdded()) {
-            mDataAdapter.refreshDatas(mDataAdapter.getPrevPos());
+            int prevPos = mDataAdapter.getPrevPos();
+            mDataAdapter.refreshDatas(prevPos);
+            lvDatas.setSelection(prevPos);
         }
     }
 
     @Override
-    public void playSelectMedia(String mediaUrl) {
+    public void playSelected() {
+    }
+
+
+    @Override
+    public void playSelected(String mediaUrl) {
         if (isAdded() && mAttachedActivity != null) {
             mAttachedActivity.openPlayerActivity(mediaUrl, mListMedias);
-        }
-    }
-
-    private class LetterSideBarCallback implements LetterSideBar.LetterSideBarListener {
-        @Override
-        public void callback(int pos, String letter) {
-            Logs.i(TAG, "LetterSideBarCallback -> callback(" + pos + "," + letter + ")");
-            lvDatas.setSelection(pos);
         }
     }
 
@@ -200,14 +212,30 @@ public class SclLc2010VdcAudioCollectsFrag extends BaseAudioListFrag {
             switch (item.isCollected) {
                 case 0:
                     item.isCollected = 1;
+                    item.updateTime = System.currentTimeMillis();
                     AudioDBManager.instance().updateMediaCollect(item);
                     ivCollect.setImageResource(R.drawable.favor_c);
                     break;
                 case 1:
                     item.isCollected = 0;
+                    item.updateTime = System.currentTimeMillis();
                     AudioDBManager.instance().updateMediaCollect(item);
                     ivCollect.setImageResource(R.drawable.favor_c_n);
+                    removeUnCollected(item.mediaUrl);
                     break;
+            }
+        }
+
+        private void removeUnCollected(String mediaUrl) {
+            if (!EmptyUtil.isEmpty(mListMedias)) {
+                for (ProAudio media : mListMedias) {
+                    if (TextUtils.equals(mediaUrl, media.mediaUrl)) {
+                        mListMedias.remove(media);
+                        break;
+                    }
+                }
+                mDataAdapter.refreshDatas();
+                layoutNoneToast.setVisibility(EmptyUtil.isEmpty(mListMedias) ? View.VISIBLE : View.INVISIBLE);
             }
         }
     }

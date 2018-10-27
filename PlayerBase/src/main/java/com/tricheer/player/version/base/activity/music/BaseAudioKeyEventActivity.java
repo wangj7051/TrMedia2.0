@@ -24,7 +24,9 @@ public abstract class BaseAudioKeyEventActivity extends BaseAudioExtendActionsAc
                 break;
         }
 
-        boolean isMenu = (key == KeyEnum.KEYCODE_DPAD_LEFT) || (key == KeyEnum.KEYCODE_DPAD_RIGHT);
+        boolean isMenu = (key == KeyEnum.KEYCODE_DPAD_LEFT)
+                || (key == KeyEnum.KEYCODE_DPAD_RIGHT)
+                || (key == KeyEnum.KEYCODE_ENTER);
         if (isMenu) {
             return true;
         } else {

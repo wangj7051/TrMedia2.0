@@ -18,10 +18,10 @@ public enum ActionEnum {
     // ### Click FileManager Media to Play ###
     // Parameter1 : "index" - [选中媒体所在数据列表位置]
     // Parameter2 : "fileList" - [媒体路径数据列表]
-    PLAY_MUSIC_BY_FILEMANAGER(20, "com.tricheer.music.PLAY_FROM_FILEMANAGER"),
+    PLAY_MUSIC_BY_FILEMANAGER(90, "com.tricheer.music.PLAY_FROM_FILEMANAGER"),
     // Parameter1 : "index" - [选中媒体所在数据列表位置]
     // Parameter2 : "fileList" - [媒体路径数据列表]
-    PLAY_VIDEO_BY_FILEMANAGER(21, "com.tricheer.video.PLAY_FROM_FILEMANAGER"),
+    PLAY_VIDEO_BY_FILEMANAGER(91, "com.tricheer.video.PLAY_FROM_FILEMANAGER"),
 
     //Media Switch
     MEDIA_SWITCH_BY_SOURCE(100, "tricheer.intent.action.SWC_SOURCE_CHANGE"),
@@ -29,6 +29,8 @@ public enum ActionEnum {
 
     // System Broadcast
     BOOT_COMPLETED(10000, Intent.ACTION_BOOT_COMPLETED),
+    SCREEN_ON(11000, Intent.ACTION_SCREEN_ON),
+    SCREEN_OFF(11001, Intent.ACTION_SCREEN_OFF),
 
     /**
      * ### Open Logs ###

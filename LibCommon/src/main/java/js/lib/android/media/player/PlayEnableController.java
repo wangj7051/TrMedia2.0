@@ -86,7 +86,7 @@ public class PlayEnableController {
      *
      * @param isScreenOff :屏是否熄灭
      */
-    public static void onScreenOff(boolean isScreenOff) {
+    public static void onScreenStateChanged(boolean isScreenOff) {
         mIsScreenOff = isScreenOff;
         print();
     }

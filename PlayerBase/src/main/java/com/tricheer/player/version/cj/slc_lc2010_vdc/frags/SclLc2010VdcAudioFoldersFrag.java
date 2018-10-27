@@ -101,52 +101,67 @@ public class SclLc2010VdcAudioFoldersFrag extends BaseAudioListFrag {
         lvDatas = (ListView) contentV.findViewById(R.id.lv_datas);
         lvDatas.setAdapter(mDataAdapter);
         lvDatas.setOnItemClickListener(new LvItemClick());
-        refreshDatas(mAttachedActivity.getListMedias(), mAttachedActivity.getLastMediaPath());
+        loadDataList();
     }
 
     @Override
-    public void refreshDatas(List<ProAudio> listMedias, String targetMediaUrl) {
-        if (isAdded()) {
-            //Check NULL
-            if (listMedias == null) {
+    public void loadDataList() {
+        if (!isAdded()) {
+            return;
+        }
+
+        //Check if second priority page
+        if (!EmptyUtil.isEmpty(mListDatas)) {
+            Object item = mListDatas.get(0);
+            // 防止刷新导致二级界面跳转到一级界面
+            if (item instanceof ProAudio) {
+                Log.i(TAG, "### Current page is Folders-2222 list page ####");
                 return;
             }
+            Log.i(TAG, "### Current page is Folders-1111 list page ####");
+        }
 
-            //Filter collected
-            Map<String, AudioFilter> mapDatas = new HashMap<>();
-            for (ProAudio media : listMedias) {
-                //Folder
-                String folderPath = "";
-                File file = new File(media.mediaUrl);
-                if (file.exists()) {
-                    File parentFile = file.getParentFile();
-                    if (parentFile != null) {
-                        folderPath = parentFile.getPath();
-                    }
-                }
+        //Check NULL
+        String targetMediaUrl = mAttachedActivity.getLastMediaPath();
+        List<ProAudio> listSrcMedias = mAttachedActivity.getListSrcMedias();
+        if (listSrcMedias == null) {
+            return;
+        }
 
-                //
-                AudioFilter audioFilter = mapDatas.get(folderPath);
-                if (audioFilter == null) {
-                    audioFilter = new AudioFilter();
-                    audioFilter.folderPath = folderPath;
-                    audioFilter.folderPathPinYin = media.mediaDirectoryPinYin;
-                    audioFilter.listMedias = new ArrayList<>();
-                    audioFilter.listMedias.add(media);
-                    mapDatas.put(audioFilter.folderPath, audioFilter);
-                } else {
-                    audioFilter.listMedias.add(media);
-                }
-
-                //
-                if (!audioFilter.isSelected) {
-                    audioFilter.isSelected = TextUtils.equals(targetMediaUrl, media.mediaUrl);
+        //Filter collected
+        Map<String, AudioFilter> mapDatas = new HashMap<>();
+        for (ProAudio media : listSrcMedias) {
+            //Folder
+            String folderPath = "";
+            File file = new File(media.mediaUrl);
+            if (file.exists()) {
+                File parentFile = file.getParentFile();
+                if (parentFile != null) {
+                    folderPath = parentFile.getPath();
                 }
             }
 
-            //Refresh UI
-            refreshFilters((mListFilters = new ArrayList<>(mapDatas.values())));
+            //
+            AudioFilter audioFilter = mapDatas.get(folderPath);
+            if (audioFilter == null) {
+                audioFilter = new AudioFilter();
+                audioFilter.folderPath = folderPath;
+                audioFilter.folderPathPinYin = media.mediaDirectoryPinYin;
+                audioFilter.listMedias = new ArrayList<>();
+                audioFilter.listMedias.add(media);
+                mapDatas.put(audioFilter.folderPath, audioFilter);
+            } else {
+                audioFilter.listMedias.add(media);
+            }
+
+            //
+            if (!audioFilter.isSelected) {
+                audioFilter.isSelected = TextUtils.equals(targetMediaUrl, media.mediaUrl);
+            }
         }
+
+        //Refresh UI
+        refreshFilters((mListFilters = new ArrayList<>(mapDatas.values())));
     }
 
     private void refreshFilters(List<AudioFilter> listFilters) {
@@ -159,7 +174,7 @@ public class SclLc2010VdcAudioFoldersFrag extends BaseAudioListFrag {
 
 
     @Override
-    public void refreshDatas(String targetMediaUrl) {
+    public void refreshPlaying(String targetMediaUrl) {
         if (isAdded() && mListDatas != null) {
             for (Object obj : mListDatas) {
                 if (obj instanceof AudioFilter) {
@@ -184,25 +199,33 @@ public class SclLc2010VdcAudioFoldersFrag extends BaseAudioListFrag {
     }
 
     @Override
-    public void next() {
+    public void selectNext() {
         if (isAdded()) {
-            mDataAdapter.refreshDatas(mDataAdapter.getNextPos());
+            int nextPos = mDataAdapter.getNextPos();
+            mDataAdapter.refreshDatas(nextPos);
+            lvDatas.setSelection(nextPos);
         }
     }
 
     @Override
-    public void prev() {
+    public void selectPrev() {
         if (isAdded()) {
-            mDataAdapter.refreshDatas(mDataAdapter.getPrevPos());
+            int prevPos = mDataAdapter.getPrevPos();
+            mDataAdapter.refreshDatas(prevPos);
+            lvDatas.setSelection(prevPos);
         }
     }
 
     @Override
-    public void playSelectMedia(String mediaUrl) {
+    public void playSelected() {
+    }
+
+    @Override
+    public void playSelected(String mediaUrl) {
         try {
             Object obj = mListDatas.get(0);
             if (obj instanceof ProAudio) {
-                mAttachedActivity.openPlayerActivity(mediaUrl, mListDatas);
+                mAttachedActivity.openPlayerActivity(mediaUrl, (List<ProAudio>) mListDatas);
             }
         } catch (Exception e) {
             Log.i(TAG, "playSelectMedia> " + e.getMessage());
@@ -213,7 +236,11 @@ public class SclLc2010VdcAudioFoldersFrag extends BaseAudioListFrag {
         @Override
         public void callback(int pos, String letter) {
             Logs.i(TAG, "LetterSideBarCallback -> callback(" + pos + "," + letter + ")");
-            lvDatas.setSelection(pos);
+            int sectionPos = mDataAdapter.getPositionForSection(letter.charAt(0));
+            if (sectionPos != -1) {
+                Logs.i(TAG, "LetterSideBarCallback -> callback(" + pos + "," + letter + "-" + sectionPos + ")");
+                lvDatas.setSelection(sectionPos);
+            }
         }
     }
 
@@ -251,7 +278,7 @@ public class SclLc2010VdcAudioFoldersFrag extends BaseAudioListFrag {
                 }
 
                 ProAudio program = (ProAudio) objItem;
-                mAttachedActivity.openPlayerActivity(program.mediaUrl, mListDatas);
+                mAttachedActivity.openPlayerActivity(program.mediaUrl, (List<ProAudio>) mListDatas);
             }
         }
 
@@ -273,11 +300,13 @@ public class SclLc2010VdcAudioFoldersFrag extends BaseAudioListFrag {
                 switch (media.isCollected) {
                     case 0:
                         media.isCollected = 1;
+                        media.updateTime = System.currentTimeMillis();
                         AudioDBManager.instance().updateMediaCollect(media);
                         ivCollect.setImageResource(R.drawable.favor_c);
                         break;
                     case 1:
                         media.isCollected = 0;
+                        media.updateTime = System.currentTimeMillis();
                         AudioDBManager.instance().updateMediaCollect(media);
                         ivCollect.setImageResource(R.drawable.favor_c_n);
                         break;

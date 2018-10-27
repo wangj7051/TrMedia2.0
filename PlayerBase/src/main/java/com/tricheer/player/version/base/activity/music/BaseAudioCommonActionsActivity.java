@@ -83,6 +83,27 @@ public abstract class BaseAudioCommonActionsActivity extends BasePlayerActivity 
     }
 
     @Override
+    public void setListSrcMedias(List<? extends MediaBase> listSrcMedias) {
+//        super.setListSrcMedias(listSrcMedias);
+        if (mPlayService != null) {
+            mPlayService.setListSrcMedias(listSrcMedias);
+        }
+    }
+
+    @Override
+    public List<ProAudio> getListSrcMedias() {
+        Logs.i(TAG, "^^ getListMedias() ^^");
+        if (mPlayService != null) {
+            List<?> list = mPlayService.getListSrcMedias();
+            if (list != null) {
+                List<ProAudio> listAudios = (List<ProAudio>) list;
+                return listAudios;
+            }
+        }
+        return null;
+    }
+
+    @Override
     public void setPlayList(List<? extends MediaBase> listPros) {
         Logs.i(TAG, "^^ setPlayList() ^^");
         if (mPlayService != null) {

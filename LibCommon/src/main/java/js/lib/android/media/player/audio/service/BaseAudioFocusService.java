@@ -4,7 +4,7 @@ import android.app.Service;
 import android.media.AudioManager;
 import android.util.Log;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import js.lib.android.media.engine.IAudioFocusListener;
@@ -23,7 +23,7 @@ public abstract class BaseAudioFocusService extends Service {
     /**
      * Player State Listener out of service
      */
-    private Set<IAudioFocusListener> mSetAudioFocusListeners = new HashSet<>();
+    private Set<IAudioFocusListener> mSetAudioFocusListeners = new LinkedHashSet<>();
 
     /**
      * Listener Audio Focus

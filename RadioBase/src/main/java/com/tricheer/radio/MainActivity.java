@@ -40,6 +40,7 @@ import js.lib.android.adapter.VPFragStateAdapter;
 import js.lib.android.fragment.BaseAppV4Fragment;
 import js.lib.android.media.engine.mediabtn.MediaBtnController;
 import js.lib.android.media.engine.mediabtn.MediaBtnReceiver;
+import js.lib.android.media.player.PlayEnableController;
 import js.lib.android.view.SeekBarImpl;
 import js.lib.android.view.ViewPagerImpl;
 
@@ -79,7 +80,7 @@ public class MainActivity extends BaseKeyEventActivity
     private ViewPagerOnChange mViewPageOnChange;
     private VPFragStateAdapter mFragAdapter;
 
-    private ObjectAnimator mAnimTowerRoate;
+    private ObjectAnimator mAnimTowerRotate;
 
     private static Handler mHandler = new Handler();
     private SearchingController mSearchingController;
@@ -104,6 +105,7 @@ public class MainActivity extends BaseKeyEventActivity
         mFmStateController.onCreate(this);
 
         //
+        ReverseReceiver.register(this);
         AccReceiver.register(this);
         MediaBtnReceiver.setListener(this);
         init();
@@ -351,17 +353,29 @@ public class MainActivity extends BaseKeyEventActivity
                 scanAndPlayPrev();
             } else if (v == ivNext) {
                 scanAndPlayNext();
+
+                //
             } else if (v == ivExit) {
-                if (!mScanningController.isScanning() && !mSearchingController.isSearching()) {
+                if (mScanningController.isScanningPrev()) {
+                    Log.i(TAG, "isScanningPrev - Stop scanning, execute play.");
+                    scanAndPlayPrev();
+                } else if (mScanningController.isScanningNext()) {
+                    Log.i(TAG, "isScanningNext - Stop scanning, execute play.");
+                    scanAndPlayNext();
+                } else if (mSearchingController.isSearching()) {
+                    Log.i(TAG, "isSearching - Stop searching, execute play.");
+                    mSearchingController.resumeOrigin();
+                } else {
                     closeFm();
                     finish();
                 }
+
+                //
             } else if (v == tvUpdate) {
-                if (mSearchingController.isSearching()) {
-                    mSearchingController.resumeOrigin();
-                } else {
-                    mSearchingController.start();
-                }
+                mSearchingController.start();
+//                if (mSearchingController.isSearching()) {
+//                    mSearchingController.resumeOrigin();
+//                }
             }
         }
     };
@@ -369,11 +383,11 @@ public class MainActivity extends BaseKeyEventActivity
     @Override
     protected void execSwitchBand() {
         Log.i(TAG, "execSwitchBand()");
-        if (mAnimTowerRoate == null) {
-            mAnimTowerRoate = ObjectAnimator.ofFloat(ivTower, "rotationY", 0, 180);
-            mAnimTowerRoate.setInterpolator(new LinearInterpolator());
-            mAnimTowerRoate.setDuration(300);
-            mAnimTowerRoate.addListener(new Animator.AnimatorListener() {
+        if (mAnimTowerRotate == null) {
+            mAnimTowerRotate = ObjectAnimator.ofFloat(ivTower, "rotationY", 0, 180);
+            mAnimTowerRotate.setInterpolator(new LinearInterpolator());
+            mAnimTowerRotate.setDuration(300);
+            mAnimTowerRotate.addListener(new Animator.AnimatorListener() {
                 @Override
                 public void onAnimationStart(Animator animation) {
                     mViewPageOnChange.reset();
@@ -398,30 +412,51 @@ public class MainActivity extends BaseKeyEventActivity
                 }
             });
         }
-        if (!mAnimTowerRoate.isRunning()) {
-            mAnimTowerRoate.start();
+        if (!mAnimTowerRotate.isRunning()) {
+            mAnimTowerRotate.start();
         }
     }
 
     @Override
-    public void onScanFreqStart(BandCategoryEnum band) {
-        super.onScanFreqStart(band);
-        Log.i(TAG, "onScanFreqStart(" + band + ")");
-        mScanningController.start();
+    public void onScanStrongFreqLeftStart(BandCategoryEnum band) {
+        super.onScanStrongFreqLeftStart(band);
+        Log.i(TAG, "onScanStrongFreqLeftStart(" + band + ")");
+        mScanningController.startPrev();
     }
 
     @Override
-    public void onScanFreqEnd(BandCategoryEnum band) {
-        super.onScanFreqEnd(band);
-        Log.i(TAG, "onScanFreqEnd(" + band + ")");
-        mScanningController.end();
+    public void onScanStrongFreqLeftEnd(BandCategoryEnum band) {
+        super.onScanStrongFreqLeftEnd(band);
+        Log.i(TAG, "onScanStrongFreqLeftEnd(" + band + ")");
+        mScanningController.endPrev();
     }
 
     @Override
-    public void onScanFreqFail(BandCategoryEnum band, int reason) {
-        super.onScanFreqFail(band, reason);
-        Log.i(TAG, "onScanFreqFail(" + band + "," + reason + ")");
-        mScanningController.fail();
+    public void onScanStrongFreqLeftFail(BandCategoryEnum band, int reason) {
+        super.onScanStrongFreqLeftFail(band, reason);
+        Log.i(TAG, "onScanStrongFreqLeftFail(" + band + "," + reason + ")");
+        mScanningController.failPrev();
+    }
+
+    @Override
+    public void onScanStrongFreqRightStart(BandCategoryEnum band) {
+        super.onScanStrongFreqRightStart(band);
+        Log.i(TAG, "onScanStrongFreqRightStart(" + band + ")");
+        mScanningController.startNext();
+    }
+
+    @Override
+    public void onScanStrongFreqRightEnd(BandCategoryEnum band) {
+        super.onScanStrongFreqRightEnd(band);
+        Log.i(TAG, "onScanStrongFreqRightEnd(" + band + ")");
+        mScanningController.endNext();
+    }
+
+    @Override
+    public void onScanStrongFreqRightFail(BandCategoryEnum band, int reason) {
+        super.onScanStrongFreqRightFail(band, reason);
+        Log.i(TAG, "onScanStrongFreqRightFail(" + band + "," + reason + ")");
+        mScanningController.failNext();
     }
 
     @Override
@@ -530,33 +565,46 @@ public class MainActivity extends BaseKeyEventActivity
     public void onAudioFocusLoss() {
         Log.i(TAG, "onAudioFocusLoss()");
         mMediaBtnController.unregister();
+
+        //Reset Radio status
+        refreshPageOnScanning(false);
+        mFmStateController.onFmStateChanged();
     }
 
     @Override
     public void onAccOn() {
-        if (!isRadioOpened()) {
+        Log.i(TAG, "onAccOn()");
+        if (!isRadioOpened()
+                && PlayEnableController.isPlayEnable()
+                && isAudioFocusRegistered()) {
             execOpenRadio();
         }
     }
 
     @Override
     public void onAccOff() {
+        Log.i(TAG, "onAccOff()");
         closeFm();
     }
 
     @Override
     public void onAccOffTrue() {
+        Log.i(TAG, "onAccOffTrue()");
         closeFm();
     }
 
     @Override
     public void onReverseOn() {
+        Log.i(TAG, "onReverseOn()");
         closeFm();
     }
 
     @Override
     public void onReverseOff() {
-        if (!isRadioOpened()) {
+        Log.i(TAG, "onReverseOff()");
+        if (!isRadioOpened()
+                && PlayEnableController.isPlayEnable()
+                && isAudioFocusRegistered()) {
             execOpenRadio();
         }
     }
@@ -637,22 +685,29 @@ public class MainActivity extends BaseKeyEventActivity
     @Override
     protected void onDestroy() {
         //
-        MediaBtnReceiver.setListener(null);
-        mMediaBtnController.unregister();
-        if (mAnimTowerRoate != null) {
-            if (mAnimTowerRoate.isRunning()) {
-                mAnimTowerRoate.cancel();
-                mAnimTowerRoate.end();
+        if (mAnimTowerRotate != null) {
+            if (mAnimTowerRotate.isRunning()) {
+                mAnimTowerRotate.cancel();
+                mAnimTowerRotate.end();
             }
-            mAnimTowerRoate = null;
+            mAnimTowerRotate = null;
         }
 
         //
+        MediaBtnReceiver.setListener(null);
+        mMediaBtnController.unregister();
+
+        //
+        ReverseReceiver.unregister(this);
         AccReceiver.unregister(this);
-        mFmStateController.onDestroy();
-        unregister(this);
+
+        //
         closeFm();
+        unregister(this);
         bindAndCreateControlService(3, 4);
+
+        //
+        mFmStateController.onDestroy();
         super.onDestroy();
     }
 
@@ -661,35 +716,56 @@ public class MainActivity extends BaseKeyEventActivity
 
         void onCreate(Context context) {
             mmContext = context;
+            Log.i(TAG, "FmStateController.onCreate(Context) > status:" + 1);
             SettingsSysUtil.setFmState(mmContext, 1);
         }
 
         void onFmStateChanged() {
-            SettingsSysUtil.setFmState(mmContext, isRadioOpened() ? 2 : 1);
+            int status = isRadioOpened() ? 2 : 1;
+            Log.i(TAG, "FmStateController.onFmStateChanged() > status:" + status);
+            SettingsSysUtil.setFmState(mmContext, status);
         }
 
         void onDestroy() {
+            Log.i(TAG, "FmStateController.onDestroy() > status:" + 0);
             SettingsSysUtil.setFmState(mmContext, 0);
         }
     }
 
     private final class ScanningController {
-        boolean mmIsScanning = false;
+        boolean mmIsScanningPrev = false;
+        boolean mmIsScanningNext = false;
 
-        void start() {
-            mmIsScanning = true;
+        void startPrev() {
+            mmIsScanningPrev = true;
         }
 
-        void end() {
-            mmIsScanning = false;
+        void endPrev() {
+            mmIsScanningPrev = false;
         }
 
-        void fail() {
-            mmIsScanning = false;
+        void failPrev() {
+            mmIsScanningPrev = false;
         }
 
-        boolean isScanning() {
-            return mmIsScanning;
+        boolean isScanningPrev() {
+            return mmIsScanningNext;
+        }
+
+        void startNext() {
+            mmIsScanningNext = true;
+        }
+
+        void endNext() {
+            mmIsScanningNext = false;
+        }
+
+        void failNext() {
+            mmIsScanningNext = false;
+        }
+
+        boolean isScanningNext() {
+            return mmIsScanningNext;
         }
     }
 

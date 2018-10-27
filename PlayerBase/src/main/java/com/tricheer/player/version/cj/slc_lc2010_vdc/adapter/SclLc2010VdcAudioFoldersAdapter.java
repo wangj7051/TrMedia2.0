@@ -19,6 +19,7 @@ import java.util.List;
 
 import js.lib.android.media.bean.ProAudio;
 import js.lib.android.utils.EmptyUtil;
+import js.lib.android.utils.Logs;
 
 public class SclLc2010VdcAudioFoldersAdapter<T> extends BaseAudioAdapter<T> implements SectionIndexer {
     // TAG
@@ -40,7 +41,7 @@ public class SclLc2010VdcAudioFoldersAdapter<T> extends BaseAudioAdapter<T> impl
         super(context, resource);
         this.mResID = R.layout.scl_lc2010_vdc_activity_audio_list_item;
         mNotSelectedColor = context.getResources().getColor(android.R.color.white);
-        mSelectFontColor = context.getResources().getColor(R.color.music_item_selected);
+        mSelectFontColor = context.getResources().getColor(R.color.music_item_selected_font);
     }
 
     public void setCollectListener(CollectListener l) {
@@ -89,6 +90,10 @@ public class SclLc2010VdcAudioFoldersAdapter<T> extends BaseAudioAdapter<T> impl
         notifyDataSetChanged();
     }
 
+    public int getSelectPos() {
+        return mSelectedPos;
+    }
+
     @Override
     public int getCount() {
         if (mListDatas == null) {
@@ -113,7 +118,7 @@ public class SclLc2010VdcAudioFoldersAdapter<T> extends BaseAudioAdapter<T> impl
             holder = new ViewHolder();
             convertView = mInflater.inflate(mResID, null);
             holder.ivStart = (ImageView) convertView.findViewById(R.id.iv_start);
-            holder.tvItem = (TextView) convertView.findViewById(R.id.tv_item);
+            holder.tvItem = (TextView) convertView.findViewById(R.id.tv_desc);
             holder.ivEnd = (ImageView) convertView.findViewById(R.id.iv_end);
             convertView.setTag(holder);
 
@@ -132,6 +137,7 @@ public class SclLc2010VdcAudioFoldersAdapter<T> extends BaseAudioAdapter<T> impl
                 if (TextUtils.equals(mSelectedMediaUrl, item.mediaUrl)) {
                     mSelectedPos = position;
                     holder.tvItem.setTextColor(mSelectFontColor);
+                    holder.ivStart.setImageResource(R.drawable.icon_item_selected);
                     holder.ivStart.setVisibility(View.VISIBLE);
                     convertView.setBackgroundResource(R.drawable.bg_lv_item_selected);
                 } else {
@@ -194,7 +200,7 @@ public class SclLc2010VdcAudioFoldersAdapter<T> extends BaseAudioAdapter<T> impl
 
     public int getPrevPos() {
         int prevPos = mSelectedPos - 1;
-        if (prevPos <= 0) {
+        if (prevPos < 0) {
             prevPos = getCount() - 1;
         }
         return prevPos;
@@ -207,7 +213,35 @@ public class SclLc2010VdcAudioFoldersAdapter<T> extends BaseAudioAdapter<T> impl
 
     @Override
     public int getPositionForSection(int sectionIndex) {
-        return 0;
+        int position = -1;
+        try {
+            for (int idx = 0; idx < getCount(); idx++) {
+                T item = getItem(idx);
+                if (item == null) {
+                    continue;
+                }
+
+                //
+                if (item instanceof ProAudio) {
+                    ProAudio media = (ProAudio) item;
+                    char firstChar = media.sortLetter.toUpperCase().charAt(0);
+                    if (firstChar == sectionIndex) {
+                        position = idx;
+                        break;
+                    }
+                } else if (item instanceof AudioFilter) {
+                    AudioFilter filter = (AudioFilter) item;
+                    char firstChar = filter.sortLetter.toUpperCase().charAt(0);
+                    if (firstChar == sectionIndex) {
+                        position = idx;
+                        break;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Logs.printStackTrace(TAG + "getPositionForSection()", e);
+        }
+        return position;
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.tricheer.player.version.cj.slc_lc2010_vdc.adapter;
 
 import android.content.Context;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +18,6 @@ import java.util.List;
 
 import js.lib.android.adapter.BaseArrayAdapter;
 import js.lib.android.media.bean.ProVideo;
-import js.lib.android.utils.EmptyUtil;
 
 public class SclLc2010VdcVideoNamesAdapter extends BaseArrayAdapter<ProVideo> implements SectionIndexer {
     // TAG
@@ -25,7 +25,7 @@ public class SclLc2010VdcVideoNamesAdapter extends BaseArrayAdapter<ProVideo> im
 
     private int mSelectedPos = 0;
     private String mSelectedMediaUrl = "";
-    private List<ProVideo> mListDatas;
+    private List<ProVideo> mListData;
 
     public SclLc2010VdcVideoNamesAdapter(Context context, int resource) {
         super(context, resource);
@@ -33,7 +33,7 @@ public class SclLc2010VdcVideoNamesAdapter extends BaseArrayAdapter<ProVideo> im
     }
 
     public void setListDatas(List<ProVideo> listDatas) {
-        this.mListDatas = listDatas;
+        this.mListData = listDatas;
     }
 
     public void setSelect(String mediaUrl) {
@@ -41,7 +41,7 @@ public class SclLc2010VdcVideoNamesAdapter extends BaseArrayAdapter<ProVideo> im
     }
 
     public void refreshDatas(List<ProVideo> listDatas) {
-        this.mListDatas = listDatas;
+        this.mListData = listDatas;
         refreshDatas();
     }
 
@@ -58,7 +58,7 @@ public class SclLc2010VdcVideoNamesAdapter extends BaseArrayAdapter<ProVideo> im
     }
 
     public void refreshDatas(List<ProVideo> listDatas, String selectMediaUrl) {
-        this.mListDatas = listDatas;
+        this.mListData = listDatas;
         this.mSelectedMediaUrl = selectMediaUrl;
         notifyDataSetChanged();
     }
@@ -69,27 +69,28 @@ public class SclLc2010VdcVideoNamesAdapter extends BaseArrayAdapter<ProVideo> im
 
     @Override
     public int getCount() {
-        if (mListDatas == null) {
+        if (mListData == null) {
             return 0;
         }
-        return mListDatas.size();
+        return mListData.size();
     }
 
     @Override
     public ProVideo getItem(int position) {
-        if (EmptyUtil.isEmpty(mListDatas)) {
+        try {
+            return mListData.get(position);
+        } catch (Exception e) {
             return null;
         }
-        return mListDatas.get(position);
     }
 
+    @NonNull
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder = null;
+    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+        ViewHolder holder;
         if (convertView == null) {
             holder = new ViewHolder();
             convertView = mInflater.inflate(mResID, null);
-            holder.vCoverBg = convertView.findViewById(R.id.rl_cover);
             holder.vCover = (ImageView) convertView.findViewById(R.id.v_cover);
             holder.vName = (TextView) convertView.findViewById(R.id.v_name);
             convertView.setTag(holder);
@@ -100,24 +101,26 @@ public class SclLc2010VdcVideoNamesAdapter extends BaseArrayAdapter<ProVideo> im
 
         //
         ProVideo item = getItem(position);
-        holder.vName.setText(item.title);
-        PlayerLogicUtils.setMediaCover(holder.vCover, item, false);
+        if (item != null) {
+            holder.vName.setText(item.title);
+            PlayerLogicUtils.setMediaCover(holder.vCover, item, false);
 
-        //Set video image resource
-        File bmFile = new File(PlayerLogicUtils.getMediaPicPath(item.mediaUrl, 2));
-        if (bmFile.exists()) {
-            holder.vCover.setImageURI(Uri.parse(bmFile.getPath()));
-        } else {
-            holder.vCover.setImageResource(R.color.video_item_bg);
-        }
+            //Set video image resource
+            File bmFile = new File(PlayerLogicUtils.getMediaPicPath(item.mediaUrl, 2));
+            if (bmFile.exists()) {
+                holder.vCover.setImageURI(Uri.parse(bmFile.getPath()));
+            } else {
+                holder.vCover.setImageResource(R.color.video_item_bg);
+            }
 
-        //Selected
-        if (TextUtils.equals(mSelectedMediaUrl, item.mediaUrl)) {
-            mSelectedPos = position;
-            holder.vCoverBg.setBackgroundResource(R.color.video_item_bg);
-            //Not selected
-        } else {
-            holder.vCoverBg.setBackgroundResource(0);
+            //Selected
+            if (TextUtils.equals(mSelectedMediaUrl, item.mediaUrl)) {
+                mSelectedPos = position;
+                convertView.setBackgroundResource(R.color.video_item_bg);
+                //Not selected
+            } else {
+                convertView.setBackgroundResource(0);
+            }
         }
 
         return convertView;
@@ -156,7 +159,6 @@ public class SclLc2010VdcVideoNamesAdapter extends BaseArrayAdapter<ProVideo> im
     }
 
     private final class ViewHolder {
-        View vCoverBg;
         ImageView vCover;
         TextView vName;
     }

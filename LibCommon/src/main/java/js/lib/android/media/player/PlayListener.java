@@ -26,6 +26,19 @@ public interface PlayListener extends IPlayStateLitener, IPlayProgressListener, 
     void removePlayListener(PlayListener l);
 
     /**
+     * 设置媒体源数据
+     * <p>
+     * 请注意，为了保证播放的正常运行，此方法必须在数据获取到以后就设置进来，因为所有的播放数据源都来自此设置的数据集合。
+     * </p>
+     */
+    void setListSrcMedias(List<? extends MediaBase> listSrcMedias);
+
+    /**
+     * 获取媒体源数据
+     */
+    List<? extends MediaBase> getListSrcMedias();
+
+    /**
      * 设置播放列表
      * <p>1st parameter</p>
      *

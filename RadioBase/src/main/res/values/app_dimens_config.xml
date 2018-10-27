@@ -1,0 +1,14 @@
+<resources>
+    <!-- Video top -->
+    <dimen name="radio_top_layout_h">120dp</dimen>
+    <dimen name="radio_top_item_font_size">30sp</dimen>
+
+    <!-- Video player middle-->
+    <dimen name="radio_space_to_left">80dp</dimen>
+    <dimen name="radio_space_to_right">80dp</dimen>
+
+    <!-- Video player bottom-->
+    <dimen name="radio_op_w">160dp</dimen>
+    <dimen name="radio_op_h">160dp</dimen>
+    <dimen name="radio_op_period">40dp</dimen>
+</resources>

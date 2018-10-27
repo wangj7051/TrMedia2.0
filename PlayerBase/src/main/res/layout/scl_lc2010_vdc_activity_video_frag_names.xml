@@ -1,25 +1,37 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layout_bottom"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal">
 
-    <com.js.sidebar.LetterSideBar
-        android:id="@+id/lsb"
-        android:layout_width="180dp"
-        android:layout_height="match_parent" />
-
-    <GridView
-        android:id="@+id/v_datas"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:cacheColorHint="@android:color/transparent"
-        android:horizontalSpacing="15dp"
-        android:listSelector="@android:color/transparent"
-        android:numColumns="4"
-        android:overScrollMode="never"
-        android:padding="10dp"
-        android:scrollbars="none"
-        android:verticalSpacing="10dp" />
-</LinearLayout>
+        android:layout_marginStart="@dimen/video_left_layout_w"
+        android:background="@color/color_black_020"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp">
+
+        <GridView
+            android:id="@+id/v_datas"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:cacheColorHint="@android:color/transparent"
+            android:horizontalSpacing="5dp"
+            android:listSelector="@android:color/transparent"
+            android:numColumns="4"
+            android:overScrollMode="never"
+            android:padding="10dp"
+            android:scrollbars="none"
+            android:verticalSpacing="5dp" />
+    </RelativeLayout>
+
+    <com.js.sidebar.LetterSideBar
+        android:id="@+id/lsb"
+        android:layout_width="@dimen/video_left_layout_w"
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp" />
+
+</RelativeLayout>

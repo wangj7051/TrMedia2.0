@@ -80,6 +80,7 @@ public class VideoInfo {
             mSetSuffixes.add(".ts");
             mSetSuffixes.add(".mov");
             //mSetSuffixes.add(".mpg");
+            mSetSuffixes.add(".vob");
         }
     }
 }

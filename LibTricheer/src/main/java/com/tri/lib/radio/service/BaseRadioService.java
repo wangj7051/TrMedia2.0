@@ -29,9 +29,13 @@ public abstract class BaseRadioService extends BaseAudioFocusService implements 
     //TAG
     private final String TAG = "BaseRadioService";
 
+    //
     private static Handler mHandler;
     private Set<FmListener> mSetFmListeners;
     private FmUtilV2 mFmUtil;
+
+    //
+    private RegisterAudioFocusController mRegisterAudioFocusController;
 
     /**
      * Get Service Object
@@ -51,6 +55,7 @@ public abstract class BaseRadioService extends BaseAudioFocusService implements 
 
     private void init() {
         RadioPreferUtils.init(getApplicationContext());
+        mRegisterAudioFocusController = new RegisterAudioFocusController();
         mHandler = new Handler();
         mSetFmListeners = new HashSet<>();
         controlFm(true);
@@ -178,6 +183,51 @@ public abstract class BaseRadioService extends BaseAudioFocusService implements 
 
     @Override
     public void onScanFreqFail(BandCategoryEnum band, int reason) {
+        for (FmListener l : mSetFmListeners) {
+            l.onScanFreqFail(band, reason);
+        }
+    }
+
+    @Override
+    public void onScanStrongFreqLeftStart(BandCategoryEnum band) {
+        for (FmListener l : mSetFmListeners) {
+            l.onScanStrongFreqLeftStart(band);
+        }
+    }
+
+    @Override
+    public void onScanStrongFreqLeftEnd(BandCategoryEnum band) {
+        for (FmListener l : mSetFmListeners) {
+            l.onScanStrongFreqLeftEnd(band);
+        }
+    }
+
+    @Override
+    public void onScanStrongFreqLeftFail(BandCategoryEnum band, int reason) {
+        for (FmListener l : mSetFmListeners) {
+            l.onScanStrongFreqLeftFail(band, reason);
+        }
+    }
+
+    @Override
+    public void onScanStrongFreqRightStart(BandCategoryEnum band) {
+        for (FmListener l : mSetFmListeners) {
+            l.onScanStrongFreqRightStart(band);
+        }
+    }
+
+    @Override
+    public void onScanStrongFreqRightEnd(BandCategoryEnum band) {
+        for (FmListener l : mSetFmListeners) {
+            l.onScanStrongFreqRightEnd(band);
+        }
+    }
+
+    @Override
+    public void onScanStrongFreqRightFail(BandCategoryEnum band, int reason) {
+        for (FmListener l : mSetFmListeners) {
+            l.onScanStrongFreqRightFail(band, reason);
+        }
     }
 
     @Override
@@ -208,7 +258,7 @@ public abstract class BaseRadioService extends BaseAudioFocusService implements 
         }
         boolean isOpened = isRadioOpened();
         if (isOpened) {
-            registerAudioFocus(1);
+            mRegisterAudioFocusController.register();
         }
         return isOpened;
     }
@@ -335,12 +385,32 @@ public abstract class BaseRadioService extends BaseAudioFocusService implements 
         return mFmUtil != null && mFmUtil.isLocOpen();
     }
 
+    public boolean isAudioFocusRegistered() {
+        return mRegisterAudioFocusController.isAudioFocusRegistered();
+    }
+
     @Override
     public void onDestroy() {
         removeAudioFocusListener(this);
-        registerAudioFocus(2);
+        mRegisterAudioFocusController.unRegister();
         mHandler.removeCallbacksAndMessages(null);
         controlFm(false);
         super.onDestroy();
+    }
+
+    private class RegisterAudioFocusController {
+        private int mmAudioFocusFlag = -1;
+
+        private void register() {
+            mmAudioFocusFlag = registerAudioFocus(1);
+        }
+
+        private void unRegister() {
+            mmAudioFocusFlag = registerAudioFocus(2);
+        }
+
+        boolean isAudioFocusRegistered() {
+            return (mmAudioFocusFlag == 1);
+        }
     }
 }

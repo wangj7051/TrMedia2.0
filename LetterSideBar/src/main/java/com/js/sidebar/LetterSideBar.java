@@ -1,5 +1,6 @@
 package com.js.sidebar;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -131,7 +132,7 @@ public class LetterSideBar extends View {
         // 每个字母占有的区域高度
         mStepH = ((float) getMeasuredHeight()) / loop;
         // 每个字母大小
-        float fontSize = mStepH * 2 / 3;
+        float fontSize = mStepH * 280 / 300;
         if (fontSize > 30f) {
             fontSize = 30f;
         }
@@ -143,16 +144,20 @@ public class LetterSideBar extends View {
         final float xCom = ((float) getMeasuredWidth()) * 9 / 10;
 
         //
+        @SuppressLint("DrawAllocation")
         Paint paintCom = new Paint();
         paintCom.setColor(mFontColor);
         paintCom.setTextAlign(Paint.Align.RIGHT);
         paintCom.setTextSize(fontSize);
+        paintCom.setTextScaleX(1.6f);
         paintCom.setStyle(Paint.Style.FILL_AND_STROKE);
 
+        @SuppressLint("DrawAllocation")
         Paint paintTouch = new Paint();
         paintTouch.setColor(mHlFontColor);
         paintTouch.setTextAlign(Paint.Align.RIGHT);
         paintTouch.setTextSize(fontSizeTouch);
+        paintTouch.setTextScaleX(1.6f);
         paintTouch.setStrokeWidth(3f);
         paintTouch.setStyle(Paint.Style.FILL_AND_STROKE);
 

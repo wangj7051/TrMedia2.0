@@ -3,10 +3,15 @@
     android:layout_height="match_parent"
     android:background="@drawable/bg_main">
 
+    <TextView
+        android:id="@+id/v_rubbish_focus"
+        android:layout_width="1dp"
+        android:layout_height="1dp" />
+
     <LinearLayout
         android:id="@+id/layout_top"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="@dimen/audio_top_layout_h"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:background="@drawable/bg_title"
@@ -17,23 +22,23 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="12"
-            android:paddingBottom="15dp"
             android:paddingLeft="5dp"
+            android:paddingTop="15dp"
             android:paddingRight="5dp"
-            android:paddingTop="15dp">
+            android:paddingBottom="15dp">
 
             <TextView
                 android:id="@+id/v_my_favorite"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerInParent="true"
-                android:background="@drawable/btn_collect_selector"
+                android:background="@drawable/btn_filter_tab_selector"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center"
                 android:text="@string/my_favorite"
                 android:textColor="@android:color/white"
-                android:textSize="25sp" />
+                android:textSize="@dimen/audio_top_item_font_size" />
         </RelativeLayout>
 
         <ImageView
@@ -46,23 +51,23 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="12"
-            android:paddingBottom="15dp"
             android:paddingLeft="5dp"
+            android:paddingTop="15dp"
             android:paddingRight="5dp"
-            android:paddingTop="15dp">
+            android:paddingBottom="15dp">
 
             <TextView
                 android:id="@+id/v_folder"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerInParent="true"
-                android:background="@drawable/btn_collect_selector"
+                android:background="@drawable/btn_filter_tab_selector"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center"
                 android:text="@string/folder"
                 android:textColor="@android:color/white"
-                android:textSize="25sp" />
+                android:textSize="@dimen/audio_top_item_font_size" />
         </RelativeLayout>
 
         <ImageView
@@ -75,23 +80,23 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="12"
-            android:paddingBottom="15dp"
             android:paddingLeft="5dp"
+            android:paddingTop="15dp"
             android:paddingRight="5dp"
-            android:paddingTop="15dp">
+            android:paddingBottom="15dp">
 
             <TextView
                 android:id="@+id/v_music_name"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerInParent="true"
-                android:background="@drawable/btn_collect_selector"
+                android:background="@drawable/btn_filter_tab_selector"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center"
                 android:text="@string/music_name"
                 android:textColor="@android:color/white"
-                android:textSize="25sp" />
+                android:textSize="@dimen/audio_top_item_font_size" />
         </RelativeLayout>
 
         <ImageView
@@ -104,23 +109,23 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="12"
-            android:paddingBottom="15dp"
             android:paddingLeft="5dp"
+            android:paddingTop="15dp"
             android:paddingRight="5dp"
-            android:paddingTop="15dp">
+            android:paddingBottom="15dp">
 
             <TextView
                 android:id="@+id/v_artist"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerInParent="true"
-                android:background="@drawable/btn_collect_selector"
+                android:background="@drawable/btn_filter_tab_selector"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center"
                 android:text="@string/artist"
                 android:textColor="@android:color/white"
-                android:textSize="25sp" />
+                android:textSize="@dimen/audio_top_item_font_size" />
         </RelativeLayout>
 
         <ImageView
@@ -133,23 +138,23 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="12"
-            android:paddingBottom="15dp"
             android:paddingLeft="5dp"
+            android:paddingTop="15dp"
             android:paddingRight="5dp"
-            android:paddingTop="15dp">
+            android:paddingBottom="15dp">
 
             <TextView
                 android:id="@+id/v_album"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerInParent="true"
-                android:background="@drawable/btn_collect_selector"
+                android:background="@drawable/btn_filter_tab_selector"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center"
                 android:text="@string/album"
                 android:textColor="@android:color/white"
-                android:textSize="25sp" />
+                android:textSize="@dimen/audio_top_item_font_size" />
         </RelativeLayout>
 
         <ImageView

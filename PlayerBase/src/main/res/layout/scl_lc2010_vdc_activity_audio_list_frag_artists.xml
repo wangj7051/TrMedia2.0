@@ -16,6 +16,8 @@
         android:layout_height="match_parent"
         android:layout_marginStart="10dp"
         android:cacheColorHint="@android:color/transparent"
+        android:focusable="false"
+        android:focusableInTouchMode="true"
         android:listSelector="@android:color/transparent"
         android:overScrollMode="never"
         android:scrollbars="none" />
