@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.tricheer.player.R;
 import com.tricheer.player.utils.PlayerLogicUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import js.lib.android.media.bean.ProAudio;
@@ -44,38 +45,42 @@ public class SclLc2010VdcAudioCollectsAdapter extends BaseAudioAdapter<ProAudio>
         mCollectListener = l;
     }
 
-    public void setListDatas(List<ProAudio> listDatas) {
-        this.mListData = listDatas;
+    public void setListData(List<ProAudio> listData) {
+        if (listData != null) {
+            this.mListData = new ArrayList<>(listData);
+        } else {
+            this.mListData = new ArrayList<>();
+        }
     }
 
     public void setSelect(String mediaUrl) {
         this.mSelectedMediaUrl = mediaUrl;
     }
 
-    public void refreshDatas(int pos) {
+    public void refreshData(int pos) {
         ProAudio item = getItem(pos);
         if (item != null) {
-            refreshDatas(item.mediaUrl);
+            refreshData(item.mediaUrl);
         }
     }
 
-    public void refreshDatas(List<ProAudio> listDatas) {
-        this.mListData = listDatas;
-        refreshDatas();
+    public void refreshData(List<ProAudio> listData) {
+        setListData(listData);
+        refreshData();
     }
 
-    public void refreshDatas(String selectedMediaUrl) {
-        this.mSelectedMediaUrl = selectedMediaUrl;
-        refreshDatas();
+    public void refreshData(String selectedMediaUrl) {
+        setSelect(selectedMediaUrl);
+        refreshData();
     }
 
-    public void refreshDatas(List<ProAudio> listDatas, String selectedMediaUrl) {
-        this.mListData = listDatas;
-        this.mSelectedMediaUrl = selectedMediaUrl;
-        refreshDatas();
+    public void refreshData(List<ProAudio> listData, String selectedMediaUrl) {
+        setSelect(selectedMediaUrl);
+        setListData(listData);
+        refreshData();
     }
 
-    public void refreshDatas() {
+    public void refreshData() {
         notifyDataSetChanged();
     }
 

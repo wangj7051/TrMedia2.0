@@ -13,9 +13,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ImageView;
 
 import com.js.sidebar.LetterSideBar;
 import com.tricheer.player.R;
+import com.tricheer.player.receiver.MediaScanReceiver;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.activity.SclLc2010VdcVideoListActivity;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.activity.SclLc2010VdcVideoPlayerActivity;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.adapter.SclLc2010VdcVideoFoldersAdapter;
@@ -30,6 +32,7 @@ import java.util.Map;
 
 import js.lib.android.media.bean.ProVideo;
 import js.lib.android.utils.EmptyUtil;
+import js.lib.android.utils.FrameAnimationController;
 import js.lib.android.utils.Logs;
 
 public class SclLc2010VdcVideoFoldersFrag extends BaseVideoListFrag {
@@ -42,6 +45,7 @@ public class SclLc2010VdcVideoFoldersFrag extends BaseVideoListFrag {
      * Grid view for list videos
      */
     private GridView gvDatas;
+    private ImageView ivLoading;
     private LetterSideBar lsb;
 
     //==========Variables in this Fragment==========
@@ -66,6 +70,9 @@ public class SclLc2010VdcVideoFoldersFrag extends BaseVideoListFrag {
      */
     private List<?> mListDatas;
     private List<VideoFilter> mListFilters;
+
+    // ImageView frame animation control
+    private FrameAnimationController mFrameAnimController;
 
     @Override
     public void onAttach(Activity activity) {
@@ -94,31 +101,40 @@ public class SclLc2010VdcVideoFoldersFrag extends BaseVideoListFrag {
         lsb.addCallback(new LetterSideBarCallback());
         lsb.setVisibility(View.VISIBLE);
 
+        //
+        ivLoading = (ImageView) contentV.findViewById(R.id.iv_loading);
+        mFrameAnimController = new FrameAnimationController();
+        mFrameAnimController.setIv(ivLoading);
+        mFrameAnimController.setFrameImgResArr(LOADING_RES_ID_ARR);
+        if (MediaScanReceiver.isMediaScanning()) {
+            onMediaScanningStart();
+        }
+
         // Data
         mDataAdapter = new SclLc2010VdcVideoFoldersAdapter(mAttachedActivity, 0);
         gvDatas = (GridView) contentV.findViewById(R.id.v_datas);
         gvDatas.setAdapter(mDataAdapter);
         gvDatas.setOnItemClickListener(new GvItemClick());
-        refreshDatas(mAttachedActivity.getListMedias(), mAttachedActivity.getLastMediaPath());
+        refreshData(mAttachedActivity.getListMedias(), mAttachedActivity.getLastMediaPath());
     }
 
     @Override
-    public void refreshDatas() {
+    public void refreshData() {
         if (isAdded()) {
-            mDataAdapter.refreshDatas();
+            mDataAdapter.refreshData();
         }
     }
 
     @Override
-    public void refreshDatas(List<ProVideo> listMedias) {
+    public void refreshData(List<ProVideo> listMedias) {
         if (isAdded()) {
             mListDatas = listMedias;
-            mDataAdapter.refreshDatas(mListDatas);
+            mDataAdapter.refreshData(mListDatas);
         }
     }
 
     @Override
-    public void refreshDatas(List<ProVideo> listMedias, String targetMediaUrl) {
+    public void refreshData(List<ProVideo> listMedias, String targetMediaUrl) {
         if (!isAdded() || EmptyUtil.isEmpty(listMedias)) {
             return;
         }
@@ -175,11 +191,40 @@ public class SclLc2010VdcVideoFoldersFrag extends BaseVideoListFrag {
             mListDatas = listFilters;
             VideoFilter.sortByFolder((List<VideoFilter>) mListDatas);
         }
-        mDataAdapter.refreshDatas(mListDatas, mAttachedActivity.getLastMediaPath());
+        mDataAdapter.refreshData(mListDatas, mAttachedActivity.getLastMediaPath());
     }
 
     @Override
     public void play() {
+    }
+
+    @Override
+    public void onMediaScanningStart() {
+        Log.i(TAG, "onMediaScanningStart()");
+        if (isAdded()) {
+            lsb.setVisibility(View.INVISIBLE);
+            ivLoading.setVisibility(View.VISIBLE);
+            mFrameAnimController.start();
+        }
+    }
+
+    @Override
+    public void onMediaScanningEnd() {
+        Log.i(TAG, "onMediaScanningEnd()");
+        if (isAdded()) {
+            lsb.setVisibility(View.VISIBLE);
+            ivLoading.setVisibility(View.INVISIBLE);
+            mFrameAnimController.stop();
+        }
+    }
+
+    @Override
+    public void onMediaScanningCancel() {
+        Log.i(TAG, "onMediaScanningCancel()");
+        if (isAdded()) {
+            lsb.setVisibility(View.VISIBLE);
+            mFrameAnimController.stop();
+        }
     }
 
     private class LetterSideBarCallback implements LetterSideBar.LetterSideBarListener {
@@ -207,7 +252,7 @@ public class SclLc2010VdcVideoFoldersFrag extends BaseVideoListFrag {
                 if (objItem instanceof VideoFilter) {
                     VideoFilter item = (VideoFilter) objItem;
                     mListDatas = item.listMedias;
-                    mDataAdapter.refreshDatas(mListDatas);
+                    mDataAdapter.refreshData(mListDatas);
                 } else if (objItem instanceof ProVideo) {
                     ProVideo media = (ProVideo) objItem;
                     openVideoPlayerActivity(media.mediaUrl, (List<ProVideo>) mListDatas);
@@ -240,7 +285,7 @@ public class SclLc2010VdcVideoFoldersFrag extends BaseVideoListFrag {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case M_REQ_PLAYING_MEDIA_URL:
-                mDataAdapter.refreshDatas(mAttachedActivity.getLastMediaPath());
+                mDataAdapter.refreshData(mAttachedActivity.getLastMediaPath());
                 break;
         }
     }
@@ -249,7 +294,7 @@ public class SclLc2010VdcVideoFoldersFrag extends BaseVideoListFrag {
     public void next() {
         if (isAdded()) {
             int nextPos = mDataAdapter.getNextPos();
-            mDataAdapter.refreshDatas(nextPos);
+            mDataAdapter.refreshData(nextPos);
             gvDatas.setSelection(nextPos);
         }
     }
@@ -258,7 +303,7 @@ public class SclLc2010VdcVideoFoldersFrag extends BaseVideoListFrag {
     public void prev() {
         if (isAdded()) {
             int prevPos = mDataAdapter.getPrevPos();
-            mDataAdapter.refreshDatas(prevPos);
+            mDataAdapter.refreshData(prevPos);
             gvDatas.setSelection(prevPos);
         }
     }

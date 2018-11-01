@@ -4,6 +4,7 @@ package com.tricheer.player.version.cj.slc_lc2010_vdc.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.View;
 
 import com.tri.lib.utils.TrVideoPreferUtils;
@@ -11,7 +12,11 @@ import com.tricheer.player.R;
 import com.tricheer.player.engine.PlayerAppManager;
 import com.tricheer.player.version.base.activity.BaseFragActivity;
 
+import js.lib.android.utils.CommonUtil;
+
 public class SclLc2010VdcVideoWarningActivity extends BaseFragActivity {
+    //TAG
+    private static final String TAG = "VideoWarningActivity";
 
     private View vAgree, vNoToast, vExit;
 
@@ -34,6 +39,19 @@ public class SclLc2010VdcVideoWarningActivity extends BaseFragActivity {
         vExit.setOnClickListener(mViewOnClick);
     }
 
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        //Hide navigation bar
+        CommonUtil.setNavigationBar(this, hasFocus ? 0 : 1);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.i(TAG, "onPause()");
+    }
+
     private View.OnClickListener mViewOnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -51,6 +69,7 @@ public class SclLc2010VdcVideoWarningActivity extends BaseFragActivity {
     };
 
     private void finishByOperate(String flag) {
+        //Finish
         Intent data = new Intent();
         data.putExtra("flag", flag);
         setResult(0, data);

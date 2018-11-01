@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -11,9 +12,11 @@ import android.widget.SectionIndexer;
 import android.widget.TextView;
 
 import com.tricheer.player.R;
+import com.tricheer.player.utils.PlayerFileUtils;
 import com.tricheer.player.utils.PlayerLogicUtils;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import js.lib.android.adapter.BaseArrayAdapter;
@@ -32,38 +35,43 @@ public class SclLc2010VdcVideoNamesAdapter extends BaseArrayAdapter<ProVideo> im
         this.mResID = R.layout.scl_lc2010_vdc_activity_video_list_item;
     }
 
-    public void setListDatas(List<ProVideo> listDatas) {
-        this.mListData = listDatas;
+    public void setListData(List<ProVideo> listData) {
+        if (listData != null) {
+            this.mListData = new ArrayList<>(listData);
+        } else {
+            this.mListData = new ArrayList<>();
+        }
     }
 
     public void setSelect(String mediaUrl) {
         this.mSelectedMediaUrl = mediaUrl;
     }
 
-    public void refreshDatas(List<ProVideo> listDatas) {
-        this.mListData = listDatas;
-        refreshDatas();
+    public void refreshData(List<ProVideo> listData) {
+        setListData(listData);
+        refreshData();
     }
 
-    public void refreshDatas(int pos) {
+    public void refreshData(int pos) {
         ProVideo item = getItem(pos);
         if (item != null) {
-            refreshDatas(item.mediaUrl);
+            refreshData(item.mediaUrl);
         }
     }
 
-    public void refreshDatas(String selectedMediaUrl) {
+    public void refreshData(String selectedMediaUrl) {
         this.mSelectedMediaUrl = selectedMediaUrl;
-        refreshDatas();
+        setSelect(selectedMediaUrl);
+        refreshData();
     }
 
-    public void refreshDatas(List<ProVideo> listDatas, String selectMediaUrl) {
-        this.mListData = listDatas;
-        this.mSelectedMediaUrl = selectMediaUrl;
+    public void refreshData(List<ProVideo> listData, String selectedMediaUrl) {
+        setSelect(selectedMediaUrl);
+        setListData(listData);
         notifyDataSetChanged();
     }
 
-    public void refreshDatas() {
+    public void refreshData() {
         notifyDataSetChanged();
     }
 
@@ -106,11 +114,21 @@ public class SclLc2010VdcVideoNamesAdapter extends BaseArrayAdapter<ProVideo> im
             PlayerLogicUtils.setMediaCover(holder.vCover, item, false);
 
             //Set video image resource
-            File bmFile = new File(PlayerLogicUtils.getMediaPicPath(item.mediaUrl, 2));
-            if (bmFile.exists()) {
-                holder.vCover.setImageURI(Uri.parse(bmFile.getPath()));
-            } else {
-                holder.vCover.setImageResource(R.color.video_item_bg);
+            //Cover
+            try {
+                String storePath = PlayerFileUtils.getVideoPicPath(item.mediaUrl);
+                String coverPicFilePath = PlayerLogicUtils.getMediaPicFilePath(item, storePath);
+                Log.i("coverAdapter", "coverPicFile: " + coverPicFilePath);
+                File coverPicFile = new File(coverPicFilePath);
+                if (coverPicFile.exists()) {
+                    Log.i("coverAdapter", "--Exist --YYYYYYYYYYY--");
+                    holder.vCover.setImageURI(Uri.parse(coverPicFilePath));
+                } else {
+                    Log.i("coverAdapter", "--Exist --NNNNNNNNNNN--");
+                    holder.vCover.setImageResource(R.color.video_item_cover);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
             //Selected

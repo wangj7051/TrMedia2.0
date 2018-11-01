@@ -1,27 +1,26 @@
 package com.tricheer.player.receiver;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
-import android.os.Handler;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.tri.lib.utils.TrAudioPreferUtils;
-import com.tri.lib.utils.TrVideoPreferUtils;
 import com.tricheer.player.engine.PlayerAppManager;
-import com.tricheer.player.engine.PlayerAppManager.PlayerCxtFlag;
-import com.tricheer.player.engine.PlayerType;
-import com.tricheer.player.engine.VersionController;
-import com.tricheer.player.receiver.PlayerReceiver.PlayerReceiverListener;
 import com.tricheer.player.utils.PlayerFileUtils;
+import com.tricheer.player.utils.PlayerLogicUtils;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,31 +43,13 @@ import js.lib.android.utils.sdcard.SDCardUtils;
  * @author Jun.Wang
  */
 public class MediaScanReceiver extends BroadcastReceiver {
-    // TAG
-    private static final String TAG = "MediaScanReceiver";
-
-    //
-    private static Context mContext;
-    private static Handler mHandler = new Handler();
+    //TAG
+    private static String TAG = "MediaScanReceiver";
 
     /**
      * Start list all medias action
      */
-    public static final String ACTION_START_LIST = "com.tricheer.player.START.LIST.ALL_MEDIAS",
-            LOADING_FLAG = "IS_LOADING_SHOWING";
-
-    // Audio
-    private static ArrayList<ProAudio> mListMusics = new ArrayList<>(), mListNewMusics = new ArrayList<>();
-    private static ArrayList<String> mListToSysScanAudios = new ArrayList<>();
-
-    // Video
-    private static ArrayList<ProVideo> mlistVideos = new ArrayList<>(), mListNewVideos = new ArrayList<>();
-    private static List<String> mListToSysScanVideos = new ArrayList<>();
-
-    /**
-     * 支持的挂载点信息
-     */
-    private static Map<String, SDCardInfo> mMapSupportSDCards = new HashMap<>();
+    public static final String ACTION_START_LIST = "com.tricheer.player.START.LIST.ALL_MEDIAS";
 
     /**
      * 挂载的路径 / 未挂载的路径
@@ -76,97 +57,129 @@ public class MediaScanReceiver extends BroadcastReceiver {
     private static Set<String> mSetPathsMounted = new HashSet<>(), mSetPathsUnMounted = new HashSet<>();
 
     /**
-     * 已挂载 / 未挂载
-     * <p>
-     * (1) ("init()" || "收到ACTION_START_LIST")，更新
-     * <p>
-     * (2) 收到[Intent.ACTION_MEDIA_MOUNTED 或 Intent.ACTION_MEDIA_UNMOUNTED]时， 且("新挂载"||"新移除") &&
-     * "设备支持该挂载点"，更新
-     */
-    private static boolean mIsMounted = false, mIsUnMounted = false;
-
-    /**
      * List All mounted paths medias
      */
+    @SuppressLint("StaticFieldLeak")
     private static ListMediaTask mListMediaTask;
 
     /**
-     * Scan Active
+     * Scanning listener
      */
-    public enum MediaScanActives {
-        START,
-        END,
-        TASK_CANCEL,
-        REFRESH,
-        SYS_SCANNED,//Has new media that u need scan yourself.
-        CLEAR
+    private static Set<MediaScanDelegate> mSetScanDelegates = new LinkedHashSet<>();
+
+    interface MediaScanDelegate {
+        void onMediaScanningStart();
+
+        void onMediaScanningEnd();
+
+        void onMediaScanningCancel();
     }
 
-    /**
-     * 在应用启动时候必须调用此方法初始化
-     */
-    public static void init(Context context) {
-        mContext = context;
-//        refreshMountStatus();
+    public interface AudioScanDelegate extends MediaScanDelegate {
+        void onMediaScanningRefresh(List<ProAudio> listMedias, boolean isOnUiThread);
+    }
+
+    public interface VideoScanDelegate extends MediaScanDelegate {
+        void onMediaScanningRefresh(List<ProVideo> listMedias, boolean isOnUiThread);
+    }
+
+    public static void register(MediaScanDelegate delegate) {
+        if (delegate != null) {
+            mSetScanDelegates.add(delegate);
+        }
+    }
+
+    public static void unregister(MediaScanDelegate delegate) {
+        if (delegate != null) {
+            mSetScanDelegates.remove(delegate);
+        }
     }
 
     @Override
     public void onReceive(Context context, Intent intent) {
         // Action
         String action = intent.getAction();
-        Log.i(TAG, "onReceive() -> [action:" + action);
+        Log.i(TAG, "onReceive() -> [action: " + action + "]");
 //        Toast.makeText(context, action, Toast.LENGTH_LONG).show();
 
         // Start list Task
         if (ACTION_START_LIST.equals(action)) {
-            refreshMountStatus();
-            startListMediaTask();
+            refreshMountStatus(context);
+            startListMediaTask(context);
 
-        } else if (Intent.ACTION_MEDIA_SCANNER_STARTED.equals(action)) {
-        } else if (Intent.ACTION_MEDIA_SCANNER_FINISHED.equals(action)) {
-
-        } else if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action)) {
+//        } else if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action)) {
         } else if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
             PlayerAppManager.exitCurrPlayer();
 
             // SDCard Mounted
         } else if (Intent.ACTION_MEDIA_MOUNTED.equals(action)) {
-            refreshMountStatus();
-            if (mIsMounted) {
-                mIsMounted = false;
-                startListMediaTask();
-            }
+            refreshMountStatus(context);
+            startListMediaTask(context);
 
             // SDCard UnMounted
         } else if (Intent.ACTION_MEDIA_UNMOUNTED.equals(action)) {
-            refreshMountStatus();
-            if (mIsUnMounted) {
-                mIsUnMounted = false;
-                CommonUtil.cancelTask(mListMediaTask);
-                clearPlayCacheInfos();
-                for (String supportPath : mSetPathsUnMounted) {
-                    AudioDBManager.instance().deleteMusics(supportPath);
-                    VideoDBManager.instance().deleteVideos(supportPath);
-                }
-
-                // Refresh
-                notifyAudiosRefresh(MediaScanActives.CLEAR);
-                notifyVideosRefresh(MediaScanActives.CLEAR);
-            }
-
-            //
-        } else if ("android.os.storage.action.VOLUME_STATE_CHANGED".equals(action)) {
+            refreshMountStatus(context);
+            CommonUtil.cancelTask(mListMediaTask);
         }
+    }
+
+    /**
+     * Refresh mount status of SdCard or UDisk.
+     */
+    public static void refreshMountStatus(Context context) {
+        Log.i(TAG, "refreshMountStatus(Context)");
+        if (context == null) {
+            return;
+        }
+
+        // 挂载/未挂载 SDCard
+        mSetPathsMounted.clear();
+        mSetPathsUnMounted.clear();
+
+        // 获取支持的挂载点
+        List<String> listSupportPaths = PlayerFileUtils.getListSuppportPaths();
+        // 如果SD支持路径列表为空，那么认为该设备支持所有盘符
+        if (EmptyUtil.isEmpty(listSupportPaths)) {
+            Log.i(TAG, "-- SUPPORT ALL --");
+            HashMap<String, SDCardInfo> mapSDCardInfos = SDCardUtils.getSDCardInfos(context.getApplicationContext(), false);
+            for (SDCardInfo temp : mapSDCardInfos.values()) {
+                Logs.i(TAG, "refreshMountStatus() -1-> [temp:" + temp.label + "-" + temp.isMounted + "-" + temp.root);
+                if (temp.isMounted) {
+                    mSetPathsMounted.add(temp.root);
+                } else {
+                    mSetPathsUnMounted.add(temp.root);
+                }
+            }
+            // 如果SD支持路径列表不为空，那么认为该设备只支持列表所含盘符
+        } else {
+            Log.i(TAG, "-- SUPPORT FIXED --");
+            HashMap<String, SDCardInfo> mapAllSdCards = SDCardUtils.getSDCardInfos(context.getApplicationContext(), false);
+            for (SDCardInfo temp : mapAllSdCards.values()) {
+                Logs.i(TAG, "refreshMountStatus() -2-> [temp:" + temp.label + "-" + temp.isMounted + "-" + temp.root);
+                if (listSupportPaths.contains(temp.root)) {
+                    if (temp.isMounted) {
+                        mSetPathsMounted.add(temp.root);
+                    } else {
+                        mSetPathsUnMounted.add(temp.root);
+                    }
+                }
+            }
+        }
+
+        Logs.i(TAG, " *** Start ***");
+        Logs.i(TAG, "mSetPathsMounted:" + mSetPathsMounted.toString());
+        Logs.i(TAG, "mSetPathsUnMounted:" + mSetPathsUnMounted.toString());
+        Logs.i(TAG, " ***  End  ***");
     }
 
     /**
      * Start List Medias Task
      */
-    private void startListMediaTask() {
+    private void startListMediaTask(Context context) {
         Logs.i(TAG, "----startListMediaTask()----");
         CommonUtil.cancelTask(mListMediaTask);
         if (!EmptyUtil.isEmpty(mSetPathsMounted)) {
-            mListMediaTask = new ListMediaTask();
+            mListMediaTask = new ListMediaTask(context);
             mListMediaTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
     }
@@ -175,31 +188,37 @@ public class MediaScanReceiver extends BroadcastReceiver {
      * List Medias Task
      */
     private static class ListMediaTask extends AsyncTask<Void, Void, Void> {
+
+        @SuppressLint("StaticFieldLeak")
+        private Context mmContext;
+        private boolean mmIsScanning = false;
+
+        ListMediaTask(Context context) {
+            mmContext = context.getApplicationContext();
+        }
+
         //
         private Map<String, ProAudio> mmMapDbAudios;
-        //        private Map<String, AudioInfo> mmMapSysDbAudios;
-        //
         private Map<String, ProVideo> mmMapDbVideos;
-//        private Map<String, VideoInfo> mmMapSysDbVideos;
 
-        long insertMusicCount = 0;
-        int insertVideoCount = 0;
+        //
+        private ArrayList<ProAudio> mmListAllAudios = new ArrayList<>();
+        private ArrayList<ProVideo> mmListAllVideos = new ArrayList<>();
+
+        //
+        private ArrayList<ProAudio> mmListNewAudios = new ArrayList<>();
+        private ArrayList<ProVideo> mmListNewVideos = new ArrayList<>();
 
         @Override
         protected void onPreExecute() {
             Logs.i(TAG, "ListMediaTask-> onPreExecute()");
             super.onPreExecute();
-            // Notify Start
-            notifyAudiosRefresh(MediaScanActives.START);
-            notifyVideosRefresh(MediaScanActives.START);
-            // Reset Audio
-            mListMusics.clear();
-            mListNewMusics.clear();
-            mListToSysScanAudios.clear();
-            // Reset Video
-            mlistVideos.clear();
-            mListNewVideos.clear();
-            mListToSysScanVideos.clear();
+            notifyScanningStart();
+
+            //
+            mmIsScanning = true;
+            mmListAllAudios = new ArrayList<>();
+            mmListAllVideos = new ArrayList<>();
         }
 
         @Override
@@ -207,11 +226,7 @@ public class MediaScanReceiver extends BroadcastReceiver {
             Logs.i(TAG, "ListMediaTask-> doInBackground(params)");
             // Query DB Medias
             mmMapDbAudios = AudioDBManager.instance().getMapMusics();
-//            mmMapSysDbAudios = AudioUtils.queryMapAudioInfos(null);
-
-            // Query SDCard Medias
             mmMapDbVideos = VideoDBManager.instance().getMapVideos(true, false);
-//            mmMapSysDbVideos = VideoUtils.queryMapVideoInfos(null);
 
             // List All Medias
             for (String supportPath : mSetPathsMounted) {
@@ -223,36 +238,17 @@ public class MediaScanReceiver extends BroadcastReceiver {
             }
             // Save Medias
             if (!isCancelled()) {
-                insertMusicCount = AudioDBManager.instance().insertListMusics(mListNewMusics);
-                insertVideoCount = VideoDBManager.instance().insertListVideos(mListNewVideos);
+                if (mmListNewAudios.size() > 0) {
+                    int audioCount = AudioDBManager.instance().insertListMusics(mmListAllAudios);
+                    Log.i(TAG, "audioCount: " + audioCount);
+                }
+                if (mmListNewVideos.size() > 0) {
+                    int videoCount = VideoDBManager.instance().insertListVideos(mmListAllVideos);
+                    Log.i(TAG, "videoCount: " + videoCount);
+                }
             }
             // Refresh
             return null;
-        }
-
-        @Override
-        protected void onCancelled() {
-            super.onCancelled();
-            Logs.i(TAG, "ListMediaTask-> onCancelled()");
-            notifyAudiosRefresh(MediaScanActives.TASK_CANCEL);
-            notifyVideosRefresh(MediaScanActives.TASK_CANCEL);
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
-            Logs.i(TAG, "ListMediaTask-> onPostExecute()");
-            if (!isCancelled()) {
-                // Notify END
-                notifyAudiosRefresh(MediaScanActives.END);
-                notifyVideosRefresh(MediaScanActives.END);
-                // Notify REFRESH
-                notifyAudiosRefresh(MediaScanActives.REFRESH);
-                notifyVideosRefresh(MediaScanActives.REFRESH);
-                // Start System Scanner
-                startScanMusics();
-                startScanVideos();
-            }
         }
 
         private void listAllMedias(File pf) {
@@ -264,8 +260,8 @@ public class MediaScanReceiver extends BroadcastReceiver {
 
             //Loop list files or folders
             try {
-                File[] fArrs = pf.listFiles();
-                if (fArrs == null) {
+                File[] fileArr = pf.listFiles();
+                if (fileArr == null) {
                     return;
                 }
 
@@ -274,9 +270,16 @@ public class MediaScanReceiver extends BroadcastReceiver {
                         break;
                     }
 
-                    // Loop List
-                    if (cf.isDirectory() && !cf.isHidden()) {
+                    //Don`t list hidden file.
+                    if (cf.isHidden()) {
+                        continue;
+                    }
+
+                    //Directory
+                    if (cf.isDirectory()) {
                         listAllMedias(cf);
+
+                        //File
                     } else if (cf.isFile()) {
                         parseFileToMedia(cf);
                     }
@@ -289,51 +292,104 @@ public class MediaScanReceiver extends BroadcastReceiver {
         private void parseFileToMedia(File cf) {
             try {
                 String path = cf.getPath();
-//                Logs.debugI(TAG, "ListMediaTask-> parseFileToMedia(" + path + ")");
                 int lastIdxOfDot = path.lastIndexOf(".");
                 if (lastIdxOfDot == -1) {
                     return;
                 }
 
+                //Don't scan the path in blacklist.
+                if (PlayerFileUtils.isInBlacklist(path)) {
+                    return;
+                }
+
                 // Media Suffix
                 String suffix = path.substring(lastIdxOfDot);
-                // Get Music
-                if (AudioInfo.isSupport(suffix) && !PlayerFileUtils.isInBlacklist(path)) {
+                // Audio
+                if (AudioInfo.isSupport(suffix)) {
                     Logs.debugI(TAG, "ListMediaTask -Music-> parseFileToMedia() " + cf.getName() + "----\n" + path);
-                    renameFileWithSpecialName(cf);
-                    if (mmMapDbAudios.containsKey(path)) {
-                        mListMusics.add(mmMapDbAudios.get(path));
-//                    } else if (mmMapSysDbAudios.containsKey(path)) {
-//                        ProAudio program = new ProAudio(mmMapSysDbAudios.get(path));
-//                        mListNewMusics.add(program);
-//                        mListMusics.add(program);
+                    //Rename file
+                    cf = renameFileWithSpecialName(cf);
+                    String renamedPath = cf.getPath();
+
+                    //Parse media information
+                    ProAudio tmpMedia;
+                    if (mmMapDbAudios.containsKey(renamedPath)) {
+                        tmpMedia = mmMapDbAudios.get(renamedPath);
                     } else {
-                        ProAudio program = new ProAudio(path, PlayerFileUtils.getFileName(cf, false));
-                        mListNewMusics.add(program);
-                        mListMusics.add(program);
-                        mListToSysScanAudios.add(path);
+                        tmpMedia = new ProAudio(mmContext, renamedPath);
+                        mmListNewAudios.add(tmpMedia);
                     }
 
-                    // Get Video
-                } else if (VideoInfo.isSupport(suffix) && !PlayerFileUtils.isInBlacklist(path)) {
+                    if (tmpMedia != null) {
+                        //Check media cover picture.
+                        String storePath = PlayerFileUtils.getMusicPicPath(tmpMedia.mediaUrl);
+                        String coverPicFilePath = PlayerLogicUtils.getMediaPicFilePath(tmpMedia, storePath);
+                        File coverPicFile = new File(coverPicFilePath);
+                        if (coverPicFile.exists()) {
+                            tmpMedia.coverUrl = coverPicFilePath;
+                            //If cover picture is not exist, try to get it.
+                        } else {
+                            Bitmap coverBitmap = tmpMedia.getThumbNail(mmContext, tmpMedia.mediaUrl);
+                            if (coverBitmap != null) {
+                                storeBitmap(coverPicFilePath, coverBitmap);
+                                tmpMedia.coverUrl = coverPicFilePath;
+                            }
+                        }
+                        mmListAllAudios.add(tmpMedia);
+                    }
+
+                    //Refresh
+                    int newSize = mmListNewAudios.size();
+                    if (newSize >= 10) {
+                        notifyAudioScanningRefresh(mmListNewAudios, false);
+                        mmListNewAudios.clear();
+                    }
+
+                    // Video
+                } else if (VideoInfo.isSupport(suffix)) {
                     Logs.debugI(TAG, "ListMediaTask -Video-> parseFileToMedia() " + cf.getName() + "----\n" + path);
-                    renameFileWithSpecialName(cf);
-                    if (mmMapDbVideos.containsKey(path)) {
-                        mlistVideos.add(mmMapDbVideos.get(path));
-//                    } else if (mmMapSysDbVideos.containsKey(path)) {
-//                        ProVideo program = new ProVideo(mmMapSysDbVideos.get(path));
-//                        mListNewVideos.add(program);
-//                        mlistVideos.add(program);
+                    //Rename file
+                    cf = renameFileWithSpecialName(cf);
+                    String renamedPath = cf.getPath();
+
+                    //Parse media information
+                    ProVideo tmpMedia;
+                    if (mmMapDbVideos.containsKey(renamedPath)) {
+                        tmpMedia = mmMapDbVideos.get(renamedPath);
                     } else {
-                        ProVideo program = new ProVideo(path, cf.getName());
-                        mListNewVideos.add(program);
-                        mlistVideos.add(program);
-                        mListToSysScanVideos.add(path);
+                        tmpMedia = new ProVideo(mmContext, renamedPath);
+                        mmListNewVideos.add(tmpMedia);
+                    }
+
+                    if (tmpMedia != null) {
+                        //Check media cover picture.
+                        String storePath = PlayerFileUtils.getVideoPicPath(tmpMedia.mediaUrl);
+                        String coverPicFilePath = PlayerLogicUtils.getMediaPicFilePath(tmpMedia, storePath);
+                        Log.i("coverScanReceiver", "coverPicFilePath: " + coverPicFilePath);
+                        File coverPicFile = new File(coverPicFilePath);
+                        if (coverPicFile.exists()) {
+                            tmpMedia.coverUrl = coverPicFilePath;
+                            //If cover picture is not exist, try to get it.
+                        } else {
+                            Bitmap coverBitmap = tmpMedia.getThumbNail(tmpMedia.mediaUrl, 200, 200, MediaStore.Images.Thumbnails.MINI_KIND);
+                            if (coverBitmap != null) {
+                                storeBitmap(coverPicFilePath, coverBitmap);
+                                tmpMedia.coverUrl = coverPicFilePath;
+                            }
+                        }
+                        mmListAllVideos.add(tmpMedia);
+                    }
+
+                    //Refresh
+                    int newSize = mmListNewVideos.size();
+                    if (newSize >= 10) {
+                        notifyVideoScanningRefresh(mmListNewVideos, false);
+                        mmListNewVideos.clear();
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
                 Logs.printStackTrace(TAG + "parseFileToMedia()", e);
+                e.printStackTrace();
             }
         }
 
@@ -346,190 +402,124 @@ public class MediaScanReceiver extends BroadcastReceiver {
                     File targetFile = new File(fPath);
                     boolean isRenamed = file.renameTo(targetFile);
                     if (isRenamed) {
-                        file = targetFile;
+                        return targetFile;
                     }
                 }
             }
             return file;
         }
-    }
 
-    /**
-     * Scan Musics to System DataBase
-     */
-    private static void startScanMusics() {
-        //        Log.i(TAG, "startScanMusics()");
-    }
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+            Logs.i(TAG, "ListMediaTask-> onCancelled()");
+            //
+            mmContext = null;
+            mmIsScanning = false;
+            notifyScanningCancel();
+        }
 
-    /**
-     * Scan Videos to System DataBase
-     */
-    private static void startScanVideos() {
-        //        Log.i(TAG, "startScanVideos()");
-    }
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+            Logs.i(TAG, "ListMediaTask-> onPostExecute()");
+            //
+            mmContext = null;
+            mmIsScanning = false;
+            notifyScanningEnd();
+        }
 
-    /**
-     * Broadcast Refresh Musics
-     */
-    private static void notifyAudiosRefresh(MediaScanActives flag) {
-        Logs.i(TAG, "notifyAudiosRefresh(" + flag + ") -> [AuidoSize:" + mListMusics.size());
-        // Notify Player
-        if (PlayerType.isMusic()) {
-            PlayerReceiverListener player = PlayerAppManager.getCurrPlayer();
-            if (player != null) {
-                player.onNotifyScanAudios(flag, mListMusics, mSetPathsMounted);
+        //Notify scanning start.
+        private void notifyScanningStart() {
+            for (MediaScanDelegate delegate : mSetScanDelegates) {
+                delegate.onMediaScanningStart();
             }
         }
-        // Notify List
-        Context cxtList = PlayerAppManager.getCxt(PlayerCxtFlag.MUSIC_LIST);
-        if (cxtList != null) {
-            if (cxtList instanceof PlayerReceiverListener) {
-                ((PlayerReceiverListener) cxtList).onNotifyScanAudios(flag, mListMusics, mSetPathsMounted);
-            }
-        }
-    }
 
-    /**
-     * Broadcast Refresh Videos
-     */
-    private static void notifyVideosRefresh(MediaScanActives flag) {
-        Logs.i(TAG, "notifyVideosRefresh(" + flag + ") -> [VideoSize:" + mlistVideos.size());
-        // Notify Player
-        if (PlayerType.isVideo()) {
-            PlayerReceiverListener player = PlayerAppManager.getCurrPlayer();
-            if (player != null) {
-                player.onNotifyScanVideos(flag, mlistVideos, mSetPathsMounted);
-            }
-        }
-        // Notify List
-        Context cxtList = PlayerAppManager.getCxt(PlayerCxtFlag.VIDEO_LIST);
-        if (cxtList != null) {
-            if (cxtList instanceof PlayerReceiverListener) {
-                ((PlayerReceiverListener) cxtList).onNotifyScanVideos(flag, mlistVideos, mSetPathsMounted);
-            }
-        }
-    }
-
-    /**
-     * Get Mounted SDCard Paths On Receive Action:[Intent.ACTION_MEDIA_MOUNTED]
-     */
-    public static void refreshMountStatus() {
-        Log.i(TAG, "refreshMountStatus()");
-        // 挂载/未挂载 SDCard
-        mSetPathsMounted.clear();
-        mSetPathsUnMounted.clear();
-        // 重置挂载/未挂载标记
-        mIsMounted = false;
-        mIsUnMounted = false;
-
-        // 挂载状态发生改变
-        Set<String> setMountStatusChangedPaths = new HashSet<String>();
-        Set<String> setUnMountStatusChangedPaths = new HashSet<String>();
-
-        // 获取支持的挂载点
-        List<String> listSupportPaths = PlayerFileUtils.getListSuppportPaths();
-        // 如果SD支持路径列表为空，那么认为该设备支持所有盘符
-        if (EmptyUtil.isEmpty(listSupportPaths)) {
-            Log.i(TAG, "refreshMountStatus() - support ALL -");
-            HashMap<String, SDCardInfo> mapSDCardInfos = SDCardUtils.getSDCardInfos(mContext);
-            for (SDCardInfo temp : mapSDCardInfos.values()) {
-                Logs.i(TAG, "refreshMountStatus() -1-> [temp:" + temp.label + "-" + temp.isMounted + "-" + temp.root);
-                mIsMounted = true;
-                mMapSupportSDCards.put(temp.root, temp);
-                // 已挂载
-//                if (temp.isMounted) {
-                mSetPathsMounted.add(temp.root);
-                // 未挂载
-//                } else {
-//                mSetPathsUnMounted.add(temp.root);
-//                }
-            }
-            Logs.i(TAG, "refreshMountStatus() -1-> [mMapSupportSDCards:" + mMapSupportSDCards.toString());
-
-            // 如果SD支持路径列表不为空，那么认为该设备只支持列表所含盘符
-        } else if (EmptyUtil.isEmpty(mMapSupportSDCards)) {
-            Log.i(TAG, "refreshMountStatus() - support FIXED -");
-            HashMap<String, SDCardInfo> mapSDCardInfos = SDCardUtils.getSDCardInfos(mContext);
-            for (SDCardInfo sdcardInfo : mapSDCardInfos.values()) {
-                if (listSupportPaths.contains(sdcardInfo.root)) {
-                    mMapSupportSDCards.put(sdcardInfo.root, sdcardInfo);
+        //Audio - Notify scanning refresh.
+        private void notifyAudioScanningRefresh(final List<ProAudio> listMedias, boolean isOnUiThread) {
+            for (MediaScanDelegate delegate : mSetScanDelegates) {
+                if (delegate instanceof AudioScanDelegate) {
+                    ((AudioScanDelegate) delegate).onMediaScanningRefresh(listMedias, isOnUiThread);
                 }
             }
-            Logs.i(TAG, "refreshMountStatus() -2-> [mMapSupportSDCards:" + mMapSupportSDCards.toString());
-
-            // 遍历获取SDCard状态
-            for (SDCardInfo temp : mapSDCardInfos.values()) {
-                Logs.i("temp", temp.root + " : " + temp.isMounted);
-                // 检测支持的SD状态
-                SDCardInfo supportSDCardInfo = mMapSupportSDCards.get(temp.root);
-                if (supportSDCardInfo != null) {
-                    // 状态不一致，表示该SDCard的Mount状态有改变
-                    if (supportSDCardInfo.isMounted != temp.isMounted) {
-                        if (temp.isMounted) {
-                            setMountStatusChangedPaths.add(temp.root);
-                        } else {
-                            setUnMountStatusChangedPaths.add(temp.root);
-                        }
-                        supportSDCardInfo.isMounted = temp.isMounted;
-                    }
-                    // 已挂载
-                    if (temp.isMounted) {
-                        mSetPathsMounted.add(temp.root);
-                        // 未挂载
-                    } else {
-                        mSetPathsUnMounted.add(temp.root);
-                    }
-                }
-            }
-
-            // 设置挂载/未挂载标记
-            mIsMounted = setMountStatusChangedPaths.size() > 0 ? true : false;
-            mIsUnMounted = setUnMountStatusChangedPaths.size() > 0 ? true : false;
         }
 
-        Logs.i(TAG, " *** Start ***");
-        Logs.i(TAG, "mIsMounted:" + mIsMounted);
-        Logs.i(TAG, "mIsUnMounted:" + mIsUnMounted);
-        Logs.i(TAG, "mSetPathsMounted:" + mSetPathsMounted.toString());
-        Logs.i(TAG, "mSetPathsUnMounted:" + mSetPathsUnMounted.toString());
-        Logs.i(TAG, " ***  End  ***");
+        //Video - Notify scanning refresh.
+        private void notifyVideoScanningRefresh(final List<ProVideo> listMedias, boolean isOnUiThread) {
+            for (MediaScanDelegate delegate : mSetScanDelegates) {
+                if (delegate instanceof VideoScanDelegate) {
+                    ((VideoScanDelegate) delegate).onMediaScanningRefresh(listMedias, isOnUiThread);
+                }
+            }
+        }
+
+        //Notify scanning start.
+        private void notifyScanningEnd() {
+            for (MediaScanDelegate delegate : mSetScanDelegates) {
+                delegate.onMediaScanningEnd();
+            }
+        }
+
+        //Notify scanning cancel.
+        private void notifyScanningCancel() {
+            for (MediaScanDelegate delegate : mSetScanDelegates) {
+                delegate.onMediaScanningCancel();
+            }
+        }
+
+        boolean isScanning() {
+            return mmIsScanning;
+        }
+    }
+
+    public static boolean isMediaScanning() {
+        return mListMediaTask != null && mListMediaTask.isScanning();
     }
 
     /**
-     * Clear Played Media Information
+     * 保存Bitmap到SD卡
+     *
+     * @param filePath  ： 文件路径 ，格式为“.../../example.png”
+     * @param bmToStore ： 要执行保存的Bitmap
      */
-    private void clearPlayCacheInfos() {
-        if (VersionController.isCjVersion()) {
-            return;
-        }
-        // Clear Music Informations
-        String lastMediaUrl = TrAudioPreferUtils.getLastTargetMediaUrl(false, "");
-        if (!EmptyUtil.isEmpty(lastMediaUrl)) {
-            for (String root : mSetPathsUnMounted) {
+    private static void storeBitmap(String filePath, Bitmap bmToStore) {
+        if (bmToStore != null) {
+            // "/sdcard/" + bitName + ".png"
+            FileOutputStream fos = null;
+            try {
+                //
+                File targetF = new File(filePath);
+                if (targetF.isDirectory() || targetF.exists()) {
+                    return;
+                }
+
+                //Compress
+                File tmpFile = new File(filePath + "_TEMP");
+                if (tmpFile.createNewFile()) {
+                    fos = new FileOutputStream(tmpFile);
+                    bmToStore.compress(Bitmap.CompressFormat.PNG, 100, fos);
+
+                    //Rename
+                    if (tmpFile.renameTo(targetF)) {
+                        Log.i(TAG, "storeBitmap --END--");
+                    }
+                }
+            } catch (Throwable e) {
+                Logs.printStackTrace(TAG + "storeBitmap()", e);
+            } finally {
                 try {
-                    if (lastMediaUrl.startsWith(root)) {
-                        TrAudioPreferUtils.getLastTargetMediaUrl(true, "");
-                        TrAudioPreferUtils.getLastPlayedMediaInfo(true, "", 0);
-                        break;
+                    if (fos != null) {
+                        // 刷新数据并将数据转交给操作系统
+                        fos.flush();
+                        // 强制系统缓冲区与基础设备同步
+                        // 将系统缓冲区数据写入到文件
+                        fos.getFD().sync();
+                        fos.close();
                     }
-                } catch (Exception e) {
-                    Logs.printStackTrace(TAG + "clearPlayCacheInfos()", e);
-                }
-            }
-        }
+                } catch (Throwable e) {
+                    Logs.printStackTrace(TAG + "storeBitmap()2", e);
 
-        // Clear Video Informations
-        lastMediaUrl = TrVideoPreferUtils.getLastTargetMediaUrl(false, "");
-        if (!EmptyUtil.isEmpty(lastMediaUrl)) {
-            for (String root : mSetPathsUnMounted) {
-                try {
-                    if (lastMediaUrl.startsWith(root)) {
-                        TrVideoPreferUtils.getLastTargetMediaUrl(true, "");
-                        TrVideoPreferUtils.getLastPlayedMediaInfo(true, "", 0);
-                        break;
-                    }
-                } catch (Exception e) {
-                    Logs.printStackTrace(TAG + "clearPlayCacheInfos()", e);
                 }
             }
         }

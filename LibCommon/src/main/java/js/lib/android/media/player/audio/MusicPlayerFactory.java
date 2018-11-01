@@ -2,7 +2,7 @@ package js.lib.android.media.player.audio;
 
 import android.content.Context;
 
-import js.lib.android.media.player.PlayListener;
+import js.lib.android.media.player.PlayDelegate;
 
 /**
  * Used to create player object
@@ -52,14 +52,14 @@ public class MusicPlayerFactory {
     /**
      * Create
      */
-    public IAudioPlayer create(Context cxt, String mediaPath, PlayListener l) {
+    public IAudioPlayer create(Context cxt, String mediaPath, PlayDelegate delegate) {
         if (mPlayer == null) {
             switch (mPlayerType) {
                 case PlayerType.VLC_PLAYER:
-                    mPlayer = new AudioVlcPlayer(cxt, mediaPath, l);
+                    mPlayer = new AudioVlcPlayer(cxt, mediaPath, delegate);
                     break;
                 case PlayerType.MEDIA_PLAYER:
-                    mPlayer = new AudioMediaPlayer(cxt, mediaPath, l);
+                    mPlayer = new AudioMediaPlayer(cxt, mediaPath, delegate);
                     break;
             }
         }

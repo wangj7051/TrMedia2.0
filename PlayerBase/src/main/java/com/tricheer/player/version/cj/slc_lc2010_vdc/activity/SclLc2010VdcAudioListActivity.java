@@ -22,7 +22,6 @@ import com.tri.lib.utils.SettingsSysUtil;
 import com.tricheer.player.R;
 import com.tricheer.player.engine.PlayerAppManager;
 import com.tricheer.player.engine.PlayerAppManager.PlayerCxtFlag;
-import com.tricheer.player.receiver.MediaScanReceiver;
 import com.tricheer.player.version.base.activity.music.BaseAudioKeyEventActivity;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.frags.BaseAudioListFrag;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.frags.SclLc2010VdcAudioAlbumsFrag;
@@ -31,6 +30,7 @@ import com.tricheer.player.version.cj.slc_lc2010_vdc.frags.SclLc2010VdcAudioColl
 import com.tricheer.player.version.cj.slc_lc2010_vdc.frags.SclLc2010VdcAudioFoldersFrag;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.frags.SclLc2010VdcAudioNamesFrag;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import js.lib.android.media.bean.MediaBase;
@@ -63,6 +63,9 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
     //==========Variables in this Activity==========
     private Context mContext;
     private Handler mHandler = new Handler();
+
+    //
+    private boolean mIsScanOnLocalIsNull = true;
 
     // Request Current Playing Media Url
     private BaseAudioListFrag mFragMedias;
@@ -167,14 +170,6 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
     }
 
     @Override
-    public void onPlayFromFolder(int playPos, List<String> listPlayPaths) {
-    }
-
-    @Override
-    public void onPlayFromFolder(Intent data) {
-    }
-
-    @Override
     protected void loadLocalMedias() {
         super.loadLocalMedias();
         CommonUtil.cancelTask(mLoadLocalMediasTask);
@@ -183,11 +178,13 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
             @Override
             public void afterLoaded(List<ProAudio> listMedias) {
                 if (EmptyUtil.isEmpty(listMedias)) {
-                    loadSDCardMedias();
+                    if (mIsScanOnLocalIsNull) {
+                        mIsScanOnLocalIsNull = false;
+                        notifyScanMedias(true);
+                    }
                 } else {
                     setListSrcMedias(listMedias);
                     refreshDataList();
-                    loadMediaImage();
                 }
             }
         });
@@ -195,65 +192,60 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
     }
 
     @Override
-    protected void loadSDCardMedias() {
-        super.loadSDCardMedias();
-        CommonUtil.cancelTask(mLoadSDCardMediasTask);
-        mLoadSDCardMediasTask = new LoadSDCardMediasTask(new LoadMediaListener() {
-
-            @Override
-            public void afterLoaded(List<ProAudio> listMedias) {
-                if (EmptyUtil.isEmpty(listMedias)) {
-                    notifyScanMedias(true);
-                } else {
-                    setListSrcMedias(listMedias);
-                    refreshDataList();
-                    loadMediaImage();
-                }
-            }
-        });
-        mLoadSDCardMediasTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    public void onMediaScanningStart() {
+        super.onMediaScanningStart();
+        Log.i(TAG, "onMediaScanningStart()");
+        if (mFragMedias != null) {
+            mFragMedias.onMediaScanningStart();
+        }
     }
 
     @Override
-    protected void loadMediaImage() {
-        super.loadMediaImage();
-        CommonUtil.cancelTask(mLoadMediaImageTask);
-        mLoadMediaImageTask = new LoadMediaImageTask(new LoadImgListener() {
-
-            @Override
-            public void postRefresh(ProAudio program, boolean isLoadEnd) {
-            }
-        });
-        mLoadMediaImageTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
-
-    @Override
-    protected void refreshOnNotifyLoading(MediaScanReceiver.MediaScanActives loadingFlag) {
-        super.refreshOnNotifyLoading(loadingFlag);
-//        if (loadingFlag == MediaScanReceiver.ScanActives.START) {
-//			showLctLm8917Loading(true);
-//        } else if (loadingFlag == MediaScanReceiver.ScanActives.TASK_CANCEL) {
-//			showLctLm8917Loading(false);
-//        }
-    }
-
-    @Override
-    protected void refreshPageOnScanning(List<ProAudio> listSrcMedias, boolean isScanned) {
-        super.refreshPageOnScanning(listSrcMedias, isScanned);
-        Log.i(TAG, "refreshPageOnScanning(" + listSrcMedias + "," + isScanned + ")");
+    public void onMediaScanningEnd() {
+        super.onMediaScanningEnd();
+        Log.i(TAG, "onMediaScanningEnd()");
+        if (mFragMedias != null) {
+            mFragMedias.onMediaScanningEnd();
+        }
         loadLocalMedias();
     }
 
     @Override
-    protected void refreshPageOnClear(List<ProAudio> listSrcMedias) {
-        super.refreshPageOnClear(listSrcMedias);
-        Log.i(TAG, "refreshPageOnClear(" + listSrcMedias + ")");
-        if (EmptyUtil.isEmpty(listSrcMedias)) {
-            release();
-        } else {
-            setListSrcMedias(listSrcMedias);
-            refreshDataList();
+    public void onMediaScanningCancel() {
+        super.onMediaScanningCancel();
+        Log.i(TAG, "onMediaScanningCancel()");
+        if (mFragMedias != null) {
+//            mFragMedias.onMediaScanningCancel();
         }
+    }
+
+    @Override
+    public void onMediaScanningRefresh(final List<ProAudio> listMedias, boolean isOnUiThread) {
+        super.onMediaScanningRefresh(listMedias, isOnUiThread);
+        Log.i(TAG, "onMediaScanningRefresh(List<ProAudio>," + isOnUiThread + ")");
+        final List<ProAudio> listDeltaMedias = new ArrayList<>(listMedias);
+        if (!isOnUiThread) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.i(TAG, "onMediaScanningRefresh(List<ProAudio>) -2-" + listDeltaMedias.size());
+                    List<ProAudio> currListSrcMedias = getListSrcMedias();
+                    if (EmptyUtil.isEmpty(currListSrcMedias)) {
+                        currListSrcMedias = new ArrayList<>(listDeltaMedias);
+                        setListSrcMedias(currListSrcMedias);
+                        refreshDataList();
+                    }
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onPlayFromFolder(int playPos, List<String> listPlayPaths) {
+    }
+
+    @Override
+    public void onPlayFromFolder(Intent data) {
     }
 
     /**
@@ -282,7 +274,6 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
 
                 //Click Name
             } else if (v == vItems[2]) {
-                notifyScanMedias(true);
                 switchTab(v, true);
 
                 //Click favorite/folder/name/artist/album
@@ -363,6 +354,7 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
     @Override
     public void onGotMediaKeyCode(KeyEvent event) {
         if (event.getAction() == KeyEvent.ACTION_UP) {
+            moveFocusToRubbish(vRubbishFocus);
             KeyEnum key = KeyEnum.getKey(event.getKeyCode());
             switch (key) {
                 case KEYCODE_MEDIA_PREVIOUS:
@@ -387,6 +379,7 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
 
     @Override
     public void onGetKeyCode(KeyEnum key) {
+        moveFocusToRubbish(vRubbishFocus);
         switch (key) {
             case KEYCODE_MEDIA_PREVIOUS:
                 if (isForeground()) {
@@ -406,14 +399,12 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
                 break;
 
             case KEYCODE_DPAD_LEFT:
-                moveFocusToRubbish(vRubbishFocus);
                 cancelOpenPlayer();
                 if (mFragMedias != null) {
                     mFragMedias.selectPrev();
                 }
                 break;
             case KEYCODE_DPAD_RIGHT:
-                moveFocusToRubbish(vRubbishFocus);
                 cancelOpenPlayer();
                 if (mFragMedias != null) {
                     mFragMedias.selectNext();
@@ -434,7 +425,13 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
         if (data != null) {
             String flag = data.getStringExtra("flag");
             if ("PLAYER_FINISH_ON_CLICK_LIST".equals(flag)) {
+                if (mFragMedias != null) {
+                    mFragMedias.refreshDataList();
+                }
             } else if ("PLAYER_FINISH_ON_GET_KEY".equals(flag)) {
+                if (mFragMedias != null) {
+                    mFragMedias.refreshDataList();
+                }
                 autoOpenPlayer();
             }
         }
@@ -589,6 +586,11 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
         mMediaBtnController.unregister();
     }
 
+    /**
+     * Move window focus to rubbish position where not useful.
+     *
+     * @param vRubbish Rubbish view.
+     */
     private void moveFocusToRubbish(View vRubbish) {
         View focusedV = getCurrentFocus();
         if (focusedV != vRubbish && vRubbish != null) {

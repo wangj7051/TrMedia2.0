@@ -15,6 +15,7 @@ import com.tricheer.player.utils.PlayerLogicUtils;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.bean.AudioFilter;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import js.lib.android.media.bean.ProAudio;
@@ -27,7 +28,7 @@ public class SclLc2010VdcAudioFoldersAdapter<T> extends BaseAudioAdapter<T> impl
 
     private int mSelectedPos = 0;
     private String mSelectedMediaUrl = "";
-    private List<T> mListDatas;
+    private List<T> mListData;
 
     @IdRes
     private int mSelectFontColor, mNotSelectedColor;
@@ -48,45 +49,49 @@ public class SclLc2010VdcAudioFoldersAdapter<T> extends BaseAudioAdapter<T> impl
         mCollectListener = l;
     }
 
-    public void setListDatas(List<T> listDatas) {
-        this.mListDatas = listDatas;
+    public void setListData(List<T> listData) {
+        if (listData != null) {
+            this.mListData = new ArrayList<>(listData);
+        } else {
+            this.mListData = new ArrayList<>();
+        }
     }
 
     public void setSelect(String mediaUrl) {
         this.mSelectedMediaUrl = mediaUrl;
     }
 
-    public void refreshDatas(int pos) {
+    public void refreshData(int pos) {
         T item = getItem(pos);
         if (item instanceof ProAudio) {
-            refreshDatas(((ProAudio) item).mediaUrl);
+            refreshData(((ProAudio) item).mediaUrl);
         } else if (item instanceof AudioFilter) {
             AudioFilter selectedAf = (AudioFilter) item;
-            for (T t : mListDatas) {
+            for (T t : mListData) {
                 AudioFilter af = (AudioFilter) t;
                 af.isSelected = TextUtils.equals(selectedAf.folderPath, af.folderPath);
             }
-            refreshDatas();
+            refreshData();
         }
     }
 
-    public void refreshDatas(List<T> listDatas) {
-        this.mListDatas = listDatas;
-        refreshDatas();
+    public void refreshData(List<T> listData) {
+        setListData(listData);
+        refreshData();
     }
 
-    public void refreshDatas(String selectedMediaUrl) {
-        this.mSelectedMediaUrl = selectedMediaUrl;
-        refreshDatas();
+    public void refreshData(String selectedMediaUrl) {
+        setSelect(selectedMediaUrl);
+        refreshData();
     }
 
-    public void refreshDatas(List<T> listDatas, String selectedMediaUrl) {
-        this.mListDatas = listDatas;
-        this.mSelectedMediaUrl = selectedMediaUrl;
-        refreshDatas();
+    public void refreshData(List<T> listData, String selectedMediaUrl) {
+        setSelect(selectedMediaUrl);
+        setListData(listData);
+        refreshData();
     }
 
-    public void refreshDatas() {
+    public void refreshData() {
         notifyDataSetChanged();
     }
 
@@ -96,18 +101,18 @@ public class SclLc2010VdcAudioFoldersAdapter<T> extends BaseAudioAdapter<T> impl
 
     @Override
     public int getCount() {
-        if (mListDatas == null) {
+        if (mListData == null) {
             return 0;
         }
-        return mListDatas.size();
+        return mListData.size();
     }
 
     @Override
     public T getItem(int position) {
-        if (EmptyUtil.isEmpty(mListDatas)) {
+        if (EmptyUtil.isEmpty(mListData)) {
             return null;
         }
-        return mListDatas.get(position);
+        return mListData.get(position);
     }
 
     @NonNull

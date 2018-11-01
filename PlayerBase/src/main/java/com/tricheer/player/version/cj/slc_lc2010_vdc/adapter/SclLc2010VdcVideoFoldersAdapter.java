@@ -1,8 +1,10 @@
 package com.tricheer.player.version.cj.slc_lc2010_vdc.adapter;
 
 import android.content.Context;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -10,10 +12,12 @@ import android.widget.SectionIndexer;
 import android.widget.TextView;
 
 import com.tricheer.player.R;
+import com.tricheer.player.utils.PlayerFileUtils;
 import com.tricheer.player.utils.PlayerLogicUtils;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.bean.VideoFilter;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import js.lib.android.adapter.BaseArrayAdapter;
@@ -33,39 +37,44 @@ public class SclLc2010VdcVideoFoldersAdapter<T> extends BaseArrayAdapter<T> impl
         this.mResID = R.layout.scl_lc2010_vdc_activity_video_list_item;
     }
 
-    public void setListDatas(List<T> listDatas) {
-        this.mListData = listDatas;
+    public void setListData(List<T> listData) {
+        if (listData != null) {
+            this.mListData = new ArrayList<>(listData);
+        } else {
+            this.mListData = new ArrayList<>();
+        }
     }
 
     public void setSelect(String mediaUrl) {
         this.mSelectedMediaUrl = mediaUrl;
     }
 
-    public void refreshDatas(List<T> listDatas) {
-        this.mListData = listDatas;
-        refreshDatas();
-    }
-
-    public void refreshDatas(int pos) {
+    public void refreshData(int pos) {
         T item = getItem(pos);
         if (item instanceof ProVideo) {
             ProVideo media = (ProVideo) item;
-            refreshDatas(media.mediaUrl);
+            refreshData(media.mediaUrl);
         }
     }
 
-    public void refreshDatas(String selectedMediaUrl) {
-        this.mSelectedMediaUrl = selectedMediaUrl;
-        refreshDatas();
+    public void refreshData(String selectedMediaUrl) {
+        setSelect(selectedMediaUrl);
+        refreshData();
     }
 
-    public void refreshDatas(List<T> listDatas, String selectMediaUrl) {
-        this.mListData = listDatas;
-        this.mSelectedMediaUrl = selectMediaUrl;
+    public void refreshData(List<T> listData) {
+        setListData(listData);
+        refreshData();
+    }
+
+
+    public void refreshData(List<T> listData, String selectedMediaUrl) {
+        setSelect(selectedMediaUrl);
+        setListData(listData);
         notifyDataSetChanged();
     }
 
-    public void refreshDatas() {
+    public void refreshData() {
         notifyDataSetChanged();
     }
 
@@ -110,7 +119,21 @@ public class SclLc2010VdcVideoFoldersAdapter<T> extends BaseArrayAdapter<T> impl
                 //
                 ProVideo item = (ProVideo) tItem;
                 holder.vName.setText(item.title);
-                PlayerLogicUtils.setMediaCover(holder.vCover, item, false);
+
+                //Cover
+                try {
+                    String storePath = PlayerFileUtils.getVideoPicPath(item.mediaUrl);
+                    String coverPicFilePath = PlayerLogicUtils.getMediaPicFilePath(item, storePath);
+                    Log.i("coverPicFile", "coverPicFile: " + coverPicFilePath);
+                    File coverPicFile = new File(coverPicFilePath);
+                    if (coverPicFile.exists()) {
+                        holder.vCover.setImageURI(Uri.parse(coverPicFilePath));
+                    } else {
+                        holder.vCover.setImageResource(R.color.video_item_cover);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
                 //Selected
                 if (TextUtils.equals(mSelectedMediaUrl, item.mediaUrl)) {
@@ -126,7 +149,7 @@ public class SclLc2010VdcVideoFoldersAdapter<T> extends BaseArrayAdapter<T> impl
                 //Folder Name
                 File file = new File(item.folderPath);
                 holder.vName.setText(file.getName());
-                holder.vCover.setImageResource(R.drawable.bg_cover_video);
+                holder.vCover.setImageResource(R.drawable.bg_cover_video_folder);
                 convertView.setBackgroundResource(android.R.color.transparent);
             }
         }

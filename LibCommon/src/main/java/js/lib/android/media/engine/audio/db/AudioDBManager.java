@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.Set;
 
 import js.lib.android.media.bean.ProAudio;
-import js.lib.android.media.engine.audio.db.AudioTables.MusicCacheInfo;
+import js.lib.android.media.engine.audio.db.AudioTables.AudioCacheInfo;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.Logs;
 
@@ -127,35 +127,35 @@ public class AudioDBManager {
     private ContentValues getContentValues(ProAudio media, long currTime) {
         ContentValues cvs = new ContentValues();
         if (media.source == 1) {
-            cvs.put(MusicCacheInfo.ID, media.id);
+            cvs.put(AudioCacheInfo.ID, media.id);
         }
-        cvs.put(MusicCacheInfo.SYS_MEDIA_ID, media.sysMediaID);
-        cvs.put(MusicCacheInfo.TITLE, media.title);//
-        cvs.put(MusicCacheInfo.TITLE_PINYIN, media.titlePinYin);//
+        cvs.put(AudioCacheInfo.SYS_MEDIA_ID, media.sysMediaID);
+        cvs.put(AudioCacheInfo.TITLE, media.title);//
+        cvs.put(AudioCacheInfo.TITLE_PINYIN, media.titlePinYin);//
 
-        cvs.put(MusicCacheInfo.ALBUM_ID, media.albumID);
-        cvs.put(MusicCacheInfo.ALBUM, media.album);//
-        cvs.put(MusicCacheInfo.ALBUM_PINYIN, media.albumPinYin);//
+        cvs.put(AudioCacheInfo.ALBUM_ID, media.albumID);
+        cvs.put(AudioCacheInfo.ALBUM, media.album);//
+        cvs.put(AudioCacheInfo.ALBUM_PINYIN, media.albumPinYin);//
 
-        cvs.put(MusicCacheInfo.ARTIST, media.artist);//
-        cvs.put(MusicCacheInfo.ARTIST_PINYIN, media.artistPinYin);//
+        cvs.put(AudioCacheInfo.ARTIST, media.artist);//
+        cvs.put(AudioCacheInfo.ARTIST_PINYIN, media.artistPinYin);//
 
-        cvs.put(MusicCacheInfo.MEDIA_URL, media.mediaUrl);//
-        cvs.put(MusicCacheInfo.MEDIA_DIRECTORY, media.mediaDirectory);//
-        cvs.put(MusicCacheInfo.MEDIA_DIRECTORY_PINYIN, media.mediaDirectoryPinYin);//
+        cvs.put(AudioCacheInfo.MEDIA_URL, media.mediaUrl);//
+        cvs.put(AudioCacheInfo.MEDIA_DIRECTORY, media.mediaDirectory);//
+        cvs.put(AudioCacheInfo.MEDIA_DIRECTORY_PINYIN, media.mediaDirectoryPinYin);//
 
-        cvs.put(MusicCacheInfo.DURATION, media.duration);//
-        cvs.put(MusicCacheInfo.IS_COLLECT, media.isCollected);//
-        cvs.put(MusicCacheInfo.COVER_URL, media.coverUrl);//
-        cvs.put(MusicCacheInfo.LYRIC, media.lyric);//
-        cvs.put(MusicCacheInfo.SOURCE, media.source);//
+        cvs.put(AudioCacheInfo.DURATION, media.duration);//
+        cvs.put(AudioCacheInfo.IS_COLLECT, media.isCollected);//
+        cvs.put(AudioCacheInfo.COVER_URL, media.coverUrl);//
+        cvs.put(AudioCacheInfo.LYRIC, media.lyric);//
+        cvs.put(AudioCacheInfo.SOURCE, media.source);//
 
         if (currTime >= 0) {
-            cvs.put(MusicCacheInfo.CREATE_TIME, currTime);//
-            cvs.put(MusicCacheInfo.UPDATE_TIME, 0);//
+            cvs.put(AudioCacheInfo.CREATE_TIME, currTime);//
+            cvs.put(AudioCacheInfo.UPDATE_TIME, 0);//
         } else {
-            cvs.put(MusicCacheInfo.CREATE_TIME, media.createTime);//
-            cvs.put(MusicCacheInfo.UPDATE_TIME, media.updateTime);//
+            cvs.put(AudioCacheInfo.CREATE_TIME, media.createTime);//
+            cvs.put(AudioCacheInfo.UPDATE_TIME, media.updateTime);//
         }
         return cvs;
     }
@@ -171,7 +171,7 @@ public class AudioDBManager {
                 mDB.beginTransaction();
                 long currTime = System.currentTimeMillis();
                 for (ProAudio media : listPrograms) {
-                    if (mDB.insert(MusicCacheInfo.T_NAME, null, getContentValues(media, currTime)) > 0) {
+                    if (mDB.insert(AudioCacheInfo.T_NAME, null, getContentValues(media, currTime)) > 0) {
                         count++;
                     }
                 }
@@ -195,9 +195,9 @@ public class AudioDBManager {
             try {
                 String whereClause = null;
                 if (!EmptyUtil.isEmpty(strLike)) {
-                    whereClause = MusicCacheInfo.MEDIA_URL + " like '%" + strLike + "%'";
+                    whereClause = AudioCacheInfo.MEDIA_URL + " like '%" + strLike + "%'";
                 }
-                mDB.delete(MusicCacheInfo.T_NAME, EmptyUtil.isEmpty(whereClause) ? null : whereClause, null);
+                mDB.delete(AudioCacheInfo.T_NAME, EmptyUtil.isEmpty(whereClause) ? null : whereClause, null);
             } catch (Exception e) {
                 throwable = e;
                 Logs.printStackTrace(TAG + "clearMusics()", e);
@@ -215,13 +215,13 @@ public class AudioDBManager {
         if (openDB()) {
             Throwable throwable = null;
             try {
-                String whereClause = MusicCacheInfo.MEDIA_URL + "=?";
+                String whereClause = AudioCacheInfo.MEDIA_URL + "=?";
                 String[] whereArgs = new String[]{music.mediaUrl};
 
                 ContentValues cvs = new ContentValues();
-                cvs.put(MusicCacheInfo.UPDATE_TIME, System.currentTimeMillis());
-                cvs.put(MusicCacheInfo.DURATION, music.duration);
-                count = mDB.delete(MusicCacheInfo.T_NAME, whereClause, whereArgs);
+                cvs.put(AudioCacheInfo.UPDATE_TIME, System.currentTimeMillis());
+                cvs.put(AudioCacheInfo.DURATION, music.duration);
+                count = mDB.delete(AudioCacheInfo.T_NAME, whereClause, whereArgs);
             } catch (Exception e) {
                 count = -1;
                 throwable = e;
@@ -242,8 +242,8 @@ public class AudioDBManager {
             try {
                 mDB.beginTransaction();
                 // Update ProAudio
-                String table = MusicCacheInfo.T_NAME;
-                String selection = MusicCacheInfo.MEDIA_URL + "=?";
+                String table = AudioCacheInfo.T_NAME;
+                String selection = AudioCacheInfo.MEDIA_URL + "=?";
                 String[] selectionArgs = null;
                 long currTime = System.currentTimeMillis();
                 for (ProAudio media : listMusics) {
@@ -268,14 +268,14 @@ public class AudioDBManager {
         if (openDB()) {
             Throwable throwable = null;
             try {
-                String selection = MusicCacheInfo.MEDIA_URL + "=?";
+                String selection = AudioCacheInfo.MEDIA_URL + "=?";
                 String[] selectionArgs = new String[]{music.mediaUrl};
 
                 ContentValues cvs = new ContentValues();
-                cvs.put(MusicCacheInfo.UPDATE_TIME, System.currentTimeMillis());
-                cvs.put(MusicCacheInfo.DURATION, music.duration);
+                cvs.put(AudioCacheInfo.UPDATE_TIME, System.currentTimeMillis());
+                cvs.put(AudioCacheInfo.DURATION, music.duration);
 
-                int rowsNum = mDB.update(MusicCacheInfo.T_NAME, cvs, selection, selectionArgs);
+                int rowsNum = mDB.update(AudioCacheInfo.T_NAME, cvs, selection, selectionArgs);
                 Log.i(TAG, "updateMusicInfo - rowsNum: " + rowsNum);
             } catch (Exception e) {
                 throwable = e;
@@ -293,12 +293,12 @@ public class AudioDBManager {
         if (media != null && openDB()) {
             Throwable throwable = null;
             try {
-                String selection = MusicCacheInfo.MEDIA_URL + "=?";
+                String selection = AudioCacheInfo.MEDIA_URL + "=?";
                 String[] selectionArgs = new String[]{media.mediaUrl};
 
                 ContentValues cvs = new ContentValues();
-                cvs.put(MusicCacheInfo.COVER_URL, media.coverUrl);
-                int rowsNum = mDB.update(MusicCacheInfo.T_NAME, cvs, selection, selectionArgs);
+                cvs.put(AudioCacheInfo.COVER_URL, media.coverUrl);
+                int rowsNum = mDB.update(AudioCacheInfo.T_NAME, cvs, selection, selectionArgs);
                 Log.i(TAG, "updateMediaCoverUrl - rowsNum: " + rowsNum);
             } catch (Exception e) {
                 throwable = e;
@@ -316,13 +316,13 @@ public class AudioDBManager {
         if (media != null && openDB()) {
             Throwable throwable = null;
             try {
-                String selection = MusicCacheInfo.MEDIA_URL + "=?";
+                String selection = AudioCacheInfo.MEDIA_URL + "=?";
                 String[] selectionArgs = new String[]{media.mediaUrl};
 
                 ContentValues cvs = new ContentValues();
-                cvs.put(MusicCacheInfo.IS_COLLECT, media.isCollected);
-                cvs.put(MusicCacheInfo.UPDATE_TIME, media.updateTime);
-                int rowsNum = mDB.update(MusicCacheInfo.T_NAME, cvs, selection, selectionArgs);
+                cvs.put(AudioCacheInfo.IS_COLLECT, media.isCollected);
+                cvs.put(AudioCacheInfo.UPDATE_TIME, media.updateTime);
+                int rowsNum = mDB.update(AudioCacheInfo.T_NAME, cvs, selection, selectionArgs);
                 Log.i(TAG, "updateMediaCollect - rowsNum: " + rowsNum);
             } catch (Exception e) {
                 throwable = e;
@@ -342,9 +342,9 @@ public class AudioDBManager {
             Throwable throwable = null;
             Cursor cur = null;
             try {
-                String table = MusicCacheInfo.T_NAME;
+                String table = AudioCacheInfo.T_NAME;
                 String[] columns = new String[]{"*"};
-                String orderBy = "upper(" + MusicCacheInfo.TITLE_PINYIN + ")";
+                String orderBy = "upper(" + AudioCacheInfo.TITLE_PINYIN + ")";
                 cur = mDB.query(table, columns, null, null, null, null, orderBy, null);
                 if (cur != null) {
                     Set<String> setAddedMedias = new HashSet<String>();
@@ -378,19 +378,19 @@ public class AudioDBManager {
             Throwable throwable = null;
             Cursor cur = null;
             try {
-                String table = MusicCacheInfo.T_NAME;
+                String table = AudioCacheInfo.T_NAME;
                 String[] columns = new String[]{"*"};
 
                 String selection = null;
                 String[] selectionArgs = null;
                 if (!EmptyUtil.isEmpty(title) && EmptyUtil.isEmpty(artist)) {
-                    selection = MusicCacheInfo.TITLE + " like ?";
+                    selection = AudioCacheInfo.TITLE + " like ?";
                     selectionArgs = new String[]{"%" + title + "%"};
                 } else if (!EmptyUtil.isEmpty(title) && !EmptyUtil.isEmpty(artist)) {
-                    selection = MusicCacheInfo.TITLE + " like ? and " + MusicCacheInfo.ARTIST + " like ?";
+                    selection = AudioCacheInfo.TITLE + " like ? and " + AudioCacheInfo.ARTIST + " like ?";
                     selectionArgs = new String[]{"%" + title + "%", "%" + artist + "%"};
                 } else if (EmptyUtil.isEmpty(title) && !EmptyUtil.isEmpty(artist)) {
-                    selection = MusicCacheInfo.ARTIST + " like ?";
+                    selection = AudioCacheInfo.ARTIST + " like ?";
                     selectionArgs = new String[]{"%" + artist + "%"};
                 }
 
@@ -426,9 +426,9 @@ public class AudioDBManager {
             Throwable throwable = null;
             Cursor cur = null;
             try {
-                String table = MusicCacheInfo.T_NAME;
+                String table = AudioCacheInfo.T_NAME;
                 String[] columns = new String[]{"*"};
-                String orderBy = MusicCacheInfo.UPDATE_TIME + " desc";
+                String orderBy = AudioCacheInfo.UPDATE_TIME + " desc";
 
                 cur = mDB.query(table, columns, null, null, null, null, orderBy, null);
                 if (cur != null) {
@@ -456,29 +456,29 @@ public class AudioDBManager {
     private ProAudio getMusicByCursor(Cursor cur) {
         ProAudio music = null;
         try {
-            String mediaUrl = cur.getString(cur.getColumnIndex(MusicCacheInfo.MEDIA_URL));
+            String mediaUrl = cur.getString(cur.getColumnIndex(AudioCacheInfo.MEDIA_URL));
             File mediaFile = new File(mediaUrl);
             if (mediaFile.exists()) {
                 music = new ProAudio();
-                music.id = cur.getInt(cur.getColumnIndex(MusicCacheInfo.ID));
-                music.sysMediaID = cur.getLong(cur.getColumnIndex(MusicCacheInfo.SYS_MEDIA_ID));
-                music.title = cur.getString(cur.getColumnIndex(MusicCacheInfo.TITLE));
-                music.titlePinYin = cur.getString(cur.getColumnIndex(MusicCacheInfo.TITLE_PINYIN));
-                music.albumID = cur.getLong(cur.getColumnIndex(MusicCacheInfo.ALBUM_ID));
-                music.album = cur.getString(cur.getColumnIndex(MusicCacheInfo.ALBUM));
-                music.albumPinYin = cur.getString(cur.getColumnIndex(MusicCacheInfo.ALBUM_PINYIN));
-                music.artist = cur.getString(cur.getColumnIndex(MusicCacheInfo.ARTIST));
-                music.artistPinYin = cur.getString(cur.getColumnIndex(MusicCacheInfo.ARTIST_PINYIN));
+                music.id = cur.getInt(cur.getColumnIndex(AudioCacheInfo.ID));
+                music.sysMediaID = cur.getLong(cur.getColumnIndex(AudioCacheInfo.SYS_MEDIA_ID));
+                music.title = cur.getString(cur.getColumnIndex(AudioCacheInfo.TITLE));
+                music.titlePinYin = cur.getString(cur.getColumnIndex(AudioCacheInfo.TITLE_PINYIN));
+                music.albumID = cur.getLong(cur.getColumnIndex(AudioCacheInfo.ALBUM_ID));
+                music.album = cur.getString(cur.getColumnIndex(AudioCacheInfo.ALBUM));
+                music.albumPinYin = cur.getString(cur.getColumnIndex(AudioCacheInfo.ALBUM_PINYIN));
+                music.artist = cur.getString(cur.getColumnIndex(AudioCacheInfo.ARTIST));
+                music.artistPinYin = cur.getString(cur.getColumnIndex(AudioCacheInfo.ARTIST_PINYIN));
                 music.mediaUrl = mediaUrl;
-                music.mediaDirectory = cur.getString(cur.getColumnIndex(MusicCacheInfo.MEDIA_DIRECTORY));
-                music.mediaDirectoryPinYin = cur.getString(cur.getColumnIndex(MusicCacheInfo.MEDIA_DIRECTORY_PINYIN));
-                music.duration = cur.getInt(cur.getColumnIndex(MusicCacheInfo.DURATION));
-                music.isCollected = cur.getInt(cur.getColumnIndex(MusicCacheInfo.IS_COLLECT));
-                music.coverUrl = cur.getString(cur.getColumnIndex(MusicCacheInfo.COVER_URL));
-                music.lyric = cur.getString(cur.getColumnIndex(MusicCacheInfo.LYRIC));
-                music.source = cur.getInt(cur.getColumnIndex(MusicCacheInfo.SOURCE));
-                music.createTime = cur.getLong(cur.getColumnIndex(MusicCacheInfo.CREATE_TIME));
-                music.updateTime = cur.getLong(cur.getColumnIndex(MusicCacheInfo.UPDATE_TIME));
+                music.mediaDirectory = cur.getString(cur.getColumnIndex(AudioCacheInfo.MEDIA_DIRECTORY));
+                music.mediaDirectoryPinYin = cur.getString(cur.getColumnIndex(AudioCacheInfo.MEDIA_DIRECTORY_PINYIN));
+                music.duration = cur.getInt(cur.getColumnIndex(AudioCacheInfo.DURATION));
+                music.isCollected = cur.getInt(cur.getColumnIndex(AudioCacheInfo.IS_COLLECT));
+                music.coverUrl = cur.getString(cur.getColumnIndex(AudioCacheInfo.COVER_URL));
+                music.lyric = cur.getString(cur.getColumnIndex(AudioCacheInfo.LYRIC));
+                music.source = cur.getInt(cur.getColumnIndex(AudioCacheInfo.SOURCE));
+                music.createTime = cur.getLong(cur.getColumnIndex(AudioCacheInfo.CREATE_TIME));
+                music.updateTime = cur.getLong(cur.getColumnIndex(AudioCacheInfo.UPDATE_TIME));
             }
         } catch (Exception e) {
             Logs.printStackTrace(TAG + "getMusicByCursor()", e);

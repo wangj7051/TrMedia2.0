@@ -8,43 +8,11 @@ package js.lib.android.media.engine.audio.db;
 public interface AudioTables {
 
     /**
-     * Music Search Info
-     */
-    public interface MusicOnlineSearchInfo {
-        // Table Name
-        String T_NAME = "MusicOnlineSearchInfo";
-
-        // ID
-        String ID = "id";
-
-        // Key
-        String KEY = "key";
-        String KEY_PINYIN = "keyPinYin";
-        // Value
-        String VALUE = "value";
-
-        // Record Create Time
-        String CREATE_TIME = "createTime";
-        // Record Update Time
-        String UPDATE_TIME = "updateTime";
-        // Table Create SQL
-        String SQL_CREATE = "CREATE TABLE IF NOT EXISTS " + T_NAME
-                + "("
-                + ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-                + KEY + " TEXT,"
-                + KEY_PINYIN + " TEXT,"
-                + VALUE + " TEXT,"
-                + CREATE_TIME + " LONG,"
-                + UPDATE_TIME + " LONG"
-                + ")";
-    }
-
-    /**
      * Music Cache Info
      */
-    public interface MusicCacheInfo {
+    interface AudioCacheInfo {
         // Table Name
-        String T_NAME = "MusicCacheInfo";
+        String T_NAME = "AudioCacheInfo";
 
         /**
          * ID

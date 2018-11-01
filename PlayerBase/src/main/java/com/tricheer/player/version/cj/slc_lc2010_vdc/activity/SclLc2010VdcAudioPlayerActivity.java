@@ -194,32 +194,9 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseAudioPlayerActivity {
     @Override
     protected void refreshCurrMediaInfo() {
         final ProAudio media = getCurrProgram();
-        if (media == null) {
-            return;
+        if (media != null) {
+            setMediaInformation(media);
         }
-
-        //
-        setMediaInformation(media);
-        //Check if stored in system database.
-//        AudioInfo info = AudioUtils.queryAudioInfo(media.mediaUrl);
-//        if (info == null) {
-//            AudioUtils.scanAudio(mContext, media.mediaUrl, new MediaScannerConnection.MediaScannerConnectionClient() {
-//                @Override
-//                public void onMediaScannerConnected() {
-//                    Toast.makeText(mContext, "onMediaScannerConnected", Toast.LENGTH_LONG).show();
-//                    Log.i(TAG, "onMediaScannerConnected()");
-//                }
-//
-//                @Override
-//                public void onScanCompleted(String path, Uri uri) {
-//                    Log.i(TAG, "onScanCompleted(" + path + ",Uri)");
-//                    Toast.makeText(mContext, "onScanCompleted", Toast.LENGTH_LONG).show();
-//                    ProAudio.copy(media, new ProAudio(AudioUtils.queryAudioInfo(media.mediaUrl)));
-//                    AudioDBManager.instance().updateMusicInfo(media);
-//                    setMediaInformation(media);
-//                }
-//            });
-//        }
     }
 
     private void setMediaInformation(ProAudio media) {

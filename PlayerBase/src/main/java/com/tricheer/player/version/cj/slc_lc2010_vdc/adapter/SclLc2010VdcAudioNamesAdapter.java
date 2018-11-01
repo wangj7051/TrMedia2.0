@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.tricheer.player.R;
 import com.tricheer.player.utils.PlayerLogicUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import js.lib.android.media.bean.ProAudio;
@@ -56,7 +57,11 @@ public class SclLc2010VdcAudioNamesAdapter extends BaseAudioAdapter<ProAudio> im
     }
 
     public void setListData(List<ProAudio> listData) {
-        this.mListData = listData;
+        if (listData != null) {
+            this.mListData = new ArrayList<>(listData);
+        } else {
+            this.mListData = new ArrayList<>();
+        }
     }
 
     public void setPlayingUrl(String mediaUrl) {
@@ -68,8 +73,8 @@ public class SclLc2010VdcAudioNamesAdapter extends BaseAudioAdapter<ProAudio> im
     }
 
     public void refreshData(List<ProAudio> listData, String mediaUrl) {
-        setListData(listData);
         setPlayingUrl(mediaUrl);
+        setListData(listData);
         refreshData();
     }
 

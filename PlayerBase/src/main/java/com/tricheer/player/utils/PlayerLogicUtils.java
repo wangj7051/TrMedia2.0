@@ -53,22 +53,16 @@ public class PlayerLogicUtils {
      * Get Media Cover Image File Path
      */
     public static String getMediaPicFilePath(final Program program, final String storePath) throws UnsupportedEncodingException {
+//        if (!TextUtils.isEmpty(storePath) && storePath.endsWith("/")) {
+//            return storePath + URLEncoder.encode(program.title, "UTF-8") + ".png";
+//        }
+//        return storePath + "/" + URLEncoder.encode(program.title, "UTF-8") + ".png";
+
+        final String thisStorePath = "/sdcard/";
         if (!TextUtils.isEmpty(storePath) && storePath.endsWith("/")) {
             return storePath + URLEncoder.encode(program.title, "UTF-8") + ".png";
         }
         return storePath + "/" + URLEncoder.encode(program.title, "UTF-8") + ".png";
-    }
-
-    public static boolean isHttpUrl(String url) {
-        if (EmptyUtil.isEmpty(url)) {
-            return false;
-        }
-
-        if (url.startsWith("http://") || url.startsWith("HTTP://") || url.startsWith("https://") || url.startsWith("HTTPS://")) {
-            return true;
-        }
-
-        return false;
     }
 
     /**

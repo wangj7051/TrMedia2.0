@@ -1,34 +1,23 @@
 package com.tricheer.player.version.base.activity.video;
 
-import android.graphics.Bitmap;
+import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.tricheer.player.bean.VideoRecordControl;
-import com.tricheer.player.engine.VersionController;
-import com.tricheer.player.receiver.MediaScanReceiver.MediaScanActives;
-import com.tricheer.player.utils.PlayerFileUtils;
-import com.tricheer.player.utils.PlayerLogicUtils;
+import com.tricheer.player.receiver.MediaScanReceiver;
 
-import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import js.lib.android.media.bean.ProVideo;
 import js.lib.android.media.engine.video.db.VideoDBManager;
-import js.lib.android.media.engine.video.utils.VideoInfo;
-import js.lib.android.media.engine.video.utils.VideoUtils;
-import js.lib.android.media.player.PlayListener;
+import js.lib.android.media.player.PlayDelegate;
 import js.lib.android.utils.CommonUtil;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.Logs;
@@ -39,34 +28,13 @@ import js.lib.utils.CharacterParser;
  *
  * @author Jun.Wang
  */
-public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActionsActivity implements PlayListener {
+public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActionsActivity
+        implements PlayDelegate,
+        MediaScanReceiver.VideoScanDelegate {
     // TAG
     private final String TAG = "BaseVideoExtendActionsActivity";
 
-    //==========Widget in this Activity==========
     //==========Variable in this Activity==========
-    /**
-     * Must Be Values Below:
-     * <p>
-     * {@link MediaStore.Images.Thumbnails#MICRO_KIND}
-     * {@link MediaStore.Images.Thumbnails#FULL_SCREEN_KIND}
-     * {@link MediaStore.Images.Thumbnails#MINI_KIND}
-     */
-    private int mThumbMode = MediaStore.Images.Thumbnails.MINI_KIND;
-    /**
-     * Video ThumbImage Information
-     */
-    private int mThumbWidth = 200, mThumbHeight = 200;
-
-    /**
-     * Is Current Video 1080P Flag
-     */
-    private boolean mIsCurrVideo1080P = false;
-    /**
-     * {@link VideoRecordControl}
-     */
-    private int mRecordControlFlag = VideoRecordControl.RESET;
-
     /**
      * 是否正在展示黑名单媒体
      */
@@ -86,18 +54,6 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
      * Load Local Medias Task
      */
     protected LoadLocalMediasTask mLoadLocalMediasTask;
-    /**
-     * Load SDCard Medias Task
-     */
-    protected LoadSDCardMediasTask mLoadSDCardMediasTask;
-    /**
-     * Load Media Images Task
-     */
-    protected LoadMediaImageTask mLoadMediaImageTask;
-    /**
-     * Load Selected Medias Task
-     */
-    protected LoadSelectedMediasTask mLoadSelectedMediasTask;
 
     /**
      * 媒体加载监听器
@@ -118,101 +74,52 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
     @Override
     protected void onCreate(@Nullable Bundle bundle) {
         super.onCreate(bundle);
-    }
-
-    /**
-     * Configuration Thumb Inch
-     *
-     * @param thumbImgW
-     * @param thumbImgH
-     * @param thumbImgMode {@link MediaStore.Images.Thumbnails#MICRO_KIND}
-     *                     {@link MediaStore.Images.Thumbnails#FULL_SCREEN_KIND}
-     *                     {@link MediaStore.Images.Thumbnails#MINI_KIND}
-     */
-    protected void configThumbInfo(int thumbImgW, int thumbImgH, int thumbImgMode) {
-        mThumbWidth = thumbImgW;
-        mThumbHeight = thumbImgH;
-        mThumbMode = thumbImgMode;
+        MediaScanReceiver.register(this);
     }
 
     @Override
-    public void onNotifyScanVideos(MediaScanActives flag, List<ProVideo> listPrgrams, Set<String> allSdMountedPaths) {
-        super.onNotifyScanVideos(flag, listPrgrams, allSdMountedPaths);
-        switch (flag) {
-            case REFRESH:
-                refreshPageOnScan(listPrgrams, false);
-                break;
-            case SYS_SCANNED:
-                refreshPageOnScan(listPrgrams, true);
-                break;
-            case CLEAR:
-                refreshPageOnClear(allSdMountedPaths);
-                break;
-            default:
-                refreshOnNotifyLoading(flag);
-                break;
-        }
+    public void onMediaScanningStart() {
     }
 
-    /**
-     * Refresh Page On Loading
-     *
-     * @param flag : {@link MediaScanActives#START} or {@link MediaScanActives#END}
-     */
-    protected void refreshOnNotifyLoading(MediaScanActives flag) {
+    @Override
+    public void onMediaScanningEnd() {
     }
 
-    /**
-     * Refresh Local Medias
-     */
-    protected void refreshPageOnScan(List<ProVideo> listScannedVideos, boolean isScaned) {
-        try {
-            if (EmptyUtil.isEmpty(mListPrograms)) {
-                mListPrograms = listScannedVideos;
-            } else {
-                Map<String, ProVideo> mapListedPrograms = new HashMap<String, ProVideo>();
-                for (ProVideo program : mListPrograms) {
-                    mapListedPrograms.put(program.mediaUrl, program);
-                }
-                for (ProVideo program : listScannedVideos) {
-                    if (!mapListedPrograms.containsKey(program.mediaUrl)) {
-                        mListPrograms.add(program);
-                    }
-                }
-            }
-            sortMediaList(mListPrograms);
-        } catch (Exception e) {
-            Logs.printStackTrace(TAG + "refreshPageOnScan()", e);
-        }
+    @Override
+    public void onMediaScanningCancel() {
     }
 
-    /**
-     * Refresh Page On Notify Clear
-     */
-    protected void refreshPageOnClear(Set<String> allSdMountedPaths) {
-        if (VersionController.isCjVersion()) {
-            try {
-                ArrayList<ProVideo> listMountedProgram = new ArrayList<ProVideo>();
-                for (ProVideo program : mListPrograms) {
-                    boolean isProgramMounted = false;
-                    for (String mountedPath : allSdMountedPaths) {
-                        if (program.mediaUrl.startsWith(mountedPath)) {
-                            isProgramMounted = true;
-                            break;
-                        }
-                    }
-                    if (isProgramMounted) {
-                        listMountedProgram.add(program);
-                    }
-                }
-                mListPrograms = listMountedProgram;
-            } catch (Exception e) {
-                Logs.printStackTrace(TAG + "refreshPageOnClear()", e);
-            }
-        } else {
-            execRelease();
-        }
+    @Override
+    public void onMediaScanningRefresh(List<ProVideo> listMedias, boolean isOnUiThread) {
     }
+
+//    /**
+//     * Refresh Page On Notify Clear
+//     */
+//    protected void refreshPageOnClear(Set<String> allSdMountedPaths) {
+//        if (VersionController.isCjVersion()) {
+//            try {
+//                ArrayList<ProVideo> listMountedProgram = new ArrayList<ProVideo>();
+//                for (ProVideo program : mListPrograms) {
+//                    boolean isProgramMounted = false;
+//                    for (String mountedPath : allSdMountedPaths) {
+//                        if (program.mediaUrl.startsWith(mountedPath)) {
+//                            isProgramMounted = true;
+//                            break;
+//                        }
+//                    }
+//                    if (isProgramMounted) {
+//                        listMountedProgram.add(program);
+//                    }
+//                }
+//                mListPrograms = listMountedProgram;
+//            } catch (Exception e) {
+//                Logs.printStackTrace(TAG + "refreshPageOnClear()", e);
+//            }
+//        } else {
+//            execRelease();
+//        }
+//    }
 
     /**
      * Sort List<ProVideo> by first Char
@@ -247,6 +154,7 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
     protected void loadLocalMedias() {
     }
 
+    @SuppressLint("StaticFieldLeak")
     public class LoadLocalMediasTask extends AsyncTask<Object, Integer, Void> {
         private WeakReference<LoadMediaListener> mmWeakReference;
 
@@ -280,360 +188,6 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-            }
-        }
-    }
-
-    /**
-     * Load Media From SDCard.
-     */
-    protected void loadMediasOnPullRefresh() {
-    }
-
-    /**
-     * Load Media From SDCard.
-     */
-    protected void loadSDCardMedias() {
-    }
-
-    public class LoadSDCardMediasTask extends AsyncTask<Void, Integer, Void> {
-        private List<ProVideo> mmListNewPrograms = new ArrayList<>();
-        private List<ProVideo> mmListExistPrograms = new ArrayList<>();
-        private WeakReference<LoadMediaListener> mmWeakReference;
-        private List<String> mmListSelectPaths;
-
-        public LoadSDCardMediasTask(List<String> listSelectPaths, LoadMediaListener l) {
-            this.mmListSelectPaths = listSelectPaths;
-            mmWeakReference = new WeakReference<>(l);
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mHandler.removeCallbacks(mmLoadSDCardMediasRunnable);
-        }
-
-        @Override
-        protected void onCancelled() {
-            super.onCancelled();
-            mHandler.removeCallbacks(mmLoadSDCardMediasRunnable);
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            // Refresh & Save Medias
-            parseMediaInfos(VideoUtils.queryMapVideoInfos(mmListSelectPaths));
-            VideoDBManager.instance().insertListVideos(mmListNewPrograms);
-            VideoDBManager.instance().updateListVideos(mmListExistPrograms);
-            // Sort & Notify load end
-            sortMediaList(mListPrograms);
-            mHandler.postDelayed(mmLoadSDCardMediasRunnable, 1000);
-            return null;
-        }
-
-        private void parseMediaInfos(Map<String, VideoInfo> mapMediaInfos) {
-            if (!EmptyUtil.isEmpty(mapMediaInfos)) {
-                if (EmptyUtil.isEmpty(mListPrograms)) {
-                    mListPrograms = VideoDBManager.instance().getListVideos(true, false);
-                }
-                // Remove Multiple
-                for (ProVideo program : mListPrograms) {
-                    if (isCancelled()) {
-                        break;
-                    }
-                    if (mapMediaInfos.containsKey(program.mediaUrl)) {
-                        ProVideo aiProgram = new ProVideo(mapMediaInfos.get(program.mediaUrl));
-                        mmListExistPrograms.add(aiProgram);
-                        ProVideo.copy(program, aiProgram);
-                        mapMediaInfos.remove(program.mediaUrl);
-                    }
-                }
-                // Add remaining Audio
-                for (VideoInfo mediaInfo : mapMediaInfos.values()) {
-                    if (isCancelled()) {
-                        break;
-                    }
-                    ProVideo program = new ProVideo(mediaInfo);
-                    mmListNewPrograms.add(program);
-                    mListPrograms.add(program);
-                }
-            }
-        }
-
-        private Runnable mmLoadSDCardMediasRunnable = new Runnable() {
-
-            @Override
-            public void run() {
-                try {
-                    if (!isCancelled()) {
-                        mmWeakReference.get().afterLoad("");
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-    }
-
-    /**
-     * Load Video Cover Image
-     */
-    protected void loadMediaImage() {
-    }
-
-    public class LoadMediaImageTask extends AsyncTask<Object, Integer, Void> {
-        private WeakReference<LoadImgListener> mmWeakReference;
-
-        @SuppressWarnings("unchecked")
-        @Override
-        protected Void doInBackground(Object... params) {
-            // Parameters
-            List<ProVideo> listMedias = null;
-            if (params[0] != null) {
-                listMedias = (List<ProVideo>) params[0];
-            }
-
-            if (params[1] != null) {
-                mmWeakReference = new WeakReference<LoadImgListener>((LoadImgListener) params[1]);
-            }
-
-            //
-            if (listMedias != null) {
-                for (Iterator<ProVideo> it = listMedias.iterator(); it.hasNext(); ) {
-                    if (isCancelled()) {
-                        break;
-                    } else {
-                        try {
-                            ProVideo program = it.next();
-                            File picF = new File(PlayerLogicUtils.getMediaPicPath(program.mediaUrl, 2));
-                            if (!picF.exists()) {
-                                cacheMediaPic(program, getThumbnail(program.mediaUrl),
-                                        PlayerFileUtils.getVideoPicPath(program.mediaUrl));
-                                if (picF.exists()) {
-                                    runOnUiThread(mmPostResultRunnable);
-                                }
-                            }
-                        } catch (Exception e) {
-                            Logs.printStackTrace(TAG + "LoadMediaImageTask -> doInBackground()", e);
-                        }
-                    }
-                }
-            }
-            return null;
-        }
-
-        private Bitmap getThumbnail(String mediaUrl) {
-            return CommonUtil.getVideoThumbnail(mediaUrl, mThumbWidth, mThumbHeight, mThumbMode);
-        }
-
-        private Runnable mmPostResultRunnable = new Runnable() {
-
-            @Override
-            public void run() {
-                try {
-                    if (!isCancelled()) {
-                        mmWeakReference.get().afterLoad();
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-    }
-
-    /**
-     * Load Selected Medias
-     */
-    public class LoadSelectedMediasTask extends AsyncTask<Object, Integer, Void> {
-
-        private WeakReference<LoadMediaListener> mmWeakReference;
-        private String mmSelectMediaUrl;
-        private List<String> mmListSelectPaths;
-
-        @SuppressWarnings("unchecked")
-        @Override
-        protected Void doInBackground(Object... params) {
-            // Sleep thread for loading wait
-            sleepForLoading();
-            // Parameters
-            int playPos = (Integer) params[0];
-            mmListSelectPaths = (List<String>) params[1];
-            if (params[2] != null) {
-                mmWeakReference = new WeakReference<LoadMediaListener>((LoadMediaListener) params[2]);
-            }
-            mmSelectMediaUrl = mmListSelectPaths.get(playPos);
-
-            // Post Results
-            mIsShowingBlacklistMedias = PlayerFileUtils.isInBlacklist(mmSelectMediaUrl);
-            if (isShowingBlacklistMedias()) {
-                postDrivingRecordsByPaths(mmListSelectPaths);
-                postDrivingRecordsByScanInfo(mmListSelectPaths);
-            } else {
-                postVideos(mmListSelectPaths);
-            }
-            return null;
-        }
-
-        /**
-         * 这个是为了展示加载动作，而让线程延迟了500ms.
-         */
-        private void sleepForLoading() {
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
-        private void postVideos(List<String> listSelectPaths) {
-            ArrayList<ProVideo> listPrograms = new ArrayList<ProVideo>();
-            if (!EmptyUtil.isEmpty(listSelectPaths)) {
-                Map<String, ProVideo> mapVideos = VideoDBManager.instance().getMapVideos(true, false);
-                List<String> listToParsePaths = new ArrayList<String>();
-
-                // Parse and Filter
-                for (String path : listSelectPaths) {
-                    if (isCancelled()) {
-                        break;
-                    } else {
-                        ProVideo program = mapVideos.get(path);
-                        if (program == null) {
-                            listToParsePaths.add(path);
-                        } else {
-                            listPrograms.add(program);
-                        }
-                    }
-                }
-
-                // Parse filtered paths
-                if (!EmptyUtil.isEmpty(listToParsePaths)) {
-                    List<VideoInfo> listVideoInfos = VideoUtils.queryListVideoInfos(listSelectPaths);
-                    Map<String, ProVideo> mapPrograms = parseMediaInfos(listVideoInfos, null);
-                    listPrograms.addAll(mapPrograms.values());
-                    VideoDBManager.instance().insertListVideos(new ArrayList<ProVideo>(mapPrograms.values()));
-                }
-            }
-            postResults(listPrograms);
-        }
-
-        private void postDrivingRecordsByPaths(List<String> listSelectPaths) {
-            ArrayList<ProVideo> listMedias = new ArrayList<ProVideo>();
-            // 倒序
-            for (String selectPath : listSelectPaths) {
-                if (isCancelled()) {
-                    break;
-                } else {
-                    File recordFile = new File(selectPath);
-                    if (recordFile.exists()) {
-                        listMedias.add(new ProVideo(recordFile.getPath()));
-                    }
-                }
-            }
-            postResults(listMedias);
-        }
-
-        private void postResults(ArrayList<ProVideo> listMedias) {
-            if (isCancelled()) {
-                return;
-            }
-            // Sort
-            mListPrograms = listMedias;
-            if (!isShowingBlacklistMedias()) {
-                sortMediaList(mListPrograms);
-            }
-            // Post data to UI thread
-            runOnUiThread(new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        mmWeakReference.get().afterLoad(mmSelectMediaUrl);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-        }
-
-        private void postDrivingRecordsByScanInfo(List<String> listSelectPaths) {
-            if (EmptyUtil.isEmpty(listSelectPaths)) {
-                return;
-            }
-            Map<String, VideoInfo> mapInfos = VideoUtils.queryMapVideoInfos(listSelectPaths);
-            ArrayList<ProVideo> listMedias = new ArrayList<ProVideo>();
-            for (String selectPath : listSelectPaths) {
-                if (isCancelled()) {
-                    break;
-                } else {
-                    File recordFile = new File(selectPath);
-                    if (recordFile.exists()) {
-                        VideoInfo videoInfo = mapInfos.get(recordFile.getPath());
-                        if (videoInfo == null) {
-                            listMedias.add(new ProVideo(recordFile.getPath()));
-                        } else {
-                            listMedias.add(new ProVideo(videoInfo));
-                        }
-                    }
-                }
-            }
-            // Post data and refresh UI
-            runOnUiThread(new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        mmWeakReference.get().refreshUI();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-        }
-
-    }
-
-    private Map<String, ProVideo> parseMediaInfos(List<VideoInfo> listVideoInfos, final LoadMediaListener l) {
-        final Map<String, ProVideo> mapPrograms = new HashMap<String, ProVideo>();
-        for (VideoInfo video : listVideoInfos) {
-            ProVideo program = new ProVideo(video);
-            mapPrograms.put(program.mediaUrl, program);
-        }
-        return mapPrograms;
-    }
-
-    /**
-     * Get Music Objects from Music Info Array
-     */
-    protected List<ProVideo> parseVideoInfos(List<String> listPaths) {
-        List<ProVideo> listPrograms = new ArrayList<ProVideo>();
-        List<VideoInfo> listInfos = VideoUtils.queryListVideoInfos(listPaths);
-        for (VideoInfo info : listInfos) {
-            ProVideo video = new ProVideo(info);
-            listPrograms.add(video);
-        }
-
-        return listPrograms;
-    }
-
-    /**
-     * Get Music Objects from Music Info Array
-     */
-    protected void parseProgramInfos() {
-        mListPrograms = new ArrayList<ProVideo>();
-        Map<String, ProVideo> mapStoredVideos = VideoDBManager.instance().getMapVideos(true, false);
-        List<VideoInfo> listInfos = VideoUtils.queryListVideoInfos(null);
-        for (VideoInfo info : listInfos) {
-            try {
-                // Just Add Parsed Program
-                ProVideo program = mapStoredVideos.get(info.path);
-                if (program != null) {
-                    mListPrograms.add(program);
-                } else {
-                    program = new ProVideo(info);
-                    mListPrograms.add(program);
-                }
-            } catch (Exception e) {
-                Logs.printStackTrace(TAG + "parseProgramInfos()", e);
             }
         }
     }
@@ -837,13 +391,10 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
         return mIsCanPlayAtBg;
     }
 
-    /**
-     * Cancel All Tasks
-     */
-    protected void cancelAllTasks() {
+    @Override
+    protected void onDestroy() {
         CommonUtil.cancelTask(mLoadLocalMediasTask);
-        CommonUtil.cancelTask(mLoadSDCardMediasTask);
-        CommonUtil.cancelTask(mLoadSelectedMediasTask);
-        CommonUtil.cancelTask(mLoadMediaImageTask);
+        MediaScanReceiver.unregister(this);
+        super.onDestroy();
     }
 }

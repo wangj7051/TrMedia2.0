@@ -6,7 +6,6 @@ import android.os.Bundle;
 import com.tri.lib.utils.TrVideoPreferUtils;
 import com.tricheer.player.engine.PlayerAppManager;
 import com.tricheer.player.engine.PlayerAppManager.PlayerCxtFlag;
-import com.tricheer.player.engine.VersionController;
 
 import js.lib.android.media.bean.ProVideo;
 import js.lib.android.media.engine.video.db.VideoDBManager;
@@ -25,18 +24,6 @@ import js.lib.android.utils.Logs;
 public abstract class BaseVideoPlayerActivity extends BaseVideoFocusActivity {
     // LOG TAG
     private final String TAG = "BaseVideoPlayerActivity";
-
-    /**
-     * Light Mode Flag
-     */
-    private int mLightMode = VideoLightMode.ON;
-
-    protected interface VideoLightMode {
-        // Means Light Mode Enable and Show Panel
-        int ON = 1;
-        // Means Light Mode Enable and Hide Panel
-        int OFF = 2;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -211,64 +198,6 @@ public abstract class BaseVideoPlayerActivity extends BaseVideoFocusActivity {
             PlayerAppManager.removeCxt(PlayerCxtFlag.VIDEO_PLAYER);
         }
     }
-
-    //>>>---------------------------------<<<
-    // >>>【开灯模式&&关灯模式设置=====Start】<<<
-    //>>>---------------------------------<<<
-
-    /**
-     * Is Light Mode On
-     */
-    protected boolean isLightOn() {
-        if (VersionController.isCanTurnOffLight()) {
-            return mLightMode == VideoLightMode.ON;
-        }
-        return true;
-    }
-
-    /**
-     * Set Light Mode
-     *
-     * @param lightMode : {@link VideoLightMode}
-     */
-    protected void setLightMode(int lightMode) {
-        if (VersionController.isCanTurnOffLight()) {
-            mHandler.removeCallbacks(mLightModeOffRunnable);
-            this.mLightMode = lightMode;
-        }
-    }
-
-    /**
-     * Switch Light Mode
-     */
-    protected void switchLightMode() {
-        if (VersionController.isCanTurnOffLight()) {
-            if (mLightMode == VideoLightMode.ON) {
-                setLightMode(VideoLightMode.OFF);
-            } else if (mLightMode == VideoLightMode.OFF) {
-                setLightMode(VideoLightMode.ON);
-                resetLightMode();
-            }
-        }
-    }
-
-    /**
-     * Reset Light Mode
-     */
-    protected void resetLightMode() {
-        if (VersionController.isCanTurnOffLight()) {
-            mHandler.removeCallbacks(mLightModeOffRunnable);
-            mHandler.postDelayed(mLightModeOffRunnable, 3 * 1000);
-        }
-    }
-
-    private Runnable mLightModeOffRunnable = new Runnable() {
-
-        @Override
-        public void run() {
-            setLightMode(VideoLightMode.OFF);
-        }
-    };
 
     @Override
     protected void onDestroy() {

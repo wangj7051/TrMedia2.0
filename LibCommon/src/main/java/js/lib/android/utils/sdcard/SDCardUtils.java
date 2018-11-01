@@ -44,12 +44,16 @@ public class SDCardUtils {
 
     /**
      * Get SDCard Information set
+     *
+     * @param cxt           {@link Context}
+     * @param isOnlyMounted 是否只获取通过mount方式挂载上的
+     * @return HashMap
      */
     @SuppressLint("ObsoleteSdkInt")
-    public static HashMap<String, SDCardInfo> getSDCardInfos(Context cxt) {
+    public static HashMap<String, SDCardInfo> getSDCardInfos(Context cxt, boolean isOnlyMounted) {
         // SDK >= 14
         if (android.os.Build.VERSION.SDK_INT >= 14) {
-            return getSDCardInfo_GreaterOrEqual14(cxt);
+            return getSDCardInfo_GreaterOrEqual14(cxt, isOnlyMounted);
         }
 
         // SDK < 14
@@ -60,7 +64,7 @@ public class SDCardUtils {
      * API14以下通过读取Linux的vold.fstab文件来获取SDCard信息
      */
     private static HashMap<String, SDCardInfo> getSDCardInfo_Below14() {
-        HashMap<String, SDCardInfo> sdCardInfos = new HashMap<String, SDCardInfo>();
+        HashMap<String, SDCardInfo> sdCardInfos = new HashMap<>();
         BufferedReader bufferedReader = null;
         List<String> dev_mountStrs = null;
         try {
@@ -111,8 +115,8 @@ public class SDCardUtils {
      * Get SDCard Informations that SDK Version >= 14
      */
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
-    private static HashMap<String, SDCardInfo> getSDCardInfo_GreaterOrEqual14(Context context) {
-        HashMap<String, SDCardInfo> sdCardInfos = new HashMap<String, SDCardInfo>();
+    private static HashMap<String, SDCardInfo> getSDCardInfo_GreaterOrEqual14(Context context, boolean isOnlyMounted) {
+        HashMap<String, SDCardInfo> sdCardInfos = new HashMap<>();
         String[] storagePathList = null;
         try {
             StorageManager storageManager = (StorageManager) context.getSystemService(Context.STORAGE_SERVICE);
@@ -142,16 +146,7 @@ public class SDCardUtils {
         }
 
         //Android 7.0 UDISK
-//        List<SDCardInfo> listJsSDInfos = JsVolumeInfo.getSDCardInfos(context);
-//        if (!EmptyUtil.isEmpty(listJsSDInfos)) {
-//            final int loop = listJsSDInfos.size();
-//            for (int idx = 0; idx < loop; idx++) {
-//                SDCardInfo sdInfo = listJsSDInfos.get(idx);
-//                sdCardInfos.put(UDISK_EXTERNAL + "_" + idx, sdInfo);
-//            }
-//        }
-
-        List<String> listUdiskPaths = PlayerMp3Utils.getAllExterSdcardPath();
+        List<String> listUdiskPaths = PlayerMp3Utils.getAllExterSdcardPath(isOnlyMounted);
         if (!EmptyUtil.isEmpty(listUdiskPaths)) {
             final int loop = listUdiskPaths.size();
             for (int idx = 0; idx < loop; idx++) {

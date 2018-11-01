@@ -1,10 +1,17 @@
 package js.lib.android.media.bean;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.MediaMetadataRetriever;
+import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.File;
 
 import js.lib.android.media.engine.audio.utils.AudioInfo;
+import js.lib.android.utils.Logs;
 import js.lib.utils.CharacterParser;
 
 /**
@@ -84,26 +91,91 @@ public class ProAudio extends Program {
     /**
      * Construct ProMusic From Media File
      */
-    public ProAudio(String mediaUrl, String title) {
-//        this.sysMediaID
-        this.title = title;
-        this.titlePinYin = CharacterParser.getPingYin(title);
-        this.artist = "<unknown>";
-        this.artistPinYin = "<unknown>";
-//        this.albumID
-        this.album = "<unknown>";
-        this.albumPinYin = "<unknown>";
+    public ProAudio(Context context, String mediaPath) {
+        MediaMetadataRetriever mmr = null;
+        try {
+            //
+            File file = new File(mediaPath);
+            if (!file.exists()) {
+                return;
+            }
 
-        //
-        this.mediaUrl = mediaUrl;
-        File file = new File(mediaUrl);
-        File parentFile = file.getParentFile();
-        if (parentFile != null) {
-            this.mediaDirectory = parentFile.getName();
-            this.mediaDirectoryPinYin = CharacterParser.getPingYin(mediaDirectory);
+            //
+            mmr = new MediaMetadataRetriever();
+            mmr.setDataSource(context, Uri.parse(mediaPath));
+
+            //
+            title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+            if (title == null) {
+                String fName = file.getName();
+                if (!TextUtils.isEmpty(fName)) {
+                    int lastIdxOfDot = fName.lastIndexOf(".");
+                    if (lastIdxOfDot != -1) {
+                        title = fName.substring(0, lastIdxOfDot);
+                    }
+                }
+            }
+            titlePinYin = CharacterParser.getPingYin(title);
+
+            //
+            artist = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
+            if (artist == null) {
+                artist = "unknown";
+            }
+            artistPinYin = CharacterParser.getPingYin(artist);
+
+            // albumID
+            album = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
+            if (album == null) {
+                album = "unknown";
+            }
+            albumPinYin = CharacterParser.getPingYin(album);
+
+            //
+            mediaUrl = mediaPath;
+            File parentFile = file.getParentFile();
+            if (parentFile != null) {
+                mediaDirectory = parentFile.getName();
+                mediaDirectoryPinYin = CharacterParser.getPingYin(mediaDirectory);
+            }
+
+            //
+            String strDuration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+            if (TextUtils.isDigitsOnly(strDuration)) {
+                duration = Integer.parseInt(strDuration);
+            }
+        } catch (Exception e) {
+            Logs.debugI(TAG, "Parse audio failure ....!!!!");
+        } finally {
+            if (mmr != null) {
+                mmr.release();
+            }
         }
+    }
 
-//        this.duration
+    /**
+     * Get video thumbnail
+     */
+    public Bitmap getThumbNail(Context context, String mediaPath) {
+        MediaMetadataRetriever mmr = null;
+        try {
+            //
+            mmr = new MediaMetadataRetriever();
+            mmr.setDataSource(context, Uri.parse(mediaPath));
+
+            //
+            byte[] picture = mmr.getEmbeddedPicture();
+            if (picture != null) {
+                return BitmapFactory.decodeByteArray(picture, 0, picture.length);
+            }
+        } catch (Exception e) {
+            Logs.debugI(TAG, "Parse audio cover image ....!!!!");
+        } finally {
+            if (mmr != null) {
+                mmr.release();
+            }
+        }
+        return null;
     }
 
     /**

@@ -121,7 +121,7 @@ public class PlayerFileUtils extends JsFileUtils {
 
         @Override
         public boolean isHasSupportStorage() {
-            return (PlayerMp3Utils.getAllExterSdcardPath().size() > 0);
+            return (PlayerMp3Utils.getAllExterSdcardPath(false).size() > 0);
         }
     }
 

@@ -17,6 +17,7 @@ import android.widget.ListView;
 
 import com.js.sidebar.LetterSideBar;
 import com.tricheer.player.R;
+import com.tricheer.player.receiver.MediaScanReceiver;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.activity.SclLc2010VdcAudioListActivity;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.adapter.BaseAudioAdapter;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.adapter.SclLc2010VdcAudioFoldersAdapter;
@@ -31,6 +32,7 @@ import java.util.Map;
 import js.lib.android.media.bean.ProAudio;
 import js.lib.android.media.engine.audio.db.AudioDBManager;
 import js.lib.android.utils.EmptyUtil;
+import js.lib.android.utils.FrameAnimationController;
 import js.lib.android.utils.Logs;
 
 /**
@@ -46,6 +48,7 @@ public class SclLc2010VdcAudioFoldersFrag extends BaseAudioListFrag {
     //==========Widgets in this Fragment==========
     private View contentV;
     private ListView lvDatas;
+    private ImageView ivLoading;
     private LetterSideBar lsb;
 
     //==========Variables in this Fragment==========
@@ -66,6 +69,9 @@ public class SclLc2010VdcAudioFoldersFrag extends BaseAudioListFrag {
      * Data adapter
      */
     private SclLc2010VdcAudioFoldersAdapter mDataAdapter;
+
+    // ImageView frame animation control
+    private FrameAnimationController mFrameAnimController;
 
     @Override
     public void onAttach(Activity activity) {
@@ -93,6 +99,15 @@ public class SclLc2010VdcAudioFoldersFrag extends BaseAudioListFrag {
         lsb.refreshLetters(null);
         lsb.addCallback(new LetterSideBarCallback());
         lsb.setVisibility(View.VISIBLE);
+
+        //
+        ivLoading = (ImageView) contentV.findViewById(R.id.iv_loading);
+        mFrameAnimController = new FrameAnimationController();
+        mFrameAnimController.setIv(ivLoading);
+        mFrameAnimController.setFrameImgResArr(LOADING_RES_ID_ARR);
+        if (MediaScanReceiver.isMediaScanning()) {
+            onMediaScanningStart();
+        }
 
         //ListView
         mDataAdapter = new SclLc2010VdcAudioFoldersAdapter(mAttachedActivity, 0);
@@ -169,9 +184,15 @@ public class SclLc2010VdcAudioFoldersFrag extends BaseAudioListFrag {
             mListDatas = listFilters;
             AudioFilter.sortByFolder((List<AudioFilter>) mListDatas);
         }
-        mDataAdapter.refreshDatas(mListDatas, mAttachedActivity.getLastMediaPath());
+        mDataAdapter.refreshData(mListDatas, mAttachedActivity.getLastMediaPath());
     }
 
+    @Override
+    public void refreshDataList() {
+        if (isAdded()) {
+            mDataAdapter.refreshData();
+        }
+    }
 
     @Override
     public void refreshPlaying(String targetMediaUrl) {
@@ -194,7 +215,7 @@ public class SclLc2010VdcAudioFoldersFrag extends BaseAudioListFrag {
                     break;
                 }
             }
-            mDataAdapter.refreshDatas(targetMediaUrl);
+            mDataAdapter.refreshData(targetMediaUrl);
         }
     }
 
@@ -202,7 +223,7 @@ public class SclLc2010VdcAudioFoldersFrag extends BaseAudioListFrag {
     public void selectNext() {
         if (isAdded()) {
             int nextPos = mDataAdapter.getNextPos();
-            mDataAdapter.refreshDatas(nextPos);
+            mDataAdapter.refreshData(nextPos);
             lvDatas.setSelection(nextPos);
         }
     }
@@ -211,7 +232,7 @@ public class SclLc2010VdcAudioFoldersFrag extends BaseAudioListFrag {
     public void selectPrev() {
         if (isAdded()) {
             int prevPos = mDataAdapter.getPrevPos();
-            mDataAdapter.refreshDatas(prevPos);
+            mDataAdapter.refreshData(prevPos);
             lvDatas.setSelection(prevPos);
         }
     }
@@ -229,6 +250,35 @@ public class SclLc2010VdcAudioFoldersFrag extends BaseAudioListFrag {
             }
         } catch (Exception e) {
             Log.i(TAG, "playSelectMedia> " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void onMediaScanningStart() {
+        Log.i(TAG, "onMediaScanningStart()");
+        if (isAdded()) {
+            lsb.setVisibility(View.INVISIBLE);
+            ivLoading.setVisibility(View.VISIBLE);
+            mFrameAnimController.start();
+        }
+    }
+
+    @Override
+    public void onMediaScanningEnd() {
+        Log.i(TAG, "onMediaScanningEnd()");
+        if (isAdded()) {
+            lsb.setVisibility(View.VISIBLE);
+            ivLoading.setVisibility(View.INVISIBLE);
+            mFrameAnimController.stop();
+        }
+    }
+
+    @Override
+    public void onMediaScanningCancel() {
+        Log.i(TAG, "onMediaScanningCancel()");
+        if (isAdded()) {
+            mFrameAnimController.stop();
+            ivLoading.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -263,7 +313,7 @@ public class SclLc2010VdcAudioFoldersFrag extends BaseAudioListFrag {
             if (objItem instanceof AudioFilter) {
                 AudioFilter item = (AudioFilter) objItem;
                 mListDatas = item.listMedias;
-                mDataAdapter.refreshDatas(mListDatas);
+                mDataAdapter.refreshData(mListDatas);
 
                 //Click Media
             } else if (objItem instanceof ProAudio) {
@@ -319,7 +369,7 @@ public class SclLc2010VdcAudioFoldersFrag extends BaseAudioListFrag {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         mAttachedActivity.onActivityResult(requestCode, resultCode, data);
-        mDataAdapter.refreshDatas(mAttachedActivity.getLastMediaPath());
+        mDataAdapter.refreshData(mAttachedActivity.getLastMediaPath());
     }
 
     @Override

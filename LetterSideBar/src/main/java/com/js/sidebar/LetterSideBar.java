@@ -141,7 +141,7 @@ public class LetterSideBar extends View {
             fontSizeTouch = 40f;
         }
         // 每个字母绘制x坐标
-        final float xCom = ((float) getMeasuredWidth()) * 9 / 10;
+        final float xCom = getMeasuredWidth() - 40;
 
         //
         @SuppressLint("DrawAllocation")
@@ -150,6 +150,7 @@ public class LetterSideBar extends View {
         paintCom.setTextAlign(Paint.Align.RIGHT);
         paintCom.setTextSize(fontSize);
         paintCom.setTextScaleX(1.6f);
+        paintCom.setStrokeWidth(0.8f);
         paintCom.setStyle(Paint.Style.FILL_AND_STROKE);
 
         @SuppressLint("DrawAllocation")
@@ -158,7 +159,7 @@ public class LetterSideBar extends View {
         paintTouch.setTextAlign(Paint.Align.RIGHT);
         paintTouch.setTextSize(fontSizeTouch);
         paintTouch.setTextScaleX(1.6f);
-        paintTouch.setStrokeWidth(3f);
+        paintTouch.setStrokeWidth(0.8f);
         paintTouch.setStyle(Paint.Style.FILL_AND_STROKE);
 
         for (int idx = 0; idx < loop; idx++) {
@@ -172,17 +173,14 @@ public class LetterSideBar extends View {
             float x = xCom;
             if (mTouchPos != -1) {
                 switch (Math.abs(mTouchPos - idx)) {
-//                    case 3:
-//                        x *= 0.85;
-//                        break;
-                    case 2:
-                        x *= 0.7;
+                    case 0:
+                        x += 30;
                         break;
                     case 1:
-                        x *= 0.55;
+                        x += 20;
                         break;
-                    case 0:
-                        x *= 0.4;
+                    case 2:
+                        x += 10;
                         break;
                 }
             }

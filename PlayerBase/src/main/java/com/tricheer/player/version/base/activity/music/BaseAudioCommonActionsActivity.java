@@ -17,7 +17,7 @@ import java.util.List;
 
 import js.lib.android.media.bean.MediaBase;
 import js.lib.android.media.bean.ProAudio;
-import js.lib.android.media.player.PlayListener;
+import js.lib.android.media.player.PlayDelegate;
 import js.lib.android.media.player.PlayMode;
 import js.lib.android.utils.Logs;
 
@@ -312,16 +312,16 @@ public abstract class BaseAudioCommonActionsActivity extends BasePlayerActivity 
     }
 
     @Override
-    public void setPlayListener(PlayListener l) {
+    public void setPlayListener(PlayDelegate delegate) {
         if (mPlayService != null) {
-            mPlayService.setPlayListener(l);
+            mPlayService.setPlayListener(delegate);
         }
     }
 
     @Override
-    public void removePlayListener(PlayListener l) {
+    public void removePlayListener(PlayDelegate delegate) {
         if (mPlayService != null) {
-            mPlayService.removePlayListener(l);
+            mPlayService.removePlayListener(delegate);
         }
     }
 

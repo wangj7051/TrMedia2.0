@@ -26,8 +26,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import js.lib.android.media.bean.ProVideo;
+import js.lib.android.media.engine.video.MediaLightModeController;
 import js.lib.android.media.player.PlayEnableController;
 import js.lib.android.media.player.PlayMode;
+import js.lib.android.utils.CommonUtil;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.KillTouch;
 import js.lib.android.utils.Logs;
@@ -47,7 +49,7 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
 
     //==========Widget in this Activity==========
     private View vCoverPanel;
-    private View vArrowRight, vArrowLeft;
+    private ImageView vArrowRight, vArrowLeft;
 
     private View vControlPanel;
     private TextView tvFolder, tvPosition, tvName;
@@ -56,11 +58,12 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
     private View layoutWarning;
 
     //==========Variables in this Activity==========
-    private PanelTouchImpl mPanelTouchImpl;
     private PanelTouchResp mPanelTouchResp;
 
     private SeekBarOnChange mSeekBarOnChange;
     private GpsImpl mGpsImpl;
+
+    private MediaLightModeController mLightModeController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,16 +80,19 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
     protected void init() {
         super.init();
 
+        // ----Variables----
+        // Light mode controller
+        mLightModeController = new MediaLightModeController();
+        mLightModeController.addModeListener(new MediaLightModeOnChange());
+
         // ----Widgets----
-        mPanelTouchImpl = new PanelTouchImpl();
+        vArrowLeft = (ImageView) findViewById(R.id.v_arrow_left);
+        vArrowRight = (ImageView) findViewById(R.id.v_arrow_right);
+
+        // Cover panel
+        PanelTouchImpl mPanelTouchImpl = new PanelTouchImpl();
         mPanelTouchImpl.init(this);
         mPanelTouchImpl.addCallback((mPanelTouchResp = new PanelTouchResp()));
-
-        vArrowLeft = findViewById(R.id.v_arrow_left);
-        vArrowLeft.setVisibility(View.INVISIBLE);
-
-        vArrowRight = findViewById(R.id.v_arrow_right);
-        vArrowRight.setVisibility(View.INVISIBLE);
 
         vCoverPanel = findViewById(R.id.vv_cover);
         vCoverPanel.setOnTouchListener(mPanelTouchImpl);
@@ -143,8 +149,10 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
                 Log.i(TAG, "onGotSpeed(" + speed_mPerS + "," + speed_kmPerH + ")");
                 if (speed_kmPerH >= 10) {
                     layoutWarning.setVisibility(View.VISIBLE);
+                    mLightModeController.keepLightOn();
                 } else {
                     layoutWarning.setVisibility(View.GONE);
+                    mLightModeController.resetLightMode();
                 }
             }
         });
@@ -159,8 +167,7 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
         // UI Loaded
         if (isUILoaded()) {
             // Resume Light MODE
-            setLightMode(VideoLightMode.ON);
-            resetLightMode();
+            mLightModeController.resetLightMode();
         }
     }
 
@@ -216,8 +223,8 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
     protected void loadLocalMedias() {
         super.loadLocalMedias();
         // Resume Light MODE
-        setLightMode(VideoLightMode.ON);
-        resetLightMode();
+        mLightModeController.resetLightMode();
+        // Play
         playByIntent();
     }
 
@@ -264,6 +271,7 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
 
         @Override
         public void onActionDown() {
+            cancelRunnable();
             Log.i(TAG, "onActionDown()");
         }
 
@@ -275,7 +283,7 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
         @Override
         public void onSingleTapUp() {
             Log.i(TAG, "onSingleTapUp()");
-            switchLightMode();
+            mLightModeController.switchLightMode();
         }
 
         @Override
@@ -308,21 +316,24 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
             Log.i(TAG, "onAdjustProgress(" + direction + "," + progressDelta + ")");
             switch (direction) {
                 case 0:
-                    vArrowLeft.setVisibility(View.INVISIBLE);
-                    vArrowRight.setVisibility(View.VISIBLE);
+                    Log.i(TAG, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
                     break;
                 case 1:
-                    vArrowLeft.setVisibility(View.VISIBLE);
-                    vArrowRight.setVisibility(View.INVISIBLE);
+                    Log.i(TAG, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
                     break;
             }
         }
 
         @Override
         public void seekProgress(int direction, int progressDelta) {
-            Log.i(TAG, "seekTo(" + direction + "," + progressDelta + ")");
+            Log.i(TAG, "seekProgress(" + direction + "," + progressDelta + ")");
             switch (direction) {
                 case 0:
+                    //
+                    vArrowLeft.setVisibility(View.INVISIBLE);
+                    vArrowRight.setVisibility(View.VISIBLE);
+                    vArrowRight.invalidate();
+                    //
                     int targetProgress = getProgress() + 15 * 1000;
                     if (targetProgress > getDuration()) {
                         targetProgress = getDuration();
@@ -330,6 +341,11 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
                     seekTo(targetProgress);
                     break;
                 case 1:
+                    //
+                    vArrowLeft.setVisibility(View.VISIBLE);
+                    vArrowLeft.invalidate();
+                    vArrowRight.setVisibility(View.INVISIBLE);
+                    //
                     targetProgress = getProgress() - 15 * 1000;
                     if (targetProgress < 0) {
                         targetProgress = 0;
@@ -341,7 +357,7 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
         }
 
         void delayInvisible() {
-            cancelRunnables();
+            cancelRunnable();
             mmHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -351,8 +367,12 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
             }, 1000);
         }
 
-        void cancelRunnables() {
+        void cancelRunnable() {
             mmHandler.removeCallbacksAndMessages(null);
+        }
+
+        void destroy() {
+            cancelRunnable();
         }
     }
 
@@ -363,7 +383,6 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
 
         @Override
         public void onClick(View v) {
-            resetLightMode();
             if (v == ivPlay) {
                 execPlayOrPause();
 
@@ -406,16 +425,6 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
         data.putExtra("flag", flag);
         setResult(0, data);
         finish();
-    }
-
-    @Override
-    protected void setLightMode(int lightMode) {
-        super.setLightMode(lightMode);
-        if (isLightOn()) {
-            vControlPanel.setVisibility(View.VISIBLE);
-        } else if (lightMode == VideoLightMode.OFF) {
-            vControlPanel.setVisibility(View.GONE);
-        }
     }
 
     @Override
@@ -516,6 +525,13 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
         setCurrPlayer(false, this);
 
         //
+        if (mLightModeController != null) {
+            mLightModeController.destroy();
+            mLightModeController = null;
+            CommonUtil.setNavigationBar(this, 1);
+        }
+
+        //
         if (mGpsImpl != null) {
             mGpsImpl.destroy();
             mGpsImpl = null;
@@ -523,7 +539,7 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
 
         //
         if (mPanelTouchResp != null) {
-            mPanelTouchResp.cancelRunnables();
+            mPanelTouchResp.destroy();
             mPanelTouchResp = null;
         }
 
@@ -577,14 +593,31 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     Logs.i(TAG, "seekBar -> SeekOnTouch -> ACTION_DOWN");
-                    setLightMode(VideoLightMode.ON);
+                    mLightModeController.keepLightOn();
                     break;
                 case MotionEvent.ACTION_UP:
                     Logs.i(TAG, "seekBar -> SeekOnTouch -> ACTION_UP");
-                    resetLightMode();
+                    mLightModeController.resetLightMode();
                     break;
             }
             return false;
+        }
+    }
+
+    /**
+     * {@link js.lib.android.media.engine.video.MediaLightModeController.MediaLightModeListener} implement
+     */
+    private class MediaLightModeOnChange implements MediaLightModeController.MediaLightModeListener {
+        @Override
+        public void onLightOn() {
+            CommonUtil.setNavigationBar(SclLc2010VdcVideoPlayerActivity.this, 1);
+            vControlPanel.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        public void onLightOff() {
+            CommonUtil.setNavigationBar(SclLc2010VdcVideoPlayerActivity.this, 0);
+            vControlPanel.setVisibility(View.GONE);
         }
     }
 }

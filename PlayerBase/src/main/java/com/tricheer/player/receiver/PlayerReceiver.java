@@ -8,22 +8,19 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.tri.lib.receiver.ActionEnum;
+import com.tri.lib.utils.TrAudioPreferUtils;
 import com.tri.lib.utils.TrVideoPreferUtils;
 import com.tricheer.player.App;
-import com.tricheer.player.MusicPlayerActivity;
-import com.tricheer.player.VideoPlayerActivity;
 import com.tricheer.player.engine.PlayerAppManager;
 import com.tricheer.player.engine.PlayerConsts;
 import com.tricheer.player.engine.PlayerConsts.PlayerOpenMethod;
 import com.tricheer.player.engine.PlayerType;
+import com.tricheer.player.service.MediaScanService;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
-import js.lib.android.media.bean.ProAudio;
-import js.lib.android.media.bean.ProVideo;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.Logs;
 
@@ -34,7 +31,7 @@ import js.lib.android.utils.Logs;
  */
 public class PlayerReceiver extends BroadcastReceiver {
     // LOG TAG
-    private final String TAG = "PlayerReceiver";
+    private static final String TAG = "PlayerReceiver";
 
     /**
      * Context
@@ -66,22 +63,6 @@ public class PlayerReceiver extends BroadcastReceiver {
          *             <p>(2)"index" - int - The position of target media url in list</p>
          */
         void onPlayFromFolder(Intent data);
-
-        /**
-         * Notify Scan Medias
-         *
-         * @param flag        : Scan Flag
-         * @param listPrgrams : Medias list
-         */
-        void onNotifyScanAudios(MediaScanReceiver.MediaScanActives flag, List<ProAudio> listPrgrams, Set<String> allSdMountedPaths);
-
-        /**
-         * Notify Scan Medias
-         *
-         * @param flag        : Scan Flag
-         * @param listPrgrams : Medias list
-         */
-        void onNotifyScanVideos(MediaScanReceiver.MediaScanActives flag, List<ProVideo> listPrgrams, Set<String> allSdMountedPaths);
     }
 
     public static void init(Context context) {
@@ -108,6 +89,7 @@ public class PlayerReceiver extends BroadcastReceiver {
                 // ### System broadcast ###
                 case BOOT_COMPLETED:
                     TrVideoPreferUtils.getVideoWarningFlag(true, 1);
+                    startMediaScanService(context);
                     break;
 
                 // ### Open Logs ###
@@ -120,16 +102,10 @@ public class PlayerReceiver extends BroadcastReceiver {
                     testSendVideoList();
                     break;
                 case TEST_OPEN_VIDEO:
-                    Intent videoI = new Intent(context, VideoPlayerActivity.class);
-                    videoI.putExtra("IS_TEST", true);
-                    videoI.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(videoI);
+                    TrVideoPreferUtils.getNoUDiskToastFlag(true);
                     break;
                 case TEST_OPEN_AUDIO:
-                    Intent audioI = new Intent(context, MusicPlayerActivity.class);
-                    audioI.putExtra("IS_TEST", true);
-                    audioI.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(audioI);
+                    TrAudioPreferUtils.getNoUDiskToastFlag(true);
                     break;
                 case TEST_EXIT_PLAYER:
                     PlayerAppManager.exitCurrPlayer();
@@ -179,6 +155,18 @@ public class PlayerReceiver extends BroadcastReceiver {
         } else {
             App.openVideoPlayer(mContext.get(), "", null);
             notifyPlayFromFolder(currPlayer, intent);
+        }
+    }
+
+    /**
+     * Start media scan service
+     */
+    private void startMediaScanService(Context context) {
+        if (context != null) {
+            Log.i(TAG, "startMediaScanService(Context)");
+            Intent intentMediaScanService = new Intent(context, MediaScanService.class);
+            intentMediaScanService.putExtra("START_BY", "PLAYER_RECEIVER");
+            context.startService(intentMediaScanService);
         }
     }
 

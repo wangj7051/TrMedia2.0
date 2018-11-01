@@ -17,7 +17,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import js.lib.android.media.engine.MediaUtils;
-import js.lib.android.media.player.PlayListener;
+import js.lib.android.media.player.PlayDelegate;
 import js.lib.android.media.player.PlayState;
 import js.lib.android.utils.Logs;
 import js.lib.utils.date.DateFormatUtil;
@@ -62,7 +62,8 @@ public class IVideoPlayer extends SurfaceView {
     private MediaPlayer.OnErrorListener mErrorListener;
     private MediaPlayer.OnSeekCompleteListener mSeekCompleteListener;
 
-    private PlayListener mPlayerListener;
+    // Play listener
+    private PlayDelegate mPlayDelegate;
 
     // 进度计时器
     private ProgressTimer mProgressTimer;
@@ -521,8 +522,8 @@ public class IVideoPlayer extends SurfaceView {
         }
     }
 
-    public void setPlayStateListener(PlayListener l) {
-        this.mPlayerListener = l;
+    public void setPlayStateListener(PlayDelegate l) {
+        this.mPlayDelegate = l;
         setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
 
             @Override
@@ -560,8 +561,8 @@ public class IVideoPlayer extends SurfaceView {
 
             @Override
             public void onProgressChange(String mediaUrl, int progress, int duration) {
-                if (mPlayerListener != null) {
-                    mPlayerListener.onProgressChanged(mediaUrl, progress, duration);
+                if (mPlayDelegate != null) {
+                    mPlayDelegate.onProgressChanged(mediaUrl, progress, duration);
                 }
             }
         });
@@ -571,8 +572,8 @@ public class IVideoPlayer extends SurfaceView {
      * 通知播放器状态
      */
     private void notifyPlayState(PlayState playState) {
-        if (mPlayerListener != null) {
-            mPlayerListener.onPlayStateChanged(playState);
+        if (mPlayDelegate != null) {
+            mPlayDelegate.onPlayStateChanged(playState);
         }
     }
 }

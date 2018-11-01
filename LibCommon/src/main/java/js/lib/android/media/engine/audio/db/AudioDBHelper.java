@@ -28,8 +28,7 @@ public class AudioDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(AudioTables.MusicCacheInfo.SQL_CREATE);
-        db.execSQL(AudioTables.MusicOnlineSearchInfo.SQL_CREATE);
+        db.execSQL(AudioTables.AudioCacheInfo.SQL_CREATE);
     }
 
     @Override

@@ -3,6 +3,7 @@
     
     <!-- Black -->
     <color name="black">#000000</color>
+    <color name="color_black_005">#0d000000</color>
     <color name="color_black_010">#20000000</color>
     <color name="color_black_020">#33000000</color>
     <color name="color_black_030">#4c000000</color>
@@ -16,6 +17,7 @@
     
     <!-- White -->
     <color name="white">#FFFFFF</color>
+    <color name="color_white_005">#0dffffff</color>
     <color name="color_white_010">#20ffffff</color>
     <color name="color_white_020">#33ffffff</color>
     <color name="color_white_030">#4cffffff</color>

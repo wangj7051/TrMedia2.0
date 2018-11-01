@@ -1,6 +1,6 @@
 package js.lib.android.media.player.audio;
 
-import js.lib.android.media.player.PlayListener;
+import js.lib.android.media.player.PlayDelegate;
 
 /**
  * Define Player actions
@@ -62,7 +62,7 @@ public interface IAudioPlayer {
     String getMediaPath();
 
     /**
-     * Set Player Listener
+     * Set Player delegate
      */
-    void setPlayerListener(PlayListener l);
+    void setPlayerDelegate(PlayDelegate l);
 }

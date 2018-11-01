@@ -8,18 +8,17 @@ import com.tri.lib.utils.TrAudioPreferUtils;
 import com.tri.lib.utils.TrVideoPreferUtils;
 import com.tricheer.player.engine.PlayerConsts.PlayerOpenMethod;
 import com.tricheer.player.engine.VersionController;
-import com.tricheer.player.receiver.MediaScanReceiver;
 import com.tricheer.player.receiver.PlayerReceiver;
 import com.tricheer.player.utils.PlayerFileUtils;
 
 import java.util.List;
 
+import js.lib.android.media.engine.audio.db.AudioDBManager;
 import js.lib.android.media.engine.audio.utils.AudioInfo;
 import js.lib.android.media.engine.audio.utils.AudioUtils;
-import js.lib.android.media.engine.audio.db.AudioDBManager;
+import js.lib.android.media.engine.video.db.VideoDBManager;
 import js.lib.android.media.engine.video.utils.VideoInfo;
 import js.lib.android.media.engine.video.utils.VideoUtils;
-import js.lib.android.media.engine.video.db.VideoDBManager;
 import js.lib.android.utils.AppCrashHandler;
 import js.lib.android.utils.AppUtil;
 import js.lib.android.utils.ImageLoaderUtils;
@@ -86,9 +85,6 @@ public class App extends Application {
         // 初始化媒体信息 - 视频
         VideoInfo.setSupportMedias(VersionController.isSupportAllMedias());
         VideoUtils.init(this, listSupportPaths, listBlacklistPaths);
-
-        // 初始化媒体扫描
-        MediaScanReceiver.init(this);
     }
 
     /**

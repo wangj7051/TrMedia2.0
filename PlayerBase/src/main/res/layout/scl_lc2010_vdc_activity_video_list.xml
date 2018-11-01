@@ -3,6 +3,11 @@
     android:layout_height="match_parent"
     android:background="@drawable/bg_main">
 
+    <TextView
+        android:id="@+id/v_rubbish_focus"
+        android:layout_width="1dp"
+        android:layout_height="1dp" />
+
     <LinearLayout
         android:id="@+id/layout_top"
         android:layout_width="match_parent"

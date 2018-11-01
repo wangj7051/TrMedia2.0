@@ -8,7 +8,7 @@ import android.util.Log;
 import java.util.HashSet;
 import java.util.Set;
 
-import js.lib.android.media.player.PlayListener;
+import js.lib.android.media.player.PlayDelegate;
 import js.lib.android.media.player.PlayState;
 import js.lib.android.media.player.audio.utils.AudioPreferUtils;
 
@@ -18,7 +18,7 @@ import js.lib.android.media.player.audio.utils.AudioPreferUtils;
  *
  * @author Jun.Wang
  */
-public abstract class BaseAudioService extends BaseAudioFocusService implements PlayListener {
+public abstract class BaseAudioService extends BaseAudioFocusService implements PlayDelegate {
     // TAG
     private final String TAG = "BaseAudioService";
 
@@ -30,7 +30,7 @@ public abstract class BaseAudioService extends BaseAudioFocusService implements 
     /**
      * Player State Listener out of service
      */
-    private Set<PlayListener> mSetPlayListeners = new HashSet<>();
+    private Set<PlayDelegate> mSetPlayDelegates = new HashSet<>();
 
     @Override
     public void onCreate() {
@@ -45,18 +45,18 @@ public abstract class BaseAudioService extends BaseAudioFocusService implements 
     }
 
     @Override
-    public void setPlayListener(PlayListener l) {
+    public void setPlayListener(PlayDelegate l) {
         if (l != null) {
             setAudioFocusListener(l);
-            mSetPlayListeners.add(l);
+            mSetPlayDelegates.add(l);
         }
     }
 
     @Override
-    public void removePlayListener(PlayListener l) {
+    public void removePlayListener(PlayDelegate l) {
         if (l != null) {
             removeAudioFocusListener(l);
-            mSetPlayListeners.remove(l);
+            mSetPlayDelegates.remove(l);
         }
     }
 
@@ -66,7 +66,7 @@ public abstract class BaseAudioService extends BaseAudioFocusService implements 
     }
 
     protected void notifyPlayState(PlayState playState) {
-        for (PlayListener l : mSetPlayListeners) {
+        for (PlayDelegate l : mSetPlayDelegates) {
             if (l != null) {
                 l.onPlayStateChanged(playState);
             }
@@ -75,7 +75,7 @@ public abstract class BaseAudioService extends BaseAudioFocusService implements 
 
     @Override
     public void onProgressChanged(String mediaPath, int progress, int duration) {
-        for (PlayListener l : mSetPlayListeners) {
+        for (PlayDelegate l : mSetPlayDelegates) {
             if (l != null) {
                 l.onProgressChanged(mediaPath, progress, duration);
             }
@@ -84,7 +84,7 @@ public abstract class BaseAudioService extends BaseAudioFocusService implements 
 
     @Override
     public void onPlayModeChange() {
-        for (PlayListener l : mSetPlayListeners) {
+        for (PlayDelegate l : mSetPlayDelegates) {
             if (l != null) {
                 l.onPlayModeChange();
             }
@@ -126,7 +126,7 @@ public abstract class BaseAudioService extends BaseAudioFocusService implements 
     @Override
     public void onDestroy() {
         removeAudioFocusListener(this);
-        mSetPlayListeners.clear();
+        mSetPlayDelegates.clear();
         clearAllRunables();
         super.onDestroy();
     }

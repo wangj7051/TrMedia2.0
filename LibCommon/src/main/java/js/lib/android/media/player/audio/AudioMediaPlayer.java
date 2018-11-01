@@ -9,9 +9,9 @@ import android.os.Handler;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import js.lib.android.media.player.PlayState;
 import js.lib.android.media.engine.MediaUtils;
-import js.lib.android.media.player.PlayListener;
+import js.lib.android.media.player.PlayDelegate;
+import js.lib.android.media.player.PlayState;
 import js.lib.android.utils.CommonUtil;
 import js.lib.android.utils.Logs;
 
@@ -59,15 +59,15 @@ public class AudioMediaPlayer implements IAudioPlayer {
     /**
      * Player Listener
      */
-    private PlayListener mPlayerListener;
+    private PlayDelegate mPlayDelegate;
 
     /**
      * Create Music Player - MediaPlayer
      */
-    public AudioMediaPlayer(Context cxt, String mediaPath, PlayListener l) {
+    public AudioMediaPlayer(Context cxt, String mediaPath, PlayDelegate l) {
         this.mContext = cxt;
         this.mMediaPath = mediaPath;
-        this.mPlayerListener = l;
+        this.mPlayDelegate = l;
         createMediaPlayer(cxt, mediaPath);
     }
 
@@ -274,8 +274,8 @@ public class AudioMediaPlayer implements IAudioPlayer {
     }
 
     @Override
-    public void setPlayerListener(PlayListener l) {
-        this.mPlayerListener = l;
+    public void setPlayerDelegate(PlayDelegate l) {
+        this.mPlayDelegate = l;
     }
 
     /**
@@ -309,8 +309,8 @@ public class AudioMediaPlayer implements IAudioPlayer {
      * Notify Play state
      */
     private void notifyPlayState(PlayState playState) {
-        if (mPlayerListener != null) {
-            mPlayerListener.onPlayStateChanged(playState);
+        if (mPlayDelegate != null) {
+            mPlayDelegate.onPlayStateChanged(playState);
         }
     }
 
@@ -323,8 +323,8 @@ public class AudioMediaPlayer implements IAudioPlayer {
      * @param duration - Media duration
      */
     private void notifyProgress(String path, int time, int duration) {
-        if (mPlayerListener != null) {
-            mPlayerListener.onProgressChanged(path, time, duration);
+        if (mPlayDelegate != null) {
+            mPlayDelegate.onProgressChanged(path, time, duration);
         }
     }
 }

@@ -17,6 +17,7 @@ import android.widget.ListView;
 
 import com.js.sidebar.LetterSideBar;
 import com.tricheer.player.R;
+import com.tricheer.player.receiver.MediaScanReceiver;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.activity.SclLc2010VdcAudioListActivity;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.adapter.BaseAudioAdapter;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.adapter.SclLc2010VdcAudioNamesAdapter;
@@ -26,6 +27,7 @@ import java.util.List;
 import js.lib.android.media.bean.ProAudio;
 import js.lib.android.media.engine.audio.db.AudioDBManager;
 import js.lib.android.utils.EmptyUtil;
+import js.lib.android.utils.FrameAnimationController;
 import js.lib.android.utils.Logs;
 
 /**
@@ -41,6 +43,7 @@ public class SclLc2010VdcAudioNamesFrag extends BaseAudioListFrag {
     //==========Widgets in this Fragment==========
     private View contentV;
     private ListView lvData;
+    private ImageView ivLoading;
     private LetterSideBar lsb;
 
     //==========Variables in this Fragment==========
@@ -63,6 +66,9 @@ public class SclLc2010VdcAudioNamesFrag extends BaseAudioListFrag {
      * Data adapter
      */
     private SclLc2010VdcAudioNamesAdapter mDataAdapter;
+
+    // ImageView frame animation control
+    private FrameAnimationController mFrameAnimController;
 
     @Override
     public void onAttach(Activity activity) {
@@ -89,6 +95,15 @@ public class SclLc2010VdcAudioNamesFrag extends BaseAudioListFrag {
         lsb = (LetterSideBar) contentV.findViewById(R.id.lsb);
         lsb.refreshLetters(null);
         lsb.addCallback(new LetterSideBarCallback());
+
+        //
+        ivLoading = (ImageView) contentV.findViewById(R.id.iv_loading);
+        mFrameAnimController = new FrameAnimationController();
+        mFrameAnimController.setIv(ivLoading);
+        mFrameAnimController.setFrameImgResArr(LOADING_RES_ID_ARR);
+        if (MediaScanReceiver.isMediaScanning()) {
+            onMediaScanningStart();
+        }
 
         //ListView
         mDataAdapter = new SclLc2010VdcAudioNamesAdapter(mAttachedActivity, 0);
@@ -120,6 +135,7 @@ public class SclLc2010VdcAudioNamesFrag extends BaseAudioListFrag {
         }
     }
 
+
     private void delayPlay(final String targetMediaUrl) {
         if (isAdded()) {
             if (mAttachedActivity.isPlaying()) {
@@ -137,6 +153,13 @@ public class SclLc2010VdcAudioNamesFrag extends BaseAudioListFrag {
                     }
                 }, 500);
             }
+        }
+    }
+
+    @Override
+    public void refreshDataList() {
+        if (isAdded()) {
+            mDataAdapter.refreshData();
         }
     }
 
@@ -178,6 +201,35 @@ public class SclLc2010VdcAudioNamesFrag extends BaseAudioListFrag {
     public void playSelected(String mediaUrl) {
         if (isAdded() && mAttachedActivity != null) {
             mAttachedActivity.openPlayerActivity(mediaUrl, mListDatas);
+        }
+    }
+
+    @Override
+    public void onMediaScanningStart() {
+        Log.i(TAG, "onMediaScanningStart()");
+        if (isAdded()) {
+            lsb.setVisibility(View.INVISIBLE);
+            ivLoading.setVisibility(View.VISIBLE);
+            mFrameAnimController.start();
+        }
+    }
+
+    @Override
+    public void onMediaScanningEnd() {
+        Log.i(TAG, "onMediaScanningEnd()");
+        if (isAdded()) {
+            lsb.setVisibility(View.VISIBLE);
+            ivLoading.setVisibility(View.INVISIBLE);
+            mFrameAnimController.stop();
+        }
+    }
+
+    @Override
+    public void onMediaScanningCancel() {
+        Log.i(TAG, "onMediaScanningCancel()");
+        if (isAdded()) {
+            mFrameAnimController.stop();
+            ivLoading.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -272,5 +324,14 @@ public class SclLc2010VdcAudioNamesFrag extends BaseAudioListFrag {
     @Override
     public int onBackPressed() {
         return 0;
+    }
+
+    @Override
+    public void onDestroy() {
+        if (mFrameAnimController != null) {
+            mFrameAnimController.destroy();
+            mFrameAnimController = null;
+        }
+        super.onDestroy();
     }
 }

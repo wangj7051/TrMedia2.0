@@ -7,8 +7,8 @@ import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
 
+import js.lib.android.media.player.PlayDelegate;
 import js.lib.android.media.player.PlayState;
-import js.lib.android.media.player.PlayListener;
 import js.lib.android.utils.Logs;
 
 /**
@@ -38,15 +38,15 @@ public class AudioVlcPlayer implements IAudioPlayer {
     /**
      * Player Listener
      */
-    private PlayListener mPlayerListener;
+    private PlayDelegate mPlayDelegate;
 
     /**
      * Create Music Player - MediaPlayer
      */
-    public AudioVlcPlayer(Context cxt, String mediaPath, PlayListener l) {
+    public AudioVlcPlayer(Context cxt, String mediaPath, PlayDelegate l) {
         this.mContext = cxt;
         this.mMediaPath = mediaPath;
-        this.mPlayerListener = l;
+        this.mPlayDelegate = l;
         createMediaPlayer(cxt, mediaPath);
     }
 
@@ -243,16 +243,16 @@ public class AudioVlcPlayer implements IAudioPlayer {
     }
 
     @Override
-    public void setPlayerListener(PlayListener l) {
-        this.mPlayerListener = l;
+    public void setPlayerDelegate(PlayDelegate l) {
+        this.mPlayDelegate = l;
     }
 
     /**
      * Notify Play state
      */
     private void notifyPlayState(PlayState playState) {
-        if (mPlayerListener != null) {
-            mPlayerListener.onPlayStateChanged(playState);
+        if (mPlayDelegate != null) {
+            mPlayDelegate.onPlayStateChanged(playState);
         }
     }
 
@@ -264,8 +264,8 @@ public class AudioVlcPlayer implements IAudioPlayer {
      * @param duration - Media duration
      */
     private void notifyProgress(String path, int time, int duration) {
-        if (mPlayerListener != null) {
-            mPlayerListener.onProgressChanged(path, time, duration);
+        if (mPlayDelegate != null) {
+            mPlayDelegate.onProgressChanged(path, time, duration);
         }
     }
 }

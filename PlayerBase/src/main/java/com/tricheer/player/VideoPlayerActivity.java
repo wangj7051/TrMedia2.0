@@ -1,8 +1,11 @@
 package com.tricheer.player;
 
 import android.os.Bundle;
+import android.util.Log;
 
+import com.tri.lib.utils.TrVideoPreferUtils;
 import com.tricheer.player.engine.PlayerAppManager;
+import com.tricheer.player.utils.PlayerFileUtils;
 import com.tricheer.player.version.base.activity.BaseUsbLogicActivity;
 
 import js.lib.android.utils.Logs;
@@ -24,17 +27,17 @@ public class VideoPlayerActivity extends BaseUsbLogicActivity {
 
     private void init() {
         Logs.i(TAG, "^^ init() ^^");
-//        if (isTest() || PlayerFileUtils.isHasSupportStorage()) {
-        openPlayer();
-//        } else {
-//            toastMsg();
-//        }
+        Log.i(TAG, "isHave: " + PlayerFileUtils.isHasSupportStorage());
+        if (isTest() || PlayerFileUtils.isHasSupportStorage()) {
+            openPlayer();
+        } else {
+            toastMsg();
+        }
     }
 
     private boolean isTest() {
-        boolean isTest = getIntent().getBooleanExtra("IS_TEST", false);
-        getIntent().removeExtra("IS_TEST");
-        return isTest;
+        int flag = TrVideoPreferUtils.getNoUDiskToastFlag(false);
+        return (flag == 0);
     }
 
     private void openPlayer() {

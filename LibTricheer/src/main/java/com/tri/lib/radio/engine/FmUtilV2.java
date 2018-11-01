@@ -369,7 +369,7 @@ public class FmUtilV2 implements FmDelegate {
     public int getMinFreq(BandCategoryEnum band) {
         switch (band) {
             case FM:
-                return 7600;
+                return 8750;
             case AM:
                 return 522;
         }

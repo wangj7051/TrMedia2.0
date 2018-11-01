@@ -131,13 +131,20 @@ public class SclLc2010VdcAudioCollectsFrag extends BaseAudioListFrag {
         }
 
         layoutNoneToast.setVisibility(EmptyUtil.isEmpty(mListMedias) ? View.VISIBLE : View.INVISIBLE);
-        mDataAdapter.refreshDatas(mListMedias, targetMediaUrl);
+        mDataAdapter.refreshData(mListMedias, targetMediaUrl);
+    }
+
+    @Override
+    public void refreshDataList() {
+        if (isAdded()) {
+            mDataAdapter.refreshData();
+        }
     }
 
     @Override
     public void refreshPlaying(String targetMediaUrl) {
         if (isAdded()) {
-            mDataAdapter.refreshDatas(targetMediaUrl);
+            mDataAdapter.refreshData(targetMediaUrl);
         }
     }
 
@@ -145,7 +152,7 @@ public class SclLc2010VdcAudioCollectsFrag extends BaseAudioListFrag {
     public void selectNext() {
         if (isAdded()) {
             int nextPos = mDataAdapter.getNextPos();
-            mDataAdapter.refreshDatas(nextPos);
+            mDataAdapter.refreshData(nextPos);
             lvDatas.setSelection(nextPos);
         }
     }
@@ -154,7 +161,7 @@ public class SclLc2010VdcAudioCollectsFrag extends BaseAudioListFrag {
     public void selectPrev() {
         if (isAdded()) {
             int prevPos = mDataAdapter.getPrevPos();
-            mDataAdapter.refreshDatas(prevPos);
+            mDataAdapter.refreshData(prevPos);
             lvDatas.setSelection(prevPos);
         }
     }
@@ -169,6 +176,21 @@ public class SclLc2010VdcAudioCollectsFrag extends BaseAudioListFrag {
         if (isAdded() && mAttachedActivity != null) {
             mAttachedActivity.openPlayerActivity(mediaUrl, mListMedias);
         }
+    }
+
+    @Override
+    public void onMediaScanningStart() {
+        Log.i(TAG, "onMediaScanningStart()");
+    }
+
+    @Override
+    public void onMediaScanningEnd() {
+        Log.i(TAG, "onMediaScanningEnd()");
+    }
+
+    @Override
+    public void onMediaScanningCancel() {
+        Log.i(TAG, "onMediaScanningCancel()");
     }
 
     /**
@@ -234,7 +256,7 @@ public class SclLc2010VdcAudioCollectsFrag extends BaseAudioListFrag {
                         break;
                     }
                 }
-                mDataAdapter.refreshDatas();
+                mDataAdapter.refreshData();
                 layoutNoneToast.setVisibility(EmptyUtil.isEmpty(mListMedias) ? View.VISIBLE : View.INVISIBLE);
             }
         }
@@ -244,7 +266,7 @@ public class SclLc2010VdcAudioCollectsFrag extends BaseAudioListFrag {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         mAttachedActivity.onActivityResult(requestCode, resultCode, data);
-        mDataAdapter.refreshDatas(mAttachedActivity.getLastMediaPath());
+        mDataAdapter.refreshData(mAttachedActivity.getLastMediaPath());
     }
 
     @Override

@@ -25,8 +25,8 @@
             android:layout_width="2dp"
             android:layout_height="match_parent"
             android:contentDescription="@string/no_img"
-            android:paddingBottom="10dp"
             android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:src="@color/video_warning_separate_line" />
 
         <TextView
@@ -43,8 +43,8 @@
             android:layout_width="2dp"
             android:layout_height="match_parent"
             android:contentDescription="@string/no_img"
-            android:paddingBottom="10dp"
             android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:src="@color/video_warning_separate_line" />
 
         <TextView
@@ -71,6 +71,13 @@
         android:layout_above="@id/v_separate_h"
         android:gravity="center"
         android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:contentDescription="@string/no_img"
+            android:scaleType="fitXY"
+            android:src="@drawable/icon_warning" />
 
         <TextView
             android:layout_width="wrap_content"

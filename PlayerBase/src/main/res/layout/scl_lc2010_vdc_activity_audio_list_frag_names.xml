@@ -7,8 +7,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginStart="@dimen/audio_left_layout_w"
-        android:background="@color/color_black_020">
+        android:layout_marginStart="@dimen/audio_lv_margin_start">
 
         <ListView
             android:id="@+id/lv_datas"
@@ -29,5 +28,26 @@
         android:layout_height="match_parent"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp" />
+
+    <RelativeLayout
+        android:layout_width="@dimen/audio_lv_margin_start"
+        android:layout_height="match_parent"
+        android:background="@color/color_white_005"
+        android:focusable="false"
+        android:focusableInTouchMode="false">
+
+        <ImageView
+            android:id="@+id/iv_loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:clickable="false"
+            android:contentDescription="@string/no_img"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:src="@drawable/loading_list0001"
+            android:visibility="invisible" />
+    </RelativeLayout>
 
 </RelativeLayout>

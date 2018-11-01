@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -16,14 +17,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.net.URLEncoder;
 import java.util.List;
-import java.util.Set;
 
 import js.lib.android.media.bean.MediaBase;
-import js.lib.android.media.bean.ProAudio;
-import js.lib.android.media.bean.ProVideo;
 import js.lib.android.media.bean.Program;
 import js.lib.android.media.bean.ProgramPinyinComparator;
-import js.lib.android.media.player.PlayListener;
+import js.lib.android.media.player.PlayDelegate;
 import js.lib.android.media.player.PlayMode;
 import js.lib.android.media.player.PlayState;
 import js.lib.android.utils.Logs;
@@ -33,7 +31,7 @@ import js.lib.android.utils.Logs;
  *
  * @author Jun.Wang
  */
-public abstract class BasePlayerActivity extends BaseFragActivity implements PlayerReceiverListener, PlayListener {
+public abstract class BasePlayerActivity extends BaseFragActivity implements PlayerReceiverListener, PlayDelegate {
     // TAG
     private static final String TAG = "BasePlayerActivity";
 
@@ -123,12 +121,15 @@ public abstract class BasePlayerActivity extends BaseFragActivity implements Pla
 
                 //
                 File tmpFile = new File(filePath + "_TEMP");
-                tmpFile.createNewFile();
-                fos = new FileOutputStream(tmpFile);
-                bmToStore.compress(Bitmap.CompressFormat.PNG, 100, fos);
+                if (tmpFile.createNewFile()) {
+                    fos = new FileOutputStream(tmpFile);
+                    bmToStore.compress(Bitmap.CompressFormat.PNG, 100, fos);
+                }
 
                 //
-                tmpFile.renameTo(targetF);
+                if (tmpFile.renameTo(targetF)) {
+                    Log.i(TAG, "--- storeBitmap END ---");
+                }
             } catch (Throwable e) {
                 Logs.printStackTrace(TAG + "storeBitmap()", e);
             } finally {
@@ -151,18 +152,7 @@ public abstract class BasePlayerActivity extends BaseFragActivity implements Pla
 
     protected void notifyScanMedias(boolean isLoading) {
         Intent data = new Intent(MediaScanReceiver.ACTION_START_LIST);
-        data.putExtra(MediaScanReceiver.LOADING_FLAG, isLoading);
         sendBroadcast(new Intent(data));
-    }
-
-    // {@link PlayerReceiverListener} Implements Method
-    @Override
-    public void onNotifyScanAudios(MediaScanReceiver.MediaScanActives flag, List<ProAudio> listPrgrams, Set<String> allSdMountedPaths) {
-    }
-
-    // {@link PlayerReceiverListener} Implements Method
-    @Override
-    public void onNotifyScanVideos(MediaScanReceiver.MediaScanActives flag, List<ProVideo> listPrgrams, Set<String> allSdMountedPaths) {
     }
 
     // {@link IPlayerListener} Implements Method
@@ -354,11 +344,11 @@ public abstract class BasePlayerActivity extends BaseFragActivity implements Pla
 
     // {@link PlayerActionsListener} Implements Method
     @Override
-    public void setPlayListener(PlayListener l) {
+    public void setPlayListener(PlayDelegate l) {
     }
 
     // {@link PlayerActionsListener} Implements Method
     @Override
-    public void removePlayListener(PlayListener l) {
+    public void removePlayListener(PlayDelegate l) {
     }
 }

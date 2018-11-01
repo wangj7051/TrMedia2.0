@@ -82,7 +82,7 @@
                     android:layout_width="@dimen/audio_player_seekbar_len"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
-                    android:background="@drawable/bg_corners_black"
+                    android:background="@drawable/seekbar_bg"
                     android:padding="5dp"
                     tools:ignore="UselessParent">
 
@@ -122,28 +122,15 @@
             </RelativeLayout>
         </LinearLayout>
 
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <ImageView
+            android:id="@+id/iv_music_cover"
+            android:layout_width="@dimen/audio_player_cover_w"
+            android:layout_height="@dimen/audio_player_cover_h"
             android:layout_gravity="center_vertical"
-            android:layout_marginStart="50dp">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:contentDescription="@string/no_img"
-                android:padding="2dp"
-                android:src="@drawable/bg_cover_border" />
-
-            <ImageView
-                android:id="@+id/iv_music_cover"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:contentDescription="@string/no_img"
-                android:src="@drawable/bg_cover_music_udisk" />
-        </RelativeLayout>
+            android:background="@drawable/bg_cover_border"
+            android:contentDescription="@string/no_img"
+            android:padding="5dp"
+            android:src="@drawable/bg_cover_music_udisk" />
     </LinearLayout>
 
     <ImageView

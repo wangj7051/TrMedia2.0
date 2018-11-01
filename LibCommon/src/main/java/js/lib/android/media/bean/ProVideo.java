@@ -1,10 +1,16 @@
 package js.lib.android.media.bean;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.media.MediaMetadataRetriever;
+import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.File;
 
 import js.lib.android.media.engine.video.utils.VideoInfo;
+import js.lib.android.utils.CommonUtil;
 import js.lib.android.utils.Logs;
 import js.lib.utils.CharacterParser;
 
@@ -43,18 +49,59 @@ public class ProVideo extends Program {
     /**
      * Construct From Media File
      */
-    public ProVideo(String mediaUrl, String title) {
-        this.title = title;
-        this.titlePinYin = CharacterParser.getPingYin(title);
+    public ProVideo(Context context, String mediaPath) {
+        MediaMetadataRetriever mmr = null;
+        try {
+            //
+            File file = new File(mediaPath);
+            if (!file.exists()) {
+                return;
+            }
 
-        //
-        this.mediaUrl = mediaUrl;
-        File file = new File(mediaUrl);
-        File parentFile = file.getParentFile();
-        if (parentFile != null) {
-            this.mediaDirectory = parentFile.getName();
-            this.mediaDirectoryPinYin = CharacterParser.getPingYin(this.mediaDirectory);
+            //
+            mmr = new MediaMetadataRetriever();
+            mmr.setDataSource(context, Uri.parse(mediaPath));
+
+            //
+            title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+            if (title == null) {
+                String fName = file.getName();
+                if (!TextUtils.isEmpty(fName)) {
+                    int lastIdxOfDot = fName.lastIndexOf(".");
+                    if (lastIdxOfDot != -1) {
+                        title = fName.substring(0, lastIdxOfDot);
+                    }
+                }
+            }
+            titlePinYin = CharacterParser.getPingYin(title);
+
+            //
+            mediaUrl = mediaPath;
+            File parentFile = file.getParentFile();
+            if (parentFile != null) {
+                this.mediaDirectory = parentFile.getName();
+                this.mediaDirectoryPinYin = CharacterParser.getPingYin(this.mediaDirectory);
+            }
+
+            //
+            String strDuration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+            if (TextUtils.isDigitsOnly(strDuration)) {
+                duration = Integer.parseInt(strDuration);
+            }
+        } catch (Exception e) {
+            Logs.debugI(TAG, "Parse video failure....!!!!");
+        } finally {
+            if (mmr != null) {
+                mmr.release();
+            }
         }
+    }
+
+    /**
+     * Get video thumbnail
+     */
+    public Bitmap getThumbNail(String mediaPath, int width, int height, int kind) {
+        return CommonUtil.getVideoThumbnail(mediaPath, width, height, kind);
     }
 
     /**

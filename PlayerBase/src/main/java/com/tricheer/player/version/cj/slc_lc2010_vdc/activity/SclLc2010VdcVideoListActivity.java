@@ -2,7 +2,6 @@ package com.tricheer.player.version.cj.slc_lc2010_vdc.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -14,20 +13,18 @@ import com.tri.lib.utils.TrVideoPreferUtils;
 import com.tricheer.player.R;
 import com.tricheer.player.engine.PlayerAppManager;
 import com.tricheer.player.engine.PlayerAppManager.PlayerCxtFlag;
-import com.tricheer.player.receiver.MediaScanReceiver;
 import com.tricheer.player.version.base.activity.video.BaseVideoKeyEventActivity;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.frags.BaseVideoListFrag;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.frags.SclLc2010VdcVideoFoldersFrag;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.frags.SclLc2010VdcVideoNamesFrag;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import js.lib.android.media.bean.ProVideo;
 import js.lib.android.utils.CommonUtil;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.FragUtil;
-import js.lib.android.utils.Logs;
 
 /**
  * SLC_LC2010_VDC Video List Activity
@@ -41,6 +38,7 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
     /**
      * ==========Widgets in this Activity==========
      */
+    private View vRubbishFocus;
     private View[] vItems = new View[2];
 
 
@@ -66,6 +64,9 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
 
     private static Handler mHandler = new Handler();
 
+    //
+    private boolean mIsScanOnLocalIsNull = true;
+
     private WarningController mWarningController;
 
     @Override
@@ -82,6 +83,9 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
         //
         mContext = this;
         mWarningController = new WarningController();
+
+        // -- Widgets --
+        vRubbishFocus = findViewById(R.id.v_rubbish_focus);
 
         //
         vItems[0] = findViewById(R.id.v_media_name);
@@ -140,10 +144,12 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
             public void afterLoad(String selectMediaUrl) {
                 Log.i(TAG, "loadLocalMedias() ->afterLoad(" + selectMediaUrl + ")");
                 if (EmptyUtil.isEmpty(mListPrograms)) {
-                    loadSDCardMedias();
+                    if (mIsScanOnLocalIsNull) {
+                        mIsScanOnLocalIsNull = false;
+                        notifyScanMedias(true);
+                    }
                 } else {
-                    refreshDatas();
-                    loadMediaImage();
+                    refreshData();
                 }
             }
 
@@ -154,70 +160,49 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
     }
 
     @Override
-    protected void loadSDCardMedias() {
-        Log.i(TAG, "loadSDCardMedias()");
-        CommonUtil.cancelTask(mLoadSDCardMediasTask);
-        mLoadSDCardMediasTask = new LoadSDCardMediasTask(null, new LoadMediaListener() {
-
-            @Override
-            public void afterLoad(String selectMediaUrl) {
-                Log.i(TAG, "loadSDCardMedias() ->afterLoad(" + selectMediaUrl + ")");
-                if (EmptyUtil.isEmpty(mListPrograms)) {
-                    notifyScanMedias(true);
-                } else {
-                    refreshDatas();
-                    loadMediaImage();
-                }
-            }
-
-            @Override
-            public void refreshUI() {
-            }
-        });
-        mLoadSDCardMediasTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
-
-    @Override
-    protected void loadMediaImage() {
-        CommonUtil.cancelTask(mLoadMediaImageTask);
-        mLoadMediaImageTask = new LoadMediaImageTask();
-        mLoadMediaImageTask.execute(mListPrograms, new LoadImgListener() {
-
-            @Override
-            public void afterLoad() {
-                if (mFragMedias != null) {
-                    mFragMedias.refreshDatas();
-                }
-            }
-        });
-    }
-
-    @Override
-    protected void refreshOnNotifyLoading(MediaScanReceiver.MediaScanActives loadingFlag) {
-        super.refreshOnNotifyLoading(loadingFlag);
-//        if (loadingFlag == MediaScanReceiver.ScanActives.START) {
-        //showLctLm8917Loading(true);
-//        } else if (loadingFlag == MediaScanReceiver.ScanActives.END || loadingFlag == MediaScanReceiver.ScanActives.TASK_CANCEL) {
-        //showLctLm8917Loading(false);
-//        }
-    }
-
-    @Override
-    protected void refreshPageOnScan(List<ProVideo> listScannedVideos, boolean isScanned) {
-        super.refreshPageOnScan(listScannedVideos, isScanned);
-        if (!EmptyUtil.isEmpty(listScannedVideos)) {
-            Logs.i(TAG, "refreshPageOnScan() -> [VideoSize:" + listScannedVideos.size() + " ; isScanned:" + isScanned);
-            loadLocalMedias();
+    public void onMediaScanningStart() {
+        super.onMediaScanningStart();
+        Log.i(TAG, "onMediaScanningStart()");
+        if (mFragMedias != null) {
+            mFragMedias.onMediaScanningStart();
         }
     }
 
     @Override
-    protected void refreshPageOnClear(Set<String> allSdMountedPaths) {
-        super.refreshPageOnClear(allSdMountedPaths);
-        if (EmptyUtil.isEmpty(mListPrograms)) {
-            clearPlayInfo();
-        } else {
-            refreshDatas();
+    public void onMediaScanningEnd() {
+        super.onMediaScanningEnd();
+        Log.i(TAG, "onMediaScanningEnd()");
+        if (mFragMedias != null) {
+            mFragMedias.onMediaScanningEnd();
+        }
+        loadLocalMedias();
+    }
+
+    @Override
+    public void onMediaScanningCancel() {
+        super.onMediaScanningCancel();
+        Log.i(TAG, "onMediaScanningCancel()");
+        if (mFragMedias != null) {
+//            mFragMedias.onMediaScanningCancel();
+        }
+    }
+
+    @Override
+    public void onMediaScanningRefresh(final List<ProVideo> listMedias, boolean isOnUiThread) {
+        super.onMediaScanningRefresh(listMedias, isOnUiThread);
+        Log.i(TAG, "onMediaScanningRefresh(List<ProAudio>," + isOnUiThread + ")");
+        final List<ProVideo> listDeltaMedias = new ArrayList<>(listMedias);
+        if (!isOnUiThread) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.i(TAG, "onMediaScanningRefresh(List<ProVideo>) -2-" + listDeltaMedias.size());
+                    if (EmptyUtil.isEmpty(mListPrograms)) {
+                        mListPrograms = new ArrayList<>(listDeltaMedias);
+                        refreshData();
+                    }
+                }
+            });
         }
     }
 
@@ -225,10 +210,10 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
         return mListPrograms;
     }
 
-    private void refreshDatas() {
+    private void refreshData() {
         //sbLetters.refreshLetters(mListSortLetters.toArray());
         if (mFragMedias != null) {
-            mFragMedias.refreshDatas(mListPrograms, getLastMediaPath());
+            mFragMedias.refreshData(mListPrograms, getLastMediaPath());
         }
     }
 
@@ -236,7 +221,6 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
         @Override
         public void onClick(View v) {
             if (v == vItems[0]) {
-                notifyScanMedias(true);
                 switchTab(v, true);
             } else {
                 switchTab(v, true);
@@ -272,6 +256,7 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
 
     @Override
     public void onGetKeyCode(KeyEnum key) {
+        moveFocusToRubbish(vRubbishFocus);
         switch (key) {
             case KEYCODE_MEDIA_PREVIOUS:
                 if (mFragMedias != null) {
@@ -422,6 +407,19 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
 
         boolean isWarningShowing() {
             return mmIsWarningShowing;
+        }
+    }
+
+    /**
+     * Move window focus to rubbish position where not useful.
+     *
+     * @param vRubbish Rubbish view.
+     */
+    private void moveFocusToRubbish(View vRubbish) {
+        View focusedV = getCurrentFocus();
+        if (focusedV != vRubbish && vRubbish != null) {
+            vRubbish.setFocusable(true);
+            vRubbish.requestFocus();
         }
     }
 }
