@@ -120,8 +120,7 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
         ivRhythmAnim.setOnClickListener(mFilterViewOnClick);
 
         //
-        switchTab(vItems[2], true);
-        bindAndCreatePlayService(1, 2);
+        bindScanService(true);
     }
 
     private void loadFragment(int idx) {
@@ -163,6 +162,12 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
     }
 
     @Override
+    protected void onScanServiceConnected() {
+        switchTab(vItems[2], true);
+        bindAndCreatePlayService(1, 2);
+    }
+
+    @Override
     protected void onPlayServiceConnected(Service service) {
         super.onPlayServiceConnected(service);
         setPlayListener(this);
@@ -180,7 +185,7 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
                 if (EmptyUtil.isEmpty(listMedias)) {
                     if (mIsScanOnLocalIsNull) {
                         mIsScanOnLocalIsNull = false;
-                        notifyScanMedias(true);
+                        startScan();
                     }
                 } else {
                     setListSrcMedias(listMedias);
@@ -233,8 +238,10 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
                     if (EmptyUtil.isEmpty(currListSrcMedias)) {
                         currListSrcMedias = new ArrayList<>(listDeltaMedias);
                         setListSrcMedias(currListSrcMedias);
-                        refreshDataList();
+                    } else {
+                        currListSrcMedias.addAll(listDeltaMedias);
                     }
+                    refreshDataList();
                 }
             });
         }
@@ -524,9 +531,16 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
         removePlayListener(this);
         AccReceiver.unregister(this);
         ReverseReceiver.unregister(this);
+
+        //
         cancelAllTasks();
         mHandler.removeCallbacksAndMessages(null);
+
+        //
+        bindScanService(false);
         bindAndCreatePlayService(3, 4);
+
+        //
         SettingsSysUtil.setAudioState(this, 0);
         PlayerAppManager.removeCxt(PlayerCxtFlag.MUSIC_LIST);
         super.onDestroy();

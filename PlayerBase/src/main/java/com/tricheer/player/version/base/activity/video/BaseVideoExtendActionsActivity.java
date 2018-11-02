@@ -1,13 +1,17 @@
 package com.tricheer.player.version.base.activity.video;
 
 import android.annotation.SuppressLint;
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.RemoteException;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-
-import com.tricheer.player.receiver.MediaScanReceiver;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -16,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 
 import js.lib.android.media.bean.ProVideo;
+import js.lib.android.media.engine.scan.IMediaScanService;
+import js.lib.android.media.engine.scan.MediaScanService;
 import js.lib.android.media.engine.video.db.VideoDBManager;
 import js.lib.android.media.player.PlayDelegate;
 import js.lib.android.utils.CommonUtil;
@@ -30,9 +36,9 @@ import js.lib.utils.CharacterParser;
  */
 public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActionsActivity
         implements PlayDelegate,
-        MediaScanReceiver.VideoScanDelegate {
+        MediaScanService.VideoScanDelegate {
     // TAG
-    private final String TAG = "BaseVideoExtendActionsActivity";
+    private final String TAG = "BaseVideoExtendActions";
 
     //==========Variable in this Activity==========
     /**
@@ -65,32 +71,29 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
     }
 
     /**
-     * 媒体封面图片加载监听器
+     * {@link IMediaScanService} Object
      */
-    protected interface LoadImgListener {
-        void afterLoad();
-    }
+    private IMediaScanService mMediaScanService;
+    private ServiceConnection mScanServiceConn = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            mMediaScanService = IMediaScanService.Stub.asInterface(service);
+            registerMediaScanDelegate(true);
+            onScanServiceConnected();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+        }
+    };
+
+    protected abstract void onScanServiceConnected();
+
 
     @Override
     protected void onCreate(@Nullable Bundle bundle) {
         super.onCreate(bundle);
-        MediaScanReceiver.register(this);
-    }
-
-    @Override
-    public void onMediaScanningStart() {
-    }
-
-    @Override
-    public void onMediaScanningEnd() {
-    }
-
-    @Override
-    public void onMediaScanningCancel() {
-    }
-
-    @Override
-    public void onMediaScanningRefresh(List<ProVideo> listMedias, boolean isOnUiThread) {
+        bindScanService(true);
     }
 
 //    /**
@@ -394,7 +397,78 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
     @Override
     protected void onDestroy() {
         CommonUtil.cancelTask(mLoadLocalMediasTask);
-        MediaScanReceiver.unregister(this);
         super.onDestroy();
+    }
+
+    /**
+     * MediaScanService bind operate.
+     */
+    protected void bindScanService(boolean isBind) {
+        try {
+            if (isBind) {
+                Intent bindIntent = new Intent(this, MediaScanService.class);
+                bindService(bindIntent, mScanServiceConn, BIND_AUTO_CREATE);
+            } else {
+                registerMediaScanDelegate(false);
+                unbindService(mScanServiceConn);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void registerMediaScanDelegate(boolean isReg) {
+        if (mMediaScanService != null) {
+            try {
+                if (isReg) {
+                    mMediaScanService.registerDelegate(this);
+                } else {
+                    mMediaScanService.unregisterDelegate(this);
+                }
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    protected void startScan() {
+        Log.i(TAG, "startScan() -1-");
+        if (mMediaScanService != null) {
+            try {
+                Log.i(TAG, "startScan() -2-");
+                mMediaScanService.startScan();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public boolean isMediaScanning() {
+        try {
+            return mMediaScanService != null && mMediaScanService.isMediaScanning();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    @Override
+    public void onMediaScanningStart() {
+    }
+
+    @Override
+    public void onMediaScanningEnd() {
+    }
+
+    @Override
+    public void onMediaScanningCancel() {
+    }
+
+    @Override
+    public void onMediaScanningRefresh(List<ProVideo> listMedias, boolean isOnUiThread) {
+    }
+
+    @Override
+    public IBinder asBinder() {
+        return null;
     }
 }

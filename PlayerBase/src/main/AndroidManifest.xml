@@ -122,7 +122,7 @@
             tools:ignore="ExportedService" />
 
         <!--Media scan service-->
-        <service android:name=".service.MediaScanService" />
+        <service android:name="js.lib.android.media.engine.scan.MediaScanService" />
 
         <!-- Media Scanner Receiver -->
         <receiver

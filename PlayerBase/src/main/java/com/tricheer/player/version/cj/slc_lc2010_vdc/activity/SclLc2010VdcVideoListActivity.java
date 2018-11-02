@@ -95,6 +95,11 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
         vItems[1].setOnClickListener(mFilterViewOnClick);
 
         //
+        bindScanService(true);
+    }
+
+    @Override
+    protected void onScanServiceConnected() {
         loadFragment(0);
         loadLocalMedias();
     }
@@ -146,7 +151,7 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
                 if (EmptyUtil.isEmpty(mListPrograms)) {
                     if (mIsScanOnLocalIsNull) {
                         mIsScanOnLocalIsNull = false;
-                        notifyScanMedias(true);
+                        startScan();
                     }
                 } else {
                     refreshData();
@@ -328,6 +333,7 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
     protected void onDestroy() {
         Log.i(TAG, "onDestroy()");
         mHandler.removeCallbacksAndMessages(null);
+        bindScanService(false);
         PlayerAppManager.removeCxt(PlayerCxtFlag.VIDEO_LIST);
         super.onDestroy();
     }

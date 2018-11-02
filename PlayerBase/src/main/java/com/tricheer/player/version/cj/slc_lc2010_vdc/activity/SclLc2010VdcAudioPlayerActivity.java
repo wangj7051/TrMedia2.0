@@ -107,6 +107,10 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseAudioPlayerActivity {
     }
 
     @Override
+    protected void onScanServiceConnected() {
+    }
+
+    @Override
     protected void onPlayServiceConnected(Service service) {
         super.onPlayServiceConnected(service);
         loadLocalMedias();

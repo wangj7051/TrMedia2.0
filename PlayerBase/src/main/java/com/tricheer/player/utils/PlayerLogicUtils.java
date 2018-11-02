@@ -58,7 +58,6 @@ public class PlayerLogicUtils {
 //        }
 //        return storePath + "/" + URLEncoder.encode(program.title, "UTF-8") + ".png";
 
-        final String thisStorePath = "/sdcard/";
         if (!TextUtils.isEmpty(storePath) && storePath.endsWith("/")) {
             return storePath + URLEncoder.encode(program.title, "UTF-8") + ".png";
         }

@@ -15,12 +15,12 @@ import com.tricheer.player.engine.PlayerAppManager;
 import com.tricheer.player.engine.PlayerConsts;
 import com.tricheer.player.engine.PlayerConsts.PlayerOpenMethod;
 import com.tricheer.player.engine.PlayerType;
-import com.tricheer.player.service.MediaScanService;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import js.lib.android.media.engine.scan.MediaScanService;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.Logs;
 

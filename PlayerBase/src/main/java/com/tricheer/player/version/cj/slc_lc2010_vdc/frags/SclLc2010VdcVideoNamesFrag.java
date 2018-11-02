@@ -17,7 +17,6 @@ import android.widget.ImageView;
 
 import com.js.sidebar.LetterSideBar;
 import com.tricheer.player.R;
-import com.tricheer.player.receiver.MediaScanReceiver;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.activity.SclLc2010VdcVideoListActivity;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.activity.SclLc2010VdcVideoPlayerActivity;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.adapter.SclLc2010VdcVideoNamesAdapter;
@@ -99,9 +98,9 @@ public class SclLc2010VdcVideoNamesFrag extends BaseVideoListFrag {
         mFrameAnimController = new FrameAnimationController();
         mFrameAnimController.setIv(ivLoading);
         mFrameAnimController.setFrameImgResArr(LOADING_RES_ID_ARR);
-        if (MediaScanReceiver.isMediaScanning()) {
-            onMediaScanningStart();
-        }
+        //TODO if (mAttachedActivity.isMediaScanning()) {
+        //TODO onMediaScanningStart();
+        //TODO }
 
         // Data
         mDataAdapter = new SclLc2010VdcVideoNamesAdapter(mAttachedActivity, 0);

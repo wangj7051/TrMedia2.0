@@ -449,7 +449,18 @@ public class IVideoPlayer extends SurfaceView {
             cancel();
             Log.i(MM_TAG, "scheduleRun()");
             mmExecutor = new ScheduledThreadPoolExecutor(5);
-            mmExecutor.scheduleAtFixedRate(new ProgressRunnable(), 0, 1, TimeUnit.SECONDS);
+            mmExecutor.scheduleAtFixedRate(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        int duration = getDuration();
+                        int progress = getCurrentPosition();
+                        mProgressListener.onProgressChange(mMediaPath, progress, duration);
+                    } catch (Exception e) {
+                        Log.i(TAG, "EXCEPTION :: " + e.getMessage());
+                    }
+                }
+            }, 0, 1, TimeUnit.SECONDS);
         }
 
         void cancel() {
@@ -460,20 +471,6 @@ public class IVideoPlayer extends SurfaceView {
                     mmExecutor = null;
                 } catch (Exception e) {
                     e.printStackTrace();
-                }
-            }
-        }
-
-        private class ProgressRunnable implements Runnable {
-            @Override
-            public void run() {
-//                Log.i(MM_TAG, "run()()");
-                try {
-                    int duration = getDuration();
-                    int progress = getCurrentPosition();
-                    mProgressListener.onProgressChange(mMediaPath, progress, duration);
-                } catch (Exception e) {
-                    Log.i(TAG, "EXCEPTION :: " + e.getMessage());
                 }
             }
         }

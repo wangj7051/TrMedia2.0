@@ -105,7 +105,7 @@ public class SclLc2010VdcAudioFoldersFrag extends BaseAudioListFrag {
         mFrameAnimController = new FrameAnimationController();
         mFrameAnimController.setIv(ivLoading);
         mFrameAnimController.setFrameImgResArr(LOADING_RES_ID_ARR);
-        if (MediaScanReceiver.isMediaScanning()) {
+        if (mAttachedActivity.isMediaScanning()) {
             onMediaScanningStart();
         }
 

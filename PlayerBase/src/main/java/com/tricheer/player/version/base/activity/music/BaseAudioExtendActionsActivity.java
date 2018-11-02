@@ -1,22 +1,22 @@
 package com.tricheer.player.version.base.activity.music;
 
-import android.graphics.Bitmap;
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.AsyncTask;
 import android.os.Handler;
-
-import com.tricheer.player.receiver.MediaScanReceiver;
-import com.tricheer.player.utils.PlayerFileUtils;
-import com.tricheer.player.utils.PlayerLogicUtils;
+import android.os.IBinder;
+import android.util.Log;
 
 import java.io.Serializable;
 import java.util.List;
 
 import js.lib.android.media.bean.ProAudio;
 import js.lib.android.media.engine.audio.db.AudioDBManager;
-import js.lib.android.media.engine.audio.utils.AudioImgUtils;
+import js.lib.android.media.engine.scan.IMediaScanService;
+import js.lib.android.media.engine.scan.MediaScanService;
 import js.lib.android.media.player.audio.utils.AudioSortUtils;
 import js.lib.android.utils.CommonUtil;
-import js.lib.android.utils.Logs;
 
 /**
  * 播放器扩展行动作 - BASE
@@ -24,7 +24,7 @@ import js.lib.android.utils.Logs;
  * @author Jun.Wang
  */
 public abstract class BaseAudioExtendActionsActivity extends BaseAudioCommonActionsActivity
-        implements MediaScanReceiver.AudioScanDelegate {
+        implements MediaScanService.AudioScanDelegate {
     // TAG
     private final String TAG = "BaseAudioExtendActions";
 
@@ -45,26 +45,28 @@ public abstract class BaseAudioExtendActionsActivity extends BaseAudioCommonActi
         void afterLoaded(List<ProAudio> listMedias);
     }
 
+    /**
+     * {@link IMediaScanService} Object
+     */
+    private IMediaScanService mMediaScanService;
+    private ServiceConnection mScanServiceConn = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            mMediaScanService = IMediaScanService.Stub.asInterface(service);
+            registerMediaScanDelegate(true);
+            onScanServiceConnected();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+        }
+    };
+
+    protected abstract void onScanServiceConnected();
+
     @Override
     protected void onCreate(android.os.Bundle bundle) {
         super.onCreate(bundle);
-        MediaScanReceiver.register(this);
-    }
-
-    @Override
-    public void onMediaScanningStart() {
-    }
-
-    @Override
-    public void onMediaScanningEnd() {
-    }
-
-    @Override
-    public void onMediaScanningCancel() {
-    }
-
-    @Override
-    public void onMediaScanningRefresh(List<ProAudio> listMedias, boolean isOnUiThread) {
     }
 
 //    private void startMergeDataOnClear(Set<String> allSdMountedPaths) {
@@ -151,24 +153,6 @@ public abstract class BaseAudioExtendActionsActivity extends BaseAudioCommonActi
     }
 
     /**
-     * 获取并存储媒体内置封面图
-     */
-    protected void getMediaInnerCover(ProAudio program) {
-        try {
-            Bitmap sysMediaCover = AudioImgUtils.getInnerImg(mContext, program.title, program.sysMediaID, program.albumID, false,
-                    -1);
-            if (sysMediaCover != null) {
-                String storePath = PlayerFileUtils.getMusicPicPath(program.mediaUrl);
-                String coverPicFilePath = PlayerLogicUtils.getMediaPicFilePath(program, storePath);
-                cacheMediaPic(coverPicFilePath, sysMediaCover);
-                program.coverUrl = coverPicFilePath;
-            }
-        } catch (Exception e) {
-            Logs.printStackTrace(TAG + "getMediaInnerCover()", e);
-        }
-    }
-
-    /**
      * Cancel All Tasks
      */
     protected void cancelAllTasks() {
@@ -177,7 +161,78 @@ public abstract class BaseAudioExtendActionsActivity extends BaseAudioCommonActi
 
     @Override
     protected void onDestroy() {
-        MediaScanReceiver.unregister(this);
         super.onDestroy();
+    }
+
+    /**
+     * MediaScanService bind operate.
+     */
+    protected void bindScanService(boolean isBind) {
+        try {
+            if (isBind) {
+                Intent bindIntent = new Intent(this, MediaScanService.class);
+                bindService(bindIntent, mScanServiceConn, BIND_AUTO_CREATE);
+            } else {
+                registerMediaScanDelegate(false);
+                unbindService(mScanServiceConn);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void registerMediaScanDelegate(boolean isReg) {
+        if (mMediaScanService != null) {
+            try {
+                if (isReg) {
+                    mMediaScanService.registerDelegate(this);
+                } else {
+                    mMediaScanService.unregisterDelegate(this);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    protected void startScan() {
+        Log.i(TAG, "startScan() -1-");
+        if (mMediaScanService != null) {
+            try {
+                Log.i(TAG, "startScan() -2-");
+                mMediaScanService.startScan();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public boolean isMediaScanning() {
+        try {
+            return mMediaScanService != null && mMediaScanService.isMediaScanning();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    @Override
+    public void onMediaScanningStart() {
+    }
+
+    @Override
+    public void onMediaScanningEnd() {
+    }
+
+    @Override
+    public void onMediaScanningCancel() {
+    }
+
+    @Override
+    public void onMediaScanningRefresh(List<ProAudio> listMedias, boolean isOnUiThread) {
+    }
+
+    @Override
+    public IBinder asBinder() {
+        return null;
     }
 }

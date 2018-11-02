@@ -220,6 +220,10 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
     }
 
     @Override
+    protected void onScanServiceConnected() {
+    }
+
+    @Override
     protected void loadLocalMedias() {
         super.loadLocalMedias();
         // Resume Light MODE
@@ -243,26 +247,34 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
 
     @Override
     public void onProgressChanged(String mediaUrl, int progress, int duration) {
-        // 如下2种情况，不执行任何操作
-        // (1) 未处于正在播放中
-        // (2) SeekBar 正在进行手动拖动进度条
-        if (!isPlaying() || mSeekBarOnChange.isTrackingTouch()) {
-            return;
-        }
+//        final String targetMediaUrl = mediaUrl;
+        final int targetProgress = progress;
+        final int targetDuration = duration;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                // 如下2种情况，不执行任何操作
+                // (1) 未处于正在播放中
+                // (2) SeekBar 正在进行手动拖动进度条
+                if (!isPlaying() || mSeekBarOnChange.isTrackingTouch()) {
+                    return;
+                }
 
-        // 不否允许播放
-        if (!PlayEnableController.isPlayEnable()) {
-            removePlayRunnable();
-            pause();
-            return;
-        }
+                // 不否允许播放
+                if (!PlayEnableController.isPlayEnable()) {
+                    removePlayRunnable();
+                    pause();
+                    return;
+                }
 
-        // 视频播放 - {正常模式}
-        seekBar.setProgress(progress);
-        updateSeekTime(progress, duration);
+                // 视频播放 - {正常模式}
+                seekBar.setProgress(targetProgress);
+                updateSeekTime(targetProgress, targetDuration);
 
-        // 每秒钟保存一次播放信息
-        savePlayInfo();
+                // 每秒钟保存一次播放信息
+                savePlayInfo();
+            }
+        });
     }
 
     private class PanelTouchResp implements PanelTouchImpl.PanelTouchCallback {

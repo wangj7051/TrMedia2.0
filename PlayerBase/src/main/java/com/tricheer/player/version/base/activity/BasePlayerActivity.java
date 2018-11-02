@@ -1,6 +1,5 @@
 package com.tricheer.player.version.base.activity;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,7 +9,6 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.tri.lib.utils.PowerManagerUtil;
-import com.tricheer.player.receiver.MediaScanReceiver;
 import com.tricheer.player.receiver.PlayerReceiver.PlayerReceiverListener;
 
 import java.io.File;
@@ -148,11 +146,6 @@ public abstract class BasePlayerActivity extends BaseFragActivity implements Pla
                 }
             }
         }
-    }
-
-    protected void notifyScanMedias(boolean isLoading) {
-        Intent data = new Intent(MediaScanReceiver.ACTION_START_LIST);
-        sendBroadcast(new Intent(data));
     }
 
     // {@link IPlayerListener} Implements Method

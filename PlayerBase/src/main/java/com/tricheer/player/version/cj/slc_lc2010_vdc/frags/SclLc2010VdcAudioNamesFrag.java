@@ -17,7 +17,6 @@ import android.widget.ListView;
 
 import com.js.sidebar.LetterSideBar;
 import com.tricheer.player.R;
-import com.tricheer.player.receiver.MediaScanReceiver;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.activity.SclLc2010VdcAudioListActivity;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.adapter.BaseAudioAdapter;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.adapter.SclLc2010VdcAudioNamesAdapter;
@@ -101,7 +100,7 @@ public class SclLc2010VdcAudioNamesFrag extends BaseAudioListFrag {
         mFrameAnimController = new FrameAnimationController();
         mFrameAnimController.setIv(ivLoading);
         mFrameAnimController.setFrameImgResArr(LOADING_RES_ID_ARR);
-        if (MediaScanReceiver.isMediaScanning()) {
+        if (mAttachedActivity.isMediaScanning()) {
             onMediaScanningStart();
         }
 
