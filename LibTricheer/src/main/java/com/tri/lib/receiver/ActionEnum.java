@@ -27,6 +27,16 @@ public enum ActionEnum {
     MEDIA_SWITCH_BY_SOURCE(100, "tricheer.intent.action.SWC_SOURCE_CHANGE"),
     MEDIA_SWITCH_BY_MEDIA(100, "tricheer.intent.action.MEDIA_SWITCH"),
 
+    //Voice assistant
+    MEDIA_EXIT_AUDIO(110, "com.tricheer.video.EXIT"),
+    MEDIA_EXIT_VIDEO(111, "com.tricheer.video.EXIT"),
+    MEDIA_PLAY_PREV(112, "com.tricheer.video.EXIT"),
+    MEDIA_PLAY_NEXT(113, "com.tricheer.MEDIA_NEXT"),
+    MEDIA_PLAY(114, "com.tricheer.MEDIA_PLAY"),
+    MEDIA_PAUSE(115, "com.tricheer.MEDIA_STOP"),
+    //parameter "new_freq" fm-108.0 /am-1620
+    MEDIA_RADIO_SET_FREQ(115, "com.tricheer.radio.SET_FREQ"),
+
     // System Broadcast
     BOOT_COMPLETED(10000, Intent.ACTION_BOOT_COMPLETED),
     SCREEN_ON(11000, Intent.ACTION_SCREEN_ON),
@@ -82,6 +92,16 @@ public enum ActionEnum {
             // ENUM - Media Switch
             mMapEnums.put(MEDIA_SWITCH_BY_SOURCE.getAction(), MEDIA_SWITCH_BY_SOURCE);
             mMapEnums.put(MEDIA_SWITCH_BY_MEDIA.getAction(), MEDIA_SWITCH_BY_MEDIA);
+
+            //Voice assistant
+            mMapEnums.put(MEDIA_EXIT_AUDIO.getAction(), MEDIA_EXIT_AUDIO);
+            mMapEnums.put(MEDIA_EXIT_VIDEO.getAction(), MEDIA_EXIT_VIDEO);
+            mMapEnums.put(MEDIA_PLAY_PREV.getAction(), MEDIA_PLAY_PREV);
+            mMapEnums.put(MEDIA_PLAY_NEXT.getAction(), MEDIA_PLAY_NEXT);
+            mMapEnums.put(MEDIA_PLAY.getAction(), MEDIA_PLAY);
+            mMapEnums.put(MEDIA_PAUSE.getAction(), MEDIA_PAUSE);
+            //parameter "new_freq" fm-108.0 /am-1620
+            mMapEnums.put(MEDIA_RADIO_SET_FREQ.getAction(), MEDIA_RADIO_SET_FREQ);
 
             // ENUM - System broadcast
             // Boot
