@@ -78,6 +78,13 @@ public class PlayerReceiver extends BroadcastReceiver {
         Log.i(TAG, "action-ae: " + ae);
         if (ae != null) {
             switch (ae) {
+                case MEDIA_EXIT_AUDIO:
+                    PlayerAppManager.exitCurrPlayer();
+                    break;
+                case MEDIA_EXIT_VIDEO:
+                    PlayerAppManager.exitCurrPlayer();
+                    break;
+
                 // ### Click FileManager Media to Play ###
                 case PLAY_MUSIC_BY_FILEMANAGER:
                     doPlayMusicFromFileManager(intent);

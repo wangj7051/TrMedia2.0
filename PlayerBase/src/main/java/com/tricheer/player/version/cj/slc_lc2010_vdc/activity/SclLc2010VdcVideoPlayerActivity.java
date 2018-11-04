@@ -13,7 +13,9 @@ import android.widget.TextView;
 
 import com.tri.lib.engine.KeyEnum;
 import com.tri.lib.receiver.AccReceiver;
+import com.tri.lib.receiver.ActionEnum;
 import com.tri.lib.receiver.ReverseReceiver;
+import com.tri.lib.receiver.VoiceAssistantReceiver;
 import com.tri.lib.utils.PanelTouchImpl;
 import com.tri.lib.utils.TrVideoPreferUtils;
 import com.tricheer.player.R;
@@ -42,7 +44,9 @@ import js.lib.utils.date.DateFormatUtil;
  * @author Jun.Wang
  */
 public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
-        implements AccReceiver.AccDelegate, ReverseReceiver.ReverseDelegate {
+        implements AccReceiver.AccDelegate,
+        ReverseReceiver.ReverseDelegate,
+        VoiceAssistantReceiver.VoiceAssistantDelegate {
 
     //TAG
     private static final String TAG = "VdcVideoPlayerActivity";
@@ -70,8 +74,9 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.scl_lc2010_vdc_activity_video_player);
         setCurrPlayer(true, this);
-        ReverseReceiver.register(this);
         AccReceiver.register(this);
+        ReverseReceiver.register(this);
+        VoiceAssistantReceiver.register(this);
         init();
     }
 
@@ -528,9 +533,26 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
     }
 
     @Override
+    public void onVoiceCommand(ActionEnum ae) {
+        switch (ae) {
+            case MEDIA_PLAY_PREV:
+                break;
+            case MEDIA_PLAY_NEXT:
+                break;
+            case MEDIA_PLAY:
+                break;
+            case MEDIA_PAUSE:
+                break;
+            case MEDIA_RADIO_SET_FREQ:
+                break;
+        }
+    }
+
+    @Override
     protected void onDestroy() {
-        ReverseReceiver.unregister(this);
         AccReceiver.unregister(this);
+        ReverseReceiver.unregister(this);
+        VoiceAssistantReceiver.unregister(this);
 
         // 释放播放器
         execRelease();

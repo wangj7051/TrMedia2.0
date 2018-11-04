@@ -17,7 +17,9 @@ import android.widget.ImageView;
 
 import com.tri.lib.engine.KeyEnum;
 import com.tri.lib.receiver.AccReceiver;
+import com.tri.lib.receiver.ActionEnum;
 import com.tri.lib.receiver.ReverseReceiver;
+import com.tri.lib.receiver.VoiceAssistantReceiver;
 import com.tri.lib.utils.SettingsSysUtil;
 import com.tricheer.player.R;
 import com.tricheer.player.engine.PlayerAppManager;
@@ -49,8 +51,10 @@ import js.lib.android.utils.Logs;
  * @author Jun.Wang
  */
 public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
-        implements AccReceiver.AccDelegate, ReverseReceiver.ReverseDelegate,
-        MediaBtnReceiver.MediaBtnListener {
+        implements AccReceiver.AccDelegate,
+        ReverseReceiver.ReverseDelegate,
+        MediaBtnReceiver.MediaBtnListener,
+        VoiceAssistantReceiver.VoiceAssistantDelegate {
 
     // TAG
     private static final String TAG = "MusicListActivity";
@@ -80,9 +84,10 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
 
         //
         PlayerAppManager.putCxt(PlayerCxtFlag.MUSIC_LIST, this);
-        ReverseReceiver.register(this);
-        AccReceiver.register(this);
         MediaBtnReceiver.setListener(this);
+        AccReceiver.register(this);
+        ReverseReceiver.register(this);
+        VoiceAssistantReceiver.register(this);
         SettingsSysUtil.setAudioState(this, 1);
 
         //
@@ -472,6 +477,22 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
     }
 
     @Override
+    public void onVoiceCommand(ActionEnum ae) {
+        switch (ae) {
+            case MEDIA_PLAY_PREV:
+                break;
+            case MEDIA_PLAY_NEXT:
+                break;
+            case MEDIA_PLAY:
+                break;
+            case MEDIA_PAUSE:
+                break;
+            case MEDIA_RADIO_SET_FREQ:
+                break;
+        }
+    }
+
+    @Override
     public void onBackPressed() {
 //        super.onBackPressed();
         if (mFragMedias != null) {
@@ -531,6 +552,7 @@ public class SclLc2010VdcAudioListActivity extends BaseAudioKeyEventActivity
         removePlayListener(this);
         AccReceiver.unregister(this);
         ReverseReceiver.unregister(this);
+        VoiceAssistantReceiver.unregister(this);
 
         //
         cancelAllTasks();

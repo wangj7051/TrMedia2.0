@@ -143,32 +143,13 @@
                 <data android:scheme="file" />
             </intent-filter>
             <intent-filter android:priority="1000">
-                <action android:name="android.intent.action.MEDIA_SCANNER_STARTED" />
-                <action android:name="android.intent.action.MEDIA_SCANNER_FINISHED" />
-            </intent-filter>
-            <intent-filter android:priority="1000">
                 <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
             </intent-filter>
-            <!-- UDisk listener, From Android6.0 -->
-            <intent-filter android:priority="1000">
-                <action android:name="android.os.storage.action.VOLUME_STATE_CHANGED" />
-
-                <data android:scheme="file" />
-            </intent-filter>
             <intent-filter android:priority="1000">
                 <action android:name="com.tricheer.player.START.LIST.ALL_MEDIAS" />
-                <action android:name="android.hardware.input.action.POWER_DISCONNECTED" />
-            </intent-filter>
-            <intent-filter android:priority="1000">
-                <action android:name="com.tricheer.SYSTEM_DOWN" />
-                <action android:name="com.tricheer.SYSTEM_UP" />
-            </intent-filter>
-            <intent-filter android:priority="1000">
-                <action android:name="android.hardware.input.action.POWER_DISCONNECTED" />
             </intent-filter>
         </receiver>
-
         <!-- Player Receiver -->
         <receiver
             android:name="com.tricheer.player.receiver.PlayerReceiver"
@@ -183,6 +164,8 @@
 
             <!-- Music / Video -->
             <intent-filter android:priority="1000">
+                <action android:name="com.tricheer.audio.EXIT" />
+                <action android:name="com.tricheer.video.EXIT" />
                 <action android:name="com.tricheer.music.PLAY_FROM_FILEMANAGER" />
                 <action android:name="com.tricheer.video.PLAY_FROM_FILEMANAGER" />
             </intent-filter>
@@ -201,6 +184,19 @@
             </intent-filter>
         </receiver>
 
+        <!-- Media Button -->
+        <receiver android:name="js.lib.android.media.engine.mediabtn.MediaBtnReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
+        <!--Screen State-->
+        <receiver android:name="com.tri.lib.receiver.ScreenStateReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.SCREEN_ON" />
+                <action android:name="android.intent.action.SCREEN_OFF" />
+            </intent-filter>
+        </receiver>
         <!-- ACC -->
         <receiver
             android:name="com.tri.lib.receiver.AccReceiver"
@@ -220,17 +216,16 @@
                 <action android:name="com.tricheer.carback.off" />
             </intent-filter>
         </receiver>
-        <!--Screen State-->
-        <receiver android:name="com.tri.lib.receiver.ScreenStateReceiver">
+        <receiver android:name="com.tri.lib.receiver.VoiceAssistantReceiver">
             <intent-filter>
-                <action android:name="android.intent.action.SCREEN_ON" />
-                <action android:name="android.intent.action.SCREEN_OFF" />
+                <action android:name="com.tricheer.MEDIA_PREV" />
+                <action android:name="com.tricheer.MEDIA_NEXT" />
+                <action android:name="com.tricheer.MEDIA_PLAY" />
+                <action android:name="com.tricheer.MEDIA_STOP" />
             </intent-filter>
-        </receiver>
-        <!-- Media Button -->
-        <receiver android:name="js.lib.android.media.engine.mediabtn.MediaBtnReceiver">
+            <!--Radio-->
             <intent-filter>
-                <action android:name="android.intent.action.MEDIA_BUTTON" />
+                <action android:name="com.tricheer.radio.SET_FREQ" />
             </intent-filter>
         </receiver>
     </application>

@@ -28,9 +28,9 @@ public enum ActionEnum {
     MEDIA_SWITCH_BY_MEDIA(100, "tricheer.intent.action.MEDIA_SWITCH"),
 
     //Voice assistant
-    MEDIA_EXIT_AUDIO(110, "com.tricheer.video.EXIT"),
+    MEDIA_EXIT_AUDIO(110, "com.tricheer.audio.EXIT"),
     MEDIA_EXIT_VIDEO(111, "com.tricheer.video.EXIT"),
-    MEDIA_PLAY_PREV(112, "com.tricheer.video.EXIT"),
+    MEDIA_PLAY_PREV(112, "com.tricheer.MEDIA_PREV"),
     MEDIA_PLAY_NEXT(113, "com.tricheer.MEDIA_NEXT"),
     MEDIA_PLAY(114, "com.tricheer.MEDIA_PLAY"),
     MEDIA_PAUSE(115, "com.tricheer.MEDIA_STOP"),
