@@ -116,7 +116,7 @@ public class SclLc2010VdcAudioAlbumsAdapter<T> extends BaseAudioAdapter<T> imple
 
     @NonNull
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, @NonNull ViewGroup parent) {
         ViewHolder holder;
         if (convertView == null) {
             holder = new ViewHolder();
@@ -143,7 +143,7 @@ public class SclLc2010VdcAudioAlbumsAdapter<T> extends BaseAudioAdapter<T> imple
                     holder.tvItem.setTextColor(mSelectFontColor);
                     holder.ivStart.setImageResource(R.drawable.icon_item_selected);
                     holder.ivStart.setVisibility(View.VISIBLE);
-                    convertView.setBackgroundResource(R.drawable.bg_lv_item_selected);
+                    convertView.setBackgroundResource(getImgResId("bg_lv_item_selected"));
                 } else {
                     holder.tvItem.setTextColor(mNotSelectedColor);
                     holder.ivStart.setVisibility(View.INVISIBLE);
@@ -178,7 +178,7 @@ public class SclLc2010VdcAudioAlbumsAdapter<T> extends BaseAudioAdapter<T> imple
                     mSelectedPos = position;
                     holder.ivStart.setImageResource(R.drawable.icon_singer_c);
                     holder.tvItem.setTextColor(mSelectFontColor);
-                    convertView.setBackgroundResource(R.drawable.bg_lv_item_selected);
+                    convertView.setBackgroundResource(getImgResId("bg_lv_item_selected"));
                 } else {
                     holder.ivStart.setImageResource(R.drawable.icon_singer);
                     holder.tvItem.setTextColor(mNotSelectedColor);

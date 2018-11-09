@@ -38,33 +38,9 @@ public class VersionController {
      */
     private static boolean mFlag$IsUseLocalMusicPlayer = false;
     /**
-     * 是否支持视频混音标记
-     */
-    private static boolean mFlag$IsSupportVideoMix = false;
-    /**
-     * 是否支持视频关灯模式
-     */
-    private static boolean mFlag$IsSupportVideoTurnOffLight = false;
-    /**
      * 是否支持列出所支持的全部格式
      */
     private static boolean mFlag$IsSupportListAllMedias = false;
-    /**
-     * 是否支持在Boot后自动恢复播放
-     */
-    private static boolean mFlag$IsAutoResumeAfterBoot = false;
-    /**
-     * 是否支持仪表盘信息
-     */
-    private static boolean mFlag$IsSupportDashboard = false;
-    /**
-     * 是否支持"顺序模式(即播放完成一次列表媒体后停止)"
-     */
-    private static boolean mFlag$IsSupportOrderPlayMode = false;
-    /**
-     * 是否处理视频分辨率
-     */
-    private static boolean mFlag$IsProcessVideoResolution = false;
 
     /**
      * 音频 - 列表/播放器
@@ -78,7 +54,7 @@ public class VersionController {
     /**
      * Player Customized Version
      */
-    private static int version = PlayerVersions.SLC_LC2010_VDC;
+    private static final int version = PlayerVersions.SLC_LC2010_VDC;
 
     private interface PlayerVersions {
         // >>>----CheJi----<<<
@@ -101,13 +77,7 @@ public class VersionController {
                 // mFlag$IsHsjVersion = false;
                 mFlag$IsCj2Version = true;
                 mFlag$IsUseLocalMusicPlayer = true;
-                mFlag$IsSupportVideoMix = false;
-                mFlag$IsSupportVideoTurnOffLight = true;
                 mFlag$IsSupportListAllMedias = true;
-                mFlag$IsAutoResumeAfterBoot = false;
-                mFlag$IsSupportDashboard = false;
-                mFlag$IsSupportOrderPlayMode = false;
-                mFlag$IsProcessVideoResolution = false;
                 // Class
                 mClsMusicList = SclLc2010VdcAudioListActivity.class;
                 mClsMusicPlayer = SclLc2010VdcAudioPlayerActivity.class;
@@ -180,20 +150,6 @@ public class VersionController {
     }
 
     /**
-     * 是否支持视频混音
-     */
-    public static boolean isSupportVideoMix() {
-        return mFlag$IsSupportVideoMix;
-    }
-
-    /**
-     * 是否支持“视频关灯模式”
-     */
-    public static boolean isCanTurnOffLight() {
-        return mFlag$IsSupportVideoTurnOffLight;
-    }
-
-    /**
      * 是否支持列出所支持的全部格式
      * <p>
      * 音乐全部格式 : {".aac" , ".m4a" , ".mid" , ".mp3" , ".wav" , ".flac"}
@@ -202,40 +158,5 @@ public class VersionController {
      */
     public static boolean isSupportAllMedias() {
         return mFlag$IsSupportListAllMedias;
-    }
-
-    /**
-     * 是否支持自动恢复播放
-     */
-    public static boolean isCanAutoResume() {
-        return mFlag$IsAutoResumeAfterBoot;
-    }
-
-    /**
-     * 是否支持仪表盘信息
-     */
-    public static boolean isSupportDashboard() {
-        return mFlag$IsSupportDashboard;
-    }
-
-    /**
-     * 是否是使用语音AIOS V2.0
-     */
-    public static boolean isAiosV2() {
-        return true;
-    }
-
-    /**
-     * 是否支持"顺序播放(即播放完成一次列表媒体后停止)"
-     */
-    public static boolean isSupportOrderPlay() {
-        return mFlag$IsSupportOrderPlayMode;
-    }
-
-    /**
-     * 是否处理视频分辨率
-     */
-    public static boolean isProcessVideoResolution() {
-        return mFlag$IsProcessVideoResolution;
     }
 }

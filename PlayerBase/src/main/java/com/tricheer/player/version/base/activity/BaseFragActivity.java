@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.tricheer.player.utils.PlayerFileUtils;
@@ -195,6 +197,14 @@ public abstract class BaseFragActivity extends FragmentActivity {
     @SuppressWarnings("unchecked")
     public <T> T findView(int vResID) {
         return (T) findViewById(vResID);
+    }
+
+    public View findRootView() {
+        View rootV = findViewById(android.R.id.content);
+        if (rootV != null) {
+            return ((ViewGroup) findViewById(android.R.id.content)).getChildAt(0);
+        }
+        return null;
     }
 
     @Override

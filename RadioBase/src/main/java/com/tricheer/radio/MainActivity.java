@@ -20,7 +20,6 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.tri.lib.engine.KeyEnum;
-import com.tri.lib.radio.engine.BandCategoryEnum;
 import com.tri.lib.receiver.AccReceiver;
 import com.tri.lib.receiver.ReverseReceiver;
 import com.tri.lib.utils.SettingsSysUtil;
@@ -30,6 +29,7 @@ import com.tricheer.radio.service.RadioPlayerService;
 import com.tricheer.radio.utils.FreqFormatUtil;
 import com.tricheer.radio.utils.TrRadioPreferUtils;
 import com.tricheer.radio.view.ToastView;
+import com.yj.lib.radio.engine.BandCategoryEnum;
 
 import java.util.ArrayList;
 import java.util.HashSet;

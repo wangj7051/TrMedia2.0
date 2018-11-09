@@ -96,8 +96,7 @@ public abstract class BaseAudioCommonActionsActivity extends BasePlayerActivity 
         if (mPlayService != null) {
             List<?> list = mPlayService.getListSrcMedias();
             if (list != null) {
-                List<ProAudio> listAudios = (List<ProAudio>) list;
-                return listAudios;
+                return (List<ProAudio>) list;
             }
         }
         return null;
@@ -117,8 +116,7 @@ public abstract class BaseAudioCommonActionsActivity extends BasePlayerActivity 
         if (mPlayService != null) {
             List<?> list = mPlayService.getListMedias();
             if (list != null) {
-                List<ProAudio> listAudios = (List<ProAudio>) list;
-                return listAudios;
+                return (List<ProAudio>) list;
             }
         }
         return null;
@@ -173,27 +171,11 @@ public abstract class BaseAudioCommonActionsActivity extends BasePlayerActivity 
     }
 
     @Override
-    public void playPrevBySecurity() {
-        Logs.i(TAG, "^^ playPrevBySecurity() ^^");
-        if (mPlayService != null) {
-            mPlayService.playPrevBySecurity();
-        }
-    }
-
-    @Override
     public void playNext() {
         super.playNext();
         Logs.i(TAG, "^^ playNext() ^^");
         if (mPlayService != null) {
             mPlayService.playNext();
-        }
-    }
-
-    @Override
-    public void playNextBySecurity() {
-        Logs.i(TAG, "^^ playNextBySecurity() ^^");
-        if (mPlayService != null) {
-            mPlayService.playNextBySecurity();
         }
     }
 
@@ -206,26 +188,10 @@ public abstract class BaseAudioCommonActionsActivity extends BasePlayerActivity 
     }
 
     @Override
-    public void pauseByUser() {
-        Logs.i(TAG, "^^ pauseByUser() ^^");
-        if (mPlayService != null) {
-            mPlayService.pauseByUser();
-        }
-    }
-
-    @Override
     public void resume() {
         Logs.i(TAG, "^^ resume() ^^");
         if (mPlayService != null) {
             mPlayService.resume();
-        }
-    }
-
-    @Override
-    public void resumeByUser() {
-        Logs.i(TAG, "^^ resumeByUser() ^^");
-        if (mPlayService != null) {
-            mPlayService.resumeByUser();
         }
     }
 
@@ -299,11 +265,6 @@ public abstract class BaseAudioCommonActionsActivity extends BasePlayerActivity 
     }
 
     @Override
-    public boolean isPauseByUser() {
-        return mPlayService != null && mPlayService.isPauseByUser();
-    }
-
-    @Override
     public void seekTo(int msec) {
         Logs.i(TAG, "^^ seekTo(" + msec + ") ^^");
         if (mPlayService != null) {
@@ -323,6 +284,15 @@ public abstract class BaseAudioCommonActionsActivity extends BasePlayerActivity 
         if (mPlayService != null) {
             mPlayService.removePlayListener(delegate);
         }
+    }
+
+    /**
+     * Audio focus register state check.
+     */
+    public boolean isAudioFocusRegistered() {
+        boolean isAudioFocusRegistered = mPlayService != null && mPlayService.isAudioFocusRegistered();
+        Log.i(TAG, "isAudioFocusRegistered: " + isAudioFocusRegistered);
+        return isAudioFocusRegistered;
     }
 
     /**

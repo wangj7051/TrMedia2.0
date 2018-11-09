@@ -101,11 +101,6 @@ public class TrPlayService extends AudioPlayService {
     }
 
     @Override
-    public boolean isPlayEnable() {
-        return super.isPlayEnable();
-    }
-
-    @Override
     public void play() {
         super.play();
     }
@@ -126,18 +121,8 @@ public class TrPlayService extends AudioPlayService {
     }
 
     @Override
-    public void playPrevBySecurity() {
-        super.playPrevBySecurity();
-    }
-
-    @Override
     public void playNext() {
         super.playNext();
-    }
-
-    @Override
-    public void playNextBySecurity() {
-        super.playNextBySecurity();
     }
 
     @Override
@@ -151,23 +136,8 @@ public class TrPlayService extends AudioPlayService {
     }
 
     @Override
-    public void pauseByUser() {
-        super.pauseByUser();
-    }
-
-    @Override
-    public boolean isPauseByUser() {
-        return super.isPauseByUser();
-    }
-
-    @Override
     public void resume() {
         super.resume();
-    }
-
-    @Override
-    public void resumeByUser() {
-        super.resumeByUser();
     }
 
     @Override

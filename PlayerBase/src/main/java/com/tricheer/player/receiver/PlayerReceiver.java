@@ -134,9 +134,11 @@ public class PlayerReceiver extends BroadcastReceiver {
             App.openMusicPlayer(mContext.get(), "", null);
             // Play Selected Medias
             Bundle bundle = intent.getExtras();
-            int playPos = bundle.getInt(PlayerConsts.INDEX);
-            ArrayList<String> listPaths = bundle.getStringArrayList(PlayerConsts.FILE_LIST);
-            notifyPlayFromFolder(currPlayer, playPos, listPaths);
+            if (bundle != null) {
+                int playPos = bundle.getInt(PlayerConsts.INDEX);
+                ArrayList<String> listPaths = bundle.getStringArrayList(PlayerConsts.FILE_LIST);
+                notifyPlayFromFolder(currPlayer, playPos, listPaths);
+            }
         }
     }
 

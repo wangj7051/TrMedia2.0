@@ -8,6 +8,8 @@ import android.util.Log;
 import java.util.HashSet;
 import java.util.Set;
 
+import js.lib.android.media.player.PlayEnableController;
+
 /**
  * Car reverse Logic Receiver
  *
@@ -56,6 +58,7 @@ public class ReverseReceiver extends BroadcastReceiver {
     }
 
     void notifyOn() {
+        PlayEnableController.onReverseStateChanged(true);
         for (ReverseDelegate delegate : mSetDelegates) {
             if (delegate != null) {
                 delegate.onReverseOn();
@@ -64,6 +67,7 @@ public class ReverseReceiver extends BroadcastReceiver {
     }
 
     void notifyOff() {
+        PlayEnableController.onReverseStateChanged(false);
         for (ReverseDelegate delegate : mSetDelegates) {
             if (delegate != null) {
                 delegate.onReverseOff();

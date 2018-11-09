@@ -107,7 +107,7 @@ public class SclLc2010VdcAudioCollectsAdapter extends BaseAudioAdapter<ProAudio>
 
     @NonNull
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, @NonNull ViewGroup parent) {
         ViewHolder holder;
         if (convertView == null) {
             holder = new ViewHolder();
@@ -123,38 +123,39 @@ public class SclLc2010VdcAudioCollectsAdapter extends BaseAudioAdapter<ProAudio>
 
         //
         ProAudio item = getItem(position);
-        String showName = PlayerLogicUtils.getMediaTitle(mContext, -1, item, true);
-        holder.tvSongName.setText((position + 1) + "    " + showName);
+        if (item != null) {
+            String showName = PlayerLogicUtils.getMediaTitle(mContext, -1, item, true);
+            holder.tvSongName.setText((position + 1) + "    " + showName);
 
-        if (TextUtils.equals(mSelectedMediaUrl, item.mediaUrl)) {
-            mSelectedPos = position;
-            holder.tvSongName.setTextColor(mSelectFontColor);
-            holder.ivSelected.setVisibility(View.VISIBLE);
-            convertView.setBackgroundResource(R.drawable.bg_lv_item_selected);
-        } else {
-            holder.tvSongName.setTextColor(mNotSelectedColor);
-            holder.ivSelected.setVisibility(View.INVISIBLE);
-            convertView.setBackgroundResource(0);
-        }
-
-        //Collect
-        switch (item.isCollected) {
-            case 1:
-                holder.ivCollect.setImageResource(R.drawable.favor_c);
-                break;
-            case 0:
-                holder.ivCollect.setImageResource(R.drawable.favor_c_n);
-                break;
-        }
-        holder.ivCollect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mCollectListener != null) {
-                    mCollectListener.onClickCollectBtn((ImageView) v, position);
-                }
+            if (TextUtils.equals(mSelectedMediaUrl, item.mediaUrl)) {
+                mSelectedPos = position;
+                holder.tvSongName.setTextColor(mSelectFontColor);
+                holder.ivSelected.setVisibility(View.VISIBLE);
+                convertView.setBackgroundResource(getImgResId("bg_lv_item_selected"));
+            } else {
+                holder.tvSongName.setTextColor(mNotSelectedColor);
+                holder.ivSelected.setVisibility(View.INVISIBLE);
+                convertView.setBackgroundResource(0);
             }
-        });
 
+            //Collect
+            switch (item.isCollected) {
+                case 1:
+                    holder.ivCollect.setImageResource(R.drawable.favor_c);
+                    break;
+                case 0:
+                    holder.ivCollect.setImageResource(R.drawable.favor_c_n);
+                    break;
+            }
+            holder.ivCollect.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mCollectListener != null) {
+                        mCollectListener.onClickCollectBtn((ImageView) v, position);
+                    }
+                }
+            });
+        }
         return convertView;
     }
 

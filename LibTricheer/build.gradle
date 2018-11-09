@@ -30,4 +30,5 @@ android {
 
 dependencies {
     api project(':LibCommon')
+    implementation files('src/main/libs/bt_proxy_0821.jar')
 }

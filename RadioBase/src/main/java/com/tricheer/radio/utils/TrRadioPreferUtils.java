@@ -2,8 +2,8 @@ package com.tricheer.radio.utils;
 
 import android.util.Log;
 
-import com.tri.lib.radio.engine.BandCategoryEnum;
-import com.tri.lib.radio.utils.RadioPreferUtils;
+import com.yj.lib.radio.engine.BandCategoryEnum;
+import com.yj.lib.radio.utils.RadioPreferUtils;
 
 /**
  * Preference storage methods

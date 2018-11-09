@@ -159,11 +159,6 @@ public abstract class AudioPlayService extends BaseAudioService {
     }
 
     @Override
-    public boolean isPlayEnable() {
-        return PlayEnableController.isPlayEnable();
-    }
-
-    @Override
     public void play() {
         Logs.i(TAG, "play()");
         MediaBase media = getCurrMedia();
@@ -219,6 +214,7 @@ public abstract class AudioPlayService extends BaseAudioService {
 
     @Override
     public void play(int pos) {
+        PlayEnableController.pauseByUser(false);
         setPlayPosition(pos);
         play();
     }
@@ -241,55 +237,52 @@ public abstract class AudioPlayService extends BaseAudioService {
     public void playPrev() {
         Logs.i(TAG, "^^ playPrev() ^^");
         try {
+            //
             mIsPlayPrev = true;
             setPlayPosByMode(2);
-            play();
+
+            //Exec play runnable
+            //防止高频点击，即用户在短时间内频繁点击执行下一个操作
+            clearAllRunables();
+            if (mPlayPrevSecRunnable == null) {
+                mPlayPrevSecRunnable = new Runnable() {
+
+                    @Override
+                    public void run() {
+                        play();
+                    }
+                };
+            }
+            postDelayRunnable(mPlayPrevSecRunnable, 500);
         } catch (Throwable e) {
             Logs.printStackTrace(TAG + "playPrev()", e);
         }
     }
 
     @Override
-    public void playPrevBySecurity() {
-        clearAllRunables();
-        if (mPlayPrevSecRunnable == null) {
-            mPlayPrevSecRunnable = new Runnable() {
-
-                @Override
-                public void run() {
-                    playPrev();
-                }
-            };
-        }
-        postDelayRunnable(mPlayPrevSecRunnable, 500);
-    }
-
-    @Override
     public void playNext() {
         Logs.i(TAG, "^^ playNext() ^^");
         try {
+            //
             mIsPlayNext = true;
             setPlayPosByMode(1);
-            play();
+
+            //Exec play runnable
+            //防止高频点击，即用户在短时间内频繁点击执行下一个操作
+            clearAllRunables();
+            if (mPlayNextSecRunnable == null) {
+                mPlayNextSecRunnable = new Runnable() {
+
+                    @Override
+                    public void run() {
+                        play();
+                    }
+                };
+            }
+            postDelayRunnable(mPlayNextSecRunnable, 500);
         } catch (Throwable e) {
             Logs.printStackTrace(TAG + "playNext()", e);
         }
-    }
-
-    @Override
-    public void playNextBySecurity() {
-        Logs.i(TAG, "^^ playNextBySecurity() ^^");
-        clearAllRunables();
-        if (mPlayNextSecRunnable == null) {
-            mPlayNextSecRunnable = new Runnable() {
-
-                @Override
-                public void run() {
-                    playNext();
-                }
-            };
-        }
-        postDelayRunnable(mPlayNextSecRunnable, 500);
     }
 
     /**
@@ -341,7 +334,7 @@ public abstract class AudioPlayService extends BaseAudioService {
                     break;
             }
         } catch (Exception e) {
-            Logs.printStackTrace(TAG + "setPlayPosByMode()", e);
+            e.printStackTrace();
         }
     }
 
@@ -379,42 +372,21 @@ public abstract class AudioPlayService extends BaseAudioService {
     @Override
     public void pause() {
         Logs.i(TAG, "^^ pause() ^^");
+        clearAllRunables();
         if (mAudioPlayer != null) {
             mAudioPlayer.pauseMedia();
         }
     }
 
     @Override
-    public void pauseByUser() {
-        Logs.i(TAG, "^^ pauseByUser() ^^");
-        PlayEnableController.pauseByUser(true);
-        clearAllRunables();
-        pause();
-    }
-
-    @Override
-    public boolean isPauseByUser() {
-        return PlayEnableController.isPauseByUser();
-    }
-
-    @Override
     public void resume() {
         Logs.i(TAG, "^^ resume() ^^");
-        if (mAudioPlayer != null) {
-            startPlay("");
-        }
-    }
-
-    @Override
-    public void resumeByUser() {
-        Logs.i(TAG, "^^ resumeByUser() ^^");
-        PlayEnableController.pauseByUser(false);
         clearAllRunables();
         if (!EmptyUtil.isEmpty(mListMedias)) {
             if (mAudioPlayer == null) {
                 playFixedMedia(getLastMediaPath());
             } else {
-                resume();
+                startPlay("");
             }
         }
     }
@@ -597,10 +569,10 @@ public abstract class AudioPlayService extends BaseAudioService {
         try {
             if (mIsPlayPrev) {
                 mIsPlayPrev = false;
-                playPrevBySecurity();
+                playPrev();
             } else if (mIsPlayNext) {
                 mIsPlayNext = false;
-                playNextBySecurity();
+                playNext();
             }
             notifyPlayState(PlayState.REFRESH_ON_ERROR);
         } catch (Exception e) {
@@ -645,6 +617,7 @@ public abstract class AudioPlayService extends BaseAudioService {
     @Override
     public void onDestroy() {
         mIsServiceDestroy = true;
+        PlayEnableController.pauseByUser(false);
         super.onDestroy();
     }
 }

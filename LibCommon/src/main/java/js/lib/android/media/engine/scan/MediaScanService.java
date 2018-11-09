@@ -24,7 +24,6 @@ import js.lib.android.media.engine.audio.db.AudioDBManager;
 import js.lib.android.media.engine.audio.utils.AudioInfo;
 import js.lib.android.media.engine.video.db.VideoDBManager;
 import js.lib.android.media.engine.video.utils.VideoInfo;
-import js.lib.android.utils.CommonUtil;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.Logs;
 import js.lib.android.utils.sdcard.SDCardInfo;
@@ -64,11 +63,7 @@ public class MediaScanService extends BaseScanService {
 
     private void init() {
         Log.i(TAG, "init()");
-
-        //
         mContext = this;
-
-        //
         mSetPathsMounted = new HashSet<>();
         mSetPathsUnMounted = new HashSet<>();
     }
@@ -83,8 +78,16 @@ public class MediaScanService extends BaseScanService {
 
         @Override
         public void startScan() {
+            Log.i(TAG, "MyBinder->startScan()");
             refreshMountStatus(mContext);
             startListMediaTask(mContext);
+        }
+
+        @Override
+        public void destroy() {
+            Log.i(TAG, "MyBinder->destroy()");
+            cancelListMediaTask();
+            stopSelf();
         }
 
         @Override
@@ -94,24 +97,35 @@ public class MediaScanService extends BaseScanService {
 
         @Override
         public void registerDelegate(IMediaScanDelegate delegate) {
-            register(delegate);
+            if (delegate != null) {
+                Log.i(TAG, "MyBinder->registerDelegate(" + delegate.toString() + ")");
+                register(delegate);
+            }
         }
 
         @Override
         public void unregisterDelegate(IMediaScanDelegate delegate) {
-            unregister(delegate);
+            if (delegate != null) {
+                Log.i(TAG, "MyBinder->unregister(" + delegate.toString() + ")");
+                unregister(delegate);
+            }
         }
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        String param = intent.getStringExtra(PARAM_SCAN);
-        if (PARAM_SCAN_VAL_START.equals(param)) {
-            refreshMountStatus(this);
-            startListMediaTask(this);
-        } else if (PARAM_SCAN_VAL_CANCEL.equals(param)) {
-            refreshMountStatus(this);
-            CommonUtil.cancelTask(mListMediaTask);
+        try {
+            String param = intent.getStringExtra(PARAM_SCAN);
+            Log.i(TAG, "param : " + param);
+            if (PARAM_SCAN_VAL_START.equals(param)) {
+                refreshMountStatus(this);
+                startListMediaTask(this);
+            } else if (PARAM_SCAN_VAL_CANCEL.equals(param)) {
+                refreshMountStatus(this);
+                cancelListMediaTask();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return super.onStartCommand(intent, flags, startId);
     }
@@ -122,11 +136,21 @@ public class MediaScanService extends BaseScanService {
     private void startListMediaTask(Context context) {
         Logs.i(TAG, "----startListMediaTask()----");
         if (mListMediaTask == null || !mListMediaTask.isScanning()) {
-            CommonUtil.cancelTask(mListMediaTask);
             if (!EmptyUtil.isEmpty(mSetPathsMounted)) {
                 mListMediaTask = new ListMediaTask(context);
                 mListMediaTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
+        }
+    }
+
+    /**
+     * Cancel list media task.
+     */
+    private void cancelListMediaTask() {
+        if (mListMediaTask != null) {
+            mListMediaTask.cancel(true);
+            mListMediaTask.destroy();
+            mListMediaTask = null;
         }
     }
 
@@ -167,6 +191,7 @@ public class MediaScanService extends BaseScanService {
             mmMapDbVideos = VideoDBManager.instance().getMapVideos(true, false);
 
             // List All Medias
+            Log.i(TAG, "#### ---- START " + System.currentTimeMillis() + "---- ####");
             for (String supportPath : mSetPathsMounted) {
                 if (isCancelled()) {
                     break;
@@ -174,6 +199,11 @@ public class MediaScanService extends BaseScanService {
                 Logs.debugI(TAG, "ListMediaTask -> doInBackground ->[supportPath:" + supportPath + "]");
                 listAllMedias(new File(supportPath));
             }
+            Log.i(TAG, "#### ---- END " + System.currentTimeMillis() + "---- ####");
+
+            //
+            saveDeltaAudios();
+            saveDeltaVideos();
             return null;
         }
 
@@ -272,11 +302,8 @@ public class MediaScanService extends BaseScanService {
                     }
 
                     //Refresh
-                    int newSize = mmListNewAudios.size();
-                    if (newSize >= 10) {
-                        AudioDBManager.instance().insertListMusics(mmListNewAudios);
-                        notifyAudioScanningRefresh(mmListNewAudios, false);
-                        mmListNewAudios.clear();
+                    if (mmListNewAudios.size() >= 10) {
+                        saveDeltaAudios();
                     }
 
                     // Video
@@ -301,11 +328,16 @@ public class MediaScanService extends BaseScanService {
                         Log.i("coverScanReceiver", "coverPicFilePath: " + coverPicFilePath);
                         File coverPicFile = new File(coverPicFilePath);
                         if (coverPicFile.exists()) {
+                            Log.i("coverScanReceiver", " [ EXIST ]");
                             tmpMedia.coverUrl = coverPicFilePath;
                             //If cover picture is not exist, try to get it.
                         } else {
+                            Log.i("coverScanReceiver", " [ CREATE NEW ]");
                             Bitmap coverBitmap = tmpMedia.getThumbNail(tmpMedia.mediaUrl, 200, 200, MediaStore.Images.Thumbnails.MINI_KIND);
-                            if (coverBitmap != null) {
+                            if (coverBitmap == null) {
+                                Log.i("coverScanReceiver", " [ CREATE NEW ] - FAIL - ");
+                            } else {
+                                Log.i("coverScanReceiver", " [ CREATE NEW ] - SUCCESSFULLY - ");
                                 storeBitmap(coverPicFilePath, coverBitmap);
                                 tmpMedia.coverUrl = coverPicFilePath;
                             }
@@ -313,11 +345,8 @@ public class MediaScanService extends BaseScanService {
                     }
 
                     //Refresh
-                    int newSize = mmListNewVideos.size();
-                    if (newSize >= 10) {
-                        VideoDBManager.instance().insertListVideos(mmListNewVideos);
-                        notifyVideoScanningRefresh(mmListNewVideos, false);
-                        mmListNewVideos.clear();
+                    if (mmListNewVideos.size() >= 10) {
+                        saveDeltaVideos();
                     }
                 }
             } catch (Exception e) {
@@ -326,13 +355,29 @@ public class MediaScanService extends BaseScanService {
             }
         }
 
+        private void saveDeltaAudios() {
+            if (mmListNewAudios.size() > 0) {
+                int count = AudioDBManager.instance().insertListMusics(mmListNewAudios);
+                Log.i(TAG, "count:" + count);
+                notifyAudioScanningRefresh(mmListNewAudios, false);
+                mmListNewAudios.clear();
+            }
+        }
+
+        private void saveDeltaVideos() {
+            if (mmListNewVideos.size() > 0) {
+                int count = VideoDBManager.instance().insertListVideos(mmListNewVideos);
+                Log.i(TAG, "count:" + count);
+                notifyVideoScanningRefresh(mmListNewVideos, false);
+                mmListNewVideos.clear();
+            }
+        }
+
         @Override
         protected void onCancelled() {
             super.onCancelled();
             Logs.i(TAG, "ListMediaTask-> onCancelled()");
-            //
-            mmContext = null;
-            mmIsScanning = false;
+            destroy();
             notifyScanningCancel();
         }
 
@@ -340,14 +385,17 @@ public class MediaScanService extends BaseScanService {
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
             Logs.i(TAG, "ListMediaTask-> onPostExecute()");
-            //
-            mmContext = null;
-            mmIsScanning = false;
+            destroy();
             notifyScanningEnd();
         }
 
         boolean isScanning() {
             return mmIsScanning;
+        }
+
+        private void destroy() {
+            mmContext = null;
+            mmIsScanning = false;
         }
     }
 
@@ -395,5 +443,25 @@ public class MediaScanService extends BaseScanService {
         Logs.i(TAG, "mSetPathsMounted:" + mSetPathsMounted.toString());
         Logs.i(TAG, "mSetPathsUnMounted:" + mSetPathsUnMounted.toString());
         Logs.i(TAG, " ***  End  ***");
+    }
+
+    private void startParseMediaTask() {
+    }
+
+    /**
+     * List Medias Task
+     */
+    @SuppressLint("StaticFieldLeak")
+    private class MediaParseTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... voids) {
+            return null;
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        cancelListMediaTask();
+        super.onDestroy();
     }
 }

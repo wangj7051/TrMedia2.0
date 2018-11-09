@@ -25,6 +25,7 @@ import java.util.List;
 
 import js.lib.android.media.bean.ProAudio;
 import js.lib.android.media.engine.audio.db.AudioDBManager;
+import js.lib.android.media.player.PlayEnableController;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.FrameAnimationController;
 import js.lib.android.utils.Logs;
@@ -109,6 +110,7 @@ public class SclLc2010VdcAudioNamesFrag extends BaseAudioListFrag {
         mDataAdapter.setCollectListener(new CollectBtnCallback());
 
         lvData = (ListView) contentV.findViewById(R.id.lv_datas);
+        lvData.setSelector(mAttachedActivity.getImgResId("bg_audio_item_selector"));
         lvData.setAdapter(mDataAdapter);
         lvData.setOnItemClickListener((mLvItemClick = new LvItemClick()));
         loadDataList();
@@ -139,7 +141,7 @@ public class SclLc2010VdcAudioNamesFrag extends BaseAudioListFrag {
         if (isAdded()) {
             if (mAttachedActivity.isPlaying()) {
                 lvData.setSelection(mAttachedActivity.getCurrIdx());
-            } else if (mAttachedActivity.isPauseByUser()) {
+            } else if (PlayEnableController.isPauseByUser()) {
                 lvData.setSelection(mAttachedActivity.getCurrIdx());
             } else {
                 mHandler.removeCallbacksAndMessages(null);
@@ -332,5 +334,23 @@ public class SclLc2010VdcAudioNamesFrag extends BaseAudioListFrag {
             mFrameAnimController = null;
         }
         super.onDestroy();
+    }
+
+    @Override
+    public void updateThemeToDefault() {
+        if (isAdded()) {
+            updateThemeCommon();
+        }
+    }
+
+    @Override
+    public void updateThemeToIos() {
+        if (isAdded()) {
+            updateThemeCommon();
+        }
+    }
+
+    private void updateThemeCommon() {
+        lvData.setSelector(mAttachedActivity.getImgResId("bg_audio_item_selector"));
     }
 }

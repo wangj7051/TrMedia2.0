@@ -1,10 +1,10 @@
 //Libs
-include ':LibCommon'
+include ':LibCommon', ':LibRadio'
 include ':LibTricheer'
 include ':LetterSideBar'
 
-//Radio
-include ':RadioBase'
-
 //Player
 include ':PlayerBase'
+
+//Radio
+include ':RadioBase'

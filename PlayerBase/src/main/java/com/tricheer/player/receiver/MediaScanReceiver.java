@@ -36,13 +36,17 @@ public class MediaScanReceiver extends BroadcastReceiver {
             // SDCard UnMounted
         } else if (Intent.ACTION_MEDIA_UNMOUNTED.equals(action)) {
             notifyScanService(context, MediaScanService.PARAM_SCAN_VAL_CANCEL);
+
+            //Test
+        } else if ("com.tricheer.player.START.LIST.ALL_MEDIAS".equals(action)) {
+            notifyScanService(context, MediaScanService.PARAM_SCAN_VAL_START);
         }
     }
 
     /**
      * Notify scan service operate.
      *
-     * @param context {@link Context}
+     * @param context   {@link Context}
      * @param scanParam {@link MediaScanService#PARAM_SCAN_VAL_START} or {@link MediaScanService#PARAM_SCAN_VAL_CANCEL}
      */
     private void notifyScanService(Context context, String scanParam) {

@@ -342,6 +342,7 @@ public class IVideoPlayer extends SurfaceView {
         if (mMediaPlayer != null) {
             mProgressTimer.cancel();
             mMediaPlayer.stop();
+            mMediaPlayer.reset();
             mMediaPlayer.release();
             mMediaPlayer = null;
             mStatus = StatusMachine.NONE;
@@ -534,7 +535,7 @@ public class IVideoPlayer extends SurfaceView {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 if (mMediaPlayer != null) {
-                    mMediaPlayer = null;
+                    release();
                     notifyPlayState(PlayState.COMPLETE);
                 }
             }

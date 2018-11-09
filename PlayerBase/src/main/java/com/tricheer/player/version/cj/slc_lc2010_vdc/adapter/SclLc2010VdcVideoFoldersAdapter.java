@@ -12,8 +12,6 @@ import android.widget.SectionIndexer;
 import android.widget.TextView;
 
 import com.tricheer.player.R;
-import com.tricheer.player.utils.PlayerFileUtils;
-import com.tricheer.player.utils.PlayerLogicUtils;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.bean.VideoFilter;
 
 import java.io.File;
@@ -22,6 +20,7 @@ import java.util.List;
 
 import js.lib.android.adapter.BaseArrayAdapter;
 import js.lib.android.media.bean.ProVideo;
+import js.lib.android.media.engine.scan.MediaScanService;
 import js.lib.android.utils.Logs;
 
 public class SclLc2010VdcVideoFoldersAdapter<T> extends BaseArrayAdapter<T> implements SectionIndexer {
@@ -122,8 +121,7 @@ public class SclLc2010VdcVideoFoldersAdapter<T> extends BaseArrayAdapter<T> impl
 
                 //Cover
                 try {
-                    String storePath = PlayerFileUtils.getVideoPicPath(item.mediaUrl);
-                    String coverPicFilePath = PlayerLogicUtils.getMediaPicFilePath(item, storePath);
+                    String coverPicFilePath = MediaScanService.getCoverBitmapPath(item, 1);
                     Log.i("coverPicFile", "coverPicFile: " + coverPicFilePath);
                     File coverPicFile = new File(coverPicFilePath);
                     if (coverPicFile.exists()) {

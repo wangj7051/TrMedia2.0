@@ -6,9 +6,14 @@ import android.os.Bundle;
 import js.lib.android.utils.AudioManagerUtil;
 import js.lib.android.utils.Logs;
 
-public abstract class BaseVideoFocusActivity extends BaseVideoKeyEventActivity {
+public abstract class BaseVideoFocusActivity extends BaseVideoUIActivity {
     //TAG
     private static final String TAG = "BaseVideoFocusActivity";
+
+    /**
+     * Audio focus flag
+     */
+    private int mAudioFocusFlag = -1;
 
     /**
      * Listener Audio Focus
@@ -64,19 +69,22 @@ public abstract class BaseVideoFocusActivity extends BaseVideoKeyEventActivity {
      * if==2 : Abandon audio focus
      */
     public void registerAudioFocus(int flag) {
-        if (flag == 1) {
-            int result = AudioManagerUtil.requestMusicGain(mContext, mAfChangeListener);
-            Logs.i(TAG, "registerAudioFocus(" + flag + ") *request AUDIOFOCUS_GAIN* >> [result:" + result);
-        } else if (flag == 2) {
-            int result = AudioManagerUtil.abandon(mContext, mAfChangeListener);
-            Logs.i(TAG, "registerAudioFocus(" + flag + ") *abandon AudioFocus* >> [result:" + result);
+        switch (flag) {
+            case 1:
+                mAudioFocusFlag = AudioManagerUtil.requestMusicGain(this, mAfChangeListener);
+                Logs.i(TAG, "registerAudioFocus(" + flag + ") *request AUDIOFOCUS_GAIN* >> [result:" + mAudioFocusFlag);
+                break;
+            case 2:
+                mAudioFocusFlag = AudioManagerUtil.abandon(this, mAfChangeListener);
+                Logs.i(TAG, "registerAudioFocus(" + flag + ") *abandon AudioFocus* >> [result:" + mAudioFocusFlag);
+                break;
         }
     }
 
     @Override
     public void onAudioFocusGain() {
         if (isForeground()) {
-            resumeByUser();
+            resume();
         }
     }
 
@@ -92,7 +100,16 @@ public abstract class BaseVideoFocusActivity extends BaseVideoKeyEventActivity {
     @Override
     public void onAudioFocusLoss() {
         registerAudioFocus(2);
-        pauseByUser();
+        pause();
+    }
+
+    /**
+     * Is audio focus registered
+     *
+     * @return true-registered; false-unregistered or loss.
+     */
+    public boolean isAudioFocusRegistered() {
+        return (mAudioFocusFlag == 1);
     }
 
     @Override

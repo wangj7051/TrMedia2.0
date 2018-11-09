@@ -55,7 +55,6 @@
 
     <!-- Music -->
     <string name="go_folder_parent">返回上一级</string>
-    <string name="udisk_music_">U盘音乐-L</string>
     <string name="my_favorite">我的收藏</string>
     <string name="folder">文件夹</string>
     <string name="music_name">歌曲名</string>
@@ -66,20 +65,17 @@
     <string name="audios_none_toast1">列表为空</string>
     <string name="audios_none_toast2">请触摸</string>
     <string name="audios_none_toast3">来添加</string>
-    <string name="lv_item_str">%1$d %2$4s</string>
 
     <!-- Video -->
     <string name="video_handbrake_prompt">行车过程中请勿观看视频</string>
     <string name="file_name">文件名</string>
-    <string name="udisk_video_">U盘视频-L</string>
+    <string name="video_pos_str" formatted="false">%s/%s</string>
     <string name="video_warning">警告</string>
     <string name="video_warning_desc">为了您的安全，车辆行驶中请不要进行操作请务必参照实际的交通规则驾驶</string>
     <string name="video_warning_desc2">为驾驶安全，车辆行驶中禁止观看视频</string>
     <string name="video_warning_op1">本次同意</string>
     <string name="video_warning_op2">本次不再提示</string>
     <string name="video_warning_op3">退出</string>
-    <string name="video_forward_15s">+15s</string>
-    <string name="video_backward_15s">-15s</string>
 
     <!-- Player Operates -->
     <string name="play_pre">上一个</string>

@@ -98,9 +98,9 @@ public class SclLc2010VdcVideoNamesFrag extends BaseVideoListFrag {
         mFrameAnimController = new FrameAnimationController();
         mFrameAnimController.setIv(ivLoading);
         mFrameAnimController.setFrameImgResArr(LOADING_RES_ID_ARR);
-        //TODO if (mAttachedActivity.isMediaScanning()) {
-        //TODO onMediaScanningStart();
-        //TODO }
+        if (mAttachedActivity.isMediaScanning()) {
+            onMediaScanningStart();
+        }
 
         // Data
         mDataAdapter = new SclLc2010VdcVideoNamesAdapter(mAttachedActivity, 0);
@@ -135,7 +135,6 @@ public class SclLc2010VdcVideoNamesFrag extends BaseVideoListFrag {
     }
 
     public void autoPlayHistory() {
-        mHandler.removeCallbacksAndMessages(null);
         if (isAdded()) {
             if (EmptyUtil.isEmpty(mListMedias) || !mAttachedActivity.isAutoPlay()) {
                 return;
@@ -151,6 +150,7 @@ public class SclLc2010VdcVideoNamesFrag extends BaseVideoListFrag {
             }
 
             //Delay Play
+            mHandler.removeCallbacksAndMessages(null);
             mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -291,5 +291,15 @@ public class SclLc2010VdcVideoNamesFrag extends BaseVideoListFrag {
     public void onDestroy() {
         mHandler.removeCallbacksAndMessages(null);
         super.onDestroy();
+    }
+
+    @Override
+    public void updateThemeToDefault() {
+        Log.i(TAG, "updateThemeToDefault()");
+    }
+
+    @Override
+    public void updateThemeToIos() {
+        Log.i(TAG, "updateThemeToIos()");
     }
 }

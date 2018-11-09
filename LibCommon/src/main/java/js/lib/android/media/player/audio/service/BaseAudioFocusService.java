@@ -21,6 +21,15 @@ public abstract class BaseAudioFocusService extends Service {
     private final String TAG = "BaseAudioFocusService";
 
     /**
+     * Audio focus flag
+     * {@link AudioManager#AUDIOFOCUS_LOSS_TRANSIENT}
+     * or {@link AudioManager#AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK}
+     * or {@link AudioManager#AUDIOFOCUS_LOSS}
+     * or {@link AudioManager#AUDIOFOCUS_GAIN}
+     */
+    private int mAudioFocusFlag = 0;
+
+    /**
      * Player State Listener out of service
      */
     private Set<IAudioFocusListener> mSetAudioFocusListeners = new LinkedHashSet<>();
@@ -30,6 +39,7 @@ public abstract class BaseAudioFocusService extends Service {
      */
     protected AudioManager.OnAudioFocusChangeListener mAfChangeListener = new AudioManager.OnAudioFocusChangeListener() {
         public void onAudioFocusChange(int focusChange) {
+            mAudioFocusFlag = focusChange;
             Log.i(TAG, "f* -> {focusChange:[" + focusChange + "]");
             // 暂时失去Audio Focus，并会很快再次获得。必须停止Audio的播放，
             // 但是因为可能会很快再次获得AudioFocus，这里可以不释放Media资源；
@@ -67,16 +77,18 @@ public abstract class BaseAudioFocusService extends Service {
      * <p>
      * if==2 : Abandon audio focus
      */
-    public int registerAudioFocus(int flag) {
-        int result = -1;
-        if (flag == 1) {
-            result = AudioManagerUtil.requestMusicGain(this, mAfChangeListener);
-            Logs.i(TAG, "registerAudioFocus(" + flag + ") *request AUDIOFOCUS_GAIN* >> [result:" + result);
-        } else if (flag == 2) {
-            result = AudioManagerUtil.abandon(this, mAfChangeListener);
-            Logs.i(TAG, "registerAudioFocus(" + flag + ") *abandon AudioFocus* >> [result:" + result);
+    public void registerAudioFocus(int flag) {
+        mAudioFocusFlag = 0;
+        switch (flag) {
+            case 1:
+                int result = AudioManagerUtil.requestMusicGain(this, mAfChangeListener);
+                Logs.i(TAG, "registerAudioFocus(" + flag + ") *request AUDIOFOCUS_GAIN* >> [result:" + result);
+                break;
+            case 2:
+                result = AudioManagerUtil.abandon(this, mAfChangeListener);
+                Logs.i(TAG, "registerAudioFocus(" + flag + ") *abandon AudioFocus* >> [result:" + result);
+                break;
         }
-        return result;
     }
 
     public void setAudioFocusListener(IAudioFocusListener l) {
@@ -108,8 +120,7 @@ public abstract class BaseAudioFocusService extends Service {
     }
 
     public void respAudioFocusLoss() {
-        int res = registerAudioFocus(2);
-        Log.i(TAG, "res:" + res);
+        registerAudioFocus(2);
         for (IAudioFocusListener l : mSetAudioFocusListeners) {
             if (l != null) {
                 l.onAudioFocusLoss();
@@ -123,6 +134,15 @@ public abstract class BaseAudioFocusService extends Service {
                 l.onAudioFocusGain();
             }
         }
+    }
+
+    /**
+     * Is audio focus registered
+     *
+     * @return true-registered; false-unregistered or loss.
+     */
+    public boolean isAudioFocusRegistered() {
+        return (mAudioFocusFlag == AudioManager.AUDIOFOCUS_GAIN);
     }
 
     @Override

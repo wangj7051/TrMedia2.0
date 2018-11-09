@@ -3,7 +3,7 @@ package com.tricheer.radio.service;
 import android.content.Intent;
 import android.os.IBinder;
 
-import com.tri.lib.radio.service.BaseRadioService;
+import com.yj.lib.radio.service.BaseRadioService;
 
 /**
  * Radio operate service

@@ -9,13 +9,21 @@ import android.util.Log;
  */
 public class PlayEnableController {
     // TAG
-    private static final String TAG = "PlayEnableFlag";
+    private static final String TAG = "PlayEnableController";
 
     /**
-     * If paused by user?
-     * <p>Usually caused by touch pause.</p>
+     * ACC state flag
+     * <p>1-ACC_ON.</p>
+     * <p>2-ACC_OFF.</p>
+     * <p>3-ACC_OFF_TRUE.</p>
      */
-    private static boolean mIsPauseByUser = false;
+    private static int mAccFlag = 1;
+
+    /**
+     * Car reverse state flag
+     * <p>It is not allowed to play when car is reversing.</p>
+     */
+    private static boolean mIsReverseOn = false;
 
     /**
      * If Bluetooth call is running?
@@ -30,34 +38,19 @@ public class PlayEnableController {
     private static boolean mIsScreenOff = false;
 
     /**
-     * ACC state flag
-     * <p>1-ACC_ON.</p>
-     * <p>2-ACC_OFF.</p>
-     * <p>3-ACC_OFF_TRUE.</p>
+     * If paused by user?
+     * <p>Usually caused by touch pause.</p>
      */
-    private static int mAccFlag = 1;
+    private static boolean mIsPauseByUser = false;
 
-    public static void init() {
-        Log.i(TAG, "init()");
-        mAccFlag = 1;
-        mIsPauseByUser = false;
-        mIsScreenOff = false;
-        mIsBtCallRunning = false;
-    }
-
-    /**
-     * 暂停 BY 用户点击了暂停
-     *
-     * @param isPauseByUser :用户是否点击了暂停
-     */
-    public static void pauseByUser(boolean isPauseByUser) {
-        mIsPauseByUser = isPauseByUser;
-        print();
-    }
-
-    public static boolean isPauseByUser() {
-        return mIsPauseByUser;
-    }
+//    public static void init() {
+//        Log.i(TAG, "init()");
+//        mAccFlag = 1;
+//        mIsReverseOn = false;
+//        mIsBtCallRunning = false;
+//        mIsPauseByUser = false;
+//        mIsScreenOff = false;
+//    }
 
     /**
      * Acc State Changed.
@@ -68,7 +61,15 @@ public class PlayEnableController {
      */
     public static void onAccStateChanged(int flag) {
         mAccFlag = flag;
-        print();
+    }
+
+    /**
+     * 暂停 BY 倒车进行中
+     *
+     * @param isReverseOn 是否倒车进行中
+     */
+    public static void onReverseStateChanged(boolean isReverseOn) {
+        mIsReverseOn = isReverseOn;
     }
 
     /**
@@ -76,9 +77,8 @@ public class PlayEnableController {
      *
      * @param isBtCallRunning :蓝牙电话是否进行中
      */
-    public static void onBtCallRunning(boolean isBtCallRunning) {
+    public static void onBtCallStateChanged(boolean isBtCallRunning) {
         mIsBtCallRunning = isBtCallRunning;
-        print();
     }
 
     /**
@@ -88,32 +88,47 @@ public class PlayEnableController {
      */
     public static void onScreenStateChanged(boolean isScreenOff) {
         mIsScreenOff = isScreenOff;
-        print();
+    }
+
+    /**
+     * 暂停 BY 用户点击了暂停
+     *
+     * @param isPauseByUser :用户是否点击了暂停
+     */
+    public static void pauseByUser(boolean isPauseByUser) {
+        mIsPauseByUser = isPauseByUser;
+    }
+
+    public static boolean isPauseByUser() {
+        return mIsPauseByUser;
     }
 
     /**
      * 是否可以播放
+     * <p>1. ACC_FLAG = 1</p>
+     * <p>2. mIsReverseOn == false</p>
+     * <p>3. mIsBtCallRunning == false</p>
+     * <p>4. mIsBtCallRunning == false</p>
      */
     public static boolean isPlayEnable() {
         boolean isPlayEnable = (mAccFlag == 1)
-                || !mIsPauseByUser
-                || !mIsScreenOff
-                || !mIsBtCallRunning;
+                && !mIsReverseOn
+                && !mIsBtCallRunning
+                && !mIsPauseByUser;
         Log.i(TAG, "isPlayEnable :: " + isPlayEnable);
         return isPlayEnable;
     }
 
     /**
-     * 打印当前标记
+     * Play enable state
      */
-    public static void print() {
-        Log.i(TAG, "  ");
-        Log.i(TAG, ">--------------^--------------");
-        Log.i(TAG, "> mAccFlag ~ " + mAccFlag);
-        Log.i(TAG, "> mIsPauseByUser ~ " + mIsPauseByUser);
-        Log.i(TAG, "> mIsScreenOff ~ " + mIsScreenOff);
-        Log.i(TAG, "> mIsBtCallRunning ~ " + mIsBtCallRunning);
-        Log.i(TAG, ">-----------------------------");
-        Log.i(TAG, "  ");
+    public static String getStateDesc() {
+        return "  " +
+                ">--------------^--------------" +
+                "> mAccFlag ~ " + mAccFlag +
+                "> mIsReverseOn ~ " + mIsReverseOn +
+                "> mIsBtCallRunning ~ " + mIsBtCallRunning +
+                "> mIsPauseByUser ~ " + mIsPauseByUser +
+                ">-----------------------------";
     }
 }

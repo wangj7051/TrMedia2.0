@@ -1,6 +1,6 @@
 package com.tricheer.radio.utils;
 
-import com.tri.lib.radio.engine.BandCategoryEnum;
+import com.yj.lib.radio.engine.BandCategoryEnum;
 
 import java.util.Locale;
 

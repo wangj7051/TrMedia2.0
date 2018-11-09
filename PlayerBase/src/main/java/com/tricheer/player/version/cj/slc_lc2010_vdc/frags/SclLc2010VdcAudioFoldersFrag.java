@@ -17,7 +17,6 @@ import android.widget.ListView;
 
 import com.js.sidebar.LetterSideBar;
 import com.tricheer.player.R;
-import com.tricheer.player.receiver.MediaScanReceiver;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.activity.SclLc2010VdcAudioListActivity;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.adapter.BaseAudioAdapter;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.adapter.SclLc2010VdcAudioFoldersAdapter;
@@ -47,7 +46,7 @@ public class SclLc2010VdcAudioFoldersFrag extends BaseAudioListFrag {
 
     //==========Widgets in this Fragment==========
     private View contentV;
-    private ListView lvDatas;
+    private ListView lvData;
     private ImageView ivLoading;
     private LetterSideBar lsb;
 
@@ -113,9 +112,10 @@ public class SclLc2010VdcAudioFoldersFrag extends BaseAudioListFrag {
         mDataAdapter = new SclLc2010VdcAudioFoldersAdapter(mAttachedActivity, 0);
         mDataAdapter.setCollectListener(new CollectBtnCallback());
 
-        lvDatas = (ListView) contentV.findViewById(R.id.lv_datas);
-        lvDatas.setAdapter(mDataAdapter);
-        lvDatas.setOnItemClickListener(new LvItemClick());
+        lvData = (ListView) contentV.findViewById(R.id.lv_datas);
+        lvData.setSelector(mAttachedActivity.getImgResId("bg_audio_item_selector"));
+        lvData.setAdapter(mDataAdapter);
+        lvData.setOnItemClickListener(new LvItemClick());
         loadDataList();
     }
 
@@ -224,7 +224,7 @@ public class SclLc2010VdcAudioFoldersFrag extends BaseAudioListFrag {
         if (isAdded()) {
             int nextPos = mDataAdapter.getNextPos();
             mDataAdapter.refreshData(nextPos);
-            lvDatas.setSelection(nextPos);
+            lvData.setSelection(nextPos);
         }
     }
 
@@ -233,7 +233,7 @@ public class SclLc2010VdcAudioFoldersFrag extends BaseAudioListFrag {
         if (isAdded()) {
             int prevPos = mDataAdapter.getPrevPos();
             mDataAdapter.refreshData(prevPos);
-            lvDatas.setSelection(prevPos);
+            lvData.setSelection(prevPos);
         }
     }
 
@@ -289,7 +289,7 @@ public class SclLc2010VdcAudioFoldersFrag extends BaseAudioListFrag {
             int sectionPos = mDataAdapter.getPositionForSection(letter.charAt(0));
             if (sectionPos != -1) {
                 Logs.i(TAG, "LetterSideBarCallback -> callback(" + pos + "," + letter + "-" + sectionPos + ")");
-                lvDatas.setSelection(sectionPos);
+                lvData.setSelection(sectionPos);
             }
         }
     }
@@ -385,5 +385,28 @@ public class SclLc2010VdcAudioFoldersFrag extends BaseAudioListFrag {
         } else {
             return 0;
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    public void updateThemeToDefault() {
+        if (isAdded()) {
+            updateThemeCommon();
+        }
+    }
+
+    @Override
+    public void updateThemeToIos() {
+        if (isAdded()) {
+            updateThemeCommon();
+        }
+    }
+
+    private void updateThemeCommon() {
+        lvData.setSelector(mAttachedActivity.getImgResId("bg_audio_item_selector"));
     }
 }

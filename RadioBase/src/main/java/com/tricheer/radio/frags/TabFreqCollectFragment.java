@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.tri.lib.radio.engine.BandCategoryEnum;
+import com.yj.lib.radio.engine.BandCategoryEnum;
 import com.tricheer.radio.MainActivity;
 import com.tricheer.radio.R;
 import com.tricheer.radio.utils.FreqFormatUtil;

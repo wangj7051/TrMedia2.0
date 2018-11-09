@@ -7,13 +7,15 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.tri.lib.engine.KeyEnum;
+import com.tri.lib.receiver.AccReceiver;
 import com.tri.lib.utils.TrVideoPreferUtils;
 import com.tricheer.player.R;
 import com.tricheer.player.engine.PlayerAppManager;
 import com.tricheer.player.engine.PlayerAppManager.PlayerCxtFlag;
-import com.tricheer.player.version.base.activity.video.BaseVideoKeyEventActivity;
+import com.tricheer.player.version.base.activity.video.BaseVideoUIActivity;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.frags.BaseVideoListFrag;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.frags.SclLc2010VdcVideoFoldersFrag;
 import com.tricheer.player.version.cj.slc_lc2010_vdc.frags.SclLc2010VdcVideoNamesFrag;
@@ -31,13 +33,15 @@ import js.lib.android.utils.FragUtil;
  *
  * @author Jun.Wang
  */
-public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
+public class SclLc2010VdcVideoListActivity extends BaseVideoUIActivity implements AccReceiver.AccDelegate {
     // TAG
     private static final String TAG = "VideoListActivityImpl";
 
     /**
      * ==========Widgets in this Activity==========
      */
+    private View layoutRoot;
+    private View layoutTop;
     private View vRubbishFocus;
     private View[] vItems = new View[2];
 
@@ -47,26 +51,27 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
      * Context
      */
     private Context mContext;
+    private static Handler mHandler = new Handler();
 
     /**
-     * Flag :: If open player automatically
+     * Flag - If open player automatically?
      * <p>Only execute once in this activity.</p>
      */
     private boolean mIsAutoPlay = true;
 
-    // Request Current Playing Media Url
-    private BaseVideoListFrag mFragMedias;
-
-    /**
-     * Request Current Playing Media Url
-     */
-    protected final int M_REQ_WARNING = 2;
-
-    private static Handler mHandler = new Handler();
-
-    //
+    // Flag - If execute scanning when local media data is null ?
     private boolean mIsScanOnLocalIsNull = true;
 
+    // Request Current Playing Media Url
+    protected final int M_REQ_WARNING = 2;
+
+    // Current page fragment.
+    private BaseVideoListFrag mFragMedias;
+    private View mFragItemV;
+
+    /**
+     * Warning page controller.
+     */
     private WarningController mWarningController;
 
     @Override
@@ -74,6 +79,7 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
         super.onCreate(bundle);
         setContentView(R.layout.scl_lc2010_vdc_activity_video_list);
         PlayerAppManager.putCxt(PlayerCxtFlag.VIDEO_LIST, this);
+        AccReceiver.register(this);
         init();
     }
 
@@ -85,6 +91,8 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
         mWarningController = new WarningController();
 
         // -- Widgets --
+        layoutRoot = findRootView();
+        layoutTop = findViewById(R.id.layout_top);
         vRubbishFocus = findViewById(R.id.v_rubbish_focus);
 
         //
@@ -100,7 +108,7 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
 
     @Override
     protected void onScanServiceConnected() {
-        loadFragment(0);
+        switchTab(vItems[0], true);
         loadLocalMedias();
     }
 
@@ -108,26 +116,6 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
     protected void onResume() {
         super.onResume();
         mWarningController.onResume();
-    }
-
-    private void loadFragment(int idx) {
-        //Remove Old
-        if (mFragMedias != null) {
-            FragUtil.removeV4Fragment(mFragMedias, getSupportFragmentManager());
-        }
-
-        //Load New
-        switch (idx) {
-            case 0:
-                mFragMedias = new SclLc2010VdcVideoNamesFrag();
-                break;
-            case 1:
-                mFragMedias = new SclLc2010VdcVideoFoldersFrag();
-                break;
-        }
-        if (mFragMedias != null) {
-            FragUtil.loadV4Fragment(R.id.layout_frag, mFragMedias, getSupportFragmentManager());
-        }
     }
 
     @Override
@@ -187,9 +175,9 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
     public void onMediaScanningCancel() {
         super.onMediaScanningCancel();
         Log.i(TAG, "onMediaScanningCancel()");
-        if (mFragMedias != null) {
+//        if (mFragMedias != null) {
 //            mFragMedias.onMediaScanningCancel();
-        }
+//        }
     }
 
     @Override
@@ -233,7 +221,8 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
         }
     };
 
-    private void switchTab(View v, boolean isFromUser) {
+    private void switchTab(View v, boolean isExecLoad) {
+        mFragItemV = v;
         //Switch TAB
         final int loop = vItems.length;
         for (int idx = 0; idx < loop; idx++) {
@@ -242,7 +231,9 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
                 item.setFocusable(true);
                 item.requestFocus();
                 setBg(item, true);
-                loadFragment(idx);
+                if (isExecLoad) {
+                    loadFragment(idx);
+                }
             } else {
                 item.setFocusable(false);
                 item.clearFocus();
@@ -251,11 +242,31 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
         }
     }
 
+    private void loadFragment(int idx) {
+        //Remove Old
+        if (mFragMedias != null) {
+            FragUtil.removeV4Fragment(mFragMedias, getSupportFragmentManager());
+        }
+
+        //Load New
+        switch (idx) {
+            case 0:
+                mFragMedias = new SclLc2010VdcVideoNamesFrag();
+                break;
+            case 1:
+                mFragMedias = new SclLc2010VdcVideoFoldersFrag();
+                break;
+        }
+        if (mFragMedias != null) {
+            FragUtil.loadV4Fragment(R.id.layout_frag, mFragMedias, getSupportFragmentManager());
+        }
+    }
+
     private void setBg(View v, boolean selected) {
         if (selected) {
-            v.setBackgroundResource(R.drawable.bg_title_item_c);
+            v.setBackgroundResource(getImgResId("bg_title_item_c"));
         } else {
-            v.setBackgroundResource(R.drawable.btn_filter_tab_selector);
+            v.setBackgroundResource(getImgResId("btn_filter_tab_selector"));
         }
     }
 
@@ -284,9 +295,9 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
                 }
                 break;
             case KEYCODE_ENTER:
-                if (mFragMedias != null) {
+//                if (mFragMedias != null) {
 //                    mFragMedias.playSelected();
-                }
+//                }
                 break;
         }
     }
@@ -343,8 +354,18 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
     }
 
     @Override
-    public boolean isPlayEnable() {
-        return false;
+    public void onAccOff() {
+    }
+
+    @Override
+    public void onAccOffTrue() {
+        Log.i(TAG, "onAccOffTrue()");
+        bindScanService(false);
+        PlayerAppManager.exitCurrPlayer();
+    }
+
+    @Override
+    public void onAccOn() {
     }
 
     @Override
@@ -427,5 +448,50 @@ public class SclLc2010VdcVideoListActivity extends BaseVideoKeyEventActivity {
             vRubbish.setFocusable(true);
             vRubbish.requestFocus();
         }
+    }
+
+    @Override
+    public void updateThemeToDefault() {
+        super.updateThemeToDefault();
+        Log.i(TAG, "updateThemeToDefault()");
+        //Common
+        updateThemeCommon();
+
+        //Fragment
+        if (mFragMedias != null) {
+            mFragMedias.updateThemeToDefault();
+        }
+    }
+
+    @Override
+    public void updateThemeToIos() {
+        Log.i(TAG, "updateThemeToIos()");
+        // Top Layout
+        // Top items
+        for (View v : vItems) {
+            ViewGroup.LayoutParams lps = v.getLayoutParams();
+            if (lps instanceof ViewGroup.MarginLayoutParams) {
+                ViewGroup.MarginLayoutParams marginLps = (ViewGroup.MarginLayoutParams) lps;
+                marginLps.topMargin = 0;
+                marginLps.bottomMargin = 0;
+            }
+        }
+
+        //Common
+        updateThemeCommon();
+
+        //Fragment
+        if (mFragMedias != null) {
+            mFragMedias.updateThemeToIos();
+        }
+    }
+
+    private void updateThemeCommon() {
+        // Bottom
+        layoutRoot.setBackgroundResource(getImgResId("bg_main"));
+        // Top Layout
+        layoutTop.setBackgroundResource(getImgResId("bg_title"));
+        // Top items
+        switchTab(mFragItemV, false);
     }
 }

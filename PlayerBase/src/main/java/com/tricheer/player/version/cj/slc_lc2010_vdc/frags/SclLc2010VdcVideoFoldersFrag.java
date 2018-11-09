@@ -105,9 +105,9 @@ public class SclLc2010VdcVideoFoldersFrag extends BaseVideoListFrag {
         mFrameAnimController = new FrameAnimationController();
         mFrameAnimController.setIv(ivLoading);
         mFrameAnimController.setFrameImgResArr(LOADING_RES_ID_ARR);
-        //TODO if (mAttachedActivity.isMediaScanning()) {
-        //TODO     onMediaScanningStart();
-        //TODO }
+        if (mAttachedActivity.isMediaScanning()) {
+            onMediaScanningStart();
+        }
 
         // Data
         mDataAdapter = new SclLc2010VdcVideoFoldersAdapter(mAttachedActivity, 0);
@@ -329,5 +329,15 @@ public class SclLc2010VdcVideoFoldersFrag extends BaseVideoListFrag {
     @Override
     public void onDestroy() {
         super.onDestroy();
+    }
+
+    @Override
+    public void updateThemeToDefault() {
+        Log.i(TAG, "updateThemeToDefault()");
+    }
+
+    @Override
+    public void updateThemeToIos() {
+        Log.i(TAG, "updateThemeToIos()");
     }
 }

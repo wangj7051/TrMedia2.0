@@ -52,7 +52,7 @@ public class SclLc2010VdcVideoWarningActivity extends BaseFragActivity {
         Log.i(TAG, "onPause()");
     }
 
-    private View.OnClickListener mViewOnClick = new View.OnClickListener() {
+    private final View.OnClickListener mViewOnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             if (v == vAgree) {

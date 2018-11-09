@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -34,9 +35,12 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseAudioPlayerActivity {
     private static final String TAG = "MusicPlayerActivityImpl";
 
     //==========Widgets in this Activity==========
+    private View layoutRoot;
+    private View layoutTop;
     private TextView tvName, tvArtist, tvAlbum;
     private ImageView ivMusicCover;
     private TextView tvStartTime, tvEndTime;
+    private RelativeLayout layoutSeekbar;
     private SeekBar seekBar;
     private ImageView ivPlayPre, ivPlay, ivPlayNext, ivCollect, ivPlayModeSet, ivList;
 
@@ -59,6 +63,9 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseAudioPlayerActivity {
         mContext = this;
 
         // Initialize Widgets
+        layoutRoot = findRootView();
+        layoutTop = findViewById(R.id.layout_top);
+
         tvName = findView(R.id.tv_name);
         tvName.setText("");
 
@@ -68,6 +75,7 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseAudioPlayerActivity {
         tvAlbum = findView(R.id.tv_album);
         tvAlbum.setText("");
 
+        layoutSeekbar = (RelativeLayout) findViewById(R.id.rl_seek_bar);
         tvStartTime = findView(R.id.tv_play_start_time);
         tvEndTime = findView(R.id.tv_play_end_time);
         seekBar = findView(R.id.seekbar);
@@ -95,6 +103,11 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseAudioPlayerActivity {
 
         //
         bindAndCreatePlayService(2);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     @Override
@@ -141,14 +154,19 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseAudioPlayerActivity {
 
         @Override
         public void onClick(View v) {
+            //Mode
             if (v == ivPlayModeSet) {
                 switchPlayMode(12);
+
+                //Play
             } else if (v == ivPlayPre) {
-                playPrevBySecurity();
+                execPlayPrevByUser();
             } else if (v == ivPlay) {
-                execPlayOrPause();
+                execPlayOrPauseByUser();
             } else if (v == ivPlayNext) {
-                playNextBySecurity();
+                execPlayNextByUser();
+
+                //Collect
             } else if (v == ivCollect) {
                 collect();
             } else if (v == ivList) {
@@ -162,11 +180,11 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseAudioPlayerActivity {
                 switch (media.isCollected) {
                     case 1:
                         media.isCollected = 0;
-                        ivCollect.setImageResource(R.drawable.btn_op_favor_selector);
+                        updateImgRes(ivCollect, "btn_op_favor_selector");
                         break;
                     case 0:
                         media.isCollected = 1;
-                        ivCollect.setImageResource(R.drawable.btn_op_favored_selector);
+                        updateImgRes(ivCollect, "btn_op_favored_selector");
                         break;
                 }
                 AudioDBManager.instance().updateMediaCollect(media);
@@ -214,10 +232,10 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseAudioPlayerActivity {
         //Collect status
         switch (media.isCollected) {
             case 0:
-                ivCollect.setImageResource(R.drawable.btn_op_favor_selector);
+                updateImgRes(ivCollect, "btn_op_favor_selector");
                 break;
             case 1:
-                ivCollect.setImageResource(R.drawable.btn_op_favored_selector);
+                updateImgRes(ivCollect, "btn_op_favored_selector");
                 break;
         }
     }
@@ -226,10 +244,10 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseAudioPlayerActivity {
     protected void refreshUIOfPlayBtn(int flag) {
         switch (flag) {
             case 1:
-                ivPlay.setImageResource(R.drawable.btn_op_pause_selector);
+                updateImgRes(ivPlay, "btn_op_pause_selector");
                 break;
             case 2:
-                ivPlay.setImageResource(R.drawable.btn_op_play_selector);
+                updateImgRes(ivPlay, "btn_op_play_selector");
                 break;
         }
     }
@@ -277,24 +295,19 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseAudioPlayerActivity {
         if (storePlayMode != null) {
             switch (storePlayMode) {
                 case LOOP:
-                    ivPlayModeSet.setImageResource(R.drawable.btn_op_mode_loop_selector);
+                    updateImgRes(ivPlayModeSet, "btn_op_mode_loop_selector");
                     break;
                 case SINGLE:
-                    ivPlayModeSet.setImageResource(R.drawable.btn_op_mode_oneloop_selector);
+                    updateImgRes(ivPlayModeSet, "btn_op_mode_oneloop_selector");
                     break;
                 case RANDOM:
-                    ivPlayModeSet.setImageResource(R.drawable.btn_op_mode_random_selector);
+                    updateImgRes(ivPlayModeSet, "btn_op_mode_random_selector");
                     break;
                 // case PlayMode.ORDER:
                 // ivPlayModeSet.setImageResource(R.drawable.btn_op_mode_order_selector);
                 // break;
             }
         }
-    }
-
-    @Override
-    public boolean isPlayEnable() {
-        return false;
     }
 
     @Override
@@ -321,10 +334,10 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseAudioPlayerActivity {
     public void onGetKeyCode(KeyEnum key) {
         switch (key) {
             case KEYCODE_MEDIA_PREVIOUS:
-                playPrevBySecurity();
+                playPrev();
                 break;
             case KEYCODE_MEDIA_NEXT:
-                playNextBySecurity();
+                playNext();
                 break;
             case KEYCODE_DPAD_LEFT:
             case KEYCODE_DPAD_RIGHT:
@@ -371,5 +384,60 @@ public class SclLc2010VdcAudioPlayerActivity extends BaseAudioPlayerActivity {
         boolean isTrackingTouch() {
             return mmIsTracking;
         }
+    }
+
+    @Override
+    public void updateThemeToDefault() {
+        Log.i(TAG, "updateThemeToDefault()");
+        updateThemeCommon();
+    }
+
+    @Override
+    public void updateThemeToIos() {
+        Log.i(TAG, "updateThemeToIos()");
+        updateThemeCommon();
+    }
+
+    private void updateThemeCommon() {
+        // -- Top Layout --
+        layoutTop.setBackgroundResource(getImgResId("bg_title"));
+        // Bottom
+        layoutRoot.setBackgroundResource(getImgResId("bg_main"));
+
+        // -- Middle Layout --
+        ivMusicCover.setBackgroundResource(getImgResId("bg_cover_border"));
+
+        //Seek bar
+        layoutSeekbar.setBackgroundResource(getImgResId("bg_corners_seekbar"));
+        seekBar.setProgressDrawable(mContext.getDrawable(getImgResId("seekbar_progress_drawable_audio")));
+        seekBar.invalidate();
+
+        // -- Bottom --
+        ivPlayPre.setImageResource(getImgResId("btn_op_prev_selector"));
+
+        Object objTag = ivPlay.getTag();
+        if (objTag == null) {
+            updateImgRes(ivPlay, "btn_op_play_selector");
+        } else {
+            updateImgRes(ivPlay, String.valueOf(objTag));
+        }
+
+        ivPlayNext.setImageResource(getImgResId("btn_op_next_selector"));
+
+        objTag = ivCollect.getTag();
+        if (objTag == null) {
+            updateImgRes(ivCollect, "btn_op_favor_selector");
+        } else {
+            updateImgRes(ivCollect, String.valueOf(objTag));
+        }
+
+        objTag = ivPlayModeSet.getTag();
+        if (objTag == null) {
+            updateImgRes(ivPlayModeSet, "btn_op_mode_loop_selector");
+        } else {
+            updateImgRes(ivPlayModeSet, String.valueOf(objTag));
+        }
+
+        ivList.setImageResource(getImgResId("btn_op_list_selector"));
     }
 }

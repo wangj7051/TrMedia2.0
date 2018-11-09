@@ -58,13 +58,6 @@ public abstract class BaseVideoCommonActionsActivity extends BasePlayerActivity 
     private boolean mIsPlayerReleased = true;
 
     /**
-     * 安全线程 - 上一个/下一个
-     * <p>
-     * 防高频点击线程
-     */
-    private Runnable mPlayPrevSecRunnable, mPlayNextSecRunnable;
-
-    /**
      * FLAG - 是否在收到广播Intent.ACTION_SCREEN_OFF后暂停
      */
     protected boolean mIsPauseOnScreenOff = false;
@@ -91,15 +84,6 @@ public abstract class BaseVideoCommonActionsActivity extends BasePlayerActivity 
      */
     protected boolean isPlayerReleased() {
         return mIsPlayerReleased;
-    }
-
-    public void removePlayRunnable() {
-        if (mPlayPrevSecRunnable != null) {
-            mHandler.removeCallbacks(mPlayPrevSecRunnable);
-        }
-        if (mPlayNextSecRunnable != null) {
-            mHandler.removeCallbacks(mPlayNextSecRunnable);
-        }
     }
 
     @Override
@@ -199,23 +183,6 @@ public abstract class BaseVideoCommonActionsActivity extends BasePlayerActivity 
     }
 
     @Override
-    public void playPrevBySecurity() {
-        Logs.i(TAG, "^^ playPrevBySecurity() ^^");
-        removePlayRunnable();
-        if (mPlayPrevSecRunnable == null) {
-            mPlayPrevSecRunnable = new Runnable() {
-
-                @Override
-                public void run() {
-                    Logs.i(TAG, "playPrevBySecurity() -> ^^ mPlayPrevSecRunnable ^^");
-                    playPrev();
-                }
-            };
-        }
-        mHandler.postDelayed(mPlayPrevSecRunnable, 500);
-    }
-
-    @Override
     public void playNext() {
         Logs.i(TAG, "^^ playNext() ^^");
         if (PlayEnableController.isPlayEnable()) {
@@ -232,36 +199,11 @@ public abstract class BaseVideoCommonActionsActivity extends BasePlayerActivity 
     }
 
     @Override
-    public void playNextBySecurity() {
-        Logs.i(TAG, "^^ playNextBySecurity() ^^");
-        removePlayRunnable();
-        if (mPlayNextSecRunnable == null) {
-            mPlayNextSecRunnable = new Runnable() {
-
-                @Override
-                public void run() {
-                    Logs.i(TAG, "playPrevBySecurity() -> ^^ mPlayNextSecRunnable ^^");
-                    playNext();
-                }
-            };
-        }
-        mHandler.postDelayed(mPlayNextSecRunnable, 500);
-    }
-
-    @Override
     public void pause() {
         Logs.i(TAG, "^^ pause() ^^");
         if (vvPlayer != null) {
             vvPlayer.pauseMedia();
         }
-    }
-
-    @Override
-    public void pauseByUser() {
-        Logs.i(TAG, "^^ pauseByUser() ^^");
-        mIsPauseOnNotify = true;
-        removePlayRunnable();
-        pause();
     }
 
     @Override
@@ -273,14 +215,6 @@ public abstract class BaseVideoCommonActionsActivity extends BasePlayerActivity 
                 makeScreenOn(true);
             }
         }
-    }
-
-    @Override
-    public void resumeByUser() {
-        Logs.i(TAG, "^^ resumeByUser() ^^");
-        mIsPauseOnNotify = false;
-        removePlayRunnable();
-        resume();
     }
 
     @Override

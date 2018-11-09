@@ -3,8 +3,8 @@ package com.tricheer.radio.activity;
 import android.app.Service;
 import android.content.Intent;
 
-import com.tri.lib.radio.activity.BaseRadioLogicActivity;
 import com.tricheer.radio.service.RadioPlayerService;
+import com.yj.lib.radio.activity.BaseRadioLogicActivity;
 
 import js.lib.android.media.engine.IAudioFocusListener;
 

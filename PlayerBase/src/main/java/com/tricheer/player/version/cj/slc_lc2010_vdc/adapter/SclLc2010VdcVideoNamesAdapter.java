@@ -12,7 +12,6 @@ import android.widget.SectionIndexer;
 import android.widget.TextView;
 
 import com.tricheer.player.R;
-import com.tricheer.player.utils.PlayerFileUtils;
 import com.tricheer.player.utils.PlayerLogicUtils;
 
 import java.io.File;
@@ -21,6 +20,7 @@ import java.util.List;
 
 import js.lib.android.adapter.BaseArrayAdapter;
 import js.lib.android.media.bean.ProVideo;
+import js.lib.android.media.engine.scan.MediaScanService;
 
 public class SclLc2010VdcVideoNamesAdapter extends BaseArrayAdapter<ProVideo> implements SectionIndexer {
     // TAG
@@ -116,15 +116,12 @@ public class SclLc2010VdcVideoNamesAdapter extends BaseArrayAdapter<ProVideo> im
             //Set video image resource
             //Cover
             try {
-                String storePath = PlayerFileUtils.getVideoPicPath(item.mediaUrl);
-                String coverPicFilePath = PlayerLogicUtils.getMediaPicFilePath(item, storePath);
+                String coverPicFilePath = MediaScanService.getCoverBitmapPath(item, 1);
                 Log.i("coverAdapter", "coverPicFile: " + coverPicFilePath);
                 File coverPicFile = new File(coverPicFilePath);
                 if (coverPicFile.exists()) {
-                    Log.i("coverAdapter", "--Exist --YYYYYYYYYYY--");
                     holder.vCover.setImageURI(Uri.parse(coverPicFilePath));
                 } else {
-                    Log.i("coverAdapter", "--Exist --NNNNNNNNNNN--");
                     holder.vCover.setImageResource(R.color.video_item_cover);
                 }
             } catch (Exception e) {

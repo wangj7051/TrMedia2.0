@@ -137,10 +137,12 @@ public class SclLc2010VdcAudioNamesAdapter extends BaseAudioAdapter<ProAudio> im
             //Playing
             if (TextUtils.equals(mPlayingMediaUrl, item.mediaUrl)) {
                 holder.tvIdx.setTextColor(mHlFontColor);
+                holder.tvIdx.setVisibility(View.GONE);
                 holder.tvDesc.setTextColor(mHlFontColor);
                 holder.ivPlaying.setVisibility(View.VISIBLE);
             } else {
                 holder.tvIdx.setTextColor(mNormalFontColor);
+                holder.tvIdx.setVisibility(View.VISIBLE);
                 holder.tvDesc.setTextColor(mNormalFontColor);
                 holder.ivPlaying.setVisibility(View.INVISIBLE);
             }
@@ -158,7 +160,7 @@ public class SclLc2010VdcAudioNamesAdapter extends BaseAudioAdapter<ProAudio> im
 
             //Item background
             if (mSelectedPos == position) {
-                convertView.setBackgroundResource(R.drawable.bg_lv_item_selected);
+                convertView.setBackgroundResource(getImgResId("bg_lv_item_selected"));
             } else {
                 convertView.setBackgroundResource(0);
             }

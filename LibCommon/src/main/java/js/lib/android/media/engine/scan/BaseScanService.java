@@ -141,10 +141,13 @@ public abstract class BaseScanService extends Service {
         }
     }
 
-    protected String getCoverBitmapPath(Program media, int flag) {
+    public static String getCoverBitmapPath(Program media, int flag) {
         String coverStorePath = "";
         try {
-            String parentStorePath = JsFileUtils.getParentPath(media.mediaUrl);
+            String parentStorePath = "/sdcard/.media_pics/";//JsFileUtils.getParentPath(media.mediaUrl);
+            JsFileUtils.createFolder(parentStorePath);
+
+            //
             switch (flag) {
                 case 0:
                     coverStorePath = parentStorePath + ".media_audio_pic";
@@ -153,7 +156,8 @@ public abstract class BaseScanService extends Service {
                     coverStorePath = parentStorePath + ".media_video_pic";
                     break;
             }
-            JsFileUtils.createFolder(coverStorePath);
+            int respFlag = JsFileUtils.createFolder(coverStorePath);
+            Log.i(TAG, "respFlag:" + respFlag);
             return coverStorePath + "/" + media.title + ".png";
         } catch (Exception e) {
             Log.i(TAG, "storeBitmap(Program)");

@@ -1,6 +1,5 @@
 package com.tricheer.player.version.base.activity;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -9,7 +8,6 @@ import com.tricheer.player.R;
 import com.tricheer.player.view.ToastMsgDialog;
 
 public abstract class BaseUsbLogicActivity extends BaseFragActivity {
-    private Context mContext;
     private static Handler mHandler = new Handler();
 
 

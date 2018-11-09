@@ -9,7 +9,6 @@ import com.tricheer.player.engine.PlayerAppManager;
 import com.tricheer.player.engine.PlayerAppManager.PlayerCxtFlag;
 import com.tricheer.player.utils.PlayerLogicUtils;
 
-import java.io.File;
 import java.util.List;
 
 import js.lib.android.media.bean.ProAudio;
@@ -24,7 +23,7 @@ import js.lib.http.IResponse;
  *
  * @author Jun.Wang
  */
-public abstract class BaseAudioPlayerActivity extends BaseAudioKeyEventActivity implements PlayerDelegate {
+public abstract class BaseAudioPlayerActivity extends BaseAudioUIActivity implements PlayerDelegate {
 
     // LOG TAG
     private final String TAG = "BaseAudioPlayerActivity";
@@ -37,7 +36,7 @@ public abstract class BaseAudioPlayerActivity extends BaseAudioKeyEventActivity 
     @Override
     protected void onResume() {
         super.onResume();
-        resumeByUser();
+        resume();
     }
 
     @Override
@@ -53,44 +52,8 @@ public abstract class BaseAudioPlayerActivity extends BaseAudioKeyEventActivity 
 
     @Override
     public void onPlayFromFolder(int playPos, List<String> listPlayPaths) {
-        // Save last select media Path
-        File selectMedia = new File(listPlayPaths.get(playPos));
-    }
-
-    /**
-     * Is Playing Media
-     */
-    protected boolean isPlayingSameMedia(String mediaUrl) {
-        try {
-            return mediaUrl.equals(getCurrMediaPath());
-        } catch (Exception e) {
-            Logs.printStackTrace(TAG + "isPlayingSameMedia()", e);
-            return false;
-        }
-    }
-
-    /**
-     * EXEC Play or Pause
-     */
-    public void execPlayOrPause() {
-        Logs.i(TAG, "execPlayOrPause");
-        if (isPlaying()) {
-            pauseByUser();
-        } else {
-            resumeByUser();
-        }
-    }
-
-    /**
-     * 打开上一页音乐
-     */
-    protected void execJumpPrevPage() {
-    }
-
-    /**
-     * 打开下一页音乐
-     */
-    protected void execJumpNextPage() {
+        // //Save last select media Path
+        // File selectMedia = new File(listPlayPaths.get(playPos));
     }
 
     @Override

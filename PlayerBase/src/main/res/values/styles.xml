@@ -32,10 +32,17 @@
     </style>
 
     <!-- SLC_LC2010_VDC Style -->
-    <style name="Widget.SeekBar.SLC_LC2010_VDC" parent="@android:style/Widget.SeekBar">
+    <style name="Widget.SeekBar.AUDIO_PLAYER" parent="@android:style/Widget.SeekBar">
         <item name="android:maxHeight">10dp</item>
         <item name="android:minHeight">10dp</item>
-        <item name="android:progressDrawable">@drawable/bg_progressbar_1</item>
+        <item name="android:progressDrawable">@drawable/seekbar_progress_drawable_audio</item>
+        <item name="android:thumb">@drawable/seekbar_point</item>
+        <item name="android:thumbOffset">0dp</item>
+    </style>
+    <style name="Widget.SeekBar.VIDEO_PLAYER" parent="@android:style/Widget.SeekBar">
+        <item name="android:maxHeight">10dp</item>
+        <item name="android:minHeight">10dp</item>
+        <item name="android:progressDrawable">@drawable/seekbar_progress_drawable_audio</item>
         <item name="android:thumb">@drawable/seekbar_point</item>
         <item name="android:thumbOffset">0dp</item>
     </style>

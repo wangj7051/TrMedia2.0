@@ -32,6 +32,7 @@ android {
 }
 
 dependencies {
+    api project(':LibRadio')
     api project(':LibTricheer')
     api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }

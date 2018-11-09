@@ -93,12 +93,12 @@ public class PlayerFileUtils extends JsFileUtils {
 
         @Override
         public List<String> getListSuppportPaths() {
-            return new ArrayList<String>();
+            return new ArrayList<>();
         }
 
         @Override
         public List<String> getBlacklistPaths() {
-            List<String> listFilterPaths = new ArrayList<String>();
+            List<String> listFilterPaths = new ArrayList<>();
             listFilterPaths.add(CAMERA1);
             listFilterPaths.add(MEDIA_RW_CAMERA1);
             listFilterPaths.add(CAMERA2);
@@ -167,7 +167,7 @@ public class PlayerFileUtils extends JsFileUtils {
 
         @Override
         public List<String> getListSuppportPaths() {
-            List<String> listSupportPaths = new ArrayList<String>();
+            List<String> listSupportPaths = new ArrayList<>();
             if (!EmptyUtil.isEmpty(SD_INNER)) {// Inner SDCard
                 listSupportPaths.add(SD_INNER);
             }
@@ -178,7 +178,7 @@ public class PlayerFileUtils extends JsFileUtils {
 
         @Override
         public List<String> getBlacklistPaths() {
-            List<String> listFilterPaths = new ArrayList<String>();
+            List<String> listFilterPaths = new ArrayList<>();
             listFilterPaths.add(DVR);
             listFilterPaths.add(AMAPAUTO_SDCARD1);
             listFilterPaths.add(AMAPAUTO_UDISK);
@@ -216,7 +216,7 @@ public class PlayerFileUtils extends JsFileUtils {
      * Get Music Picture Store Path
      */
     public static String getMusicPicPath(String mediaUrl) {
-        String storePath = getParentPath(mediaUrl) + ".music_pic";
+        String storePath = getParentPath(mediaUrl) + ".media_audio_pic";
         // String storePath = SUPPORT_PATH_0 + "/PlayerCache/Music/Pic";
         createFolder(storePath);
         return getPath(storePath, "");
@@ -226,7 +226,7 @@ public class PlayerFileUtils extends JsFileUtils {
      * Get Video Picture Store Path
      */
     public static String getVideoPicPath(String mediaUrl) {
-        String storePath = getParentPath(mediaUrl) + ".video_pic";
+        String storePath = getParentPath(mediaUrl) + ".media_video_pic";
         createFolder(storePath);
         return getPath(storePath, "");
     }
@@ -245,7 +245,7 @@ public class PlayerFileUtils extends JsFileUtils {
         if (mDelegate != null) {
             return mDelegate.getListSuppportPaths();
         }
-        return new ArrayList<String>();
+        return new ArrayList<>();
     }
 
     /**
@@ -255,14 +255,7 @@ public class PlayerFileUtils extends JsFileUtils {
         if (mDelegate != null) {
             return mDelegate.getBlacklistPaths();
         }
-        return new ArrayList<String>();
-    }
-
-    /**
-     * Is Media in the blacklist
-     */
-    public static boolean isInBlacklist(String mediaUrl) {
-        return mDelegate != null && mDelegate.isInBlacklist(mediaUrl);
+        return new ArrayList<>();
     }
 
     public static boolean isHasSupportStorage() {

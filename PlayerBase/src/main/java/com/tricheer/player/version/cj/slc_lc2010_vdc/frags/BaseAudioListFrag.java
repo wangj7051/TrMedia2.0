@@ -1,6 +1,7 @@
 package com.tricheer.player.version.cj.slc_lc2010_vdc.frags;
 
 import com.tricheer.player.R;
+import com.tricheer.player.engine.ThemeController;
 
 import js.lib.android.fragment.BaseAppV4Fragment;
 
@@ -9,7 +10,7 @@ import js.lib.android.fragment.BaseAppV4Fragment;
  *
  * @author Jun.Wang
  */
-public abstract class BaseAudioListFrag extends BaseAppV4Fragment {
+public abstract class BaseAudioListFrag extends BaseAppV4Fragment implements ThemeController.ThemeChangeDelegate {
 
     protected final int[] LOADING_RES_ID_ARR = {R.drawable.loading_list0001,
             R.drawable.loading_list0002,

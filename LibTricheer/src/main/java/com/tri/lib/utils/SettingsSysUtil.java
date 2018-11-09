@@ -40,4 +40,13 @@ public class SettingsSysUtil {
             Log.i(TAG, e.getMessage());
         }
     }
+
+    /**
+     * Get theme value
+     *
+     * @return int-0 默认主题 ; 1 苹果主题
+     */
+    public static int getThemeVal(Context context) {
+        return Settings.System.getInt(context.getContentResolver(), "theme_setting", 0);
+    }
 }

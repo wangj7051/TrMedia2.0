@@ -24,6 +24,7 @@ import js.lib.android.media.engine.scan.IMediaScanService;
 import js.lib.android.media.engine.scan.MediaScanService;
 import js.lib.android.media.engine.video.db.VideoDBManager;
 import js.lib.android.media.player.PlayDelegate;
+import js.lib.android.media.player.PlayEnableController;
 import js.lib.android.utils.CommonUtil;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.Logs;
@@ -45,6 +46,13 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
      * 是否正在展示黑名单媒体
      */
     private boolean mIsShowingBlacklistMedias = false;
+
+    /**
+     * 安全线程 - 上一个/下一个
+     * <p>
+     * 防高频点击线程
+     */
+    private Runnable mPlayPrevSecRunnable, mPlayNextSecRunnable;
 
     /**
      * 是否允许后台播放视频
@@ -93,7 +101,6 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
     @Override
     protected void onCreate(@Nullable Bundle bundle) {
         super.onCreate(bundle);
-        bindScanService(true);
     }
 
 //    /**
@@ -129,25 +136,22 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
      */
     protected void sortMediaList(List<ProVideo> listPrograms) {
         if (!EmptyUtil.isEmpty(listPrograms)) {
-            if (isShowingBlacklistMedias()) {
-            } else {
-                for (ProVideo program : mListPrograms) {
-                    try {
-                        program.titlePinYin = CharacterParser.getPingYin(program.title);
-                        String firstChar = program.titlePinYin.substring(0, 1).toUpperCase();
-                        if (firstChar.matches("[A-Z]")) {
-                            program.sortLetter = firstChar;
-                        } else {
-                            program.sortLetter = "#";
-                        }
-                    } catch (Exception e) {
-                        Logs.printStackTrace(TAG + "sortMediaList()", e);
-                        program.titlePinYin = "";
-                        program.sortLetter = "";
+            for (ProVideo program : mListPrograms) {
+                try {
+                    program.titlePinYin = CharacterParser.getPingYin(program.title);
+                    String firstChar = program.titlePinYin.substring(0, 1).toUpperCase();
+                    if (firstChar.matches("[A-Z]")) {
+                        program.sortLetter = firstChar;
+                    } else {
+                        program.sortLetter = "#";
                     }
+                } catch (Exception e) {
+                    Logs.printStackTrace(TAG + "sortMediaList()", e);
+                    program.titlePinYin = "";
+                    program.sortLetter = "";
                 }
-                Collections.sort(mListPrograms, mComparator);
             }
+            Collections.sort(mListPrograms, mComparator);
         }
     }
 
@@ -165,11 +169,11 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
         protected Void doInBackground(Object... params) {
             try {
                 // Parameters
-                mmWeakReference = new WeakReference<LoadMediaListener>((LoadMediaListener) params[0]);
+                mmWeakReference = new WeakReference<>((LoadMediaListener) params[0]);
 
                 // Get List Medias
                 Map<String, ProVideo> mapPrograms = VideoDBManager.instance().getMapVideos(true, false);
-                mListPrograms = new ArrayList<ProVideo>();
+                mListPrograms = new ArrayList<>();
                 if (mapPrograms != null) {
                     mListPrograms.addAll(mapPrograms.values());
                 }
@@ -199,7 +203,7 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
      * Release
      */
     protected void clearPlayInfo() {
-        mListPrograms = new ArrayList<ProVideo>();
+        mListPrograms = new ArrayList<>();
         if (tvStartTime != null) {
             tvStartTime.setText("00:00");
         }
@@ -256,9 +260,10 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
         }
 
         // 执行播放
-        vvPlayer.setVisibility(View.INVISIBLE);
         saveTargetMediaPath(toPlayProgram.mediaUrl);
         mTargetAutoSeekProgress = getLastProgress();
+
+        vvPlayer.setVisibility(View.INVISIBLE);
         vvPlayer.setTag(toPlayProgram);
         vvPlayer.setMediaPath(toPlayProgram.mediaUrl);
         startPlay(true);
@@ -271,13 +276,39 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
     @Override
     public void playPrev() {
         super.playPrev();
-        execPlay(mPlayPos);
+        if (mPlayPrevSecRunnable == null) {
+            mPlayPrevSecRunnable = new Runnable() {
+
+                @Override
+                public void run() {
+                    Logs.i(TAG, "playPrevBySecurity() -> ^^ mPlayPrevSecRunnable ^^");
+                    execPlay(mPlayPos);
+                }
+            };
+        }
+        mHandler.postDelayed(mPlayPrevSecRunnable, 500);
     }
 
     @Override
     public void playNext() {
         super.playNext();
-        execPlay(mPlayPos);
+        removePlayRunnable();
+        if (mPlayNextSecRunnable == null) {
+            mPlayNextSecRunnable = new Runnable() {
+
+                @Override
+                public void run() {
+                    Logs.i(TAG, "playPrevBySecurity() -> ^^ mPlayNextSecRunnable ^^");
+                    execPlay(mPlayPos);
+                }
+            };
+        }
+        mHandler.postDelayed(mPlayNextSecRunnable, 500);
+    }
+
+    @Override
+    public void pause() {
+        super.pause();
     }
 
     private void resetSeekBar() {
@@ -305,17 +336,49 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
     }
 
     /**
+     * EXEC Play previous by user
+     */
+    public void execPlayPrevByUser() {
+        PlayEnableController.pauseByUser(false);
+        playPrev();
+    }
+
+    /**
+     * EXEC Play next by user
+     */
+    public void execPlayNextByUser() {
+        PlayEnableController.pauseByUser(false);
+        playNext();
+    }
+
+    /**
      * Play Pause Video
      */
-    protected void execPlayOrPause() {
+    protected void execPlayOrPauseByUser() {
         Logs.i(TAG, "----execPlayOrPause()----");
         if (!EmptyUtil.isEmpty(mListPrograms)) {
             if (isPlaying()) {
-                pauseByUser();
+                execPauseByUser();
             } else {
-                resumeByUser();
+                execResumeByUser();
             }
         }
+    }
+
+    /**
+     * EXEC pause by user
+     */
+    public void execPauseByUser() {
+        PlayEnableController.pauseByUser(true);
+        pause();
+    }
+
+    /**
+     * EXEC resume by user
+     */
+    public void execResumeByUser() {
+        PlayEnableController.pauseByUser(false);
+        resume();
     }
 
     /**
@@ -396,8 +459,21 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
 
     @Override
     protected void onDestroy() {
+        removePlayRunnable();
         CommonUtil.cancelTask(mLoadLocalMediasTask);
         super.onDestroy();
+    }
+
+    /**
+     * Remove play runnable
+     */
+    public void removePlayRunnable() {
+        if (mPlayPrevSecRunnable != null) {
+            mHandler.removeCallbacks(mPlayPrevSecRunnable);
+        }
+        if (mPlayNextSecRunnable != null) {
+            mHandler.removeCallbacks(mPlayNextSecRunnable);
+        }
     }
 
     /**
@@ -448,6 +524,17 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
             return mMediaScanService != null && mMediaScanService.isMediaScanning();
         } catch (Exception e) {
             return false;
+        }
+    }
+
+    protected void destroyScanService() {
+        if (mMediaScanService != null) {
+            try {
+                mMediaScanService.destroy();
+                mMediaScanService = null;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

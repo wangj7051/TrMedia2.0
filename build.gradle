@@ -21,7 +21,6 @@ allprojects {
         tasks.withType(JavaCompile) {
             options.compilerArgs.add('-Xbootclasspath/p:libs/android-common.jar')
             options.compilerArgs.add('-Xbootclasspath/p:libs/android-core.jar')
-            options.compilerArgs.add('-Xbootclasspath/p:libs/bluetooth_modify_new.jar')
             options.compilerArgs.add('-Xbootclasspath/p:libs/framework.jar')
         }
     }

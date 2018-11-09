@@ -1,11 +1,13 @@
 package com.tricheer.player.version.base.activity.music;
 
+import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.IBinder;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.Serializable;
@@ -15,8 +17,10 @@ import js.lib.android.media.bean.ProAudio;
 import js.lib.android.media.engine.audio.db.AudioDBManager;
 import js.lib.android.media.engine.scan.IMediaScanService;
 import js.lib.android.media.engine.scan.MediaScanService;
+import js.lib.android.media.player.PlayEnableController;
 import js.lib.android.media.player.audio.utils.AudioSortUtils;
 import js.lib.android.utils.CommonUtil;
+import js.lib.android.utils.Logs;
 
 /**
  * 播放器扩展行动作 - BASE
@@ -69,34 +73,13 @@ public abstract class BaseAudioExtendActionsActivity extends BaseAudioCommonActi
         super.onCreate(bundle);
     }
 
-//    private void startMergeDataOnClear(Set<String> allSdMountedPaths) {
-//        try {
-//            List<ProAudio> oldListSrcMedias = getListSrcMedias();
-//            List<ProAudio> listMountedProgram = new ArrayList<>();
-//            for (ProAudio program : oldListSrcMedias) {
-//                boolean isProgramMounted = false;
-//                for (String mountedPath : allSdMountedPaths) {
-//                    if (program.mediaUrl.startsWith(mountedPath)) {
-//                        isProgramMounted = true;
-//                        break;
-//                    }
-//                }
-//                if (isProgramMounted) {
-//                    listMountedProgram.add(program);
-//                }
-//            }
-//            refreshPageOnClear(listMountedProgram);
-//        } catch (Exception e) {
-//            Logs.printStackTrace(TAG + "refreshPageOnClear()", e);
-//        }
-//    }
-
     /**
      * 加载本地媒体
      */
     protected void loadLocalMedias() {
     }
 
+    @SuppressLint("StaticFieldLeak")
     public class LoadLocalMediasTask extends AsyncTask<Void, Integer, Void> {
         private List<ProAudio> mmListMedias;
         private LoadMediaListener mmLoadMediaListener;
@@ -134,9 +117,63 @@ public abstract class BaseAudioExtendActionsActivity extends BaseAudioCommonActi
     }
 
     /**
+     * Is Playing Media
+     */
+    public boolean isPlayingSameMedia(String mediaUrl) {
+        boolean isPlayingSameMedia = isPlaying() && TextUtils.equals(getCurrMediaPath(), mediaUrl);
+        Log.i(TAG, "isPlayingSameMedia : " + isPlayingSameMedia);
+        return isPlayingSameMedia;
+    }
+
+    /**
+     * EXEC Play previous by user
+     */
+    public void execPlayPrevByUser() {
+        PlayEnableController.pauseByUser(false);
+        playPrev();
+    }
+
+    /**
+     * EXEC Play next by user
+     */
+    public void execPlayNextByUser() {
+        PlayEnableController.pauseByUser(false);
+        playNext();
+    }
+
+    /**
+     * EXEC Play or Pause by user
+     */
+    public void execPlayOrPauseByUser() {
+        Logs.i(TAG, "execPlayOrPause");
+        if (isPlaying()) {
+            execPauseByUser();
+        } else {
+            execResumeByUser();
+        }
+    }
+
+    /**
+     * EXEC pause by user
+     */
+    public void execPauseByUser() {
+        PlayEnableController.pauseByUser(true);
+        pause();
+    }
+
+    /**
+     * EXEC resume by user
+     */
+    public void execResumeByUser() {
+        PlayEnableController.pauseByUser(false);
+        resume();
+    }
+
+    /**
      * EXEC Play Selected Music
      */
     protected void execPlay(String mediaUrl) {
+        PlayEnableController.pauseByUser(false);
         play(mediaUrl);
     }
 
@@ -212,6 +249,16 @@ public abstract class BaseAudioExtendActionsActivity extends BaseAudioCommonActi
             return mMediaScanService != null && mMediaScanService.isMediaScanning();
         } catch (Exception e) {
             return false;
+        }
+    }
+
+    protected void destroyScanService() {
+        if (mMediaScanService != null) {
+            try {
+                mMediaScanService.destroy();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

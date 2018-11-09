@@ -43,14 +43,14 @@ public class ResParser {
      * Parse Music List Listener
      */
     public interface ParseListListener {
-        public void afterParse(String avatarUrl, String strJsonData);
+        void afterParse(String avatarUrl, String strJsonData);
     }
 
     /**
      * Parse Music List Listener
      */
     public interface ParseMusicListener {
-        public void afterParse(String musicWebUrl, String musicLyricWebUrl);
+        void afterParse(String musicWebUrl, String musicLyricWebUrl);
     }
 
     /**

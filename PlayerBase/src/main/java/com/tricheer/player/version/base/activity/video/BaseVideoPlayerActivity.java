@@ -33,7 +33,6 @@ public abstract class BaseVideoPlayerActivity extends BaseVideoFocusActivity {
     @Override
     protected void init() {
         super.init();
-        mIsPauseOnNotify = false;
     }
 
     @Override
@@ -125,7 +124,7 @@ public abstract class BaseVideoPlayerActivity extends BaseVideoFocusActivity {
     protected void onNotifyPlayState$Complete() {
         PlayMode storePlayMode = TrVideoPreferUtils.getPlayMode(false, PlayMode.LOOP);
         if (storePlayMode == PlayMode.LOOP) {
-            playNextBySecurity();
+            playNext();
         } else {
             clearPlayedMediaInfos();
             execPlay(mPlayPos);
@@ -135,7 +134,7 @@ public abstract class BaseVideoPlayerActivity extends BaseVideoFocusActivity {
     protected void onNotifyPlayState$Error() {
         // Play Next
         if (!EmptyUtil.isEmpty(mListPrograms)) {
-            playNextBySecurity();
+            playNext();
         }
     }
 

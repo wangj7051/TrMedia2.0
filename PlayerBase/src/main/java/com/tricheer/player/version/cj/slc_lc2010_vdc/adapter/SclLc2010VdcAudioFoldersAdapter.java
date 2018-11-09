@@ -117,7 +117,7 @@ public class SclLc2010VdcAudioFoldersAdapter<T> extends BaseAudioAdapter<T> impl
 
     @NonNull
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, @NonNull ViewGroup parent) {
         ViewHolder holder;
         if (convertView == null) {
             holder = new ViewHolder();
@@ -144,7 +144,7 @@ public class SclLc2010VdcAudioFoldersAdapter<T> extends BaseAudioAdapter<T> impl
                     holder.tvItem.setTextColor(mSelectFontColor);
                     holder.ivStart.setImageResource(R.drawable.icon_item_selected);
                     holder.ivStart.setVisibility(View.VISIBLE);
-                    convertView.setBackgroundResource(R.drawable.bg_lv_item_selected);
+                    convertView.setBackgroundResource(getImgResId("bg_lv_item_selected"));
                 } else {
                     holder.tvItem.setTextColor(mNotSelectedColor);
                     holder.ivStart.setVisibility(View.INVISIBLE);
@@ -182,7 +182,7 @@ public class SclLc2010VdcAudioFoldersAdapter<T> extends BaseAudioAdapter<T> impl
                     mSelectedPos = position;
                     holder.ivStart.setImageResource(R.drawable.icon_folder_c);
                     holder.tvItem.setTextColor(mSelectFontColor);
-                    convertView.setBackgroundResource(R.drawable.bg_lv_item_selected);
+                    convertView.setBackgroundResource(getImgResId("bg_lv_item_selected"));
                 } else {
                     holder.ivStart.setImageResource(R.drawable.icon_folder);
                     holder.tvItem.setTextColor(mNotSelectedColor);

@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.tri.lib.engine.BtCallStateController;
 import com.tri.lib.engine.KeyEnum;
 import com.tri.lib.receiver.AccReceiver;
 import com.tri.lib.receiver.ActionEnum;
@@ -19,11 +20,13 @@ import com.tri.lib.receiver.VoiceAssistantReceiver;
 import com.tri.lib.utils.PanelTouchImpl;
 import com.tri.lib.utils.TrVideoPreferUtils;
 import com.tricheer.player.R;
+import com.tricheer.player.engine.PlayerAppManager;
 import com.tricheer.player.engine.PlayerConsts;
 import com.tricheer.player.version.base.activity.video.BaseVideoPlayerActivity;
 
 import java.io.File;
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,19 +49,21 @@ import js.lib.utils.date.DateFormatUtil;
 public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
         implements AccReceiver.AccDelegate,
         ReverseReceiver.ReverseDelegate,
+        BtCallStateController.BtCallSateDelegate,
         VoiceAssistantReceiver.VoiceAssistantDelegate {
 
     //TAG
     private static final String TAG = "VdcVideoPlayerActivity";
 
     //==========Widget in this Activity==========
+    private View layoutRoot;
+    private View layoutTop;
     private View vCoverPanel;
     private ImageView vArrowRight, vArrowLeft;
 
     private View vControlPanel;
     private TextView tvFolder, tvPosition, tvName;
-    private ImageView ivModeSet;
-    private View vList;
+    private ImageView ivPlayModeSet, ivList;
     private View layoutWarning;
 
     //==========Variables in this Activity==========
@@ -67,7 +72,11 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
     private SeekBarOnChange mSeekBarOnChange;
     private GpsImpl mGpsImpl;
 
+    //Media light mode controller
     private MediaLightModeController mLightModeController;
+
+    // BT call state controller
+    private BtCallStateController mBtCallStateController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,7 +99,13 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
         mLightModeController = new MediaLightModeController();
         mLightModeController.addModeListener(new MediaLightModeOnChange());
 
+        //BT call
+        mBtCallStateController = new BtCallStateController(this);
+        mBtCallStateController.register(this);
+
         // ----Widgets----
+        layoutRoot = findRootView();
+        layoutTop = findViewById(R.id.layout_top);
         vArrowLeft = (ImageView) findViewById(R.id.v_arrow_left);
         vArrowRight = (ImageView) findViewById(R.id.v_arrow_right);
 
@@ -134,12 +149,12 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
         ivPlayNext = findView(R.id.iv_play_next);
         ivPlayNext.setOnClickListener(mViewOnClick);
 
-        ivModeSet = (ImageView) findViewById(R.id.iv_play_mode_set);
-        ivModeSet.setOnClickListener(mViewOnClick);
+        ivPlayModeSet = (ImageView) findViewById(R.id.iv_play_mode_set);
+        ivPlayModeSet.setOnClickListener(mViewOnClick);
         onPlayModeChange();
 
-        vList = findViewById(R.id.v_list);
-        vList.setOnClickListener(mViewOnClick);
+        ivList = (ImageView) findViewById(R.id.v_list);
+        ivList.setOnClickListener(mViewOnClick);
 
         //Warning
         layoutWarning = findViewById(R.id.layout_warning);
@@ -400,20 +415,16 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
 
         @Override
         public void onClick(View v) {
-            if (v == ivPlay) {
-                execPlayOrPause();
-
-            } else if (v == ivPlayPre) {
-                mIsPauseOnNotify = false;
-                playPrevBySecurity();
-
+            if (v == ivPlayPre) {
+                execPlayPrevByUser();
+            } else if (v == ivPlay) {
+                execPlayOrPauseByUser();
             } else if (v == ivPlayNext) {
-                mIsPauseOnNotify = false;
-                playNextBySecurity();
+                execPlayNextByUser();
 
-            } else if (v == ivModeSet) {
+            } else if (v == ivPlayModeSet) {
                 switchPlayMode(53);
-            } else if (v == vList) {
+            } else if (v == ivList) {
                 finishByOperate("EXIT_VIDEO_PLAYER");
             }
         }
@@ -428,10 +439,10 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
         if (storePlayMode != null) {
             switch (storePlayMode) {
                 case LOOP:
-                    ivModeSet.setImageResource(R.drawable.btn_op_mode_loop_selector);
+                    updateImgRes(ivPlayModeSet, "btn_op_mode_loop_selector");
                     break;
                 case SINGLE:
-                    ivModeSet.setImageResource(R.drawable.btn_op_mode_oneloop_selector);
+                    updateImgRes(ivPlayModeSet, "btn_op_mode_oneloop_selector");
                     break;
             }
         }
@@ -447,10 +458,13 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
     @Override
     protected void updatePlayStatus(int flag) {
         super.updatePlayStatus(flag);
-        if (flag == 1) {
-            ivPlay.setImageResource(R.drawable.btn_op_pause_selector);
-        } else if (flag == 2) {
-            ivPlay.setImageResource(R.drawable.btn_op_play_selector);
+        switch (flag) {
+            case 1:
+                updateImgRes(ivPlay, "btn_op_pause_selector");
+                break;
+            case 2:
+                updateImgRes(ivPlay, "btn_op_play_selector");
+                break;
         }
     }
 
@@ -471,16 +485,26 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
     @Override
     protected void onNotifyPlayState$Play() {
         ProVideo program = getCurrProgram();
-        if (program != null) {
-            File file = new File(program.mediaUrl);
-            if (file.exists()) {
-                File folder = file.getParentFile();
-                if (folder != null) {
-                    tvFolder.setText(folder.getName());
-                }
-                tvName.setText(program.title);
-                tvPosition.setText((getCurrIdx() + 1) + "/" + getTotalCount());
+        if (program == null) {
+            return;
+        }
+
+        File file = new File(program.mediaUrl);
+        if (file.exists()) {
+            //Folder
+            File folder = file.getParentFile();
+            if (folder != null) {
+                tvFolder.setText(folder.getName());
             }
+
+            //Title
+            tvName.setText(program.title);
+
+            // Position
+            String formatStr = getString(R.string.video_pos_str);
+            String currPosStr = String.valueOf((getCurrIdx() + 1));
+            String totalCountStr = String.valueOf(getTotalCount());
+            tvPosition.setText(String.format(formatStr, currPosStr, totalCountStr));
         }
     }
 
@@ -488,64 +512,102 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
     public void onGetKeyCode(KeyEnum key) {
         switch (key) {
             case KEYCODE_MEDIA_PREVIOUS:
-                mIsPauseOnNotify = false;
-                playPrevBySecurity();
+                playPrev();
                 break;
             case KEYCODE_MEDIA_NEXT:
-                mIsPauseOnNotify = false;
-                playNextBySecurity();
+                playNext();
                 break;
         }
     }
 
     @Override
-    public boolean isPlayEnable() {
-        return false;
-    }
-
-    @Override
-    public void onAudioFocusLoss() {
-        super.onAudioFocusLoss();
-    }
-
-    @Override
     public void onAccOn() {
-        resume();
+        Log.i(TAG, "onAccOn()");
+        if (!isPlaying()
+                && isForeground()
+                && isAudioFocusRegistered()) {
+            Log.i(TAG, "onAccOffTrue -> resume()");
+            resume();
+        }
     }
 
     @Override
     public void onAccOff() {
-        pause();
+        Log.i(TAG, "onAccOff()");
+        if (isPlaying()) {
+            pause();
+        }
     }
 
     @Override
     public void onAccOffTrue() {
+        Log.i(TAG, "onAccOffTrue()");
+        bindScanService(false);
+        PlayerAppManager.exitCurrPlayer();
     }
 
     @Override
     public void onReverseOn() {
-        pause();
+        Log.i(TAG, "onReverseOn()");
+        if (isPlaying()) {
+            pause();
+        }
     }
 
     @Override
     public void onReverseOff() {
-        resume();
+        Log.i(TAG, "onReverseOff()");
+        if (!isPlaying()
+                && isForeground()
+                && isAudioFocusRegistered()) {
+            Log.i(TAG, "onReverseOff -> resume()");
+            resume();
+        }
+    }
+
+    @Override
+    public void onBtCallStateChanged(boolean isBtRunning) {
+        Log.i(TAG, "onBtCallStateChanged(" + isBtRunning + ")");
+        if (isBtRunning && isPlaying()) {
+            Log.i(TAG, "onBtCallStateChanged -> pause()");
+            pause();
+        } else if (!isPlaying()
+                && isForeground()
+                && isAudioFocusRegistered()) {
+            Log.i(TAG, "onBtCallStateChanged -> resume()");
+            resume();
+        }
     }
 
     @Override
     public void onVoiceCommand(ActionEnum ae) {
         switch (ae) {
             case MEDIA_PLAY_PREV:
+                if (isForeground()) {
+                    execPlayPrevByUser();
+                }
                 break;
             case MEDIA_PLAY_NEXT:
+                if (isForeground()) {
+                    execPlayNextByUser();
+                }
                 break;
             case MEDIA_PLAY:
+                if (isForeground()) {
+                    execResumeByUser();
+                }
                 break;
             case MEDIA_PAUSE:
-                break;
-            case MEDIA_RADIO_SET_FREQ:
+                if (isPlaying()) {
+                    execPauseByUser();
+                }
                 break;
         }
+    }
+
+    @Override
+    public void onAudioFocusGain() {
+        super.onAudioFocusGain();
     }
 
     @Override
@@ -553,6 +615,12 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
         AccReceiver.unregister(this);
         ReverseReceiver.unregister(this);
         VoiceAssistantReceiver.unregister(this);
+
+        //
+        if (mBtCallStateController != null) {
+            mBtCallStateController.unregister();
+            mBtCallStateController = null;
+        }
 
         // 释放播放器
         execRelease();
@@ -653,5 +721,61 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
             CommonUtil.setNavigationBar(SclLc2010VdcVideoPlayerActivity.this, 0);
             vControlPanel.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public void updateThemeToDefault() {
+        Log.i(TAG, "updateThemeToDefault()");
+        updateThemeCommon();
+    }
+
+    @Override
+    public void updateThemeToIos() {
+        Log.i(TAG, "updateThemeToIos()");
+        updateThemeCommon();
+    }
+
+    private void updateThemeCommon() {
+        // -- Top Layout --
+        layoutTop.setBackgroundResource(getImgResId("bg_title"));
+        // Bottom
+        layoutRoot.setBackgroundResource(getImgResId("bg_main"));
+
+        // -- Middle Layout --
+        //Seek bar
+        seekBar.setProgressDrawable(mContext.getDrawable(getImgResId("seekbar_progress_drawable_video")));
+        try {//
+            Class<?> superclass = seekBar.getClass().getSuperclass().getSuperclass();
+            Field mMaxHeight = superclass.getDeclaredField("mMaxHeight");
+            mMaxHeight.setAccessible(true);
+            mMaxHeight.set(seekBar, 10);
+
+            Field mMinHeight = superclass.getDeclaredField("mMinHeight");
+            mMinHeight.setAccessible(true);
+            mMinHeight.set(seekBar, 10);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // -- Bottom --
+        ivPlayPre.setImageResource(getImgResId("btn_op_prev_selector"));
+
+        Object objTag = ivPlay.getTag();
+        if (objTag == null) {
+            updateImgRes(ivPlay, "btn_op_play_selector");
+        } else {
+            updateImgRes(ivPlay, String.valueOf(objTag));
+        }
+
+        ivPlayNext.setImageResource(getImgResId("btn_op_next_selector"));
+
+        objTag = ivPlayModeSet.getTag();
+        if (objTag == null) {
+            updateImgRes(ivPlayModeSet, "btn_op_mode_loop_selector");
+        } else {
+            updateImgRes(ivPlayModeSet, String.valueOf(objTag));
+        }
+
+        ivList.setImageResource(getImgResId("btn_op_list_selector"));
     }
 }

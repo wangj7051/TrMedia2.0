@@ -171,12 +171,14 @@ public class AudioDBManager {
                 mDB.beginTransaction();
                 long currTime = System.currentTimeMillis();
                 for (ProAudio media : listPrograms) {
-                    if (mDB.insert(AudioCacheInfo.T_NAME, null, getContentValues(media, currTime)) > 0) {
+                    long rowId = mDB.insert(AudioCacheInfo.T_NAME, null, getContentValues(media, currTime));
+                    if (rowId > 0) {
                         count++;
                     }
                 }
                 mDB.setTransactionSuccessful();
             } catch (Exception e) {
+                e.printStackTrace();
                 throwable = e;
                 Logs.printStackTrace(TAG + "insertNewMusics()", e);
             } finally {

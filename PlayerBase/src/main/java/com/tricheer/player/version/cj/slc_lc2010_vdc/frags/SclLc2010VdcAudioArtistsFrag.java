@@ -46,7 +46,7 @@ public class SclLc2010VdcAudioArtistsFrag extends BaseAudioListFrag {
 
     //==========Widgets in this Fragment==========
     private View contentV;
-    private ListView lvDatas;
+    private ListView lvData;
     private ImageView ivLoading;
     private LetterSideBar lsb;
 
@@ -113,9 +113,10 @@ public class SclLc2010VdcAudioArtistsFrag extends BaseAudioListFrag {
         mDataAdapter = new SclLc2010VdcAudioArtistAdapter(mAttachedActivity, 0);
         mDataAdapter.setCollectListener(new CollectBtnCallback());
 
-        lvDatas = (ListView) contentV.findViewById(R.id.lv_datas);
-        lvDatas.setAdapter(mDataAdapter);
-        lvDatas.setOnItemClickListener((mLvItemClick = new LvItemClick()));
+        lvData = (ListView) contentV.findViewById(R.id.lv_datas);
+        lvData.setSelector(mAttachedActivity.getImgResId("bg_audio_item_selector"));
+        lvData.setAdapter(mDataAdapter);
+        lvData.setOnItemClickListener((mLvItemClick = new LvItemClick()));
         loadDataList();
     }
 
@@ -225,7 +226,7 @@ public class SclLc2010VdcAudioArtistsFrag extends BaseAudioListFrag {
         if (isAdded()) {
             int nextPos = mDataAdapter.getNextPos();
             mDataAdapter.refreshData(nextPos);
-            lvDatas.setSelection(nextPos);
+            lvData.setSelection(nextPos);
         }
     }
 
@@ -234,7 +235,7 @@ public class SclLc2010VdcAudioArtistsFrag extends BaseAudioListFrag {
         if (isAdded()) {
             int prevPos = mDataAdapter.getPrevPos();
             mDataAdapter.refreshData(prevPos);
-            lvDatas.setSelection(prevPos);
+            lvData.setSelection(prevPos);
         }
     }
 
@@ -292,7 +293,7 @@ public class SclLc2010VdcAudioArtistsFrag extends BaseAudioListFrag {
         @Override
         public void callback(int pos, String letter) {
             Logs.i(TAG, "LetterSideBarCallback -> callback(" + pos + "," + letter + ")");
-            lvDatas.setSelection(pos);
+            lvData.setSelection(pos);
         }
     }
 
@@ -349,7 +350,7 @@ public class SclLc2010VdcAudioArtistsFrag extends BaseAudioListFrag {
         @Override
         public void onClickCollectBtn(ImageView ivCollect, int pos) {
             Object item = mDataAdapter.getItem(pos);
-            if (item != null && item instanceof ProAudio) {
+            if (item instanceof ProAudio) {
                 ProAudio media = (ProAudio) item;
                 switch (media.isCollected) {
                     case 0:
@@ -389,5 +390,23 @@ public class SclLc2010VdcAudioArtistsFrag extends BaseAudioListFrag {
         } else {
             return 0;
         }
+    }
+
+    @Override
+    public void updateThemeToDefault() {
+        if (isAdded()) {
+            updateThemeCommon();
+        }
+    }
+
+    @Override
+    public void updateThemeToIos() {
+        if (isAdded()) {
+            updateThemeCommon();
+        }
+    }
+
+    private void updateThemeCommon() {
+        lvData.setSelector(mAttachedActivity.getImgResId("bg_audio_item_selector"));
     }
 }

@@ -1,9 +1,7 @@
 package com.tricheer.player.version.base.activity;
 
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -11,18 +9,13 @@ import android.widget.TextView;
 import com.tri.lib.utils.PowerManagerUtil;
 import com.tricheer.player.receiver.PlayerReceiver.PlayerReceiverListener;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.net.URLEncoder;
 import java.util.List;
 
 import js.lib.android.media.bean.MediaBase;
-import js.lib.android.media.bean.Program;
 import js.lib.android.media.bean.ProgramPinyinComparator;
 import js.lib.android.media.player.PlayDelegate;
 import js.lib.android.media.player.PlayMode;
 import js.lib.android.media.player.PlayState;
-import js.lib.android.utils.Logs;
 
 /**
  * Player Base
@@ -50,15 +43,6 @@ public abstract class BasePlayerActivity extends BaseFragActivity implements Pla
      */
     protected ProgramPinyinComparator mComparator;
 
-    /**
-     * Pause Flag on Notify
-     */
-    protected boolean mIsPauseOnNotify = false;
-    /**
-     * Pause Flag on AiSpeech Window On
-     */
-    protected boolean mIsPauseOnAisOpen = false;
-
     @Override
     protected void onCreate(@Nullable Bundle bundle) {
         super.onCreate(bundle);
@@ -78,73 +62,6 @@ public abstract class BasePlayerActivity extends BaseFragActivity implements Pla
     protected void makeScreenOn(boolean isMakeOn) {
         if (mPlayerPowerManager != null) {
             mPlayerPowerManager.keepScreenOn(this, isMakeOn);
-        }
-    }
-
-    /**
-     * Cache Music Picture to Local
-     */
-    protected void cacheMediaPic(String coverUrl, Bitmap coverBitmap) {
-        storeBitmap(coverUrl, coverBitmap);
-    }
-
-    /**
-     * Cache Music Picture to Local
-     */
-    protected void cacheMediaPic(final Program program, Bitmap bm, final String storePath) {
-        try {
-            String bmFilePath = storePath + "/" + URLEncoder.encode(program.mediaUrl, "UTF-8") + ".png";
-            storeBitmap(bmFilePath, bm);
-        } catch (Throwable e) {
-            Logs.printStackTrace(TAG + "cacheMediaPic()", e);
-        }
-    }
-
-    /**
-     * 保存Bitmap到SD卡
-     *
-     * @param filePath  ： 文件路径 ，格式为“.../../example.png”
-     * @param bmToStore ： 要执行保存的Bitmap
-     */
-    private static void storeBitmap(String filePath, Bitmap bmToStore) {
-        if (bmToStore != null) {
-            // "/sdcard/" + bitName + ".png"
-            FileOutputStream fos = null;
-            try {
-                //
-                File targetF = new File(filePath);
-                if (targetF.isDirectory() || targetF.exists()) {
-                    return;
-                }
-
-                //
-                File tmpFile = new File(filePath + "_TEMP");
-                if (tmpFile.createNewFile()) {
-                    fos = new FileOutputStream(tmpFile);
-                    bmToStore.compress(Bitmap.CompressFormat.PNG, 100, fos);
-                }
-
-                //
-                if (tmpFile.renameTo(targetF)) {
-                    Log.i(TAG, "--- storeBitmap END ---");
-                }
-            } catch (Throwable e) {
-                Logs.printStackTrace(TAG + "storeBitmap()", e);
-            } finally {
-                try {
-                    if (fos != null) {
-                        // 刷新数据并将数据转交给操作系统
-                        fos.flush();
-                        // 强制系统缓冲区与基础设备同步
-                        // 将系统缓冲区数据写入到文件
-                        fos.getFD().sync();
-                        fos.close();
-                    }
-                } catch (Throwable e) {
-                    Logs.printStackTrace(TAG + "storeBitmap()2", e);
-
-                }
-            }
         }
     }
 
@@ -210,17 +127,7 @@ public abstract class BasePlayerActivity extends BaseFragActivity implements Pla
 
     // {@link PlayerActionsListener} Implements Method
     @Override
-    public void playPrevBySecurity() {
-    }
-
-    // {@link PlayerActionsListener} Implements Method
-    @Override
     public void playNext() {
-    }
-
-    // {@link PlayerActionsListener} Implements Method
-    @Override
-    public void playNextBySecurity() {
     }
 
     // {@link PlayerActionsListener} Implements Method
@@ -230,17 +137,7 @@ public abstract class BasePlayerActivity extends BaseFragActivity implements Pla
 
     // {@link PlayerActionsListener} Implements Method
     @Override
-    public void pauseByUser() {
-    }
-
-    // {@link PlayerActionsListener} Implements Method
-    @Override
     public void resume() {
-    }
-
-    // {@link PlayerActionsListener} Implements Method
-    @Override
-    public void resumeByUser() {
     }
 
     // {@link PlayerActionsListener} Implements Method
@@ -293,12 +190,6 @@ public abstract class BasePlayerActivity extends BaseFragActivity implements Pla
     // {@link PlayerActionsListener} Implements Method
     @Override
     public boolean isPlaying() {
-        return false;
-    }
-
-    // {@link PlayerActionsListener} Implements Method
-    @Override
-    public boolean isPauseByUser() {
         return false;
     }
 

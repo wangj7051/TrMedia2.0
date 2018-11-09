@@ -95,12 +95,6 @@ public interface PlayDelegate extends IPlayStateLitener, IPlayProgressListener, 
     int getDuration();
 
     /**
-     * 是否可以播放
-     * <p>取决于 {@link PlayEnableController#isPlayEnable()}</p>
-     */
-    boolean isPlayEnable();
-
-    /**
      * 执行播放
      */
     void play();
@@ -125,21 +119,9 @@ public interface PlayDelegate extends IPlayStateLitener, IPlayProgressListener, 
     void playPrev();
 
     /**
-     * 执行播放上一个
-     * <p>防止高频点击，即用户在短时间内频繁点击执行上一个操作</p>
-     */
-    void playPrevBySecurity();
-
-    /**
      * 执行播放下一个
      */
     void playNext();
-
-    /**
-     * 执行播放下一个
-     * <p>防止高频点击，即用户在短时间内频繁点击执行下一个操作</p>
-     */
-    void playNextBySecurity();
 
     /**
      * 播放器是否正在播放
@@ -152,29 +134,9 @@ public interface PlayDelegate extends IPlayStateLitener, IPlayProgressListener, 
     void pause();
 
     /**
-     * 被用户暂停
-     * <p>该操作是由用户的意志而触发的</p>
-     * {@link PlayEnableController#pauseByUser(boolean)}
-     */
-    void pauseByUser();
-
-    /**
-     * 是否被用户暂停了
-     * <p>"被用户触碰或等同于此动作"的暂停</p>
-     * {@link PlayEnableController#isPauseByUser()}
-     */
-    boolean isPauseByUser();
-
-    /**
      * 执行恢复播放
      */
     void resume();
-
-    /**
-     * 被用户恢复播放
-     * <p>该操作是由用户的意志而触发的</p>
-     */
-    void resumeByUser();
 
     /**
      * 释放播放器

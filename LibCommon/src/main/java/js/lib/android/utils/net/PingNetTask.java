@@ -1,5 +1,7 @@
 package js.lib.android.utils.net;
 
+import android.os.AsyncTask;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,7 +9,6 @@ import java.io.InputStreamReader;
 
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.Logs;
-import android.os.AsyncTask;
 
 /**
  * Ping And Check Net Work
@@ -29,7 +30,7 @@ public class PingNetTask extends AsyncTask<Void, Void, Boolean> {
 	private PingNetListener mPingNetListener;
 
 	public interface PingNetListener {
-		public void onPinged(boolean isNetActive);
+		void onPinged(boolean isNetActive);
 	}
 
 	public PingNetTask() {

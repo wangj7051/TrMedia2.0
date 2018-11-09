@@ -9,7 +9,7 @@ public interface VideoTables {
     /**
      * Video Cache Info
      */
-    public interface VideoCacheInfo {
+    interface VideoCacheInfo {
         // Table Name
         String T_NAME = "VideoCacheInfo";
 

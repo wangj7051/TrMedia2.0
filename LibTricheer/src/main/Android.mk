@@ -101,7 +101,7 @@ LOCAL_CERTIFICATE := platform
 ## .jar
 LOCAL_STATIC_JAVA_LIBRARIES := android-support-v4
 LOCAL_STATIC_JAVA_LIBRARIES += LIB_COMMON
-#LOCAL_STATIC_JAVA_LIBRARIES += JAR_jcifs
+LOCAL_STATIC_JAVA_LIBRARIES += JAR_bt_proxy
 ## .aar
 #LOCAL_STATIC_JAVA_AAR_LIBRARIES := AAR_vlc
 
@@ -121,7 +121,7 @@ include $(CLEAR_VARS)
 #LOCAL_PREBUILT_LIBS := SO_libqtplayer:libs/armeabi-v7a/libqtplayer.so
 #LOCAL_PREBUILT_LIBS +=
 ## ^^ .jar 预编译 ^^
-#LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES := JAR_jcifs:libs/jcifs-1.3.18.jar
+LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES := JAR_bt_proxy:libs/bt_proxy_0821.jar
 #LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES +=
 ## ^^ .aar 预编译 ^^
 #LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES += AAR_vlc:libs/libvlc-3.0.0.aar

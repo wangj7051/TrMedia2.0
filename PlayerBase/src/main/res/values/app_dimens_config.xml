@@ -3,6 +3,8 @@
     <!-- Audio top -->
     <dimen name="audio_top_layout_h">120dp</dimen>
     <dimen name="audio_top_item_font_size">30sp</dimen>
+    <dimen name="audio_top_item_margin_top">15dp</dimen>
+    <dimen name="audio_top_item_margin_bottom">15dp</dimen>
     <!-- Audio list left-bottom -->
     <dimen name="audio_left_layout_w">180dp</dimen>
     <!-- Audio list right-bottom ListView -->

@@ -1,4 +1,5 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/v_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_main">
@@ -23,15 +24,15 @@
             android:layout_height="match_parent"
             android:layout_weight="12"
             android:paddingLeft="5dp"
-            android:paddingTop="15dp"
-            android:paddingRight="5dp"
-            android:paddingBottom="15dp">
+            android:paddingRight="5dp">
 
             <TextView
                 android:id="@+id/v_my_favorite"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerInParent="true"
+                android:layout_marginTop="@dimen/audio_top_item_margin_top"
+                android:layout_marginBottom="@dimen/audio_top_item_margin_bottom"
                 android:background="@drawable/btn_filter_tab_selector"
                 android:clickable="true"
                 android:focusable="true"
@@ -52,15 +53,15 @@
             android:layout_height="match_parent"
             android:layout_weight="12"
             android:paddingLeft="5dp"
-            android:paddingTop="15dp"
-            android:paddingRight="5dp"
-            android:paddingBottom="15dp">
+            android:paddingRight="5dp">
 
             <TextView
                 android:id="@+id/v_folder"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerInParent="true"
+                android:layout_marginTop="@dimen/audio_top_item_margin_top"
+                android:layout_marginBottom="@dimen/audio_top_item_margin_bottom"
                 android:background="@drawable/btn_filter_tab_selector"
                 android:clickable="true"
                 android:focusable="true"
@@ -81,15 +82,15 @@
             android:layout_height="match_parent"
             android:layout_weight="12"
             android:paddingLeft="5dp"
-            android:paddingTop="15dp"
-            android:paddingRight="5dp"
-            android:paddingBottom="15dp">
+            android:paddingRight="5dp">
 
             <TextView
                 android:id="@+id/v_music_name"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerInParent="true"
+                android:layout_marginTop="@dimen/audio_top_item_margin_top"
+                android:layout_marginBottom="@dimen/audio_top_item_margin_bottom"
                 android:background="@drawable/btn_filter_tab_selector"
                 android:clickable="true"
                 android:focusable="true"
@@ -110,15 +111,15 @@
             android:layout_height="match_parent"
             android:layout_weight="12"
             android:paddingLeft="5dp"
-            android:paddingTop="15dp"
-            android:paddingRight="5dp"
-            android:paddingBottom="15dp">
+            android:paddingRight="5dp">
 
             <TextView
                 android:id="@+id/v_artist"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerInParent="true"
+                android:layout_marginTop="@dimen/audio_top_item_margin_top"
+                android:layout_marginBottom="@dimen/audio_top_item_margin_bottom"
                 android:background="@drawable/btn_filter_tab_selector"
                 android:clickable="true"
                 android:focusable="true"
@@ -139,15 +140,15 @@
             android:layout_height="match_parent"
             android:layout_weight="12"
             android:paddingLeft="5dp"
-            android:paddingTop="15dp"
-            android:paddingRight="5dp"
-            android:paddingBottom="15dp">
+            android:paddingRight="5dp">
 
             <TextView
                 android:id="@+id/v_album"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerInParent="true"
+                android:layout_marginTop="@dimen/audio_top_item_margin_top"
+                android:layout_marginBottom="@dimen/audio_top_item_margin_bottom"
                 android:background="@drawable/btn_filter_tab_selector"
                 android:clickable="true"
                 android:focusable="true"
