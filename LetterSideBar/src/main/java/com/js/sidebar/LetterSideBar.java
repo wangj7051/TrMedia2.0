@@ -43,6 +43,11 @@ public class LetterSideBar extends View {
          * @param letter Letter that u touched.
          */
         void callback(int pos, String letter);
+
+        /**
+         * Scroll state.
+         */
+        void onScroll(boolean isScrolling);
     }
 
     public LetterSideBar(Context context) {
@@ -141,13 +146,13 @@ public class LetterSideBar extends View {
             fontSizeTouch = 40f;
         }
         // 每个字母绘制x坐标
-        final float xCom = getMeasuredWidth() - 40;
+        final float xCom = getMeasuredWidth() / 2;
 
         //
         @SuppressLint("DrawAllocation")
         Paint paintCom = new Paint();
         paintCom.setColor(mFontColor);
-        paintCom.setTextAlign(Paint.Align.RIGHT);
+        paintCom.setTextAlign(Paint.Align.CENTER);
         paintCom.setTextSize(fontSize);
         paintCom.setTextScaleX(1.6f);
         paintCom.setStrokeWidth(0.8f);
@@ -156,7 +161,7 @@ public class LetterSideBar extends View {
         @SuppressLint("DrawAllocation")
         Paint paintTouch = new Paint();
         paintTouch.setColor(mHlFontColor);
-        paintTouch.setTextAlign(Paint.Align.RIGHT);
+        paintTouch.setTextAlign(Paint.Align.CENTER);
         paintTouch.setTextSize(fontSizeTouch);
         paintTouch.setTextScaleX(1.6f);
         paintTouch.setStrokeWidth(0.8f);
@@ -195,15 +200,23 @@ public class LetterSideBar extends View {
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
         int action = event.getAction();
+        Log.i(TAG, "dispatchTouchEvent(" + action + ")");
         switch (action) {
             case MotionEvent.ACTION_DOWN:
-            case MotionEvent.ACTION_MOVE:
                 Log.i(TAG, "-- ACTION_DOWN --");
+            case MotionEvent.ACTION_MOVE:
+                Log.i(TAG, "-- ACTION_MOVE --");
                 refresh(event.getY());
+                if (mListener != null) {
+                    mListener.onScroll(true);
+                }
                 break;
             case MotionEvent.ACTION_UP:
                 Log.i(TAG, "-- ACTION_UP --");
                 refresh(-1);
+                if (mListener != null) {
+                    mListener.onScroll(false);
+                }
                 break;
         }
 //        return super.dispatchTouchEvent(event);

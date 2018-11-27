@@ -6,7 +6,8 @@
       <module fileurl="file://$PROJECT_DIR$/LibCommon/LibCommon.iml" filepath="$PROJECT_DIR$/LibCommon/LibCommon.iml" />
       <module fileurl="file://$PROJECT_DIR$/LibRadio/LibRadio.iml" filepath="$PROJECT_DIR$/LibRadio/LibRadio.iml" />
       <module fileurl="file://$PROJECT_DIR$/LibTricheer/LibTricheer.iml" filepath="$PROJECT_DIR$/LibTricheer/LibTricheer.iml" />
-      <module fileurl="file://$PROJECT_DIR$/PlayerBase/PlayerBase.iml" filepath="$PROJECT_DIR$/PlayerBase/PlayerBase.iml" />
+      <module fileurl="file://$PROJECT_DIR$/PlayerBaseAudio/PlayerBaseAudio.iml" filepath="$PROJECT_DIR$/PlayerBaseAudio/PlayerBaseAudio.iml" />
+      <module fileurl="file://$PROJECT_DIR$/PlayerBaseVideo/PlayerBaseVideo.iml" filepath="$PROJECT_DIR$/PlayerBaseVideo/PlayerBaseVideo.iml" />
       <module fileurl="file://$PROJECT_DIR$/RadioBase/RadioBase.iml" filepath="$PROJECT_DIR$/RadioBase/RadioBase.iml" />
       <module fileurl="file://$PROJECT_DIR$/TrMedia2.0.iml" filepath="$PROJECT_DIR$/TrMedia2.0.iml" />
     </modules>

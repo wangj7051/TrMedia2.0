@@ -13,8 +13,12 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard.flags'
         }
+    }
+
+    packagingOptions {
+        pickFirst 'META-INF/*'
     }
 
     lintOptions {

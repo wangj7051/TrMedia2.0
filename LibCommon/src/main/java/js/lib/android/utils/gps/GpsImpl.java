@@ -161,10 +161,12 @@ public class GpsImpl {
         }
 
         private void updateSpeedByLocation(Location location) {
-            double speedMPerS = location.getSpeed();
-            double speedKmPerH = speedMPerS * 3.6;
-            if (mGpsImplListener != null) {
-                mGpsImplListener.onGotSpeed(speedMPerS, speedKmPerH);
+            if (location != null) {
+                double speedMPerS = location.getSpeed();
+                double speedKmPerH = speedMPerS * 3.6;
+                if (mGpsImplListener != null) {
+                    mGpsImplListener.onGotSpeed(speedMPerS, speedKmPerH);
+                }
             }
         }
     }

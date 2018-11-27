@@ -12,7 +12,8 @@
             <option value="$PROJECT_DIR$/LibCommon" />
             <option value="$PROJECT_DIR$/LibRadio" />
             <option value="$PROJECT_DIR$/LibTricheer" />
-            <option value="$PROJECT_DIR$/PlayerBase" />
+            <option value="$PROJECT_DIR$/PlayerBaseAudio" />
+            <option value="$PROJECT_DIR$/PlayerBaseVideo" />
             <option value="$PROJECT_DIR$/RadioBase" />
           </set>
         </option>

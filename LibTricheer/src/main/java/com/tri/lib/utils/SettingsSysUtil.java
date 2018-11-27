@@ -21,6 +21,10 @@ public class SettingsSysUtil {
         try {
             Log.i(TAG, "setAudioState(Context," + state + ")");
             Settings.System.putInt(context.getApplicationContext().getContentResolver(), "app_music_state", state);
+
+            //
+            int storedFlag = Settings.System.getInt(context.getContentResolver(), "app_music_state");
+            Log.i(TAG, "AudioState: " + storedFlag);
         } catch (Exception e) {
             Log.i(TAG, e.getMessage());
         }
@@ -48,5 +52,22 @@ public class SettingsSysUtil {
      */
     public static int getThemeVal(Context context) {
         return Settings.System.getInt(context.getContentResolver(), "theme_setting", 0);
+    }
+
+    /**
+     * Set player remember flag.
+     */
+    public static void setRememberFlag(Context context, boolean isRemember) {
+        try {
+            Log.i(TAG, "setRememberFlag(Context," + isRemember + ")");
+            String flag = isRemember ? "music" : "";
+            Settings.System.putString(context.getContentResolver(), "remembered_application", flag);
+
+            //
+            String storedFlag = Settings.System.getString(context.getContentResolver(), "remembered_application");
+            Log.i(TAG, "RememberFlag: " + storedFlag);
+        } catch (Exception e) {
+            Log.i(TAG, e.getMessage());
+        }
     }
 }

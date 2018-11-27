@@ -116,7 +116,7 @@ public class AudioInfo extends BaseBean {
         if (isSupportAll) {
             // mSetSuffixs.add(".aac");
             mSetSuffixs.add(".m4a");
-            mSetSuffixs.add(".mid");
+//            mSetSuffixs.add(".mid");
             // mSetSuffixs.add(".mp3");
             mSetSuffixs.add(".wav");
             mSetSuffixs.add(".flac");

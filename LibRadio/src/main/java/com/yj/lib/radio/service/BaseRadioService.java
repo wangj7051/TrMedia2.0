@@ -100,6 +100,10 @@ public abstract class BaseRadioService extends BaseAudioFocusService implements 
     }
 
     @Override
+    public void onAudioFocus(int flag) {
+    }
+
+    @Override
     public void onFreqChanged(final int freq, final BandCategoryEnum band) {
         mHandler.post(new Runnable() {
             @Override

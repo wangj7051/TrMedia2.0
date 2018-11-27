@@ -27,11 +27,11 @@ public class VideoDBHelper extends SQLiteOpenHelper {
     /**
      * Database Copy Number
      * <p/>
-     * History Copy Number : 1
+     * History Copy Number : 1,2
      * <p/>
-     * Now : 1
+     * Now : 3
      */
-    private static final int DB_VERSION = 1;
+    private static final int DB_VERSION = 3;
 
     /**
      * @param context ：上下文环境

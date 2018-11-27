@@ -20,7 +20,7 @@ public class Logs {
      * Open LOGS
      */
     public static void init(String logTag) {
-        mIsPrintLog = true;//PreferenceHelper.isOpenLogs(false, false);
+        mIsPrintLog = PreferenceHelper.isOpenLogs(false, false);
     }
 
     /**

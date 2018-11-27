@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Lyric Paint Color -->
+    <!-- 灰色 -->
+    <color name="paint_color_gray">#949494</color>
+    <!-- 蓝色 -->
+    <color name="paint_color_hl_blue">#0891cc</color>
+    <!-- Yellow -->
+    <color name="paint_color_hl_yellow">#e4c724</color>
+
+    <!-- SLB Colors -->
+    <!-- Blue  -->
+    <color name="slb_color_blue_1">#185ab4</color>
+    <color name="slb_color_blue_2">#09479b</color>
+    <color name="slb_color_blue_3">#7f0529a8</color>
+
+    <!-- LB8 Colors -->
+    <color name="lb8_bg">#222222</color>
+
+    <!-- lct_lc8919_zck colors -->
+    <color name="lct_lc8919_zck_font_color_yellow_green">#d5ff05</color>
+
+    <!-- ir8 colors -->
+    <color name="ir8_gray">#777777</color>
+    <color name="ir8">#FF5117</color> <!--橙色 -->
+
+    <!-- ir8 colors -->
+    <color name="sidbar_center_color">#816565</color>
+
+    <!-- SCL_LC2010_Music colors -->
+    <color name="music_item_focused">#330b61ff</color>
+    <color name="music_item_selected_font">#af1026</color>
+    <color name="video_item_cover">#7a004B89</color>
+    <color name="video_item_bg">#004B89</color>
+    <color name="video_warning_separate_line">#003E71</color>
+
+    <!--SCL_LC2010_Music -IOS- colors-->
+    <color name="color_yellow_f36634">#f36634</color>
+</resources>

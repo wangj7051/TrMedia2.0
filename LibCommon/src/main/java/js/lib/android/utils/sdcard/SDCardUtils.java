@@ -16,14 +16,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import js.lib.android.utils.EmptyUtil;
-
 /**
  * SDCard Common Methods
  *
  * @author Jun.Wang
  */
 public class SDCardUtils {
+    //TAG
+    private static final String TAG = "SDCardUtils";
+
     public static String SDCARD_INTERNAL = "internal";
     public static String SDCARD_EXTERNAL = "external";
     public static String UDISK_EXTERNAL = "udisk";
@@ -45,15 +46,15 @@ public class SDCardUtils {
     /**
      * Get SDCard Information set
      *
-     * @param cxt           {@link Context}
-     * @param isOnlyMounted 是否只获取通过mount方式挂载上的
+     * @param cxt      {@link Context}
+     * @param isFilter 是否只获取通过mount方式挂载上的
      * @return HashMap
      */
     @SuppressLint("ObsoleteSdkInt")
-    public static HashMap<String, SDCardInfo> getSDCardInfos(Context cxt, boolean isOnlyMounted) {
+    public static HashMap<String, SDCardInfo> getSDCardInfos(Context cxt, boolean isFilter) {
         // SDK >= 14
         if (android.os.Build.VERSION.SDK_INT >= 14) {
-            return getSDCardInfo_GreaterOrEqual14(cxt, isOnlyMounted);
+            return getSDCardInfo_GreaterOrEqual14(cxt, isFilter);
         }
 
         // SDK < 14
@@ -115,7 +116,7 @@ public class SDCardUtils {
      * Get SDCard Informations that SDK Version >= 14
      */
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
-    private static HashMap<String, SDCardInfo> getSDCardInfo_GreaterOrEqual14(Context context, boolean isOnlyMounted) {
+    private static HashMap<String, SDCardInfo> getSDCardInfo_GreaterOrEqual14(Context context, boolean isFilter) {
         HashMap<String, SDCardInfo> sdCardInfos = new HashMap<>();
         String[] storagePathList = null;
         try {
@@ -146,17 +147,18 @@ public class SDCardUtils {
         }
 
         //Android 7.0 UDISK
-        List<String> listUdiskPaths = PlayerMp3Utils.getAllExterSdcardPath(isOnlyMounted);
-        if (!EmptyUtil.isEmpty(listUdiskPaths)) {
-            final int loop = listUdiskPaths.size();
-            for (int idx = 0; idx < loop; idx++) {
-                SDCardInfo sdInfo = new SDCardInfo();
-                sdInfo.root = listUdiskPaths.get(idx);
-                sdInfo.isMounted = true;
-                sdInfo.label = UDISK_EXTERNAL + "_" + idx;
-                sdCardInfos.put(sdInfo.label, sdInfo);
-            }
-        }
+//        List<String> listUdiskPaths = PlayerMp3Utils.getAllExterSdcardPath(isFilter);
+//        if (!EmptyUtil.isEmpty(listUdiskPaths)) {
+//            final int loop = listUdiskPaths.size();
+//            for (int idx = 0; idx < loop; idx++) {
+//                SDCardInfo sdInfo = new SDCardInfo();
+//                sdInfo.root = listUdiskPaths.get(idx);
+//                sdInfo.isMounted = true;
+//                sdInfo.label = UDISK_EXTERNAL + "_" + idx;
+//                sdCardInfos.put(sdInfo.label, sdInfo);
+//                Logs.i(TAG, "[sdInfo:" + sdInfo.label + "-" + sdInfo.isMounted + "-" + sdInfo.root);
+//            }
+//        }
 
         return sdCardInfos;
     }

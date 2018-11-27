@@ -1,0 +1,17 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_bottom"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ListView
+        android:id="@+id/lv_data"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="@dimen/audio_lv_com_ui_space"
+        android:cacheColorHint="@android:color/transparent"
+        android:divider="@drawable/separate_line_h"
+        android:dividerHeight="2dp"
+        android:listSelector="@drawable/bg_audio_item_selector"
+        android:overScrollMode="never"
+        android:scrollbars="none" />
+</RelativeLayout>

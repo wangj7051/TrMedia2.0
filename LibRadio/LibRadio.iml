@@ -106,7 +106,7 @@
       <excludeFolder url="file://$MODULE_DIR$/build/outputs" />
       <excludeFolder url="file://$MODULE_DIR$/build/tmp" />
     </content>
-    <orderEntry type="jdk" jdkName="Android API 27 Platform (1)" jdkType="Android SDK" />
+    <orderEntry type="jdk" jdkName="Android API 22 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Gradle: __local_aars__:E.\WorkSpace\Code\Studio\TrMedia2.0\LibCommon\src\main\libs\android-support-v4.jar:unspecified@jar" level="project" />
     <orderEntry type="library" name="Gradle: __local_aars__:E.\WorkSpace\Code\Studio\TrMedia2.0\LibCommon\src\main\libs\jsoup-1.8.3.jar:unspecified@jar" level="project" />
@@ -121,6 +121,6 @@
     <orderEntry type="library" name="Gradle: __local_aars__:E.\WorkSpace\Code\Studio\TrMedia2.0\LibCommon\src\main\libs\httpcore-4.4.10.jar:unspecified@jar" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains:annotations:13.0@jar" level="project" />
     <orderEntry type="module" module-name="LibCommon" />
-    <orderEntry type="library" name="Gradle: android-android-27" level="project" />
+    <orderEntry type="library" name="Gradle: android-android-22" level="project" />
   </component>
 </module>

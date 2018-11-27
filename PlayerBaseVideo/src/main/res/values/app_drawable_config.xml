@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <drawable name="slb_seekbar_bg">#00000000</drawable>
+    <drawable name="slb_seekbar_process">#FFFFFF</drawable>
+
+</resources>

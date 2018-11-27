@@ -55,9 +55,9 @@ public class PlayEnableController {
     /**
      * Acc State Changed.
      *
-     * @param flag <p>1-ACC_ON.</p>
-     *             <p>2-ACC_OFF.</p>
-     *             <p>3-ACC_OFF_TRUE.</p>
+     * @param flag <p> 1 -ACC_ON.</p>
+     *             <p> 0 -ACC_OFF.</p>
+     *             <p>-1 -ACC_OFF_TRUE.</p>
      */
     public static void onAccStateChanged(int flag) {
         mAccFlag = flag;
@@ -108,14 +108,25 @@ public class PlayEnableController {
      * <p>1. ACC_FLAG = 1</p>
      * <p>2. mIsReverseOn == false</p>
      * <p>3. mIsBtCallRunning == false</p>
-     * <p>4. mIsBtCallRunning == false</p>
+     * <p>4. mIsPauseByUser == false</p>
      */
     public static boolean isPlayEnable() {
         boolean isPlayEnable = (mAccFlag == 1)
                 && !mIsReverseOn
                 && !mIsBtCallRunning
                 && !mIsPauseByUser;
-        Log.i(TAG, "isPlayEnable :: " + isPlayEnable);
+        Log.i(TAG, "isPlayEnable() - isPlayEnable :: " + isPlayEnable);
+        return isPlayEnable;
+    }
+
+    /**
+     * 是否可以播放
+     * <p>1. mIsReverseOn == false</p>
+     * <p>2. mIsBtCallRunning == false</p>
+     */
+    public static boolean isSysAllowPlay() {
+        boolean isPlayEnable = !mIsBtCallRunning;
+        Log.i(TAG, "isSysAllowPlay() - isPlayEnable :: " + isPlayEnable);
         return isPlayEnable;
     }
 

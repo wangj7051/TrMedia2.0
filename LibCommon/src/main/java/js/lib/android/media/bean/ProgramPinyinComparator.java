@@ -1,8 +1,8 @@
 package js.lib.android.media.bean;
 
-import android.util.Log;
-
 import java.util.Comparator;
+
+import js.lib.android.utils.Logs;
 
 /**
  * Program PinYin Comparator
@@ -19,7 +19,7 @@ public class ProgramPinyinComparator implements Comparator<Program> {
             return 1;
         } else {
             int result = lhs.sortLetter.compareTo(rhs.sortLetter);
-            Log.i("ProgramPinyinComparator", lhs.sortLetter + " compareTo " + rhs.sortLetter + " == result : " + result);
+            Logs.debugI("ProgramPinyinComparator", lhs.sortLetter + " compareTo " + rhs.sortLetter + " == result : " + result);
             return result;
         }
     }

@@ -24,11 +24,11 @@ public class AccReceiver extends BroadcastReceiver {
     private static Set<AccDelegate> mSetDelegates = new LinkedHashSet<>();
 
     public interface AccDelegate {
-        void onAccOff();
+//        void onAccOff();
 
         void onAccOffTrue();
 
-        void onAccOn();
+//        void onAccOn();
     }
 
     public static void register(AccDelegate t) {
@@ -63,21 +63,21 @@ public class AccReceiver extends BroadcastReceiver {
     }
 
     void notifyOn() {
-        PlayEnableController.onAccStateChanged(1);
-        for (AccDelegate delegate : mSetDelegates) {
-            delegate.onAccOn();
-        }
+//        PlayEnableController.onAccStateChanged(1);
+//        for (AccDelegate delegate : mSetDelegates) {
+//            delegate.onAccOn();
+//        }
     }
 
     void notifyOff() {
-        PlayEnableController.onAccStateChanged(2);
-        for (AccDelegate delegate : mSetDelegates) {
-            delegate.onAccOff();
-        }
+//        PlayEnableController.onAccStateChanged(0);
+//        for (AccDelegate delegate : mSetDelegates) {
+//            delegate.onAccOff();
+//        }
     }
 
     void notifyTrue() {
-        PlayEnableController.onAccStateChanged(3);
+        PlayEnableController.onAccStateChanged(-1);
         TrVideoPreferUtils.getVideoWarningFlag(true, 1);
         for (AccDelegate delegate : mSetDelegates) {
             delegate.onAccOffTrue();

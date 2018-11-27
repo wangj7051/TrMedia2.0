@@ -29,6 +29,7 @@ public enum ActionEnum {
 
     //Voice assistant
     MEDIA_EXIT_AUDIO(110, "com.tricheer.audio.EXIT"),
+    MEDIA_AUDIO_OPEN_AND_PLAY(112, "com.tricheer.audio.OPEN_PLAY"),
     MEDIA_EXIT_VIDEO(111, "com.tricheer.video.EXIT"),
     MEDIA_PLAY_PREV(112, "com.tricheer.MEDIA_PREV"),
     MEDIA_PLAY_NEXT(113, "com.tricheer.MEDIA_NEXT"),
@@ -44,8 +45,8 @@ public enum ActionEnum {
 
     /**
      * ### Open Logs ###
-     * <p>
-     * Parameter1(boolean) : "IS_OPEN"[true,false]
+     * <p> Parameter1(boolean) : "IS_OPEN"[true,false] </p>
+     * <p>e.g. [adb shell am broadcast -a com.tricheer.app.OPEN_LOGS --ez "IS_OPEN" true]</p>
      */
     OPEN_LOGS(30, "com.tricheer.app.OPEN_LOGS"),
 
@@ -95,6 +96,7 @@ public enum ActionEnum {
 
             //Voice assistant
             mMapEnums.put(MEDIA_EXIT_AUDIO.getAction(), MEDIA_EXIT_AUDIO);
+            mMapEnums.put(MEDIA_AUDIO_OPEN_AND_PLAY.getAction(), MEDIA_AUDIO_OPEN_AND_PLAY);
             mMapEnums.put(MEDIA_EXIT_VIDEO.getAction(), MEDIA_EXIT_VIDEO);
             mMapEnums.put(MEDIA_PLAY_PREV.getAction(), MEDIA_PLAY_PREV);
             mMapEnums.put(MEDIA_PLAY_NEXT.getAction(), MEDIA_PLAY_NEXT);

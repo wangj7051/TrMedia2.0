@@ -29,4 +29,14 @@ public class RadioPlayerService extends BaseRadioService {
     public int onStartCommand(Intent intent, int flags, int startId) {
         return super.onStartCommand(intent, flags, startId);
     }
+
+    @Override
+    public boolean openFm() {
+        return super.openFm();
+    }
+
+    @Override
+    public boolean closeFm() {
+        return super.closeFm();
+    }
 }

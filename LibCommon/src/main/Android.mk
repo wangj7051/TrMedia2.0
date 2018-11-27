@@ -35,9 +35,13 @@ LOCAL_MODULE = LIB_COMMON
 
 ### 声明 资源文件 ###
 #LOCAL_RESOURCE_DIR := $(LOCAL_PATH)/res
-### 声明 JAVA文件 & AIDL文件 ###
+### 声明 JAVA文件 ###
 SRC_DIRS := java
 LOCAL_SRC_FILES := $(call all-java-files-under, $(SRC_DIRS))
+### 声明 AIDL文件 ###
+AIDL_DIRS := aidl
+LOCAL_SRC_FILES += $(call all-Iaidl-files-under, $(AIDL_DIRS))
+LOCAL_AIDL_INCLUDES := $(LOCAL_PATH)/$(AIDL_DIRS)
 
 ## current 编译时会忽略源码隐藏的API
 ## LOCAL_JAVA_LIBRARIES=true时，Android.mk中不能定义LOCAL_SDK_VERSION

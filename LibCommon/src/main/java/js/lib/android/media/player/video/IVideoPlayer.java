@@ -139,108 +139,114 @@ public class IVideoPlayer extends SurfaceView {
     private boolean createMediaPlayer() {
         Logs.i(TAG, "^^ createMediaPlayer() ^^");
         boolean isNewCreated = false;
-        // 新建媒体播放器
-        if (mMediaPlayer == null) {
-            if (TextUtils.isEmpty(mMediaPath) || TextUtils.isEmpty(mMediaPath.trim())) {
-                return false;
-            }
-
-            // 创建
-            mMediaPlayer = MediaPlayer.create(mContext, Uri.parse(mMediaPath));
+        try {
+            // create new
             if (mMediaPlayer == null) {
-                if (mErrorListener != null) {
-                    mErrorListener.onError(mMediaPlayer, MediaPlayer.MEDIA_ERROR_UNKNOWN, -1);
+                if (TextUtils.isEmpty(mMediaPath) || TextUtils.isEmpty(mMediaPath.trim())) {
+                    return false;
                 }
-                return false;
-            } else {
-                mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                isNewCreated = true;
+
+                // 创建
+                mMediaPlayer = MediaPlayer.create(mContext, Uri.parse(mMediaPath));
+                if (mMediaPlayer == null) {
+                    if (mErrorListener != null) {
+                        mErrorListener.onError(mMediaPlayer, MediaPlayer.MEDIA_ERROR_UNKNOWN, -1);
+                    }
+                    return false;
+                } else {
+                    mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                    isNewCreated = true;
+                }
+
+                // 设置监听加载
+                mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+
+                    @Override
+                    public void onPrepared(MediaPlayer mp) {
+                        Logs.i(TAG, "createMediaPlayer() -> onPrepared() -> [mStatus:" + mStatus + "]");
+                        // 异步加载完成后，启动播放
+                        if (mStatus == StatusMachine.ASYNC_PREPARING) {
+                            if (mPreparedListener != null) {
+                                mPreparedListener.onPrepared(mp);
+                            }
+                            start();
+                        }
+                    }
+                });
+                // 设置监听播放完成
+                mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        mProgressTimer.cancel();
+                        Logs.i(TAG, "createMediaPlayer() -> onCompletion() -> [mStatus:" + mStatus + "]");
+                        if (mStatus != StatusMachine.ASYNC_PREPARING) {
+                            if (mCompletionListener != null) {
+                                mCompletionListener.onCompletion(mp);
+                            }
+                        }
+                    }
+                });
+                // 设置监听异常
+                mMediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+
+                    @Override
+                    public boolean onError(MediaPlayer mp, int what, int extra) {
+                        // LOG
+                        Logs.i(TAG, "createMediaPlayer() -> onError(mp," + what + "," + extra + ")");
+                        MediaUtils.printError(mp, what, extra);
+
+                        //Cancel progress timer
+                        mProgressTimer.cancel();
+
+                        // Process Error
+                        boolean isProcessError = true;
+                        switch (what) {
+                            // 未发现该问题有何用处，暂不处理该错误
+                            case -38:
+                                isProcessError = false;
+                                break;
+
+                            //Media server died. In this case, the application must release the
+                            //MediaPlayer object and instantiate a new one.
+                            case MediaPlayer.MEDIA_ERROR_SERVER_DIED:
+                                release();
+                                break;
+                        }
+                        // Error callback
+                        if (isProcessError && mErrorListener != null) {
+                            mErrorListener.onError(mp, what, extra);
+                        }
+                        return false;
+                    }
+                });
+                // 监听Seek
+                mMediaPlayer.setOnSeekCompleteListener(new MediaPlayer.OnSeekCompleteListener() {
+
+                    @Override
+                    public void onSeekComplete(MediaPlayer mp) {
+                        Logs.i(TAG, "createMediaPlayer() -> onSeekComplete() -> [mStatus:" + mStatus + "]");
+                        if (mStatus != StatusMachine.ASYNC_PREPARING) {
+                            if (mSeekCompleteListener != null) {
+                                mSeekCompleteListener.onSeekComplete(mp);
+                            }
+                        }
+                    }
+                });
+                mMediaPlayer.setOnInfoListener(new OnInfoListener() {
+
+                    @Override
+                    public boolean onInfo(MediaPlayer mp, int what, int extra) {
+                        // Logs.i(TAG ,"createMediaPlayer() -> onInfo(mp," + what +
+                        // "," + extra + ")");
+                        return false;
+                    }
+                });
             }
-
-            // 设置监听加载
-            mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    Logs.i(TAG, "createMediaPlayer() -> onPrepared() -> [mStatus:" + mStatus + "]");
-                    // 异步加载完成后，启动播放
-                    if (mStatus == StatusMachine.ASYNC_PREPARING) {
-                        if (mPreparedListener != null) {
-                            mPreparedListener.onPrepared(mp);
-                        }
-                        start();
-                    }
-                }
-            });
-            // 设置监听播放完成
-            mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mProgressTimer.cancel();
-                    Logs.i(TAG, "createMediaPlayer() -> onCompletion() -> [mStatus:" + mStatus + "]");
-                    if (mStatus != StatusMachine.ASYNC_PREPARING) {
-                        if (mCompletionListener != null) {
-                            mCompletionListener.onCompletion(mp);
-                        }
-                    }
-                }
-            });
-            // 设置监听异常
-            mMediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-
-                @Override
-                public boolean onError(MediaPlayer mp, int what, int extra) {
-                    // LOG
-                    Logs.i(TAG, "createMediaPlayer() -> onError(mp," + what + "," + extra + ")");
-                    MediaUtils.printError(mp, what, extra);
-
-                    //Cancel progress timer
-                    mProgressTimer.cancel();
-
-                    // Process Error
-                    boolean isProcessError = true;
-                    switch (what) {
-                        // 未发现该问题有何用处，暂不处理该错误
-                        case -38:
-                            isProcessError = false;
-                            break;
-
-                        //Media server died. In this case, the application must release the
-                        //MediaPlayer object and instantiate a new one.
-                        case MediaPlayer.MEDIA_ERROR_SERVER_DIED:
-                            release();
-                            break;
-                    }
-                    // Error callback
-                    if (isProcessError && mErrorListener != null) {
-                        mErrorListener.onError(mp, what, extra);
-                    }
-                    return false;
-                }
-            });
-            // 监听Seek
-            mMediaPlayer.setOnSeekCompleteListener(new MediaPlayer.OnSeekCompleteListener() {
-
-                @Override
-                public void onSeekComplete(MediaPlayer mp) {
-                    Logs.i(TAG, "createMediaPlayer() -> onSeekComplete() -> [mStatus:" + mStatus + "]");
-                    if (mStatus != StatusMachine.ASYNC_PREPARING) {
-                        if (mSeekCompleteListener != null) {
-                            mSeekCompleteListener.onSeekComplete(mp);
-                        }
-                    }
-                }
-            });
-            mMediaPlayer.setOnInfoListener(new OnInfoListener() {
-
-                @Override
-                public boolean onInfo(MediaPlayer mp, int what, int extra) {
-                    // Logs.i(TAG ,"createMediaPlayer() -> onInfo(mp," + what +
-                    // "," + extra + ")");
-                    return false;
-                }
-            });
+        } catch (Exception e) {
+            e.printStackTrace();
+            Logs.i(TAG, "createMediaPlayer() - Exception: " + e.getMessage());
+            notifyPlayState(PlayState.ERROR);
         }
         return isNewCreated;
     }

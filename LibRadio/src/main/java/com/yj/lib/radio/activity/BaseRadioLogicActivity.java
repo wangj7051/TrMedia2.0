@@ -29,6 +29,10 @@ public abstract class BaseRadioLogicActivity extends BaseRadioActivity {
     @Override
     public void onFreqChanged(int freq, BandCategoryEnum band) {
         super.onFreqChanged(freq, band);
+        Log.i(TAG, "onFreqChanged");
+    }
+
+    protected void saveLastFreq(boolean isSave, BandCategoryEnum band, int freq) {
         RadioPreferUtils.getLastFreq(true, band, freq);
     }
 

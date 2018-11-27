@@ -206,14 +206,15 @@ public class MainActivity extends BaseKeyEventActivity
                 execOpenRadio();
             }
         } else {
+            //Second
             if (isRadioOpened()) {
-                BandCategoryEnum currBand = getCurrBand();
-                if (paramBand != currBand) {
-                    execSwitchBand();
-                    return;
-                }
+                execSwitchBand();
+                return;
             }
-            execOpenRadio(paramBand, getLastFreq(paramBand));
+
+            //First
+            BandCategoryEnum lastBand = getLastBand();
+            execOpenRadio(lastBand, getLastFreq(lastBand));
         }
     }
 
@@ -296,6 +297,11 @@ public class MainActivity extends BaseKeyEventActivity
     @Override
     public void onFreqChanged(int freq, BandCategoryEnum band) {
         super.onFreqChanged(freq, band);
+        if (!mSearchingController.isSearching()
+                && !mScanningController.isScanningNext()
+                && !mScanningController.isScanningPrev()) {
+            saveLastFreq(true, band, freq);
+        }
         int currProgress = freq - getMinFreq();
         seekBarFreq.setProgress(currProgress);
         setFreqInfo(freq, band);
@@ -550,19 +556,26 @@ public class MainActivity extends BaseKeyEventActivity
     @Override
     public void onAudioFocusGain() {
         Log.i(TAG, "onAudioFocusGain()");
-        // closeFm() executed in service
-        // Call back in activity
-        if (mSearchingController.isSearching()) {
-            Log.i(TAG, "onAudioFocusGain() -Resume-");
-            mSearchingController.resumeOrigin();
-        } else if (!isRadioOpened()) {
-            Log.i(TAG, "onAudioFocusGain() -Open-");
-            execOpenRadio();
+        if (PlayEnableController.isPlayEnable()) {
+            // closeFm() executed in service
+            // Call back in activity
+            if (mSearchingController.isSearching()) {
+                Log.i(TAG, "onAudioFocusGain() -Resume-");
+                mSearchingController.resumeOrigin();
+            } else if (!isRadioOpened()) {
+                Log.i(TAG, "onAudioFocusGain() -Open-");
+                execOpenRadio();
+            }
         }
     }
 
     @Override
     public void onAudioFocusLoss() {
+        //
+        if (mSearchingController != null) {
+            mSearchingController.resumeUI();
+        }
+
         Log.i(TAG, "onAudioFocusLoss()");
         mMediaBtnController.unregister();
 
@@ -572,20 +585,24 @@ public class MainActivity extends BaseKeyEventActivity
     }
 
     @Override
-    public void onAccOn() {
-        Log.i(TAG, "onAccOn()");
-        if (!isRadioOpened()
-                && PlayEnableController.isPlayEnable()
-                && isAudioFocusRegistered()) {
-            execOpenRadio();
-        }
+    public void onAudioFocus(int flag) {
     }
 
-    @Override
-    public void onAccOff() {
-        Log.i(TAG, "onAccOff()");
-        closeFm();
-    }
+    //    @Override
+//    public void onAccOn() {
+//        Log.i(TAG, "onAccOn()");
+//        if (!isRadioOpened()
+//                && PlayEnableController.isPlayEnable()
+//                && isAudioFocusRegistered()) {
+//            execOpenRadio();
+//        }
+//    }
+
+//    @Override
+//    public void onAccOff() {
+//        Log.i(TAG, "onAccOff()");
+//        closeFm();
+//    }
 
     @Override
     public void onAccOffTrue() {
@@ -615,14 +632,10 @@ public class MainActivity extends BaseKeyEventActivity
             KeyEnum key = KeyEnum.getKey(event.getKeyCode());
             switch (key) {
                 case KEYCODE_MEDIA_PREVIOUS:
-                    if (!isForeground()) {
-                        scanAndPlayPrev();
-                    }
+                    scanAndPlayPrev();
                     break;
                 case KEYCODE_MEDIA_NEXT:
-                    if (!isForeground()) {
-                        scanAndPlayNext();
-                    }
+                    scanAndPlayNext();
                     break;
             }
         }
@@ -649,16 +662,16 @@ public class MainActivity extends BaseKeyEventActivity
                 }
                 break;
 
-            case KEYCODE_MEDIA_PREVIOUS:
-                if (isForeground()) {
-                    scanAndPlayPrev();
-                }
-                break;
-            case KEYCODE_MEDIA_NEXT:
-                if (isForeground()) {
-                    scanAndPlayNext();
-                }
-                break;
+//            case KEYCODE_MEDIA_PREVIOUS:
+//                if (isForeground()) {
+//                    scanAndPlayPrev();
+//                }
+//                break;
+//            case KEYCODE_MEDIA_NEXT:
+//                if (isForeground()) {
+//                    scanAndPlayNext();
+//                }
+//                break;
 
             case KEYCODE_DPAD_LEFT:
                 stepPrev();
@@ -843,6 +856,19 @@ public class MainActivity extends BaseKeyEventActivity
 
         int getBaseProgress() {
             return mmBaseProgress;
+        }
+
+        void resumeUI() {
+            refreshPageOnScanning(false);
+
+            //Reset origin
+            mmOriginBand = BandCategoryEnum.NONE;
+            mmOriginFreq = 0;
+
+            mmBaseProgress = 0;
+            mmIsSearching = false;
+            mmLastSearchedBand = BandCategoryEnum.NONE;
+            mmSetSearchedBand.clear();
         }
 
         void resumeOrigin() {

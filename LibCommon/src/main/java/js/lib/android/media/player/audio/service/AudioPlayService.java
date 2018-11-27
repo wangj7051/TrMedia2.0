@@ -214,7 +214,6 @@ public abstract class AudioPlayService extends BaseAudioService {
 
     @Override
     public void play(int pos) {
-        PlayEnableController.pauseByUser(false);
         setPlayPosition(pos);
         play();
     }
@@ -243,7 +242,7 @@ public abstract class AudioPlayService extends BaseAudioService {
 
             //Exec play runnable
             //防止高频点击，即用户在短时间内频繁点击执行下一个操作
-            clearAllRunables();
+            clearAllRunnable();
             if (mPlayPrevSecRunnable == null) {
                 mPlayPrevSecRunnable = new Runnable() {
 
@@ -266,10 +265,11 @@ public abstract class AudioPlayService extends BaseAudioService {
             //
             mIsPlayNext = true;
             setPlayPosByMode(1);
+            Log.i(TAG, "mPlayIdx - " + mPlayIdx);
 
             //Exec play runnable
             //防止高频点击，即用户在短时间内频繁点击执行下一个操作
-            clearAllRunables();
+            clearAllRunnable();
             if (mPlayNextSecRunnable == null) {
                 mPlayNextSecRunnable = new Runnable() {
 
@@ -372,7 +372,7 @@ public abstract class AudioPlayService extends BaseAudioService {
     @Override
     public void pause() {
         Logs.i(TAG, "^^ pause() ^^");
-        clearAllRunables();
+        clearAllRunnable();
         if (mAudioPlayer != null) {
             mAudioPlayer.pauseMedia();
         }
@@ -381,7 +381,7 @@ public abstract class AudioPlayService extends BaseAudioService {
     @Override
     public void resume() {
         Logs.i(TAG, "^^ resume() ^^");
-        clearAllRunables();
+        clearAllRunnable();
         if (!EmptyUtil.isEmpty(mListMedias)) {
             if (mAudioPlayer == null) {
                 playFixedMedia(getLastMediaPath());
@@ -519,7 +519,6 @@ public abstract class AudioPlayService extends BaseAudioService {
 
     @Override
     public void onPlayStateChanged(PlayState playState) {
-        super.onPlayStateChanged(playState);
         // 阻止继续执行
         // (1) 已经执行了Service销毁
         if (mIsServiceDestroy) {
@@ -596,7 +595,7 @@ public abstract class AudioPlayService extends BaseAudioService {
     public void onAudioFocusTransient() {
         super.onAudioFocusTransient();
         Logs.i(TAG, "----$$ onAudioFocusTransient() $$----");
-        clearAllRunables();
+        clearAllRunnable();
         pause();
     }
 
@@ -604,7 +603,7 @@ public abstract class AudioPlayService extends BaseAudioService {
     public void onAudioFocusGain() {
         super.onAudioFocusGain();
         Logs.i(TAG, "----$$ onAudioFocusGain() $$----");
-        resume();
+//        resume();
     }
 
     @Override

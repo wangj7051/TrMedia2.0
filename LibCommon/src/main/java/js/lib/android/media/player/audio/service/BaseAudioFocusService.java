@@ -83,10 +83,18 @@ public abstract class BaseAudioFocusService extends Service {
             case 1:
                 int result = AudioManagerUtil.requestMusicGain(this, mAfChangeListener);
                 Logs.i(TAG, "registerAudioFocus(" + flag + ") *request AUDIOFOCUS_GAIN* >> [result:" + result);
+                if (result == 1) {
+                    mAudioFocusFlag = AudioManager.AUDIOFOCUS_GAIN;
+                    respAudioFocus(1);
+                }
                 break;
             case 2:
                 result = AudioManagerUtil.abandon(this, mAfChangeListener);
                 Logs.i(TAG, "registerAudioFocus(" + flag + ") *abandon AudioFocus* >> [result:" + result);
+                if (result == 1) {
+                    mAudioFocusFlag = AudioManager.AUDIOFOCUS_LOSS;
+                    respAudioFocus(2);
+                }
                 break;
         }
     }
@@ -132,6 +140,14 @@ public abstract class BaseAudioFocusService extends Service {
         for (IAudioFocusListener l : mSetAudioFocusListeners) {
             if (l != null) {
                 l.onAudioFocusGain();
+            }
+        }
+    }
+
+    public void respAudioFocus(int flag) {
+        for (IAudioFocusListener l : mSetAudioFocusListeners) {
+            if (l != null) {
+                l.onAudioFocus(flag);
             }
         }
     }

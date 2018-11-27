@@ -49,7 +49,8 @@ public class FmUtilV2 implements FmDelegate {
         // mContext = context;
         try {
             Log.i(TAG, "FmUtilV2(context)");
-            @SuppressLint("PrivateApi") Class<?> servicemanager = Class.forName("android.os.ServiceManager");
+            @SuppressLint("PrivateApi")
+            Class<?> servicemanager = Class.forName("android.os.ServiceManager");
             Method getService = servicemanager.getMethod("getService", String.class);
             IBinder ibinder = (IBinder) getService.invoke(null, "fm_manager");
             mFmManager = IFmManager.Stub.asInterface(ibinder);

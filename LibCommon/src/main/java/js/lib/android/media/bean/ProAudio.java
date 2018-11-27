@@ -11,6 +11,7 @@ import android.util.Log;
 import java.io.File;
 
 import js.lib.android.media.engine.audio.utils.AudioInfo;
+import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.Logs;
 import js.lib.utils.CharacterParser;
 
@@ -56,18 +57,51 @@ public class ProAudio extends Program {
     public String lyric = "";
 
     /**
-     * Is Parsed By MP3File
-     * <p>
-     * 0 尚未获取信息
-     * <p>
-     * 1 已经获取过信息
-     */
-    public int parseInfoFlag = 0;
-
-    /**
      * Empty Construct
      */
     public ProAudio() {
+    }
+
+    /**
+     * Construct ProMusic From Media File
+     */
+    public ProAudio(String mediaPath) {
+        File file = new File(mediaPath);
+        if (!file.exists()) {
+            return;
+        }
+
+        //
+        //sysMediaID
+        String fName = file.getName();
+        if (EmptyUtil.isEmpty(fName)) {
+            title = UNKNOWN;
+        } else {
+            int lastIdxOfDot = fName.lastIndexOf(".");
+            if (lastIdxOfDot != -1) {
+                title = fName.substring(0, lastIdxOfDot);
+            }
+        }
+        titlePinYin = UNKNOWN;
+
+        //
+        artist = UNKNOWN;
+        artistPinYin = UNKNOWN;
+
+        // albumID
+        album = UNKNOWN;
+        albumPinYin = UNKNOWN;
+
+        //
+        mediaUrl = mediaPath;
+        File parentFile = file.getParentFile();
+        if (parentFile != null) {
+            mediaDirectory = parentFile.getName();
+            mediaDirectoryPinYin = UNKNOWN;
+        }
+
+        //
+        duration = 0;
     }
 
     /**
@@ -89,12 +123,16 @@ public class ProAudio extends Program {
     }
 
     /**
-     * Construct ProMusic From Media File
+     * Parse media information
+     *
+     * @param context {@link Context}
+     * @param media   {@link ProAudio}
      */
-    public ProAudio(Context context, String mediaPath) {
+    public static void parseMedia(Context context, ProAudio media) {
         MediaMetadataRetriever mmr = null;
         try {
             //
+            String mediaPath = media.mediaUrl;
             File file = new File(mediaPath);
             if (!file.exists()) {
                 return;
@@ -105,44 +143,39 @@ public class ProAudio extends Program {
             mmr.setDataSource(context, Uri.parse(mediaPath));
 
             //
-            title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-            if (title == null) {
-                String fName = file.getName();
-                if (!TextUtils.isEmpty(fName)) {
-                    int lastIdxOfDot = fName.lastIndexOf(".");
-                    if (lastIdxOfDot != -1) {
-                        title = fName.substring(0, lastIdxOfDot);
-                    }
-                }
+            //sysMediaID
+            String parsedTitle = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+            if (!EmptyUtil.isEmpty(parsedTitle)) {
+                media.title = parsedTitle;
             }
-            titlePinYin = CharacterParser.getPingYin(title);
+            media.titlePinYin = CharacterParser.getPingYin(media.title);
 
             //
-            artist = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
-            if (artist == null) {
-                artist = "unknown";
+            String parsedArtist = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
+            if (!EmptyUtil.isEmpty(parsedArtist)) {
+                media.artist = parsedArtist;
             }
-            artistPinYin = CharacterParser.getPingYin(artist);
+            media.artistPinYin = CharacterParser.getPingYin(media.artist);
 
             // albumID
-            album = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
-            if (album == null) {
-                album = "unknown";
+            String parsedAlbum = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
+            if (!EmptyUtil.isEmpty(parsedAlbum)) {
+                media.album = parsedAlbum;
             }
-            albumPinYin = CharacterParser.getPingYin(album);
+            media.albumPinYin = CharacterParser.getPingYin(media.album);
 
             //
-            mediaUrl = mediaPath;
+//            media.mediaUrl = mediaPath;
             File parentFile = file.getParentFile();
             if (parentFile != null) {
-                mediaDirectory = parentFile.getName();
-                mediaDirectoryPinYin = CharacterParser.getPingYin(mediaDirectory);
+                media.mediaDirectory = parentFile.getName();
+                media.mediaDirectoryPinYin = CharacterParser.getPingYin(media.mediaDirectory);
             }
 
             //
             String strDuration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
             if (TextUtils.isDigitsOnly(strDuration)) {
-                duration = Integer.parseInt(strDuration);
+                media.duration = Integer.parseInt(strDuration);
             }
         } catch (Exception e) {
             Logs.debugI(TAG, "Parse audio failure ....!!!!");

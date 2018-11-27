@@ -57,13 +57,12 @@ public class PlayerMp3Utils {
     }
 
     /**
-     * 获取U盘路径
+     * 获取sd卡和U盘路径
      *
-     * @param isOnlyMounted 是否只获取通过mount方式挂载上的
-     * @return List<String>
+     * @return
      */
-    public static List<String> getAllExterSdcardPath(boolean isOnlyMounted) {
-        List<String> listPaths = new ArrayList<String>();
+    public static List<String> getAllExterSdcardPath(boolean isFilter) {
+        List<String> SdList = new ArrayList<>();
         try {
             Runtime runtime = Runtime.getRuntime();
             // 运行mount命令，获取命令的输出，得到系统中挂载的所有目录
@@ -86,13 +85,15 @@ public class PlayerMp3Utils {
                     String items[] = line.split(" ");
                     if (items.length > 1) {
                         String path = items[2].toLowerCase(Locale.getDefault());
-                        if (isOnlyMounted && path.startsWith("/mnt/media_rw")) {
-                            continue;
-                        }
                         // 添加一些判断，确保是sd卡，如果是otg等挂载方式，可以具体分析并添加判断条件
-                        if (!listPaths.contains(path) && path.contains("media_rw")) {
-                            listPaths.add(items[2]);
+                        if (isFilter) {
+                            if (!SdList.contains(path) && path.contains("media_rw")) {
+                                SdList.add(items[2]);
+                            }
+                        } else if (!SdList.contains(path) && path.contains("media_rw")) {
+                            SdList.add(items[2]);
                         }
+
                     }
                 }
             }
@@ -100,7 +101,7 @@ public class PlayerMp3Utils {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        return listPaths;
+        return SdList;
     }
 
     /**
@@ -124,6 +125,5 @@ public class PlayerMp3Utils {
                 }
             }
         }
-
     }
 }

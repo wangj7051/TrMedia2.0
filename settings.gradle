@@ -4,7 +4,8 @@ include ':LibTricheer'
 include ':LetterSideBar'
 
 //Player
-include ':PlayerBase'
+include ':PlayerBaseAudio'
+include ':PlayerBaseVideo'
 
 //Radio
 include ':RadioBase'

@@ -1,5 +1,6 @@
 package com.tri.lib.engine;
 
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.util.Log;
@@ -35,11 +36,15 @@ public class BtCallStateController {
         BTPhone btPhone = new BTPhone(context.getApplicationContext(), new BTPhoneCallback() {
             @Override
             public void onConnectionStateChanged(BluetoothDevice bluetoothDevice, int i) {
+                Log.i(TAG, "onConnectionStateChanged(" + i + ")");
+                if (i != BluetoothAdapter.STATE_CONNECTED) {
+                    onBtCallStateChanged(false);
+                }
             }
 
             @Override
             public void onCallStateChanged(BTCallState btCallState) {
-                Log.i(TAG, "onCallStateChanged(BTCallState)");
+                Log.i(TAG, "onCallStateChanged(" + btCallState + ")");
                 //通话状态发生改变主动回调触发
                 int state = btCallState.getState();
                 onBtCallStateChanged(state);
@@ -65,18 +70,17 @@ public class BtCallStateController {
 
     private static void onBtCallStateChanged(int state) {
         // 通话中
-        boolean isBtRunning = false;
-        if (state != -1 && state != BTCallState.CALL_STATE_TERMINATED) {
-            isBtRunning = true;
-            PlayEnableController.onBtCallStateChanged(true);
-        } else {
-            PlayEnableController.onBtCallStateChanged(false);
-        }
+        Log.i(TAG, "onBtCallStateChanged(" + state + ")");
+        boolean isBtRunning = (state != -1) && (state != BTCallState.CALL_STATE_TERMINATED);
+        onBtCallStateChanged(isBtRunning);
+    }
 
+    private static void onBtCallStateChanged(boolean isCalling) {
+        PlayEnableController.onBtCallStateChanged(isCalling);
         //Callback
-        Log.i(TAG, "onBtCallStateChanged(" + state + ") :: isBtRunning[" + isBtRunning + "]");
+        Log.i(TAG, "onBtCallStateChanged(" + isCalling + ")");
         if (mBtCallStateDelegate != null) {
-            mBtCallStateDelegate.onBtCallStateChanged(isBtRunning);
+            mBtCallStateDelegate.onBtCallStateChanged(isCalling);
         }
     }
 }

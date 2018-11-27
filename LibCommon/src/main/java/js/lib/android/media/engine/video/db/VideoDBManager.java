@@ -320,8 +320,11 @@ public class VideoDBManager {
 
                         //
                         ProVideo program = new ProVideo();
-                        program.mediaUrl = mediaUrl;
                         program.title = cur.getString(cur.getColumnIndex(VideoCacheInfo.TITLE));
+                        program.titlePinYin = cur.getString(cur.getColumnIndex(VideoCacheInfo.TITLE_PINYIN));
+                        program.mediaUrl = mediaUrl;
+                        program.mediaDirectory = cur.getString(cur.getColumnIndex(VideoCacheInfo.MEDIA_DIRECTORY));
+                        program.mediaDirectoryPinYin = cur.getString(cur.getColumnIndex(VideoCacheInfo.MEDIA_DIRECTORY_PINYIN));
                         program.duration = cur.getInt(cur.getColumnIndex(VideoCacheInfo.DURATION));
                         mapVideos.put(program.mediaUrl, program);
                     }

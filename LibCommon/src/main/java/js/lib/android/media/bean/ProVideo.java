@@ -23,6 +23,21 @@ public class ProVideo extends Program {
     //TAG
     private static final String TAG = "ProVideo";
 
+    /**
+     * Video width
+     */
+    public int width;
+
+    /**
+     * Video width
+     */
+    public int height;
+
+    /**
+     * Video rotation
+     */
+    public int rotation;
+
     public ProVideo() {
     }
 
@@ -35,24 +50,49 @@ public class ProVideo extends Program {
         this.duration = video.duration;
     }
 
-    public ProVideo(String fPath) {
-        try {
-            this.mediaUrl = fPath;
-            this.title = fPath.substring(fPath.lastIndexOf("/") + 1);
-        } catch (Exception e) {
-            Logs.printStackTrace(TAG + "ProVideo()", e);
-            this.mediaUrl = "";
-            this.title = "";
-        }
-    }
-
     /**
      * Construct From Media File
      */
-    public ProVideo(Context context, String mediaPath) {
+    public ProVideo(String mediaPath) {
+        //
+        File file = new File(mediaPath);
+        if (!file.exists()) {
+            return;
+        }
+
+        //
+        String fName = file.getName();
+        if (!TextUtils.isEmpty(fName)) {
+            int lastIdxOfDot = fName.lastIndexOf(".");
+            if (lastIdxOfDot != -1) {
+                title = fName.substring(0, lastIdxOfDot);
+            }
+        }
+        titlePinYin = UNKNOWN;
+
+        //
+        mediaUrl = mediaPath;
+        File parentFile = file.getParentFile();
+        if (parentFile != null) {
+            this.mediaDirectory = parentFile.getName();
+            this.mediaDirectoryPinYin = UNKNOWN;
+        }
+
+        //
+        duration = 0;
+    }
+
+    /**
+     * Parse media information
+     *
+     * @param context {@link Context}
+     * @param media   {@link ProVideo}
+     */
+    public static void parseMedia(Context context, ProVideo media) {
         MediaMetadataRetriever mmr = null;
         try {
             //
+            String mediaPath = media.mediaUrl;
             File file = new File(mediaPath);
             if (!file.exists()) {
                 return;
@@ -63,33 +103,60 @@ public class ProVideo extends Program {
             mmr.setDataSource(context, Uri.parse(mediaPath));
 
             //
-            title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-            if (title == null) {
-                String fName = file.getName();
-                if (!TextUtils.isEmpty(fName)) {
-                    int lastIdxOfDot = fName.lastIndexOf(".");
-                    if (lastIdxOfDot != -1) {
-                        title = fName.substring(0, lastIdxOfDot);
-                    }
-                }
+            String parsedTitle = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+            if (parsedTitle != null) {
+                media.title = parsedTitle;
             }
-            titlePinYin = CharacterParser.getPingYin(title);
+            media.titlePinYin = CharacterParser.getPingYin(media.title);
 
             //
-            mediaUrl = mediaPath;
+//            media.mediaUrl = mediaPath;
             File parentFile = file.getParentFile();
             if (parentFile != null) {
-                this.mediaDirectory = parentFile.getName();
-                this.mediaDirectoryPinYin = CharacterParser.getPingYin(this.mediaDirectory);
+                media.mediaDirectory = parentFile.getName();
+                media.mediaDirectoryPinYin = CharacterParser.getPingYin(media.mediaDirectory);
             }
 
             //
             String strDuration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
             if (TextUtils.isDigitsOnly(strDuration)) {
-                duration = Integer.parseInt(strDuration);
+                media.duration = Integer.parseInt(strDuration);
             }
         } catch (Exception e) {
             Logs.debugI(TAG, "Parse video failure....!!!!");
+        } finally {
+            if (mmr != null) {
+                mmr.release();
+            }
+        }
+    }
+
+    /**
+     * Parse media scale information.
+     *
+     * @param context {@link Context}
+     * @param media   {@link ProVideo}
+     */
+    public static void parseMediaScaleInfo(Context context, ProVideo media) {
+        MediaMetadataRetriever mmr = null;
+        try {
+            //
+            String mediaPath = media.mediaUrl;
+            File file = new File(mediaPath);
+            if (file.exists()) {
+                //
+                mmr = new MediaMetadataRetriever();
+                mmr.setDataSource(context, Uri.parse(mediaPath));
+
+                // 视频高度
+                media.height = Integer.parseInt(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
+                // 视频宽度
+                media.width = Integer.parseInt(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
+                // 视频旋转方向
+                media.rotation = Integer.parseInt(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION));
+            }
+        } catch (Exception e) {
+            Logs.debugI(TAG, "Parse video scale information failure....!!!!");
         } finally {
             if (mmr != null) {
                 mmr.release();

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.media.AudioManager;
 
 public class MediaBtnController {
+    private Context mContext;
     private ComponentName mComponentName;
     private AudioManager mAudioManager;
 

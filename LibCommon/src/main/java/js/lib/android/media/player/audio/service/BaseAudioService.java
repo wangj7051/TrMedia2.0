@@ -47,16 +47,16 @@ public abstract class BaseAudioService extends BaseAudioFocusService implements 
     @Override
     public void setPlayListener(PlayDelegate l) {
         if (l != null) {
-            setAudioFocusListener(l);
             mSetPlayDelegates.add(l);
+            setAudioFocusListener(l);
         }
     }
 
     @Override
     public void removePlayListener(PlayDelegate l) {
         if (l != null) {
-            removeAudioFocusListener(l);
             mSetPlayDelegates.remove(l);
+            removeAudioFocusListener(l);
         }
     }
 
@@ -111,6 +111,11 @@ public abstract class BaseAudioService extends BaseAudioFocusService implements 
         Log.i(TAG, "onAudioFocusLoss()");
     }
 
+    @Override
+    public void onAudioFocus(int flag) {
+        Log.i(TAG, "onAudioFocus(" + flag + ")");
+    }
+
     protected void postRunnable(Runnable r) {
         mHandler.post(r);
     }
@@ -119,7 +124,7 @@ public abstract class BaseAudioService extends BaseAudioFocusService implements 
         mHandler.postDelayed(r, delayTime);
     }
 
-    protected void clearAllRunables() {
+    protected void clearAllRunnable() {
         mHandler.removeCallbacksAndMessages(null);
     }
 
@@ -127,7 +132,7 @@ public abstract class BaseAudioService extends BaseAudioFocusService implements 
     public void onDestroy() {
         removeAudioFocusListener(this);
         mSetPlayDelegates.clear();
-        clearAllRunables();
+        clearAllRunnable();
         super.onDestroy();
     }
 }

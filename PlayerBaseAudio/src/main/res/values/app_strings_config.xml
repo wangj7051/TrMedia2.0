@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- TAG ID -->
+    <string name="tag_is_show_lyric">tag_is_show_lyric</string>
+
+    <!-- Application Name -->
+    <string name="app_name_music">音乐</string>
+    <string name="app_name_video">视频</string>
+
+    <!-- AiSpeech String -->
+    <string name="ais_net_error">网络链接错误！</string>
+    <string name="ais_device_temp_too_high">设备温度过高!</string>
+
+    <!-- Player -->
+    <string name="toast_usb_not_exist">请注意，无可用USB设备，请检查&#8230;</string>
+    <string name="no_compare_musics">没有匹配的音乐文件</string>
+    <string name="no_compare_videos">没有匹配的视频文件</string>
+    <string name="music_online">在线音乐</string>
+    <string name="music_local">本地音乐</string>
+    <string name="video_local">本地视频</string>
+    <string name="sure_1">确认</string>
+    <string name="playing_curr">正在播放</string>
+    <string name="my_category">我的分类</string>
+    <string name="recently_play">最近播放</string>
+    <string name="radio_category_null">未找到同名台分类</string>
+    <string name="radio_init_failed">电台初始化失败!</string>
+    <string name="delete_select_music">删除选定的音频?</string>
+    <string name="delete_music_success_str">“%s” 已删除!</string>
+    <string name="device_temp_high">设备温度过高!</string>
+    <string name="music_online_error">目标音乐不可用或已删除!</string>
+    <string name="plea_input_search_key">请输入查询关键字!</string>
+    <string name="hint_input_music_searchinfo">请输入您想听的歌名或者歌手名字</string>
+    <string name="video_has_resume">视频恢复播放!</string>
+    <string name="dialing_toast">通话过程中不允许操作媒体!</string>
+    <string name="bt_connected">蓝牙媒体通道已连接</string>
+    <string name="select_bt_media">打开蓝牙媒体</string>
+    <string name="select_local_media">打开本地媒体</string>
+    <string name="select_timeout_on_bt_connected">长时间未选择，播放本地媒体</string>
+    <string name="select_bt_toast">您选择了蓝牙媒体，本地媒体将关闭</string>
+    <string name="play_error">《%s》播放异常！</string>
+    <string name="media_deleted">媒体文件不存在</string>
+    <string name="music_search_none">未搜索到匹配的歌曲</string>
+    <string name="tcard_monted">T卡已挂载</string>
+    <string name="udisk_monted">U盘已挂载</string>
+    <string name="playing_1080p_on_record">为了保证视频播放流畅，播放过程中建议关闭行车记录功能</string>
+    <string name="my_favor">我的最爱</string>
+    <string name="local_music">本地歌曲</string>
+    <string name="local_music2">本地音乐</string>
+    <string name="i_want_find_musics">我要找歌</string>
+    <string name="video_catalog">视频目录</string>
+    <string name="hint_input_video_searchinfo">请输入您想观看的视频</string>
+    <string name="no_videos">没有视频</string>
+    <string name="loading_medias_">正在加载媒体数据 &#8230;</string>
+
+    <!-- Music -->
+    <string name="go_folder_parent">返回上一级</string>
+    <string name="my_favorite">我的收藏</string>
+    <string name="folder">文件夹</string>
+    <string name="music_name">歌曲名</string>
+    <string name="artist">表演者</string>
+    <string name="album">专辑</string>
+    <string name="artist_">演唱者%s</string>
+    <string name="album_">所属专辑%s</string>
+    <string name="audios_none_toast1">列表为空</string>
+    <string name="audios_none_toast2">请触摸</string>
+    <string name="audios_none_toast3">来添加</string>
+    <string name="toast_no_audios">没有音频文件</string>
+    <string name="unknown_title">未知标题</string>
+    <string name="unknown_album">未知专辑</string>
+    <string name="unknown_artist">未知表演者</string>
+
+    <!-- Video -->
+    <string name="video_handbrake_prompt">行车过程中请勿观看视频</string>
+    <string name="file_name">文件名</string>
+    <string name="video_pos_str" formatted="false">%s/%s</string>
+    <string name="video_warning">警告</string>
+    <string name="video_warning_desc">为了您的安全，车辆行驶中请不要进行操作请务必参照实际的交通规则驾驶</string>
+    <string name="video_warning_desc2">为驾驶安全，车辆行驶中禁止观看视频</string>
+    <string name="video_warning_op1">本次同意</string>
+    <string name="video_warning_op2">本次不再提示</string>
+    <string name="video_warning_op3">退出</string>
+    <string name="toast_no_videos">没有视频文件</string>
+
+    <!-- Player Operates -->
+    <string name="play_pre">上一个</string>
+    <string name="play_start">播放</string>
+    <string name="play_pause">暂停</string>
+    <string name="play_next">下一个</string>
+    <string name="play_size_21_9">21:9</string>
+    <string name="play_size_16_9">16:9</string>
+    <string name="play_size_4_3">4:3</string>
+    <string name="play_size_full">全屏</string>
+    <string name="screen_switch">画面切换</string>
+    <string name="play_vol">音量</string>
+
+    <!-- Request Loading Information -->
+    <string name="music_loading">音乐加载中&#8230;</string>
+    <string name="music_re_loading">目标音乐不可用，尝试重新加载&#8230;</string>
+
+    <!-- Fill Strings -->
+    <string name="fillstr_time_1">00:00</string>
+    <string name="fillstr_selected_val">Selected Value</string>
+    <string name="fillstr_1">A Broken Spirit</string>
+    <string name="fillstr_2">Left Operate</string>
+    <string name="fillstr_3">Right Operate</string>
+    <string name="fillstr_4">连接类型: PPPOE\nIP地址: xxx.xxx.xxx.xxx\n子网掩码: xxx.xxx.xxx.xxx\nDNS: xxx.xxx.xxx.xxx</string>
+    <string name="fillstr_5">系统音量：0</string>
+    <string name="fillstr_6">Singer</string>
+    <string name="fillstr_7">SongName</string>
+    <string name="fillstr_8">解决1300万“黑狐” 知易行难</string>
+    <string name="fillstr_9">1/91</string>
+    <string name="fillstr_10">1/315 有没有那么一首歌.MP3</string>
+
+</resources>

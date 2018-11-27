@@ -21,7 +21,7 @@ include $(CLEAR_VARS)
 #### 指定编译所用SDK  ####
 TARGET_PLATFORM=android-22
 
-LOCAL_MODULE := Player_SCL_LC2010_VDC_TEMP
+LOCAL_MODULE := YJPlayer_Music_TEMP
 LOCAL_MODULE_CLASS := APPS
 
 ## user: 指该模块只在user版本下才编译
@@ -59,7 +59,7 @@ LOCAL_MODULE_SUFFIX := $(COMMON_ANDROID_PACKAGE_SUFFIX)
 ## (5)	presigned - Use apk`s origin signature.
 LOCAL_CERTIFICATE := PRESIGNED
 
-LOCAL_SRC_FILES := PlayerBase-release.apk
+LOCAL_SRC_FILES := PlayerBaseAudio-release.apk
 LOCAL_MODULE_PATH := $(PRODUCT_OUT)/system/priv-app
 
 #use the folling include to make apk

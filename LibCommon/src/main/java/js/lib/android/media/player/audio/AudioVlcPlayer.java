@@ -66,17 +66,24 @@ public class AudioVlcPlayer implements IAudioPlayer {
 
     private class PlayerEventImpl implements MediaPlayer.EventListener {
 
+        private PlayState mmPlayState;
+
         @Override
         public void onEvent(MediaPlayer.Event event) {
             switch (event.type) {
                 case MediaPlayer.Event.MediaChanged:
                     Logs.debugI(TAG, "MediaPlayerEvent :: MediaChanged");
-                    notifyPlayState(PlayState.REFRESH_UI);
+                    if (mmPlayState != PlayState.REFRESH_UI) {
+                        mmPlayState = PlayState.REFRESH_UI;
+                        notifyPlayState(mmPlayState);
+                    }
                     break;
                 case MediaPlayer.Event.Opening:
-                    notifyPlayState(PlayState.PLAY);
-                    notifyPlayState(PlayState.PREPARED);
                     Logs.debugI(TAG, "MediaPlayerEvent :: Opening");
+                    if (mmPlayState != PlayState.PREPARED) {
+                        mmPlayState = PlayState.PREPARED;
+                        notifyPlayState(mmPlayState);
+                    }
                     break;
                 case MediaPlayer.Event.Buffering:
                     Logs.debugI(TAG, "MediaPlayerEvent :: Buffering");
@@ -85,30 +92,45 @@ public class AudioVlcPlayer implements IAudioPlayer {
                 //Media is playing
                 case MediaPlayer.Event.Playing:
                     Logs.debugI(TAG, "MediaPlayerEvent :: Playing");
-                    notifyPlayState(PlayState.PLAY);
+                    if (mmPlayState != PlayState.PLAY) {
+                        mmPlayState = PlayState.PLAY;
+                        notifyPlayState(mmPlayState);
+                    }
                     break;
 
                 //Media is paused
                 case MediaPlayer.Event.Paused:
                     Logs.debugI(TAG, "MediaPlayerEvent :: Paused");
-                    notifyPlayState(PlayState.PAUSE);
+                    if (mmPlayState != PlayState.PAUSE) {
+                        mmPlayState = PlayState.PAUSE;
+                        notifyPlayState(mmPlayState);
+                    }
                     break;
 
                 case MediaPlayer.Event.Stopped:
                     Logs.debugI(TAG, "MediaPlayerEvent :: Stopped");
-                    notifyPlayState(PlayState.STOP);
+                    if (mmPlayState != PlayState.STOP) {
+                        mmPlayState = PlayState.STOP;
+                        notifyPlayState(mmPlayState);
+                    }
                     break;
 
                 //Media completed
                 case MediaPlayer.Event.EndReached:
                     Logs.debugI(TAG, "MediaPlayerEvent :: EndReached");
-                    notifyPlayState(PlayState.COMPLETE);
+                    if (mmPlayState != PlayState.COMPLETE) {
+                        mmPlayState = PlayState.COMPLETE;
+                        notifyPlayState(mmPlayState);
+                    }
                     break;
 
                 //Media error on playing
                 case MediaPlayer.Event.EncounteredError:
                     Logs.debugI(TAG, "MediaPlayerEvent :: EncounteredError");
-                    notifyPlayState(PlayState.ERROR);
+                    if (mmPlayState != PlayState.ERROR) {
+                        mmPlayState = PlayState.ERROR;
+                        notifyPlayState(mmPlayState);
+                    }
                     break;
 
                 //Media current time changed
@@ -158,7 +180,7 @@ public class AudioVlcPlayer implements IAudioPlayer {
 
     @Override
     public void pauseMedia() {
-        Log.i(TAG, "pause()");
+        Log.i(TAG, "pause() lyy2");
         if (mMediaPlayer != null) {
             mMediaPlayer.pause();
         }

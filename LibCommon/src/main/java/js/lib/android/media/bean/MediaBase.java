@@ -8,6 +8,9 @@ import js.lib.bean.BaseBean;
  * @author Jun.Wang
  */
 public class MediaBase extends BaseBean {
+    //
+    public static final String UNKNOWN = "unknown";
+
     /**
      * Media Play URL
      * <p>e.g. "/sdcard/媒体/test.mp4"</p>

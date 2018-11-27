@@ -279,6 +279,12 @@ public abstract class BaseRadioActivity extends BaseFragActivity implements FmDe
         return mControlService != null && mControlService.isAudioFocusRegistered();
     }
 
+    public void registerAudioFocus(int flag) {
+        if (mControlService != null) {
+            mControlService.registerAudioFocus(flag);
+        }
+    }
+
     @Override
     protected void onDestroy() {
         unregister(this);

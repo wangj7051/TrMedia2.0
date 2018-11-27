@@ -1,0 +1,62 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_bottom"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="@dimen/video_gv_margin_start"
+        android:background="@color/color_black_020"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp">
+
+        <GridView
+            android:id="@+id/v_data"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:cacheColorHint="@android:color/transparent"
+            android:horizontalSpacing="5dp"
+            android:listSelector="@android:color/transparent"
+            android:numColumns="4"
+            android:overScrollMode="never"
+            android:padding="10dp"
+            android:scrollbars="none"
+            android:verticalSpacing="5dp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="@dimen/video_left_layout_w"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:contentDescription="@string/no_img"
+            android:src="@drawable/loading_list_bg" />
+
+        <com.js.sidebar.LetterSideBar
+            android:id="@+id/lsb"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp" />
+
+        <ImageView
+            android:id="@+id/iv_loading"
+            android:layout_width="@dimen/video_left_loading_w"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:clickable="false"
+            android:contentDescription="@string/no_img"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:src="@drawable/loading_list0001"
+            android:visibility="invisible" />
+    </RelativeLayout>
+
+</RelativeLayout>

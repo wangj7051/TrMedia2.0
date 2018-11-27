@@ -1,5 +1,7 @@
 package js.lib.android.media.engine;
 
+import android.media.AudioManager;
+
 /**
  * Play audio focus Listener
  *
@@ -37,4 +39,10 @@ public interface IAudioFocusListener {
      * {@link android.media.AudioManager#AUDIOFOCUS_GAIN}
      */
     void onAudioFocusLoss();
+
+    /**
+     * @param flag 1-{@link android.media.AudioManager#requestAudioFocus(AudioManager.OnAudioFocusChangeListener, int, int)}
+     *             2-{@link android.media.AudioManager#abandonAudioFocus(AudioManager.OnAudioFocusChangeListener)}
+     */
+    void onAudioFocus(int flag);
 }

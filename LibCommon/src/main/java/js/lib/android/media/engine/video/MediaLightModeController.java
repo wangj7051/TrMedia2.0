@@ -1,6 +1,7 @@
 package js.lib.android.media.engine.video;
 
 import android.os.Handler;
+import android.util.Log;
 
 /**
  * Video light mode controller
@@ -8,6 +9,9 @@ import android.os.Handler;
  * @author Jun.Wang
  */
 public class MediaLightModeController {
+    //TAG
+    private final String TAG = "LightModeController";
+
     /**
      * Thread handler
      */
@@ -55,6 +59,7 @@ public class MediaLightModeController {
      */
     private void setLightMode(int lightMode) {
         this.mLightMode = lightMode;
+        Log.i(TAG, "mMediaLightModeListener : " + mMediaLightModeListener);
         if (mMediaLightModeListener != null) {
             switch (mLightMode) {
                 case ON:
@@ -68,10 +73,12 @@ public class MediaLightModeController {
     }
 
     public void makeLightOff() {
+        Log.i(TAG, "makeLightOff()");
         setLightMode(OFF);
     }
 
     public void makeLightOn() {
+        Log.i(TAG, "makeLightOn()");
         setLightMode(ON);
     }
 
@@ -79,6 +86,7 @@ public class MediaLightModeController {
      * Keep current mode is ON.
      */
     public void keepLightOn() {
+        Log.i(TAG, "keepLightOn()");
         makeLightOn();
         mHandler.removeCallbacksAndMessages(null);
     }
@@ -87,6 +95,7 @@ public class MediaLightModeController {
      * Switch Light Mode
      */
     public void switchLightMode() {
+        Log.i(TAG, "switchLightMode()");
         switch (mLightMode) {
             case ON:
                 makeLightOff();
@@ -101,21 +110,25 @@ public class MediaLightModeController {
      * Reset Light Mode
      */
     public void resetLightMode() {
+        Log.i(TAG, "resetLightMode()");
         makeLightOn();
         mHandler.removeCallbacksAndMessages(null);
-        mHandler.postDelayed(new Runnable() {
-
-            @Override
-            public void run() {
-                setLightMode(OFF);
-            }
-        }, 3 * 1000);
+        mHandler.postDelayed(mDelayCloseLightRunnable, 3 * 1000);
     }
+
+    private Runnable mDelayCloseLightRunnable = new Runnable() {
+        @Override
+        public void run() {
+            Log.i(TAG, "mDelayCloseLightRunnable -run()-");
+            setLightMode(OFF);
+        }
+    };
 
     /**
      * Settings on activity or other view destroy
      */
     public void destroy() {
+        Log.i(TAG, "destroy()");
         mHandler.removeCallbacksAndMessages(null);
     }
 

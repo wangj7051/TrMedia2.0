@@ -423,7 +423,7 @@ public class AudioDBManager {
      * Get Music List
      */
     public Map<String, ProAudio> getMapMusics() {
-        Map<String, ProAudio> mapMusics = new HashMap<String, ProAudio>();
+        Map<String, ProAudio> mapMusics = new HashMap<>();
         if (openDB()) {
             Throwable throwable = null;
             Cursor cur = null;

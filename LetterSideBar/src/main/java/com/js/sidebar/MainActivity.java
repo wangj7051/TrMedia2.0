@@ -24,6 +24,10 @@ public class MainActivity extends Activity {
             public void callback(int pos, String letter) {
                 Log.i(TAG, "lsb.calback(" + pos + "," + letter + ")");
             }
+
+            @Override
+            public void onScroll(boolean isScrolling) {
+            }
         });
     }
 }

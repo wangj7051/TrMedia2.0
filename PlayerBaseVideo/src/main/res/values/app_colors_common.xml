@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Bg Main -->
+    <color name="color_gray_ebebeb">#ebebeb</color>
+    <color name="color_gray_c5c5c5">#c5c5c5</color>
+    <color name="color_gray_dfdfdf">#dfdfdf</color>
+    
+    <!-- Bg Blue -->
+    <color name="color_blue_1c81ff">#1c81ff</color>
+    
+    <!-- font -->
+    <color name="font_1">#353432</color>
+    <color name="font_2">#7f8c8d</color>
+    <color name="font_3">#7f7f7f</color>
+    <color name="font_blue_1">#0091ff</color>
+    
+    <!-- 淡灰色分割线 -->
+    <!-- 20%透明度 -->
+    <color name="color_D3D3D3_20">#33D3D3D3</color>
+    <!-- 100%透明度，即无透明度 -->
+    <color name="color_D3D3D3_100">#D3D3D3</color>
+
+</resources>
