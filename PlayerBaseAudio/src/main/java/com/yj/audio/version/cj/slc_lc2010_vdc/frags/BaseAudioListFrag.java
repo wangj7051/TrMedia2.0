@@ -40,24 +40,9 @@ public abstract class BaseAudioListFrag extends BaseAppV4Fragment implements The
     public abstract void onMediaScanningStart();
 
     /**
-     * Notify scanning status - Found new.
-     */
-    public abstract void onMediaScanningNew();
-
-    /**
-     * Notify scanning status - END
-     */
-    public abstract void onMediaScanningEnd();
-
-    /**
      * Notify scanning status - CANCEL
      */
     public abstract void onMediaScanningCancel();
-
-    /**
-     * Notify scanning status - Parse END
-     */
-    public abstract void onMediaParseEnd();
 
     /**
      * @return <p>0-Frag is in base page.</p>
@@ -66,20 +51,17 @@ public abstract class BaseAudioListFrag extends BaseAppV4Fragment implements The
     public abstract int onBackPressed();
 
     /**
-     * Load local medias
-     * <p>Data in database.</p>
+     * 该方法仅在以下情况执行
+     * (1)页面没有数据
+     * (2)首次加载数据
      */
     public abstract void loadLocalMedias();
 
     /**
-     * Load data list
+     * 该方法仅在以下情况执行
+     * (1)页面已有数据，更新数据
      */
-    public abstract void loadDataList();
-
-    /**
-     * Refresh
-     */
-    public abstract void refreshDataList();
+    public abstract void refreshData();
 
     /**
      * Refresh playing
@@ -102,11 +84,6 @@ public abstract class BaseAudioListFrag extends BaseAppV4Fragment implements The
      * Play selected
      */
     public abstract void playSelected();
-
-    /**
-     * Play selected media url
-     */
-    public abstract void playSelected(String mediaUrl);
 
     /**
      * 根据数据位置，计算并获取该数据所在页的第一个数据索引

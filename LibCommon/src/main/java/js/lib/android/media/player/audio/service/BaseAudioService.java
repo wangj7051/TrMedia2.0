@@ -18,7 +18,7 @@ import js.lib.android.media.player.audio.utils.AudioPreferUtils;
  *
  * @author Jun.Wang
  */
-public abstract class BaseAudioService extends BaseAudioFocusService implements PlayDelegate {
+public abstract class BaseAudioService extends BaseMediaFocusService implements PlayDelegate {
     // TAG
     private final String TAG = "BaseAudioService";
 
@@ -92,6 +92,10 @@ public abstract class BaseAudioService extends BaseAudioFocusService implements 
     }
 
     @Override
+    public void setVolume(float leftVolume, float rightVolume) {
+    }
+
+    @Override
     public void onAudioFocusDuck() {
         Log.i(TAG, "onAudioFocusDuck()");
     }
@@ -114,14 +118,6 @@ public abstract class BaseAudioService extends BaseAudioFocusService implements 
     @Override
     public void onAudioFocus(int flag) {
         Log.i(TAG, "onAudioFocus(" + flag + ")");
-    }
-
-    protected void postRunnable(Runnable r) {
-        mHandler.post(r);
-    }
-
-    protected void postDelayRunnable(Runnable r, int delayTime) {
-        mHandler.postDelayed(r, delayTime);
     }
 
     protected void clearAllRunnable() {

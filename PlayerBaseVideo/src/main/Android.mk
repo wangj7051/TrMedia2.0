@@ -31,7 +31,7 @@ LOCAL_MODULE_TAGS := optional
 LOCAL_PACKAGE_NAME := YJPlayer_Video
 
 ### 声明 资源文件 ###
-#LOCAL_RESOURCE_DIR := $(LOCAL_PATH)/res
+LOCAL_RESOURCE_DIR := $(LOCAL_PATH)/res
 ### 声明 JAVA文件 & AIDL文件 ###
 #JAVA
 SRC_DIRS := java

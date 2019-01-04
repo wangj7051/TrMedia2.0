@@ -61,8 +61,13 @@ public class VideoDBManager {
      * @param dbName  It should be similar to "/sdcard/Music/TrAudio.sqlite"
      */
     public void init(Context context, String dbName) {
-        mContext = context;
-        mDbName = dbName;
+        try {
+            Log.i(TAG, "init(" + context + "," + dbName + ")");
+            mContext = context.getApplicationContext();
+            mDbName = dbName;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -72,8 +77,11 @@ public class VideoDBManager {
         if (mDB == null || !mDB.isOpen()) {
             try {
                 SQLiteOpenHelper helper = new VideoDBHelper(mContext, mDbName);
+                Log.i(TAG, "mContext : " + mContext);
+                Log.i(TAG, "mDbName : " + mDbName);
                 mDB = helper.getWritableDatabase();
             } catch (Exception e) {
+                Log.i(TAG, "openDB() :: Exception-" + e.getMessage());
                 e.printStackTrace();
                 closeDB();
             }

@@ -2,6 +2,7 @@ package com.yj.video.version.cj.slc_lc2010_vdc.frags;
 
 import android.text.TextUtils;
 
+import com.yj.video.engine.ThemeController;
 import com.yj.video.version.cj.slc_lc2010_vdc.bean.VideoFilter;
 
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.List;
 import js.lib.android.fragment.BaseAppV4Fragment;
 import js.lib.android.media.bean.ProVideo;
 
-public abstract class BaseVideoFolderGroupsFrag extends BaseAppV4Fragment {
+public abstract class BaseVideoFolderGroupsFrag extends BaseAppV4Fragment implements ThemeController.ThemeChangeDelegate {
     // TAG
     private static final String TAG = "BaseAudioGroupsFrag";
 

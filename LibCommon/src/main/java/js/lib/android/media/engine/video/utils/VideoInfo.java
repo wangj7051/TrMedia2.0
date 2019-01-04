@@ -19,11 +19,26 @@ public class VideoInfo {
      */
     private static Set<String> mSetSuffixes = new HashSet<>();
 
+    //媒体格式后缀
+    private static final String AUDIO_QUALCOMM_MP4 = ".mp4";
+    private static final String AUDIO_QUALCOMM_AVI = ".avi";
+    private static final String AUDIO_QUALCOMM_MKV = ".mkv";
+    private static final String AUDIO_QUALCOMM_3GP = ".3gp";
+    //Others
+    private static final String AUDIO_FLV = ".flv";
+    private static final String AUDIO_MOV = ".mov";
+    private static final String AUDIO_VOB = ".vob";
+    private static final String AUDIO_TS = ".ts";
+
     static {
-        mSetSuffixes.add(".3gp");
-        mSetSuffixes.add(".avi");
-        mSetSuffixes.add(".mp4");
-        mSetSuffixes.add(".mkv");
+        mSetSuffixes.add(AUDIO_QUALCOMM_MP4);
+        mSetSuffixes.add(AUDIO_QUALCOMM_AVI);
+        mSetSuffixes.add(AUDIO_QUALCOMM_MKV);
+        mSetSuffixes.add(AUDIO_QUALCOMM_3GP);
+        mSetSuffixes.add(AUDIO_FLV);
+        mSetSuffixes.add(AUDIO_MOV);
+        mSetSuffixes.add(AUDIO_VOB);
+        mSetSuffixes.add(AUDIO_TS);
     }
 
     /**
@@ -65,22 +80,5 @@ public class VideoInfo {
      */
     public static boolean isSupport(String suffix) {
         return mSetSuffixes.contains(suffix);
-    }
-
-    /**
-     * Set Support Media Types
-     */
-    public static void setSupportMedias(boolean isSupportAll) {
-        if (isSupportAll) {
-            // mSetSuffixes.add(".3gp");
-            // mSetSuffixes.add(".avi");
-            mSetSuffixes.add(".flv");
-            // mSetSuffixes.add(".mp4");
-            // mSetSuffixes.add(".mkv");
-            mSetSuffixes.add(".ts");
-            mSetSuffixes.add(".mov");
-            //mSetSuffixes.add(".mpg");
-            //mSetSuffixes.add(".vob");
-        }
     }
 }

@@ -63,8 +63,13 @@ public class AudioDBManager {
      * @param dbName  It should be similar to "/sdcard/Music/TrAudio.sqlite"
      */
     public void init(Context context, String dbName) {
-        mContext = context;
-        mDbName = dbName;
+        try {
+            Log.i(TAG, "init(" + context + "," + dbName + ")");
+            mContext = context.getApplicationContext();
+            mDbName = dbName;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -76,6 +81,7 @@ public class AudioDBManager {
                 SQLiteOpenHelper helper = new AudioDBHelper(mContext, mDbName);
                 mDB = helper.getWritableDatabase();
             } catch (Exception e) {
+                Log.i(TAG, "openDB() :: Exception-" + e.getMessage());
                 e.printStackTrace();
                 closeDB();
             }
@@ -338,6 +344,37 @@ public class AudioDBManager {
     /**
      * Get Music List
      */
+    public ProAudio getMedia(String path) {
+        Log.i(TAG, "getMedia(" + path + ")");
+        ProAudio media = null;
+        if (openDB()) {
+            Throwable throwable = null;
+            Cursor cur = null;
+            try {
+                String table = AudioCacheInfo.T_NAME;
+                String[] columns = new String[]{"*"};
+                String selection = AudioCacheInfo.MEDIA_URL + "=?";
+                String[] selectionArgs = new String[]{path};
+
+                //
+                cur = mDB.query(table, columns, selection, selectionArgs, null, null, null, null);
+                if (cur != null && cur.moveToFirst()) {
+                    media = getMusicByCursor(cur);
+                }
+            } catch (Exception e) {
+                throwable = e;
+                Log.i(TAG, "e:" + e.getMessage());
+                e.printStackTrace();
+            } finally {
+                closeDBInfo(cur, false, throwable != null);
+            }
+        }
+        return media;
+    }
+
+    /**
+     * Get Music List
+     */
     public List<ProAudio> getListMusics() {
         List<ProAudio> listMusics = new ArrayList<>();
         if (openDB()) {
@@ -375,7 +412,8 @@ public class AudioDBManager {
      * Get Music List
      */
     public List<ProAudio> getListMusics(String title, String artist) {
-        List<ProAudio> listMusics = new ArrayList<ProAudio>();
+        Log.i(TAG, "getListMusics(" + title + "," + artist + ")");
+        List<ProAudio> listMusics = new ArrayList<>();
         if (openDB()) {
             Throwable throwable = null;
             Cursor cur = null;
@@ -397,8 +435,7 @@ public class AudioDBManager {
                 }
 
                 //
-                if (selection == null || selectionArgs == null) {
-                } else {
+                if (selection != null) {
                     cur = mDB.query(table, columns, selection, selectionArgs, null, null, null, null);
                     if (cur != null) {
                         for (cur.moveToFirst(); !cur.isAfterLast(); cur.moveToNext()) {
@@ -411,7 +448,7 @@ public class AudioDBManager {
                 }
             } catch (Exception e) {
                 throwable = e;
-                Logs.printStackTrace(TAG + "getListMusics(String,String)", e);
+                Logs.printStackTrace(TAG + "getListMusics(title,artist)", e);
             } finally {
                 closeDBInfo(cur, false, throwable != null);
             }

@@ -6,7 +6,6 @@ import android.util.Log;
 import com.tri.lib.engine.BtCallStateController;
 import com.tri.lib.utils.SettingsGlobalUtil;
 import com.tri.lib.utils.TrAudioPreferUtils;
-import com.yj.audio.engine.PlayerAppManager;
 import com.yj.audio.utils.PlayerFileUtils;
 import com.yj.audio.version.base.activity.BaseUsbLogicActivity;
 
@@ -31,7 +30,7 @@ public class WelcomeActivity extends BaseUsbLogicActivity {
 
     private void init() {
         Logs.i(TAG, "^^ init() ^^");
-        if (isTest() || PlayerFileUtils.isHasSupportStorage()) {
+        if (isTest() || isHasStorage()) {
             //Open player
             openPlayer();
         } else {
@@ -41,18 +40,17 @@ public class WelcomeActivity extends BaseUsbLogicActivity {
 
     private boolean isTest() {
         int flag = TrAudioPreferUtils.getNoUDiskToastFlag(false);
+        Log.i(TAG, "isTest() - flag:" + flag);
         return (flag == 0);
     }
 
-    private void openPlayer() {
-        switch (PlayerAppManager.getCurrPlayerFlag()) {
-            case PlayerAppManager.PlayerCxtFlag.VIDEO_LIST:
-            case PlayerAppManager.PlayerCxtFlag.VIDEO_PLAYER:
-                PlayEnableController.pauseByUser(false);
-                PlayerAppManager.exitCurrPlayer();
-                break;
-        }
+    private boolean isHasStorage() {
+        boolean isHasSD = PlayerFileUtils.isHasSupportStorage();
+        Log.i(TAG, "isHasStorage() - isHasSD:" + isHasSD);
+        return isHasSD;
+    }
 
+    private void openPlayer() {
         //Check play enable
         Log.i(TAG, "*** Print status ***");
         Log.i(TAG, PlayEnableController.getStateDesc());
@@ -72,6 +70,7 @@ public class WelcomeActivity extends BaseUsbLogicActivity {
 
     @Override
     protected void onDestroy() {
+        Log.i(TAG, "onDestroy()");
         super.onDestroy();
     }
 }

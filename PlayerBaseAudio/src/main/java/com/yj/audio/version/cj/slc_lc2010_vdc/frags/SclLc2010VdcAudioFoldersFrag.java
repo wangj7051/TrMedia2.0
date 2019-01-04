@@ -32,15 +32,19 @@ public class SclLc2010VdcAudioFoldersFrag extends BaseAudioGroupsFrag {
 
     @Override
     public void loadLocalMedias() {
-        loadDataList();
+        super.loadLocalMedias();
+        Log.i(TAG, "loadLocalMedias()");
+        refreshData();
     }
 
     @Override
-    public void loadDataList() {
+    public void refreshData() {
+        super.refreshData();
         if (!isAdded()) {
             return;
         }
 
+        Log.i(TAG, "refreshData()");
         //Check if second priority page
         if (isAudioList(mListData)) {
             Log.i(TAG, "### Current page is Folders-2222 list page ####");
@@ -48,47 +52,57 @@ public class SclLc2010VdcAudioFoldersFrag extends BaseAudioGroupsFrag {
         }
         Log.i(TAG, "### Current page is Folders-1111 list page ####");
 
-        //Check NULL
+        //Get source information
         String targetMediaUrl = mAttachedActivity.getLastMediaPath();
         List<ProAudio> listSrcMedias = mAttachedActivity.getListSrcMedias();
         if (listSrcMedias == null) {
-            return;
+            listSrcMedias = new ArrayList<>();
         }
 
-        //Filter collected
-        Map<String, AudioFilter> mapDatas = new HashMap<>();
-        for (ProAudio media : listSrcMedias) {
-            //Folder
-            String folderPath = "";
-            File file = new File(media.mediaUrl);
-            if (file.exists()) {
-                File parentFile = file.getParentFile();
-                if (parentFile != null) {
-                    folderPath = parentFile.getPath();
+        //Filter
+        if (!EmptyUtil.isEmpty(listSrcMedias)) {
+            showLoading(false);
+            Map<String, AudioFilter> mapDatas = new HashMap<>();
+
+            //Loop and filter
+            try {
+                for (ProAudio media : listSrcMedias) {
+                    //Folder
+                    String folderPath = "";
+                    File file = new File(media.mediaUrl);
+                    if (file.exists()) {
+                        File parentFile = file.getParentFile();
+                        if (parentFile != null) {
+                            folderPath = parentFile.getPath();
+                        }
+                    }
+
+                    //
+                    AudioFilter audioFilter = mapDatas.get(folderPath);
+                    if (audioFilter == null) {
+                        audioFilter = new AudioFilter();
+                        audioFilter.folderPath = folderPath;
+                        audioFilter.folderPathPinYin = media.mediaDirectoryPinYin;
+                        audioFilter.listMedias = new ArrayList<>();
+                        audioFilter.listMedias.add(media);
+                        mapDatas.put(audioFilter.folderPath, audioFilter);
+                    } else {
+                        audioFilter.listMedias.add(media);
+                    }
+
+                    //
+                    if (!audioFilter.isSelected) {
+                        audioFilter.isSelected = TextUtils.equals(targetMediaUrl, media.mediaUrl);
+                    }
                 }
+            } catch (Exception e) {
+                Log.i(TAG, "refreshData() - ERROR:" + e.getMessage());
+                e.printStackTrace();
             }
 
-            //
-            AudioFilter audioFilter = mapDatas.get(folderPath);
-            if (audioFilter == null) {
-                audioFilter = new AudioFilter();
-                audioFilter.folderPath = folderPath;
-                audioFilter.folderPathPinYin = media.mediaDirectoryPinYin;
-                audioFilter.listMedias = new ArrayList<>();
-                audioFilter.listMedias.add(media);
-                mapDatas.put(audioFilter.folderPath, audioFilter);
-            } else {
-                audioFilter.listMedias.add(media);
-            }
-
-            //
-            if (!audioFilter.isSelected) {
-                audioFilter.isSelected = TextUtils.equals(targetMediaUrl, media.mediaUrl);
-            }
+            //Refresh UI
+            refreshFilters((mListFilters = new ArrayList<>(mapDatas.values())));
         }
-
-        //Refresh UI
-        refreshFilters((mListFilters = new ArrayList<>(mapDatas.values())));
     }
 
     @SuppressWarnings("unchecked")
@@ -110,12 +124,5 @@ public class SclLc2010VdcAudioFoldersFrag extends BaseAudioGroupsFrag {
             AudioFilter.sortByFolder((List<AudioFilter>) mListData);
         }
         mDataAdapter.refreshData(mListData, mAttachedActivity.getLastMediaPath());
-    }
-
-    @Override
-    public void refreshDataList() {
-        if (isAdded()) {
-            mDataAdapter.refreshData();
-        }
     }
 }

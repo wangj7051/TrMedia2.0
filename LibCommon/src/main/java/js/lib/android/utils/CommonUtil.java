@@ -271,7 +271,7 @@ public class CommonUtil {
      * Get Random Integer Number by Given Bound
      */
     public static int getRandomNum(int oldNum, int bound) {
-        int randomNum = oldNum;
+        int randomNum;
         if (bound == 1) {
             randomNum = 0;
         } else {
@@ -284,7 +284,6 @@ public class CommonUtil {
                 }
             }
         }
-
         return randomNum;
     }
 
@@ -491,13 +490,17 @@ public class CommonUtil {
      */
     @SuppressWarnings("deprecation")
     public static boolean isRunningBackground(Context context, String targetPackageName) {
-        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        ComponentName topActivity = am.getRunningTasks(1).get(0).topActivity;
-        String topPkgName = topActivity.getPackageName();
-        if (TextUtils.isEmpty(topPkgName)) {
-            return true;
-        } else {
-            return !topPkgName.equals(targetPackageName);
+        try {
+            ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+            ComponentName topActivity = am.getRunningTasks(1).get(0).topActivity;
+            String topPkgName = topActivity.getPackageName();
+            if (TextUtils.isEmpty(topPkgName)) {
+                return true;
+            } else {
+                return !topPkgName.equals(targetPackageName);
+            }
+        } catch (Exception e) {
+            return false;
         }
     }
 
@@ -564,6 +567,24 @@ public class CommonUtil {
 
     /**
      * 设置状态栏显示及隐藏
+     * <p>View.SYSTEM_UI_FLAG_HIDE_NAVIGATION, //隐藏导航栏</p>
+     * <p>View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION，</p>
+     * <p>View.SYSTEM_UI_LAYOUT_FLAGS，</p>
+     * <p>View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN, //全屏，状态栏会盖在布局上</p>
+     * <p>View.SYSTEM_UI_FLAG_FULLSCREEN, //全屏，状态栏和导航栏不显示</p>
+     * <p>View.SYSTEM_UI_FLAG_VISIBLE, //显示状态栏和导航栏</p>
+     * <p>View.SYSTEM_UI_FLAG_LAYOUT_STABLE,// 保持View Layout不变，隐藏状态栏或者导航栏后，View不会拉伸。</p>
+     * <p>View.SYSTEM_UI_FLAG_LOW_PROFILE,//状态栏:低能显示状态，状态栏上一些图标显示会被隐藏。</p>
+     * <p>
+     * View.SYSTEM_UI_FLAG_IMMERSIVE
+     * //只有当设置了 SYSTEM_UI_FLAG_HIDE_NAVIGATION 才起作用。
+     * 如果没有设置，任意的View相互动作都退出SYSTEM_UI_FLAG_HIDE_NAVIGATION模式。如果设置就不会退出。
+     * </p>
+     * <p>
+     * View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+     * //只有当设置了 SYSTEM_UI_FLAG_FULLSCREEN | SYSTEM_UI_FLAG_HIDE_NAVIGATION 时起作用。
+     * 如果没有设置，任意的View相互动作都退出SYSTEM_UI_FLAG_FULLSCREEN | SYSTEM_UI_FLAG_HIDE_NAVIGATION模式。
+     * </p>
      *
      * @param activity {@link Activity}
      * @param visible  0 hide; 1 show.

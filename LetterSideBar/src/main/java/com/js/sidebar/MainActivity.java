@@ -26,7 +26,15 @@ public class MainActivity extends Activity {
             }
 
             @Override
-            public void onScroll(boolean isScrolling) {
+            public void onTouchDown() {
+            }
+
+            @Override
+            public void onTouchMove() {
+            }
+
+            @Override
+            public void onTouchUp() {
             }
         });
     }

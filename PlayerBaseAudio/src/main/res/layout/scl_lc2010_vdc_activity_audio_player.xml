@@ -20,7 +20,7 @@
             android:layout_marginStart="50dp"
             android:text="@string/local_music2"
             android:textColor="@android:color/white"
-            android:textSize="@dimen/audio_top_item_font_size" />
+            android:textSize="@dimen/audio_player_top_font_size" />
     </LinearLayout>
 
     <LinearLayout
@@ -30,9 +30,9 @@
         android:layout_weight="30"
         android:baselineAligned="false"
         android:orientation="horizontal"
-        android:paddingStart="70dp"
+        android:paddingStart="60dp"
         android:paddingTop="20dp"
-        android:paddingEnd="70dp"
+        android:paddingEnd="60dp"
         android:paddingBottom="20dp">
 
         <LinearLayout
@@ -46,9 +46,10 @@
                 android:id="@+id/tv_name"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="10"
+                android:layout_weight="15"
                 android:ellipsize="marquee"
                 android:gravity="center_vertical"
+                android:marqueeRepeatLimit="marquee_forever"
                 android:singleLine="true"
                 android:text="@string/fillstr_10"
                 android:textColor="@android:color/white"
@@ -111,7 +112,7 @@
                         android:textColor="@android:color/white"
                         android:textSize="18sp" />
 
-                    <SeekBar
+                    <js.lib.android.view.SeekBarImpl
                         android:id="@+id/seekbar"
                         style="@style/Widget.SeekBar.AUDIO_PLAYER"
                         android:layout_width="match_parent"
@@ -129,6 +130,7 @@
             android:layout_width="@dimen/audio_player_cover_w"
             android:layout_height="@dimen/audio_player_cover_h"
             android:layout_gravity="center_vertical"
+            android:layout_marginStart="70dp"
             android:background="@drawable/bg_cover_border"
             android:contentDescription="@string/no_img"
             android:padding="5dp"
@@ -136,6 +138,7 @@
     </LinearLayout>
 
     <ImageView
+        android:id="@+id/iv_separate_h1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:contentDescription="@string/no_img"
@@ -149,7 +152,9 @@
         android:baselineAligned="false"
         android:gravity="center"
         android:orientation="horizontal"
+        android:paddingLeft="60dp"
         android:paddingTop="30dp"
+        android:paddingRight="60dp"
         android:paddingBottom="30dp">
 
         <ImageView
@@ -169,7 +174,6 @@
             android:clickable="true"
             android:contentDescription="@string/no_img"
             android:focusable="true"
-            android:padding="6dp"
             android:src="@drawable/btn_op_play_selector" />
 
         <ImageView
@@ -180,7 +184,6 @@
             android:clickable="true"
             android:contentDescription="@string/no_img"
             android:focusable="true"
-            android:padding="6dp"
             android:src="@drawable/btn_op_next_selector" />
 
         <ImageView
@@ -191,7 +194,6 @@
             android:clickable="true"
             android:contentDescription="@string/no_img"
             android:focusable="true"
-            android:padding="6dp"
             android:src="@drawable/btn_op_favor_selector" />
 
         <ImageView
@@ -202,7 +204,6 @@
             android:clickable="true"
             android:contentDescription="@string/no_img"
             android:focusable="true"
-            android:padding="6dp"
             android:src="@drawable/btn_op_mode_loop_selector" />
 
         <ImageView
@@ -213,7 +214,6 @@
             android:clickable="true"
             android:contentDescription="@string/no_img"
             android:focusable="true"
-            android:padding="6dp"
             android:scaleType="fitXY"
             android:src="@drawable/btn_op_list_selector" />
     </LinearLayout>

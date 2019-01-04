@@ -65,6 +65,20 @@
 
         <!-- SLC_LC2010_VDC -->
         <activity
+            android:name=".version.cj.slc_lc2010_vdc.activity.TestVobPlayActivity"
+            android:icon="@drawable/ic_launcher_music"
+            android:label="@string/app_name_music"
+            android:launchMode="singleInstance"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.Black.NoTitleBar" />
+        <activity
+            android:name=".version.cj.slc_lc2010_vdc.activity.TestVVPlayActivity"
+            android:icon="@drawable/ic_launcher_music"
+            android:label="@string/app_name_music"
+            android:launchMode="singleInstance"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.Black.NoTitleBar" />
+        <activity
             android:name=".version.cj.slc_lc2010_vdc.activity.SclLc2010VdcVideoListActivity"
             android:icon="@drawable/ic_launcher_music"
             android:label="@string/app_name_music"
@@ -86,15 +100,8 @@
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" />
 
-        <!-- Music Play Service -->
-        <service
-            android:name=".service.TrPlayService"
-            android:enabled="true"
-            android:exported="true"
-            tools:ignore="ExportedService" />
-
         <!--Media scan service-->
-        <service android:name="js.lib.android_media_scan.MediaScanService" />
+        <service android:name="js.lib.android_media.scan.video.VideoScanService" />
 
         <!-- Media Scanner Receiver -->
         <receiver
@@ -105,17 +112,13 @@
                 <action android:name="android.intent.action.MEDIA_UNMOUNTED" />
                 <action android:name="android.intent.action.MEDIA_MOUNTED" />
                 <!--<action android:name="android.intent.action.MEDIA_CHECKING" />-->
-                <!--<action android:name="android.intent.action.MEDIA_EJECT" />-->
+                <action android:name="android.intent.action.MEDIA_EJECT" />
                 <!--<action android:name="android.intent.action.MEDIA_REMOVED" />-->
 
                 <data android:scheme="file" />
             </intent-filter>
             <intent-filter>
-                <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
-                <!--<action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />-->
-            </intent-filter>
-            <intent-filter>
-                <action android:name="com.tricheer.player.START.LIST.ALL_MEDIAS" />
+                <action android:name="com.yj.test.scan_videos" />
             </intent-filter>
         </receiver>
         <!-- Player Receiver -->
@@ -140,15 +143,7 @@
 
             <!-- Open Player Logs -->
             <intent-filter>
-                <action android:name="com.tricheer.app.OPEN_LOGS" />
-            </intent-filter>
-
-            <!--Test Broadcast-->
-            <intent-filter>
-                <action android:name="com.tri.test.OPEN_AUDIO" />
-                <action android:name="com.tri.test.OPEN_VIDEO" />
-                <action android:name="com.tri.test.OPEN_SELECTED_VIDEOLIST" />
-                <action android:name="com.tri.test.EXIT_PLAYER" />
+                <action android:name="com.yj.app.OPEN_LOGS" />
             </intent-filter>
         </receiver>
 
@@ -175,7 +170,8 @@
                 <action android:name="com.tricheer.carback.off" />
             </intent-filter>
         </receiver>
-        <receiver android:name="com.tri.lib.receiver.VoiceAssistantReceiver"
+        <receiver
+            android:name="com.tri.lib.receiver.VoiceAssistantReceiver"
             tools:ignore="ExportedReceiver">
             <intent-filter>
                 <action android:name="com.tricheer.audio.OPEN_PLAY" />
@@ -183,6 +179,19 @@
                 <action android:name="com.tricheer.MEDIA_NEXT" />
                 <action android:name="com.tricheer.MEDIA_PLAY" />
                 <action android:name="com.tricheer.MEDIA_STOP" />
+            </intent-filter>
+        </receiver>
+
+        <!--Test receiver - used to test case.-->
+        <receiver
+            android:name=".receiver.TestReceiver"
+            tools:ignore="ExportedReceiver">
+            <intent-filter>
+                <action android:name="com.tri.test.EXIT_PLAYER" />
+                <action android:name="com.tri.test.OPEN_VIDEO" />
+                <action android:name="com.tri.test.OPEN_SELECTED_VIDEOLIST" />
+                <!-- Test send gps data -->
+                <action android:name="com.tri.test.SEND_GPS" />
             </intent-filter>
         </receiver>
     </application>

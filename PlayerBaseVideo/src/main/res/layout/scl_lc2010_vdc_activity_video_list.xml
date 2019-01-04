@@ -20,20 +20,19 @@
         <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp">
 
             <TextView
                 android:id="@+id/v_media_name"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerInParent="true"
-                android:layout_marginEnd="5dp"
                 android:background="@drawable/bg_title_item_c"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center"
-                android:paddingTop="15dp"
-                android:paddingBottom="15dp"
                 android:text="@string/file_name"
                 android:textColor="@android:color/white"
                 android:textSize="@dimen/video_top_item_font_size" />
@@ -48,20 +47,19 @@
         <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp">
 
             <TextView
                 android:id="@+id/v_folder"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerInParent="true"
-                android:layout_marginStart="5dp"
                 android:background="@drawable/btn_filter_tab_selector"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center"
-                android:paddingTop="15dp"
-                android:paddingBottom="15dp"
                 android:text="@string/folder"
                 android:textColor="@android:color/white"
                 android:textSize="@dimen/video_top_item_font_size" />

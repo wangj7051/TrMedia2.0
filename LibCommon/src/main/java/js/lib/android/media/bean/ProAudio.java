@@ -173,6 +173,9 @@ public class ProAudio extends Program {
             }
 
             //
+//            long fileSize = file.length();
+//            long bitRate = Long.parseLong(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE));
+//            media.duration = (fileSize * 8) / (bitRate) * 1000;
             String strDuration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
             if (TextUtils.isDigitsOnly(strDuration)) {
                 media.duration = Integer.parseInt(strDuration);

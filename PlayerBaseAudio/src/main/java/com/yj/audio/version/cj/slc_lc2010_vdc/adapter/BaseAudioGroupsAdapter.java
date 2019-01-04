@@ -192,6 +192,7 @@ public abstract class BaseAudioGroupsAdapter<T> extends BaseAudioAdapter<T> impl
             }
 
             //Collect
+            holder.ivEnd.setVisibility(View.VISIBLE);
             holder.vEnd.setOnClickListener(new CollectOnClick(holder.ivEnd, position));
             switch (item.isCollected) {
                 case 1:
@@ -205,6 +206,7 @@ public abstract class BaseAudioGroupsAdapter<T> extends BaseAudioAdapter<T> impl
             //Media Artist
         } else if (tItem instanceof AudioFilter) {
             AudioFilter item = (AudioFilter) tItem;
+            holder.ivStart.setVisibility(View.VISIBLE);
             holder.tvIdx.setText(String.valueOf((position + 1)));
             setGroupDesc(item, holder.tvDesc);
             holder.ivEnd.setVisibility(View.INVISIBLE);

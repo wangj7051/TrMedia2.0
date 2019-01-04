@@ -126,4 +126,9 @@ public class ThemeController {
         String targetImgResName = mCurrThemeStr + imgResName;
         return ResourceUtils.getDrawableId(mContext, targetImgResName);
     }
+
+    public int getColorResId(String imgResName) {
+        String targetResName = mCurrThemeStr + imgResName;
+        return ResourceUtils.getColorId(mContext, targetResName);
+    }
 }

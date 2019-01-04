@@ -9,6 +9,7 @@
       <module fileurl="file://$PROJECT_DIR$/PlayerBaseAudio/PlayerBaseAudio.iml" filepath="$PROJECT_DIR$/PlayerBaseAudio/PlayerBaseAudio.iml" />
       <module fileurl="file://$PROJECT_DIR$/PlayerBaseVideo/PlayerBaseVideo.iml" filepath="$PROJECT_DIR$/PlayerBaseVideo/PlayerBaseVideo.iml" />
       <module fileurl="file://$PROJECT_DIR$/RadioBase/RadioBase.iml" filepath="$PROJECT_DIR$/RadioBase/RadioBase.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TestScanMedias/TestScanMedias.iml" filepath="$PROJECT_DIR$/TestScanMedias/TestScanMedias.iml" />
       <module fileurl="file://$PROJECT_DIR$/TrMedia2.0.iml" filepath="$PROJECT_DIR$/TrMedia2.0.iml" />
     </modules>
   </component>

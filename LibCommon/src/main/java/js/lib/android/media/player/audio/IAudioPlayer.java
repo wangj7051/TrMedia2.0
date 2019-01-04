@@ -65,4 +65,12 @@ public interface IAudioPlayer {
      * Set Player delegate
      */
     void setPlayerDelegate(PlayDelegate l);
+
+    /**
+     * 设置左右声道声音比率
+     *
+     * @param leftVolume  [0f~1f]
+     * @param rightVolume [0f~1f]
+     */
+    void setVolume(float leftVolume, float rightVolume);
 }

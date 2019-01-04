@@ -7,16 +7,17 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.yj.lib.radio.engine.BandCategoryEnum;
 import com.tricheer.radio.MainActivity;
 import com.tricheer.radio.R;
 import com.tricheer.radio.utils.FreqFormatUtil;
 import com.tricheer.radio.utils.TrRadioPreferUtils;
+import com.yj.lib.radio.engine.BandCategoryEnum;
 
 import js.lib.android.fragment.BaseAppV4Fragment;
 

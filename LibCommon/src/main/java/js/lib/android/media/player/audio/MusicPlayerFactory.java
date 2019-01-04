@@ -53,15 +53,13 @@ public class MusicPlayerFactory {
      * Create
      */
     public IAudioPlayer create(Context cxt, String mediaPath, PlayDelegate delegate) {
-        if (mPlayer == null) {
-            switch (mPlayerType) {
-                case PlayerType.VLC_PLAYER:
-                    mPlayer = new AudioVlcPlayer(cxt, mediaPath, delegate);
-                    break;
-                case PlayerType.MEDIA_PLAYER:
-                    mPlayer = new AudioMediaPlayer(cxt, mediaPath, delegate);
-                    break;
-            }
+        switch (mPlayerType) {
+            case PlayerType.VLC_PLAYER:
+                mPlayer = new AudioVlcPlayer(cxt, mediaPath, delegate);
+                break;
+            case PlayerType.MEDIA_PLAYER:
+                mPlayer = new AudioMediaPlayer(cxt, mediaPath, delegate);
+                break;
         }
         return mPlayer;
     }

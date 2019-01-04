@@ -12,7 +12,6 @@ import java.io.File;
 import js.lib.android.media.engine.video.utils.VideoInfo;
 import js.lib.android.utils.CommonUtil;
 import js.lib.android.utils.Logs;
-import js.lib.utils.CharacterParser;
 
 /**
  * Video Program
@@ -80,55 +79,6 @@ public class ProVideo extends Program {
 
         //
         duration = 0;
-    }
-
-    /**
-     * Parse media information
-     *
-     * @param context {@link Context}
-     * @param media   {@link ProVideo}
-     */
-    public static void parseMedia(Context context, ProVideo media) {
-        MediaMetadataRetriever mmr = null;
-        try {
-            //
-            String mediaPath = media.mediaUrl;
-            File file = new File(mediaPath);
-            if (!file.exists()) {
-                return;
-            }
-
-            //
-            mmr = new MediaMetadataRetriever();
-            mmr.setDataSource(context, Uri.parse(mediaPath));
-
-            //
-            String parsedTitle = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-            if (parsedTitle != null) {
-                media.title = parsedTitle;
-            }
-            media.titlePinYin = CharacterParser.getPingYin(media.title);
-
-            //
-//            media.mediaUrl = mediaPath;
-            File parentFile = file.getParentFile();
-            if (parentFile != null) {
-                media.mediaDirectory = parentFile.getName();
-                media.mediaDirectoryPinYin = CharacterParser.getPingYin(media.mediaDirectory);
-            }
-
-            //
-            String strDuration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-            if (TextUtils.isDigitsOnly(strDuration)) {
-                media.duration = Integer.parseInt(strDuration);
-            }
-        } catch (Exception e) {
-            Logs.debugI(TAG, "Parse video failure....!!!!");
-        } finally {
-            if (mmr != null) {
-                mmr.release();
-            }
-        }
     }
 
     /**

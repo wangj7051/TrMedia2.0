@@ -37,8 +37,14 @@ public class BtCallStateController {
             @Override
             public void onConnectionStateChanged(BluetoothDevice bluetoothDevice, int i) {
                 Log.i(TAG, "onConnectionStateChanged(" + i + ")");
-                if (i != BluetoothAdapter.STATE_CONNECTED) {
-                    onBtCallStateChanged(false);
+                switch (i) {
+                    case BluetoothAdapter.STATE_CONNECTING:
+                        break;
+                    default:
+                        if (i != BluetoothAdapter.STATE_CONNECTED) {
+                            onBtCallStateChanged(false);
+                        }
+                        break;
                 }
             }
 

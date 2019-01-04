@@ -10,10 +10,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 
+import com.js.sidebar.LetterBg;
 import com.js.sidebar.LetterSideBar;
 import com.yj.audio.R;
 import com.yj.audio.version.cj.slc_lc2010_vdc.activity.SclLc2010VdcAudioListActivity;
@@ -44,11 +46,13 @@ public class SclLc2010VdcAudioCollectsFrag extends BaseAudioListFrag {
     private View contentV;
     private ListView lvData;
     private ImageView ivLoading;
-    private LetterSideBar lsb;
+
+    //Letter sidebar
+    private LetterSideBar letterSidebar;
+    private LetterBg letterCircle;
 
     //==========Variables in this Fragment==========
     private SclLc2010VdcAudioListActivity mAttachedActivity;
-    private static Handler mHandler = new Handler();
 
     // ImageView frame animation control
     private FrameAnimationController mFrameAnimController;
@@ -104,9 +108,11 @@ public class SclLc2010VdcAudioCollectsFrag extends BaseAudioListFrag {
         layoutNoneToast.setVisibility(View.INVISIBLE);
 
         //Side bar
-        lsb = (LetterSideBar) contentV.findViewById(R.id.lsb);
-        lsb.refreshLetters(null);
-        lsb.addCallback(new LetterSideBarCallback());
+        letterCircle = (LetterBg) contentV.findViewById(R.id.letter_circle);
+        letterCircle.setVisibility(View.INVISIBLE);
+        letterSidebar = (LetterSideBar) contentV.findViewById(R.id.lsb);
+        letterSidebar.refreshLetters(null);
+        letterSidebar.addCallback(new LetterSideBarCallback());
 
         ivLoading = (ImageView) contentV.findViewById(R.id.iv_loading);
         mFrameAnimController = new FrameAnimationController();
@@ -122,49 +128,54 @@ public class SclLc2010VdcAudioCollectsFrag extends BaseAudioListFrag {
         lvData.setSelector(mAttachedActivity.getImgResId("bg_audio_item_selector"));
         lvData.setAdapter(mDataAdapter);
         lvData.setOnItemClickListener((mLvItemClick = new LvItemClick()));
-        loadDataList();
+        lvData.setOnScrollListener(new LvOnScroll());
+
+        //Loading page
+        Log.i(TAG, "init() -loadLocalMedias-");
+        updateThemeCommon();
+        loadLocalMedias();
     }
 
     @Override
     public void loadLocalMedias() {
-        loadDataList();
+        Log.i(TAG, "loadLocalMedias()");
+        refreshData();
     }
 
     @Override
-    public void loadDataList() {
+    public void refreshData() {
         if (!isAdded()) {
             return;
         }
 
-        //Check NULL
+        Log.i(TAG, "refreshData()");
+        //Get source information
         String targetMediaUrl = mAttachedActivity.getLastMediaPath();
         List<ProAudio> listSrcMedias = mAttachedActivity.getListSrcMedias();
         if (listSrcMedias == null) {
-            return;
+            listSrcMedias = new ArrayList<>();
         }
 
-        //Filter collected
-        mListData = new ArrayList<>();
-        for (ProAudio media : listSrcMedias) {
-            if (media.isCollected == 1) {
-                mListData.add(media);
+        //Filter
+        if (!EmptyUtil.isEmpty(listSrcMedias)) {
+            showLoading(false);
+            mListData = new ArrayList<>();
+
+            //Loop and filter
+            try {
+                for (ProAudio media : listSrcMedias) {
+                    if (media.isCollected == 1) {
+                        mListData.add(media);
+                    }
+                }
+            } catch (Exception e) {
+                Log.i(TAG, "refreshData() - ERROR:" + e.getMessage());
+                e.printStackTrace();
             }
-        }
 
-        //Refresh UI
-//        AudioSortUtils.sortByUpdateTime(mListData);
-        for (ProAudio media : mListData) {
-            Log.i(TAG, media.title + " - " + media.isCollected + " - " + media.updateTime);
-        }
-
-        layoutNoneToast.setVisibility(EmptyUtil.isEmpty(mListData) ? View.VISIBLE : View.INVISIBLE);
-        mDataAdapter.refreshData(mListData, targetMediaUrl);
-    }
-
-    @Override
-    public void refreshDataList() {
-        if (isAdded()) {
-            mDataAdapter.refreshData();
+            //Refresh UI
+            layoutNoneToast.setVisibility(EmptyUtil.isEmpty(mListData) ? View.VISIBLE : View.INVISIBLE);
+            mDataAdapter.refreshData(mListData, targetMediaUrl);
         }
     }
 
@@ -242,34 +253,13 @@ public class SclLc2010VdcAudioCollectsFrag extends BaseAudioListFrag {
         if (isAdded()) {
             int selectPos = mDataAdapter.getSelectPos();
             Log.i(TAG, "playSelected() > selectPos:" + selectPos);
-            mLvItemClick.execItemClick(mDataAdapter.getItem(selectPos));
-        }
-    }
-
-    @Override
-    public void playSelected(String mediaUrl) {
-        if (isAdded() && mAttachedActivity != null) {
-            mAttachedActivity.playAndOpenPlayerActivity(mediaUrl, mListData);
+            mLvItemClick.execItemClick(selectPos);
         }
     }
 
     @Override
     public void onMediaScanningStart() {
         Log.i(TAG, "onMediaScanningStart()");
-    }
-
-    @Override
-    public void onMediaScanningNew() {
-    }
-
-    @Override
-    public void onMediaScanningEnd() {
-        Log.i(TAG, "onMediaScanningEnd()");
-    }
-
-    @Override
-    public void onMediaParseEnd() {
-        Log.i(TAG, "onMediaParseEnd()");
     }
 
     @Override
@@ -281,33 +271,137 @@ public class SclLc2010VdcAudioCollectsFrag extends BaseAudioListFrag {
     public void showLoading(boolean isShow) {
         if (isAdded()) {
             if (isShow) {
-                lsb.setVisibility(View.INVISIBLE);
+                letterSidebar.setVisibility(View.INVISIBLE);
                 ivLoading.setVisibility(View.VISIBLE);
                 mFrameAnimController.start();
             } else {
-                lsb.setVisibility(View.VISIBLE);
+                letterSidebar.setVisibility(View.VISIBLE);
                 ivLoading.setVisibility(View.INVISIBLE);
                 mFrameAnimController.stop();
             }
         }
     }
 
+    @Override
+    public int onBackPressed() {
+        return 0;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    public void updateThemeToDefault() {
+        if (isAdded()) {
+            updateThemeCommon();
+        }
+    }
+
+    @Override
+    public void updateThemeToIos() {
+        if (isAdded()) {
+            updateThemeCommon();
+        }
+    }
+
+    private void updateThemeCommon() {
+        lvData.setDivider(mAttachedActivity.getDrawable(mAttachedActivity.getImgResId("separate_line_h")));
+        lvData.setSelector(mAttachedActivity.getImgResId("bg_audio_item_selector"));
+    }
+
     /**
-     * {@link LetterSideBar} callback.
+     * Letter side bar touch callback.
      */
     private class LetterSideBarCallback implements LetterSideBar.LetterSideBarListener {
+
+        private Character mmTouchedLetter;
+
         @Override
         public void callback(int pos, String letter) {
-            Logs.i(TAG, "LetterSideBarCallback -> callback(" + pos + "," + letter + ")");
-            int sectionPos = mDataAdapter.getPositionForSection(letter.charAt(0));
-            if (sectionPos != -1) {
-                Logs.i(TAG, "LetterSideBarCallback -> sectionPos: " + sectionPos);
-                lvData.setSelection(sectionPos);
+            try {
+                Logs.i(TAG, "LetterSideBarCallback -> callback(" + pos + "," + letter + ")");
+                mmTouchedLetter = letter.charAt(0);
+                int sectionPos = mDataAdapter.getPositionForSection(mmTouchedLetter);
+                if (sectionPos != -1) {
+                    Logs.i(TAG, "LetterSideBarCallback -> callback(" + pos + "," + letter + "-" + sectionPos + ")");
+                    lvData.setSelection(sectionPos);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 
         @Override
-        public void onScroll(boolean isScrolling) {
+        public void onTouchDown() {
+            try {
+                Log.i(TAG, "LetterSideBarCallback - onTouchDown()");
+                letterCircle.refreshLetter(mmTouchedLetter);
+                letterCircle.setVisibility(View.VISIBLE);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onTouchMove() {
+            try {
+                Log.i(TAG, "LetterSideBarCallback - onTouchMove()");
+                letterCircle.refreshLetter(mmTouchedLetter);
+                letterCircle.setVisibility(View.VISIBLE);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onTouchUp() {
+            try {
+                Log.i(TAG, "LetterSideBarCallback - onTouchUp()");
+                letterCircle.setVisibility(View.INVISIBLE);
+                letterSidebar.refreshHlLetter(mmTouchedLetter);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * ListView scroll event.
+     */
+    private class LvOnScroll implements AbsListView.OnScrollListener {
+
+        private boolean mmIsTouchScrolling;
+
+        @Override
+        public void onScrollStateChanged(AbsListView view, int scrollState) {
+            switch (scrollState) {
+                case SCROLL_STATE_TOUCH_SCROLL:
+                    mmIsTouchScrolling = true;
+                    Log.i(TAG, "LvOnScroll -SCROLL_STATE_TOUCH_SCROLL-");
+                    break;
+                case SCROLL_STATE_IDLE:
+                    mmIsTouchScrolling = false;
+                    Log.i(TAG, "LvOnScroll -SCROLL_STATE_IDLE-");
+                    break;
+                case SCROLL_STATE_FLING:
+                    Log.i(TAG, "LvOnScroll -SCROLL_STATE_FLING-");
+                    break;
+
+            }
+        }
+
+        @Override
+        public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+            try {
+                if (mmIsTouchScrolling) {
+                    int section = mDataAdapter.getSectionForPosition(firstVisibleItem);
+                    letterSidebar.refreshHlLetter((char) section);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -321,7 +415,7 @@ public class SclLc2010VdcAudioCollectsFrag extends BaseAudioListFrag {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             Logs.i(TAG, "LvItemClick -> onItemClick(AdapterView," + position + ",id)");
-            execItemClick(parent.getItemAtPosition(position));
+            execItemClick(position);
         }
 
         private Runnable mmDelayResetClickingFlagRunnable = new Runnable() {
@@ -332,7 +426,8 @@ public class SclLc2010VdcAudioCollectsFrag extends BaseAudioListFrag {
             }
         };
 
-        private void execItemClick(Object objItem) {
+        private void execItemClick(int position) {
+            Object objItem = mDataAdapter.getItem(position);
             if (objItem == null) {
                 return;
             }
@@ -349,10 +444,13 @@ public class SclLc2010VdcAudioCollectsFrag extends BaseAudioListFrag {
 
             //
             ProAudio program = (ProAudio) objItem;
-            mAttachedActivity.playAndOpenPlayerActivity(program.mediaUrl, mListData);
+            mAttachedActivity.playAndOpenPlayerActivity(position, program.mediaUrl, mListData);
         }
     }
 
+    /**
+     * Collect operate callback.
+     */
     private class CollectBtnCallback implements BaseAudioAdapter.CollectListener {
         @Override
         public void onClickCollectBtn(ImageView ivCollect, int pos) {
@@ -385,33 +483,4 @@ public class SclLc2010VdcAudioCollectsFrag extends BaseAudioListFrag {
             }
         }
     }
-
-    @Override
-    public int onBackPressed() {
-        return 0;
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
-
-    @Override
-    public void updateThemeToDefault() {
-        if (isAdded()) {
-            updateThemeCommon();
-        }
-    }
-
-    @Override
-    public void updateThemeToIos() {
-        if (isAdded()) {
-            updateThemeCommon();
-        }
-    }
-
-    private void updateThemeCommon() {
-        lvData.setSelector(mAttachedActivity.getImgResId("bg_audio_item_selector"));
-    }
-
 }

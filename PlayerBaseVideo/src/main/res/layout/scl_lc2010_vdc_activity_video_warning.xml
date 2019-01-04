@@ -1,5 +1,4 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/black">
@@ -19,9 +18,10 @@
             android:gravity="center"
             android:text="@string/video_warning_op1"
             android:textColor="@android:color/white"
-            android:textSize="30sp" />
+            android:textSize="36sp" />
 
         <ImageView
+            android:id="@+id/iv_v_separate1"
             android:layout_width="2dp"
             android:layout_height="match_parent"
             android:contentDescription="@string/no_img"
@@ -37,9 +37,10 @@
             android:gravity="center"
             android:text="@string/video_warning_op2"
             android:textColor="@android:color/white"
-            android:textSize="30sp" />
+            android:textSize="36sp" />
 
         <ImageView
+            android:id="@+id/iv_v_separate2"
             android:layout_width="2dp"
             android:layout_height="match_parent"
             android:contentDescription="@string/no_img"
@@ -55,20 +56,21 @@
             android:gravity="center"
             android:text="@string/video_warning_op3"
             android:textColor="@android:color/white"
-            android:textSize="30sp" />
+            android:textSize="36sp" />
     </LinearLayout>
 
-    <View
-        android:id="@+id/v_separate_h"
+    <ImageView
+        android:id="@+id/iv_h_separate1"
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:layout_above="@id/layout_bottom"
-        android:background="@color/video_warning_separate_line" />
+        android:contentDescription="@string/no_img"
+        android:src="@color/video_warning_separate_line" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/v_separate_h"
+        android:layout_above="@id/iv_h_separate1"
         android:gravity="center"
         android:orientation="vertical">
 
@@ -87,13 +89,13 @@
             android:textSize="100sp" />
 
         <TextView
-            android:layout_width="600dp"
+            android:layout_width="700dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:gravity="center"
             android:text="@string/video_warning_desc"
             android:textColor="@android:color/white"
-            android:textSize="35sp" />
+            android:textSize="40sp" />
     </LinearLayout>
 
 </RelativeLayout>

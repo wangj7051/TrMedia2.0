@@ -34,7 +34,11 @@
     <color name="video_item_cover">#7a004B89</color>
     <color name="video_item_bg">#004B89</color>
     <color name="video_warning_separate_line">#003E71</color>
+    <color name="tab_bg_border">#3F8BFE</color>
+    <color name="tab_bg">#B7D0FA</color>
 
     <!--SCL_LC2010_Music -IOS- colors-->
     <color name="color_yellow_f36634">#f36634</color>
+    <color name="ios_video_item_bg">#f36634</color>
+    <color name="ios_video_warning_separate_line">#f36634</color>
 </resources>

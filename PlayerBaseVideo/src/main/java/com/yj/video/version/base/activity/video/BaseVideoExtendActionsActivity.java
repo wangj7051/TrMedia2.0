@@ -26,8 +26,8 @@ import js.lib.android.media.player.PlayEnableController;
 import js.lib.android.utils.CommonUtil;
 import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.Logs;
-import js.lib.android_media_scan.IMediaScanService;
-import js.lib.android_media_scan.MediaScanService;
+import js.lib.android_media.scan.IMediaScanService;
+import js.lib.android_media.scan.video.VideoScanService;
 import js.lib.utils.CharacterParser;
 
 /**
@@ -36,7 +36,7 @@ import js.lib.utils.CharacterParser;
  * @author Jun.Wang
  */
 public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActionsActivity
-        implements PlayDelegate, MediaScanService.VideoScanDelegate {
+        implements PlayDelegate, VideoScanService.VideoScanDelegate {
     // TAG
     private final String TAG = "BaseVideoExtendActions";
 
@@ -132,11 +132,8 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
     }
 
     /**
-     * Load Played Medias From Database
+     * Load local medias task.
      */
-    protected void loadLocalMedias() {
-    }
-
     @SuppressLint("StaticFieldLeak")
     public class LoadLocalMediasTask extends AsyncTask<Object, Integer, Void> {
         private WeakReference<LoadMediaListener> mmWeakReference;
@@ -294,7 +291,7 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
             Logs.i(TAG, "----resetSeekBar()----");
             if (seekBar != null) {
                 seekBar.setEnabled(true);
-                seekBar.setMax(mListPrograms.get(mPlayPos).duration);
+                seekBar.setMax((int) mListPrograms.get(mPlayPos).duration);
                 seekBar.setProgress(0);
             }
         } catch (Exception e) {
@@ -367,7 +364,7 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
             String currMediaUrl = vvPlayer.getMediaPath();
             if (!EmptyUtil.isEmpty(currMediaUrl)) {
                 Logs.debugI(TAG, "savePlayInfo() -> [progress:" + getProgress());
-                savePlayMediaInfos(currMediaUrl, getProgress());
+                savePlayMediaInfo(currMediaUrl, (int) getProgress());
             }
         }
     }
@@ -388,7 +385,7 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
 
         if (playPos < 0) {
             playPos = 0;
-            clearPlayedMediaInfos();
+            clearPlayedMediaInfo();
         }
 
         return playPos;
@@ -462,7 +459,7 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
             Log.i(TAG, "bindScanService(" + isBind + ")");
             if (isBind) {
                 if (!mIsScanServiceBound) {
-                    Intent bindIntent = new Intent(this, MediaScanService.class);
+                    Intent bindIntent = new Intent(this, VideoScanService.class);
                     mIsScanServiceBound = bindService(bindIntent, mScanServiceConn, BIND_AUTO_CREATE);
                 }
             } else {
@@ -473,6 +470,7 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
                 }
             }
         } catch (Exception e) {
+            Log.i(TAG, "bindScanService :: Exception - " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -527,19 +525,7 @@ public abstract class BaseVideoExtendActionsActivity extends BaseVideoCommonActi
     }
 
     @Override
-    public void onMediaScanningNew() {
-    }
-
-    @Override
-    public void onMediaScanningEnd() {
-    }
-
-    @Override
     public void onMediaScanningEnd(boolean isHasMedias) {
-    }
-
-    @Override
-    public void onMediaParseEnd(int type) {
     }
 
     @Override

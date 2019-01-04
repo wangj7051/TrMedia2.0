@@ -175,7 +175,7 @@ public abstract class BaseVideoCommonActionsActivity extends BasePlayerActivity 
                 if (mPlayPos < 0) {
                     mPlayPos = mListPrograms.size() - 1;
                 }
-                clearPlayedMediaInfos();
+                clearPlayedMediaInfo();
             } catch (Exception e) {
                 Logs.printStackTrace(TAG + "execPlayPre()", e);
             }
@@ -191,7 +191,7 @@ public abstract class BaseVideoCommonActionsActivity extends BasePlayerActivity 
                 if (mPlayPos >= mListPrograms.size()) {
                     mPlayPos = 0;
                 }
-                clearPlayedMediaInfos();
+                clearPlayedMediaInfo();
             } catch (Exception e) {
                 Logs.printStackTrace(TAG + "execPlayNext()", e);
             }
@@ -239,13 +239,13 @@ public abstract class BaseVideoCommonActionsActivity extends BasePlayerActivity 
         try {
             String lastTargetMediaUrl = getLastMediaPath();
             Logs.i(TAG, "getLastMediaProgress() -> [lastTargetMediaUrl:" + lastTargetMediaUrl);
-            String[] mediaInfos = getPlayedMediaInfos();
+            String[] mediaInfos = getPlayedMediaInfo();
             if (mediaInfos != null) {
                 Logs.i(TAG, "getLastMediaProgress() -> [lastPlayedMediaUrl:" + mediaInfos[0]);
                 if (mediaInfos[0].equals(lastTargetMediaUrl)) {
                     lastProgress = Integer.valueOf(mediaInfos[1]);
                 } else {
-                    clearPlayedMediaInfos();
+                    clearPlayedMediaInfo();
                 }
             }
         } catch (Exception e) {
@@ -277,7 +277,7 @@ public abstract class BaseVideoCommonActionsActivity extends BasePlayerActivity 
     }
 
     @Override
-    public int getProgress() {
+    public long getProgress() {
         if (vvPlayer != null) {
             return vvPlayer.getMediaProgress();
         }
@@ -285,7 +285,7 @@ public abstract class BaseVideoCommonActionsActivity extends BasePlayerActivity 
     }
 
     @Override
-    public int getDuration() {
+    public long getDuration() {
         if (vvPlayer != null) {
             return vvPlayer.getMediaDuration();
         }
@@ -315,18 +315,18 @@ public abstract class BaseVideoCommonActionsActivity extends BasePlayerActivity 
     }
 
     @Override
-    public String[] getPlayedMediaInfos() {
+    public String[] getPlayedMediaInfo() {
         return TrVideoPreferUtils.getLastPlayedMediaInfo(false, "", 0);
     }
 
     @Override
-    public void savePlayMediaInfos(String mediaUrl, int progress) {
+    public void savePlayMediaInfo(String mediaUrl, int progress) {
         TrVideoPreferUtils.getLastPlayedMediaInfo(true, mediaUrl, progress);
         Logs.debugI("SavePlayInfo", "savePlayMediaInfos() -> [mediaUrl:" + mediaUrl + " ; progress:" + progress);
     }
 
     @Override
-    public void clearPlayedMediaInfos() {
+    public void clearPlayedMediaInfo() {
         TrVideoPreferUtils.getLastPlayedMediaInfo(true, "", 0);
     }
 

@@ -42,9 +42,9 @@ public interface PlayDelegate extends IPlayStateLitener, IPlayProgressListener, 
      * 设置播放列表
      * <p>1st parameter</p>
      *
-     * @param listMedias Media list set
+     * @param mediasToPlay Media list set
      */
-    void setPlayList(List<? extends MediaBase> listMedias);
+    void setPlayList(List<? extends MediaBase> mediasToPlay);
 
     /**
      * 获取播放列表
@@ -83,16 +83,21 @@ public interface PlayDelegate extends IPlayStateLitener, IPlayProgressListener, 
     /**
      * 获取当前媒体播放进度
      *
-     * @return int : 单位 "毫秒"
+     * @return long : 单位 "毫秒"
      */
-    int getProgress();
+    long getProgress();
 
     /**
      * 获取当前媒体总时长
      *
-     * @return int : 单位 "毫秒" 或 "秒"
+     * @return long : 单位 "毫秒" 或 "秒"
      */
-    int getDuration();
+    long getDuration();
+
+    /**
+     * 播放器是否正在播放
+     */
+    boolean isPlaying();
 
     /**
      * 执行播放
@@ -124,11 +129,6 @@ public interface PlayDelegate extends IPlayStateLitener, IPlayProgressListener, 
     void playNext();
 
     /**
-     * 播放器是否正在播放
-     */
-    boolean isPlaying();
-
-    /**
      * 暂停
      */
     void pause();
@@ -151,55 +151,12 @@ public interface PlayDelegate extends IPlayStateLitener, IPlayProgressListener, 
     void seekTo(int time);
 
     /**
-     * 保存目标媒体路径
+     * 设置左右声道声音比率
      *
-     * @param mediaPath 这个是指定要播放的，并不一定等同于上次播放过的，可能来源于语音等其它方式通知到播放器的
+     * @param leftVolume  [0f~1f]
+     * @param rightVolume [0f~1f]
      */
-    void saveTargetMediaPath(String mediaPath);
-
-    /**
-     * 上一次指定要播放的媒体路径
-     * <p>这个是指定要播放的，并不一定等同于上次播放过的，可能来源于语音等其它方式通知到播放器的</p>
-     * <p>注意: 该方法不应当暴露给外部使用，仅用于{{@link #getLastMediaPath()}} 返回.</p>
-     */
-    String getLastTargetMediaPath();
-
-    /**
-     * 获取上一次播放的媒体
-     * <p>return 如果{@link #getLastTargetMediaPath()} 不为null,则应当等于{@link #getLastTargetMediaPath()}</p>
-     * <p>return 如果{@link #getLastTargetMediaPath()} 不为null,则返回上一次播放存储的媒体路径。</p>
-     */
-    String getLastMediaPath();
-
-    /**
-     * 获取上一次播放的媒体进度
-     * <p>条件 {@link #getLastTargetMediaPath()} == {@link #getLastMediaPath()}</p>
-     * <p>在满足条件的情况下,返回存储的Progress; 否则应当返回0,并清空存储的Progress</p>
-     *
-     * @return int : 单位 "毫秒"
-     */
-    long getLastProgress();
-
-    /**
-     * 保存播放的媒体信息
-     * <p>这个方法应该在{{@link #onProgressChanged(String, int, int)}}时调用，用来保存即时播放信息</p>
-     *
-     * @param mediaPath 当前媒体路径
-     * @param progress  当前媒体进度
-     */
-    void savePlayMediaInfos(String mediaPath, int progress);
-
-    /**
-     * 获取保存的媒体信息
-     * <p>[0] 当前媒体路径</p>
-     * <p>[1] 当前媒体进度</p>
-     */
-    String[] getPlayedMediaInfos();
-
-    /**
-     * 清除播放过的媒体信息
-     */
-    void clearPlayedMediaInfos();
+    void setVolume(float leftVolume, float rightVolume);
 
     /**
      * 设置播放器模式
@@ -223,8 +180,66 @@ public interface PlayDelegate extends IPlayStateLitener, IPlayProgressListener, 
     void setPlayMode(PlayMode mode);
 
     /**
+     * Get play mode
+     *
+     * @return PlayMode
+     */
+    PlayMode getPlayMode();
+
+    /**
      * 当播放模式发生改变
      * <p>Should be called after 'switchPlayMode' or 'setPlayMode' to notify play mode changed.</p>
      */
     void onPlayModeChange();
+
+    /**
+     * 保存目标媒体路径
+     *
+     * @param mediaPath 这个是指定要播放的，并不一定等同于上次播放过的，可能来源于语音等其它方式通知到播放器的
+     */
+    void saveTargetMediaPath(String mediaPath);
+
+    /**
+     * 上一次指定要播放的媒体路径
+     * <p>这个是指定要播放的，并不一定等同于上次播放过的，可能来源于语音等其它方式通知到播放器的</p>
+     * <p>注意: 该方法不应当暴露给外部使用，仅用于{{@link #getLastMediaPath()}} 返回.</p>
+     */
+    String getLastTargetMediaPath();
+
+    /**
+     * 获取上一次播放的媒体
+     * <p>return 如果{@link #getLastTargetMediaPath()} 不为null,则应当等于{@link #getLastTargetMediaPath()}</p>
+     * <p>return 如果{@link #getLastTargetMediaPath()} 为null,则返回上一次播放存储的媒体路径。</p>
+     */
+    String getLastMediaPath();
+
+    /**
+     * 获取上一次播放的媒体进度
+     * <p>条件 {@link #getLastTargetMediaPath()} == {@link #getLastMediaPath()}</p>
+     * <p>在满足条件的情况下,返回存储的Progress; 否则应当返回0,并清空存储的Progress</p>
+     *
+     * @return int : 单位 "毫秒"
+     */
+    long getLastProgress();
+
+    /**
+     * 保存播放的媒体信息
+     * <p>这个方法应该在{{@link #onProgressChanged(String, int, int)}}时调用，用来保存即时播放信息</p>
+     *
+     * @param mediaPath 当前媒体路径
+     * @param progress  当前媒体进度
+     */
+    void savePlayMediaInfo(String mediaPath, int progress);
+
+    /**
+     * 获取保存的媒体信息
+     * <p>[0] 当前媒体路径</p>
+     * <p>[1] 当前媒体进度</p>
+     */
+    String[] getPlayedMediaInfo();
+
+    /**
+     * 清除播放过的媒体信息
+     */
+    void clearPlayedMediaInfo();
 }

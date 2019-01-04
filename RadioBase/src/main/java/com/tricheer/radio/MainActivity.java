@@ -92,6 +92,8 @@ public class MainActivity extends BaseKeyEventActivity
     // Media Button Controller
     private MediaBtnController mMediaBtnController;
 
+    private SeekBarOnChange mSeekBarOnChange;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -131,7 +133,7 @@ public class MainActivity extends BaseKeyEventActivity
         seekBarSearchingAll = (SeekBarImpl) findViewById(R.id.seekbar_freqs_searching_all);
         seekBarSearchingAll.setCanSeek(false);
         seekBarFreq = (SeekBar) findViewById(R.id.seekbar_freqs);
-        seekBarFreq.setOnSeekBarChangeListener(new SeekBarOnChange());
+        seekBarFreq.setOnSeekBarChangeListener((mSeekBarOnChange = new SeekBarOnChange()));
 
         layoutTower = findViewById(R.id.layout_tower);
         tvBand = (TextView) findViewById(R.id.v_band);
@@ -249,11 +251,13 @@ public class MainActivity extends BaseKeyEventActivity
             @Override
             public void run() {
                 if (paramBand == BandCategoryEnum.NONE) {
+                    //
                     execOpenRadio();
                     if (isFirstTimeOpen) {
                         mSearchingController.prepare();
                     }
                 } else {
+                    //
                     execOpenRadio(paramBand, getLastFreq(paramBand));
                 }
             }
@@ -279,7 +283,7 @@ public class MainActivity extends BaseKeyEventActivity
         }
 
         //ViewPager
-        List<BaseAppV4Fragment> listFrags = new ArrayList<BaseAppV4Fragment>();
+        List<BaseAppV4Fragment> listFrags = new ArrayList<>();
         int loop = getPageSum();
         for (int idx = 0; idx < loop; idx++) {
             TabFreqCollectFragment frag = new TabFreqCollectFragment();
@@ -1021,23 +1025,31 @@ public class MainActivity extends BaseKeyEventActivity
      */
     private class SeekBarOnChange implements SeekBar.OnSeekBarChangeListener {
 
+        private int mmLastProgress;
+        private int mmProgress;
+
         @Override
         public void onStartTrackingTouch(SeekBar seekBar) {
             Log.i(TAG, "onStartTrackingTouch");
+            mmLastProgress = -1;
         }
 
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
             Log.i(TAG, "onStopTrackingTouch");
-            int targetFreq = getMinFreq() + seekBar.getProgress();
-            play(targetFreq);
+            play(mmProgress);
         }
 
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            setFreqInfo(getMinFreq() + progress, getCurrBand());
+            if (mmLastProgress == -1) {
+                mmLastProgress = progress;
+            }
+            if (Math.abs(mmLastProgress - progress) > 100) {
+                mmProgress = getMinFreq() + progress;
+                setFreqInfo(mmProgress, getCurrBand());
+            }
         }
-
     }
 
     /**

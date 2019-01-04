@@ -7,7 +7,7 @@
         android:id="@+id/lv_data"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginStart="@dimen/audio_lv_com_ui_space"
+        android:layout_marginStart="@dimen/video_lv_com_ui_space"
         android:cacheColorHint="@android:color/transparent"
         android:divider="@drawable/separate_line_h"
         android:dividerHeight="2dp"

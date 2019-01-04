@@ -58,10 +58,15 @@
             android:layout_marginStart="@dimen/audio_lv_com_ui_space"
             android:cacheColorHint="@android:color/transparent"
             android:divider="@drawable/separate_line_h"
-            android:dividerHeight="2dp"
             android:listSelector="@drawable/bg_audio_item_selector"
             android:overScrollMode="never"
             android:scrollbars="none" />
+
+        <com.js.sidebar.LetterBg
+            android:id="@+id/letter_circle"
+            android:layout_width="160dp"
+            android:layout_height="160dp"
+            android:layout_centerInParent="true" />
     </RelativeLayout>
 
     <RelativeLayout

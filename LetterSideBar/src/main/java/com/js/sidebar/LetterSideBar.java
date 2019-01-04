@@ -29,6 +29,7 @@ public class LetterSideBar extends View {
 
     //Letters list
     private List<String> mListLetters = new ArrayList<>();
+    private Character mHlLetter;
 
     /**
      * {@link LetterSideBarListener}
@@ -45,9 +46,19 @@ public class LetterSideBar extends View {
         void callback(int pos, String letter);
 
         /**
-         * Scroll state.
+         * {@link MotionEvent#ACTION_DOWN}
          */
-        void onScroll(boolean isScrolling);
+        void onTouchDown();
+
+        /**
+         * {@link MotionEvent#ACTION_MOVE}
+         */
+        void onTouchMove();
+
+        /**
+         * {@link MotionEvent#ACTION_UP}
+         */
+        void onTouchUp();
     }
 
     public LetterSideBar(Context context) {
@@ -76,6 +87,14 @@ public class LetterSideBar extends View {
         }
         if (hlFontColor != -1) {
             mHlFontColor = hlFontColor;
+        }
+    }
+
+    public void refreshHlLetter(Character hlLetter) {
+        if (mHlLetter != hlLetter) {
+            Log.i(TAG, "refreshHlLetter(" + hlLetter + ")");
+            mHlLetter = hlLetter;
+            invalidate();
         }
     }
 
@@ -154,8 +173,8 @@ public class LetterSideBar extends View {
         paintCom.setColor(mFontColor);
         paintCom.setTextAlign(Paint.Align.CENTER);
         paintCom.setTextSize(fontSize);
-        paintCom.setTextScaleX(1.6f);
-        paintCom.setStrokeWidth(0.8f);
+        paintCom.setStrokeWidth(0.7f);
+        paintCom.setAntiAlias(true);
         paintCom.setStyle(Paint.Style.FILL_AND_STROKE);
 
         @SuppressLint("DrawAllocation")
@@ -163,8 +182,8 @@ public class LetterSideBar extends View {
         paintTouch.setColor(mHlFontColor);
         paintTouch.setTextAlign(Paint.Align.CENTER);
         paintTouch.setTextSize(fontSizeTouch);
-        paintTouch.setTextScaleX(1.6f);
-        paintTouch.setStrokeWidth(0.8f);
+        paintTouch.setStrokeWidth(0.7f);
+        paintTouch.setAntiAlias(true);
         paintTouch.setStyle(Paint.Style.FILL_AND_STROKE);
 
         for (int idx = 0; idx < loop; idx++) {
@@ -192,6 +211,8 @@ public class LetterSideBar extends View {
             if (mTouchPos == idx) {
                 canvas.drawText(letter, x, y, paintTouch);
             } else {
+                String hlLetter = (mHlLetter == null) ? "" : mHlLetter.toString();
+                paintCom.setColor(TextUtils.equals(hlLetter, letter) ? mHlFontColor : mFontColor);
                 canvas.drawText(letter, x, y, paintCom);
             }
         }
@@ -204,18 +225,24 @@ public class LetterSideBar extends View {
         switch (action) {
             case MotionEvent.ACTION_DOWN:
                 Log.i(TAG, "-- ACTION_DOWN --");
-            case MotionEvent.ACTION_MOVE:
-                Log.i(TAG, "-- ACTION_MOVE --");
+                mHlLetter = null;
                 refresh(event.getY());
                 if (mListener != null) {
-                    mListener.onScroll(true);
+                    mListener.onTouchDown();
+                }
+            case MotionEvent.ACTION_MOVE:
+                Log.i(TAG, "-- ACTION_MOVE --");
+                mHlLetter = null;
+                refresh(event.getY());
+                if (mListener != null) {
+                    mListener.onTouchMove();
                 }
                 break;
             case MotionEvent.ACTION_UP:
                 Log.i(TAG, "-- ACTION_UP --");
                 refresh(-1);
                 if (mListener != null) {
-                    mListener.onScroll(false);
+                    mListener.onTouchUp();
                 }
                 break;
         }

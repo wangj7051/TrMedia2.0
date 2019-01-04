@@ -3,7 +3,7 @@ package com.yj.audio.version.cj.slc_lc2010_vdc.adapter;
 import android.content.Context;
 import android.widget.ImageView;
 
-import com.yj.audio.version.base.activity.music.BaseAudioUIActivity;
+import com.yj.audio.version.base.activity.music.BaseUIActivity;
 
 import js.lib.android.adapter.BaseArrayAdapter;
 
@@ -21,8 +21,8 @@ public class BaseAudioAdapter<T> extends BaseArrayAdapter<T> {
     }
 
     protected int getImgResId(String imgResName) {
-        if (mContext instanceof BaseAudioUIActivity) {
-            BaseAudioUIActivity activity = (BaseAudioUIActivity) mContext;
+        if (mContext instanceof BaseUIActivity) {
+            BaseUIActivity activity = (BaseUIActivity) mContext;
             return activity.getImgResId(imgResName);
         }
         return 0;

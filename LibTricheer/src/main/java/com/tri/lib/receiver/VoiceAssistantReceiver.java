@@ -38,10 +38,9 @@ public class VoiceAssistantReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
-        Log.i(TAG, "action :: " + action);
-
-        //
+        Log.i(TAG, "action : " + action);
         ActionEnum ae = ActionEnum.getByAction(action);
+        Log.i(TAG, "action-ae : " + ae);
         notifyVoiceCommand(ae);
     }
 

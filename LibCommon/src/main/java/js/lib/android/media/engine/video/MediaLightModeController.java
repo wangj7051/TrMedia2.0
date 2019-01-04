@@ -113,16 +113,14 @@ public class MediaLightModeController {
         Log.i(TAG, "resetLightMode()");
         makeLightOn();
         mHandler.removeCallbacksAndMessages(null);
-        mHandler.postDelayed(mDelayCloseLightRunnable, 3 * 1000);
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Log.i(TAG, "resetLightMode -run()-");
+                setLightMode(OFF);
+            }
+        }, 3 * 1000);
     }
-
-    private Runnable mDelayCloseLightRunnable = new Runnable() {
-        @Override
-        public void run() {
-            Log.i(TAG, "mDelayCloseLightRunnable -run()-");
-            setLightMode(OFF);
-        }
-    };
 
     /**
      * Settings on activity or other view destroy

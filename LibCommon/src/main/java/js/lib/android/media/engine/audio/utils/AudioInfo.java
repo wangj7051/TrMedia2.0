@@ -6,10 +6,20 @@ import android.provider.MediaStore;
 import java.util.HashSet;
 import java.util.Set;
 
+import js.lib.android.media.engine.MediaUtils;
 import js.lib.bean.BaseBean;
 
 /**
  * SDCard Audio Information Bean
+ * <p>
+ * Audio Decoders :
+ * PCM playback;AAC/AAC+/eAAC+;MP3;WMA (v9 and v10);WMALossless;WMAPro10;AMR-NB
+ * AMR-WB;FLAC;ALAC;Vorbis;AIFF;APE;AC3 (from Dolby);eAC3 (from Dolby)
+ * </p>
+ * <p>
+ * Audio Encoders:
+ * PCM recording;AAC;AMR-NB;AMR-WB;EVRC;QCELP;AAC5.1
+ * </p>
  *
  * @author Jun.Wang
  */
@@ -20,16 +30,34 @@ public class AudioInfo extends BaseBean {
      */
     private static final long serialVersionUID = 1L;
 
+    //媒体格式后缀
+    private static final String AUDIO_QUALCOMM_MP3 = ".mp3";//高通支持
+    private static final String AUDIO_QUALCOMM_AAC = ".aac";//高通支持
+    private static final String AUDIO_QUALCOMM_FLAC = ".flac";//高通支持
+    private static final String AUDIO_QUALCOMM_APE = ".ape";//高通支持
+    private static final String AUDIO_QUALCOMM_WAV = ".wav";//高通支持
+    private static final String AUDIO_QUALCOMM_M4A = ".m4a";//高通支持播放,但不支持拖动
+    //Others
+//    private static final String AUDIO_WMA = ".wma";//高通解码不支持,平台支持-需要软解码
+
     /**
      * Support Suffixes
-     * <p>
-     * like Set<".mp3"> ...
+     * <p>like Set<".mp3"> ...</p>
      */
-    private static Set<String> mSetSuffixs = new HashSet<String>();
+    private static Set<String> mSetSuffixs = new HashSet<>();
+    private static Set<String> mSetSuffixsOfQualcommSupport = new HashSet<>();
 
     static {
-        mSetSuffixs.add(".aac");
-        mSetSuffixs.add(".mp3");
+        //Add qualcomm support
+        mSetSuffixsOfQualcommSupport.add(AUDIO_QUALCOMM_MP3);
+        mSetSuffixsOfQualcommSupport.add(AUDIO_QUALCOMM_AAC);
+        mSetSuffixsOfQualcommSupport.add(AUDIO_QUALCOMM_FLAC);
+        mSetSuffixsOfQualcommSupport.add(AUDIO_QUALCOMM_APE);
+        mSetSuffixsOfQualcommSupport.add(AUDIO_QUALCOMM_WAV);
+        mSetSuffixsOfQualcommSupport.add(AUDIO_QUALCOMM_M4A);
+        //Add all
+        mSetSuffixs.addAll(mSetSuffixsOfQualcommSupport);
+//        mSetSuffixs.add(AUDIO_WMA);
     }
 
     /**
@@ -110,18 +138,12 @@ public class AudioInfo extends BaseBean {
     }
 
     /**
-     * Set Support Media Types
+     * If media that qualcomm support.
+     *
+     * @param fPathOrDisplayName media name or path.
      */
-    public static void setSupportMedias(boolean isSupportAll) {
-        if (isSupportAll) {
-            // mSetSuffixs.add(".aac");
-            mSetSuffixs.add(".m4a");
-//            mSetSuffixs.add(".mid");
-            // mSetSuffixs.add(".mp3");
-            mSetSuffixs.add(".wav");
-            mSetSuffixs.add(".flac");
-            mSetSuffixs.add(".wma");
-            mSetSuffixs.add(".ape");
-        }
+    public static boolean isQualcommSupport(String fPathOrDisplayName) {
+        String suffix = MediaUtils.getSuffix(fPathOrDisplayName);
+        return mSetSuffixsOfQualcommSupport.contains(suffix);
     }
 }

@@ -100,6 +100,13 @@ public class SclLc2010VdcVideoFolderFoldersFrag extends BaseVideoFolderGroupsFra
         init();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.i(TAG, "onResume()");
+        refreshPlaying(mAttachedActivity.getLastMediaPath());
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     private void init() {
         // Data
@@ -107,6 +114,9 @@ public class SclLc2010VdcVideoFolderFoldersFrag extends BaseVideoFolderGroupsFra
         lvData = (ListView) contentV.findViewById(R.id.lv_data);
         lvData.setAdapter(mDataAdapter);
         lvData.setOnItemClickListener((mLvItemClick = new LvItemClick()));
+
+        //
+        updateThemeCommon();
         loadDataList();
     }
 
@@ -255,5 +265,26 @@ public class SclLc2010VdcVideoFolderFoldersFrag extends BaseVideoFolderGroupsFra
             mLvItemClick.destroy();
         }
         super.onDestroy();
+    }
+
+    @Override
+    public void updateThemeToDefault() {
+        Log.i(TAG, "updateThemeToDefault()");
+        if (isAdded()) {
+            updateThemeCommon();
+        }
+    }
+
+    @Override
+    public void updateThemeToIos() {
+        Log.i(TAG, "updateThemeToIos()");
+        if (isAdded()) {
+            updateThemeCommon();
+        }
+    }
+
+    private void updateThemeCommon() {
+        lvData.setDivider(mAttachedActivity.getDrawable(mAttachedActivity.getImgResId("separate_line_h")));
+        lvData.setSelector(mAttachedActivity.getImgResId("bg_audio_item_selector"));
     }
 }

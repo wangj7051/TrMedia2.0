@@ -15,7 +15,7 @@ import com.yj.lib.radio.utils.RadioPreferUtils;
 import java.util.HashSet;
 import java.util.Set;
 
-import js.lib.android.media.player.audio.service.BaseAudioFocusService;
+import js.lib.android.media.player.audio.service.BaseMediaFocusService;
 
 /**
  * Base Radio operate service
@@ -25,7 +25,7 @@ import js.lib.android.media.player.audio.service.BaseAudioFocusService;
  *
  * @author Jun.Wang
  */
-public abstract class BaseRadioService extends BaseAudioFocusService implements FmDelegate, FmListener {
+public abstract class BaseRadioService extends BaseMediaFocusService implements FmDelegate, FmListener {
     //TAG
     private final String TAG = "BaseRadioService";
 
@@ -495,8 +495,8 @@ public abstract class BaseRadioService extends BaseAudioFocusService implements 
     }
 
     @Override
-    public boolean isAudioFocusRegistered() {
-        return super.isAudioFocusRegistered();
+    public boolean isAudioFocusGained() {
+        return super.isAudioFocusGained();
     }
 
     @Override

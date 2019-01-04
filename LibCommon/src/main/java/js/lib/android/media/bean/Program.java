@@ -49,7 +49,7 @@ public class Program extends MediaBase {
     /**
      * Program Duration
      */
-    public int duration = 0;
+    public long duration = 0;
 
     /**
      * Is This Program Collect

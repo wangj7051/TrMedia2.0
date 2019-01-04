@@ -4,15 +4,15 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Service;
 import android.content.Context;
+import android.util.Log;
 
-import com.yj.audio.App;
 import com.yj.audio.receiver.PlayerReceiver;
+import com.yj.audio.version.cj.slc_lc2010_vdc.activity.SclLc2010VdcAudioListActivity;
+import com.yj.audio.version.cj.slc_lc2010_vdc.activity.SclLc2010VdcAudioPlayerActivity;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
-import js.lib.android.utils.EmptyUtil;
 import js.lib.android.utils.Logs;
 
 /**
@@ -22,100 +22,30 @@ import js.lib.android.utils.Logs;
  */
 public class PlayerAppManager {
     // TAG
-    private static final String TAG = "PlayerAppManager";
-
-    public interface PlayerCxtFlag {
-        int NONE = -1;
-        int MUSIC_PLAYER = 101;
-        int MUSIC_LIST = 102;
-        int VIDEO_PLAYER = 201;
-        int VIDEO_LIST = 202;
-    }
+    private static final String TAG = "AudioAppManager";
 
     /**
      * Player Objects
      */
     @SuppressLint("UseSparseArrays")
-    private static Map<Integer, Context> mMapCxts = new HashMap<>();
+    private static Set<Context> mSetContexts = new LinkedHashSet<>();
 
     /**
      * Cache Context[Activity or Service] Object
      */
-    public static void putCxt(int cxtFlag, Context actObj) {
-        // 播放器类型判断
-        switch (cxtFlag) {
-            case PlayerCxtFlag.MUSIC_PLAYER:
-            case PlayerCxtFlag.MUSIC_LIST:
-                if (!PlayerType.isMusic()) {
-                    clearPlayer();
-                    PlayerType.setType(PlayerType.MUSIC);
-                }
-                break;
-            case PlayerCxtFlag.VIDEO_PLAYER:
-            case PlayerCxtFlag.VIDEO_LIST:
-                if (!PlayerType.isVideo()) {
-                    clearPlayer();
-                    PlayerType.setType(PlayerType.VIDEO);
-                }
-                break;
-        }
-
-        // 存储当前对象
-        mMapCxts.put(cxtFlag, actObj);
-    }
-
-    /**
-     * 清空播放器
-     */
-    private static void clearPlayer() {
-        Iterator<Map.Entry<Integer, Context>> iterator = mMapCxts.entrySet().iterator();
-        for (; iterator.hasNext(); ) {
-            Map.Entry<Integer, Context> entry = iterator.next();
-            if (entry != null) {
-                // Close Context
-                Context cxt = entry.getValue();
-                if (cxt instanceof Activity) {
-                    ((Activity) cxt).finish();
-                } else if (cxt instanceof Service) {
-                    ((Service) cxt).stopSelf();
-                }
-                // Remove Object
-                iterator.remove();
-            }
+    public static void addContext(Context actObj) {
+        if (actObj != null) {
+            mSetContexts.add(actObj);
         }
     }
 
     /**
      * Remove Context[Activity or Service] Object
      */
-    public static void removeCxt(int cxtFlag) {
-        mMapCxts.remove(cxtFlag);
-        if (EmptyUtil.isEmpty(mMapCxts)) {
-            PlayerType.setType(-1);
+    public static void removeContext(Context actObj) {
+        if (actObj != null) {
+            mSetContexts.remove(actObj);
         }
-    }
-
-    /**
-     * Get Context Object
-     */
-    public static Context getCxt(int cxtFlag) {
-        return mMapCxts.get(cxtFlag);
-    }
-
-    /**
-     * 获取当前播放器标记
-     *
-     * @return {@link PlayerCxtFlag}
-     */
-    public static int getCurrPlayerFlag() {
-        for (Integer flag : mMapCxts.keySet()) {
-            switch (flag) {
-                case PlayerCxtFlag.MUSIC_PLAYER:
-                case PlayerCxtFlag.VIDEO_PLAYER:
-                    return flag;
-            }
-        }
-        return PlayerCxtFlag.NONE;
     }
 
     /**
@@ -124,39 +54,58 @@ public class PlayerAppManager {
      * @return {@link PlayerReceiver.PlayerReceiverListener}
      */
     public static PlayerReceiver.PlayerReceiverListener getCurrPlayer() {
-        Context currPlayer = mMapCxts.get(getCurrPlayerFlag());
-        if (currPlayer instanceof PlayerReceiver.PlayerReceiverListener) {
-            return (PlayerReceiver.PlayerReceiverListener) currPlayer;
+        for (Context context : mSetContexts) {
+            if (context instanceof SclLc2010VdcAudioPlayerActivity) {
+                return (PlayerReceiver.PlayerReceiverListener) context;
+            }
         }
         return null;
     }
 
     /**
-     * Start Player By Player Flag
+     * 获取当前播放器对象
+     *
+     * @return {@link PlayerReceiver.PlayerReceiverListener}
      */
-    public static void startPlayer(Context cxt, int cxtFlag) {
-        switch (cxtFlag) {
-            case PlayerCxtFlag.MUSIC_PLAYER:
-                App.openMusicPlayer(cxt, "", null);
-                break;
+    public static SclLc2010VdcAudioListActivity getAudioListActivity() {
+        for (Context context : mSetContexts) {
+            if (context instanceof SclLc2010VdcAudioListActivity) {
+                return (SclLc2010VdcAudioListActivity) context;
+            }
         }
-    }
-
-    /**
-     * Close Music Player
-     */
-    public static void closeMusicPlayer() {
-        Logs.i(TAG, "^^ closeMusicPlayer() ^^");
-        if (PlayerType.isMusic()) {
-            clearPlayer();
-        }
+        return null;
     }
 
     /**
      * Exit Current Player
      */
-    public static void exitCurrPlayer() {
-        Logs.i(TAG, "exitCurrPlayer() -> [Player.type():" + PlayerType.type());
+    public static void exitCurrPlayer(boolean isForceDestroy) {
+        Logs.i(TAG, "exitCurrPlayer(" + isForceDestroy + ")");
         clearPlayer();
+    }
+
+    /**
+     * 清空播放器
+     */
+    private static void clearPlayer() {
+        try {
+            Log.i(TAG, "clearPlayer() >>>>>>>>>>>>>>>>>>>>> mSetContexts.size():" + mSetContexts.size());
+            Object[] objArr = mSetContexts.toArray();
+            for (Object obj : objArr) {
+                Context context = (Context) obj;
+                if (context instanceof Activity) {
+                    Activity activity = (Activity) context;
+                    Log.i(TAG, "clear - " + activity);
+                    activity.finish();
+                } else if (context instanceof Service) {
+                    Service service = (Service) context;
+                    Log.i(TAG, "clear - " + context);
+                    service.stopSelf();
+                }
+            }
+        } catch (Exception e) {
+            Log.i(TAG, "clearPlayer() :: ERROR - " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }

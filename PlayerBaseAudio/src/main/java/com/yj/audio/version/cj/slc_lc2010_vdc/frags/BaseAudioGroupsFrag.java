@@ -10,10 +10,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 
+import com.js.sidebar.LetterBg;
 import com.js.sidebar.LetterSideBar;
 import com.yj.audio.R;
 import com.yj.audio.version.cj.slc_lc2010_vdc.activity.SclLc2010VdcAudioListActivity;
@@ -44,7 +46,10 @@ public abstract class BaseAudioGroupsFrag extends BaseAudioListFrag {
     protected View contentV;
     protected ListView lvData;
     protected ImageView ivLoading;
-    protected LetterSideBar lsb;
+
+    //Letter sidebar
+    private LetterSideBar letterSidebar;
+    private LetterBg letterCircle;
 
     //==========Variables in this Fragment==========
     //Attached activity of this fragment.
@@ -107,10 +112,12 @@ public abstract class BaseAudioGroupsFrag extends BaseAudioListFrag {
     private void init() {
         //----Widgets----
         //Side bar
-        lsb = (LetterSideBar) contentV.findViewById(R.id.lsb);
-        lsb.refreshLetters(null);
-        lsb.addCallback(new LetterSideBarCallback());
-        lsb.setVisibility(View.VISIBLE);
+        letterCircle = (LetterBg) contentV.findViewById(R.id.letter_circle);
+        letterCircle.setVisibility(View.INVISIBLE);
+        letterSidebar = (LetterSideBar) contentV.findViewById(R.id.lsb);
+        letterSidebar.refreshLetters(null);
+        letterSidebar.addCallback(new LetterSideBarCallback());
+        letterSidebar.setVisibility(View.VISIBLE);
 
         //
         ivLoading = (ImageView) contentV.findViewById(R.id.iv_loading);
@@ -125,7 +132,12 @@ public abstract class BaseAudioGroupsFrag extends BaseAudioListFrag {
         lvData.setSelector(mAttachedActivity.getImgResId("bg_audio_item_selector"));
         lvData.setAdapter(mDataAdapter);
         lvData.setOnItemClickListener((mLvItemClick = new LvItemClick()));
-        loadDataList();
+        lvData.setOnScrollListener(new LvOnScroll());
+
+        //Loading page
+        Log.i(TAG, "init() -loadLocalMedias-");
+        updateThemeCommon();
+        loadLocalMedias();
     }
 
     /**
@@ -138,14 +150,7 @@ public abstract class BaseAudioGroupsFrag extends BaseAudioListFrag {
     }
 
     @Override
-    public void loadDataList() {
-    }
-
-    @Override
-    public void refreshDataList() {
-        if (isAdded()) {
-            mDataAdapter.refreshData();
-        }
+    public void refreshData() {
     }
 
     @Override
@@ -222,19 +227,7 @@ public abstract class BaseAudioGroupsFrag extends BaseAudioListFrag {
         if (isAdded()) {
             int selectPos = mDataAdapter.getSelectPos();
             Log.i(TAG, "playSelected() > selectPos:" + selectPos);
-            mLvItemClick.execItemClick(mDataAdapter.getItem(selectPos));
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public void playSelected(String mediaUrl) {
-        if (isAdded() && isAudioList(mListData)) {
-            try {
-                mAttachedActivity.playAndOpenPlayerActivity(mediaUrl, (List<ProAudio>) mListData);
-            } catch (Exception e) {
-                Log.i(TAG, "playSelectMedia> " + e.getMessage());
-            }
+            mLvItemClick.execItemClick(selectPos);
         }
     }
 
@@ -242,25 +235,6 @@ public abstract class BaseAudioGroupsFrag extends BaseAudioListFrag {
     public void onMediaScanningStart() {
         Log.i(TAG, "onMediaScanningStart()");
         showLoading(true);
-    }
-
-    @Override
-    public void onMediaScanningNew() {
-        Log.i(TAG, "onMediaScanningNew()");
-        if (EmptyUtil.isEmpty(mListData)) {
-            showLoading(true);
-        }
-    }
-
-    @Override
-    public void onMediaScanningEnd() {
-        Log.i(TAG, "onMediaScanningEnd()");
-    }
-
-    @Override
-    public void onMediaParseEnd() {
-        Log.i(TAG, "onMediaParseEnd()");
-        showLoading(false);
     }
 
     @Override
@@ -276,11 +250,11 @@ public abstract class BaseAudioGroupsFrag extends BaseAudioListFrag {
     public void showLoading(boolean isShow) {
         if (isAdded()) {
             if (isShow) {
-                lsb.setVisibility(View.INVISIBLE);
+                letterSidebar.setVisibility(View.INVISIBLE);
                 ivLoading.setVisibility(View.VISIBLE);
                 mFrameAnimController.start();
             } else {
-                lsb.setVisibility(View.VISIBLE);
+                letterSidebar.setVisibility(View.VISIBLE);
                 ivLoading.setVisibility(View.INVISIBLE);
                 mFrameAnimController.stop();
             }
@@ -385,6 +359,7 @@ public abstract class BaseAudioGroupsFrag extends BaseAudioListFrag {
         }
 
         if (isAudioList(mListData)) {
+            refreshFilters(mListFilters);
             return 1;
         } else {
             return 0;
@@ -419,6 +394,7 @@ public abstract class BaseAudioGroupsFrag extends BaseAudioListFrag {
     }
 
     private void updateThemeCommon() {
+        lvData.setDivider(mAttachedActivity.getDrawable(mAttachedActivity.getImgResId("separate_line_h")));
         lvData.setSelector(mAttachedActivity.getImgResId("bg_audio_item_selector"));
     }
 
@@ -426,18 +402,93 @@ public abstract class BaseAudioGroupsFrag extends BaseAudioListFrag {
      * Letter side bar touch callback.
      */
     private class LetterSideBarCallback implements LetterSideBar.LetterSideBarListener {
+
+        private Character mmTouchedLetter;
+
         @Override
         public void callback(int pos, String letter) {
-            Logs.i(TAG, "LetterSideBarCallback -> callback(" + pos + "," + letter + ")");
-            int sectionPos = mDataAdapter.getPositionForSection(letter.charAt(0));
-            if (sectionPos != -1) {
-                Logs.i(TAG, "LetterSideBarCallback -> callback(" + pos + "," + letter + "-" + sectionPos + ")");
-                lvData.setSelection(sectionPos);
+            try {
+                Logs.i(TAG, "LetterSideBarCallback -> callback(" + pos + "," + letter + ")");
+                mmTouchedLetter = letter.charAt(0);
+                int sectionPos = mDataAdapter.getPositionForSection(mmTouchedLetter);
+                if (sectionPos != -1) {
+                    Logs.i(TAG, "LetterSideBarCallback -> callback(" + pos + "," + letter + "-" + sectionPos + ")");
+                    lvData.setSelection(sectionPos);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 
         @Override
-        public void onScroll(boolean isScrolling) {
+        public void onTouchDown() {
+            try {
+                Log.i(TAG, "LetterSideBarCallback - onTouchDown()");
+                letterCircle.refreshLetter(mmTouchedLetter);
+                letterCircle.setVisibility(View.VISIBLE);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onTouchMove() {
+            try {
+                Log.i(TAG, "LetterSideBarCallback - onTouchMove()");
+                letterCircle.refreshLetter(mmTouchedLetter);
+                letterCircle.setVisibility(View.VISIBLE);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onTouchUp() {
+            try {
+                Log.i(TAG, "LetterSideBarCallback - onTouchUp()");
+                letterCircle.setVisibility(View.INVISIBLE);
+                letterSidebar.refreshHlLetter(mmTouchedLetter);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * ListView scroll event.
+     */
+    private class LvOnScroll implements AbsListView.OnScrollListener {
+
+        private boolean mmIsTouchScrolling;
+
+        @Override
+        public void onScrollStateChanged(AbsListView view, int scrollState) {
+            switch (scrollState) {
+                case SCROLL_STATE_TOUCH_SCROLL:
+                    mmIsTouchScrolling = true;
+                    Log.i(TAG, "LvOnScroll -SCROLL_STATE_TOUCH_SCROLL-");
+                    break;
+                case SCROLL_STATE_IDLE:
+                    mmIsTouchScrolling = false;
+                    Log.i(TAG, "LvOnScroll -SCROLL_STATE_IDLE-");
+                    break;
+                case SCROLL_STATE_FLING:
+                    Log.i(TAG, "LvOnScroll -SCROLL_STATE_FLING-");
+                    break;
+
+            }
+        }
+
+        @Override
+        public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+            try {
+                if (mmIsTouchScrolling) {
+                    int section = mDataAdapter.getSectionForPosition(firstVisibleItem);
+                    letterSidebar.refreshHlLetter((char) section);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -452,10 +503,11 @@ public abstract class BaseAudioGroupsFrag extends BaseAudioListFrag {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             Logs.i(TAG, "LvItemClick -> onItemClick(AdapterView," + position + ",id)");
-            execItemClick(parent.getItemAtPosition(position));
+            execItemClick(position);
         }
 
-        private void execItemClick(Object objItem) {
+        private void execItemClick(int position) {
+            Object objItem = mDataAdapter.getItem(position);
             if (objItem == null) {
                 return;
             }
@@ -479,7 +531,7 @@ public abstract class BaseAudioGroupsFrag extends BaseAudioListFrag {
 
                 //
                 ProAudio program = (ProAudio) objItem;
-                mAttachedActivity.playAndOpenPlayerActivity(program.mediaUrl, (List<ProAudio>) mListData);
+                mAttachedActivity.playAndOpenPlayerActivity(position, program.mediaUrl, (List<ProAudio>) mListData);
             }
         }
 

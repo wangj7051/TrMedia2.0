@@ -3,10 +3,7 @@ package com.yj.video.version.cj.slc_lc2010_vdc.frags;
 import com.yj.video.R;
 import com.yj.video.engine.ThemeController;
 
-import java.util.List;
-
 import js.lib.android.fragment.BaseAppV4Fragment;
-import js.lib.android.media.bean.ProVideo;
 
 public abstract class BaseVideoListFrag extends BaseAppV4Fragment implements ThemeController.ThemeChangeDelegate {
 
@@ -33,24 +30,9 @@ public abstract class BaseVideoListFrag extends BaseAppV4Fragment implements The
     public abstract void onMediaScanningStart();
 
     /**
-     * Notify scanning status - Found new.
-     */
-    public abstract void onMediaScanningNew();
-
-    /**
-     * Notify scanning status - END
-     */
-    public abstract void onMediaScanningEnd();
-
-    /**
      * Notify scanning status - CANCEL
      */
     public abstract void onMediaScanningCancel();
-
-    /**
-     * Notify scanning status - Parse END
-     */
-    public abstract void onMediaParseEnd();
 
     /**
      * @return <p>0-Frag is in base page.</p>
@@ -58,9 +40,18 @@ public abstract class BaseVideoListFrag extends BaseAppV4Fragment implements The
      */
     public abstract int onBackPressed();
 
-    public abstract void refreshData();
+    /**
+     * 该方法仅在以下情况执行
+     * (1)页面没有数据
+     * (2)首次加载数据
+     */
+    public abstract void loadLocalMedias();
 
-    public abstract void refreshData(List<ProVideo> listMedias, String targetMediaUrl);
+    /**
+     * 该方法仅在以下情况执行
+     * (1)页面已有数据，更新数据
+     */
+    public abstract void refreshData();
 
     /**
      * Select next
@@ -73,8 +64,6 @@ public abstract class BaseVideoListFrag extends BaseAppV4Fragment implements The
     public abstract void selectPrev();
 
     public abstract void playSelected();
-
-    public abstract void play();
 
     /**
      * 根据数据位置，计算并获取该数据所在页的第一个数据索引

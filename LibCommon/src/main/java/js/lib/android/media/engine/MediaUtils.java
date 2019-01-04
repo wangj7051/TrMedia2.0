@@ -17,7 +17,7 @@ public class MediaUtils {
     /**
      * Context
      */
-    protected static ContentResolver mContentResolver;
+//    protected static ContentResolver mContentResolver;
 
     /**
      * You can only get medias at these paths
@@ -29,70 +29,70 @@ public class MediaUtils {
     protected static List<String> mListFilterPaths;
 
     public static void init(Context cxt, List<String> listSupportPaths, List<String> listFilterPaths) {
-        mContentResolver = cxt.getContentResolver();
+//        mContentResolver = cxt.getContentResolver();
         mListSupportPaths = listSupportPaths;
         mListFilterPaths = listFilterPaths;
     }
 
-    /**
-     * Get Query Selection
-     */
-    protected static String getSelection() {
-        String selection = null;
-
-        //
-        String limitLike = null;
-        if (!EmptyUtil.isEmpty(mListSupportPaths)) {
-            limitLike = "";
-            int loop = mListSupportPaths.size();
-            for (int idx = 0; idx < loop; idx++) {
-                String path = mListSupportPaths.get(idx);
-                if (idx > 0) {
-                    limitLike += " or ";
-                }
-                limitLike += VideoInfo._PATH + " like '%" + path + "%' ";
-            }
-        }
-
-        //
-        String filterNotLike = null;
-        if (!EmptyUtil.isEmpty(mListFilterPaths)) {
-            filterNotLike = "";
-            int loop = mListFilterPaths.size();
-            for (int idx = 0; idx < loop; idx++) {
-                String path = mListFilterPaths.get(idx);
-                if (idx > 0) {
-                    filterNotLike += " and ";
-                }
-                filterNotLike += VideoInfo._PATH + " not like '%" + path + "%' ";
-            }
-        }
-
-        //
-        selection = limitLike;
-        if (EmptyUtil.isEmpty(selection)) {
-            selection = filterNotLike;
-        } else if (!EmptyUtil.isEmpty(filterNotLike)) {
-            selection = "(" + limitLike + ")" + " and " + filterNotLike;
-        }
-        return selection;
-    }
-
-    /**
-     * Get Query Selection Arguments
-     */
-    protected static String getSelectionArgs(List<String> listSelectedPaths) {
-        StringBuffer sbArgs = new StringBuffer();
-        int loop = listSelectedPaths.size();
-        for (int idx = 0; idx < loop; idx++) {
-            String str = listSelectedPaths.get(idx);
-            sbArgs.append("'" + str + "'");
-            if (idx != (loop - 1)) {
-                sbArgs.append(",");
-            }
-        }
-        return "(" + sbArgs.toString() + ")";
-    }
+//    /**
+//     * Get Query Selection
+//     */
+//    protected static String getSelection() {
+//        String selection = null;
+//
+//        //
+//        String limitLike = null;
+//        if (!EmptyUtil.isEmpty(mListSupportPaths)) {
+//            limitLike = "";
+//            int loop = mListSupportPaths.size();
+//            for (int idx = 0; idx < loop; idx++) {
+//                String path = mListSupportPaths.get(idx);
+//                if (idx > 0) {
+//                    limitLike += " or ";
+//                }
+//                limitLike += VideoInfo._PATH + " like '%" + path + "%' ";
+//            }
+//        }
+//
+//        //
+//        String filterNotLike = null;
+//        if (!EmptyUtil.isEmpty(mListFilterPaths)) {
+//            filterNotLike = "";
+//            int loop = mListFilterPaths.size();
+//            for (int idx = 0; idx < loop; idx++) {
+//                String path = mListFilterPaths.get(idx);
+//                if (idx > 0) {
+//                    filterNotLike += " and ";
+//                }
+//                filterNotLike += VideoInfo._PATH + " not like '%" + path + "%' ";
+//            }
+//        }
+//
+//        //
+//        selection = limitLike;
+//        if (EmptyUtil.isEmpty(selection)) {
+//            selection = filterNotLike;
+//        } else if (!EmptyUtil.isEmpty(filterNotLike)) {
+//            selection = "(" + limitLike + ")" + " and " + filterNotLike;
+//        }
+//        return selection;
+//    }
+//
+//    /**
+//     * Get Query Selection Arguments
+//     */
+//    protected static String getSelectionArgs(List<String> listSelectedPaths) {
+//        StringBuffer sbArgs = new StringBuffer();
+//        int loop = listSelectedPaths.size();
+//        for (int idx = 0; idx < loop; idx++) {
+//            String str = listSelectedPaths.get(idx);
+//            sbArgs.append("'" + str + "'");
+//            if (idx != (loop - 1)) {
+//                sbArgs.append(",");
+//            }
+//        }
+//        return "(" + sbArgs.toString() + ")";
+//    }
 
     /**
      * Get Media Suffix

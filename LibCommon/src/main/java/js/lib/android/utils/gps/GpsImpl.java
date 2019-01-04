@@ -46,7 +46,9 @@ public class GpsImpl {
             String bestProvider = mLocationManager.getBestProvider(getLocationCriteria(), true);
             // 获取位置信息
             // 如果不设置查询要求，getLastKnownLocation方法传人的参数为LocationManager.GPS_PROVIDER
-            Location location = mLocationManager.getLastKnownLocation(bestProvider);
+            if (bestProvider != null) {
+                Location location = mLocationManager.getLastKnownLocation(bestProvider);
+            }
             // 监听状态
             mLocationManager.addGpsStatusListener((mGpsStausListener = new GpsStatusOnChange()));
             // 绑定监听，有4个参数

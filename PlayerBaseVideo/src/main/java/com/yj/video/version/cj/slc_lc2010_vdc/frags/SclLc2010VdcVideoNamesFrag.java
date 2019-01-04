@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,10 +18,9 @@ import android.widget.ImageView;
 import com.js.sidebar.LetterSideBar;
 import com.yj.video.R;
 import com.yj.video.version.cj.slc_lc2010_vdc.activity.SclLc2010VdcVideoListActivity;
-import com.yj.video.version.cj.slc_lc2010_vdc.activity.SclLc2010VdcVideoPlayerActivity;
 import com.yj.video.version.cj.slc_lc2010_vdc.adapter.SclLc2010VdcVideoNamesAdapter;
 
-import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import js.lib.android.media.bean.ProVideo;
@@ -62,11 +60,6 @@ public class SclLc2010VdcVideoNamesFrag extends BaseVideoListFrag {
     private GvItemClick mGvItemClick;
 
     /**
-     * Request Current Playing Media Url
-     */
-    protected final int M_REQ_PLAYING_MEDIA_URL = 1;
-
-    /**
      * Media list
      */
     private List<ProVideo> mListMedias;
@@ -93,6 +86,13 @@ public class SclLc2010VdcVideoNamesFrag extends BaseVideoListFrag {
         init();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.i(TAG, "onResume()");
+        refreshData();
+    }
+
     private void init() {
         //----Widgets----
         //Side bar
@@ -113,55 +113,59 @@ public class SclLc2010VdcVideoNamesFrag extends BaseVideoListFrag {
         gvData.setAdapter(mDataAdapter);
         gvData.setOnItemClickListener((mGvItemClick = new GvItemClick()));
         gvData.setOnScrollListener(new GvOnScroll());
-        refreshData(mAttachedActivity.getListMedias(), mAttachedActivity.getLastMediaPath());
+
+        //Loading page
+        Log.i(TAG, "init() -loadLocalMedias-");
+        loadLocalMedias();
+    }
+
+    @Override
+    public void loadLocalMedias() {
+        if (!isAdded()) {
+            return;
+        }
+        Log.i(TAG, "loadLocalMedias()");
+        //Refresh
+        List<ProVideo> listMedias = mAttachedActivity.getListMedias();
+        //Empty
+        if (EmptyUtil.isEmpty(listMedias)) {
+            mListMedias = new ArrayList<>();
+            mDataAdapter.refreshData(mListMedias, "");
+            //Not empty
+        } else {
+            showLoading(false);
+            mListMedias = new ArrayList<>(listMedias);
+            String targetMediaPath = mAttachedActivity.getLastTargetMediaPath();
+            if (EmptyUtil.isEmpty(targetMediaPath)) {
+                ProVideo firstMedia = mListMedias.get(0);
+                targetMediaPath = firstMedia.mediaUrl;
+            }
+            mDataAdapter.refreshData(mListMedias, targetMediaPath);
+        }
     }
 
     @Override
     public void refreshData() {
-        if (isAdded()) {
-            mDataAdapter.refreshData();
+        if (!isAdded()) {
+            return;
         }
-    }
-
-    @Override
-    public void refreshData(List<ProVideo> listMedias, String targetMediaUrl) {
-        if (isAdded()) {
-            mListMedias = listMedias;
-            mDataAdapter.refreshData(mListMedias, targetMediaUrl);
-            autoPlayHistory();
-        }
-    }
-
-    public void autoPlayHistory() {
-        if (isAdded()) {
-            if (EmptyUtil.isEmpty(mListMedias) || !mAttachedActivity.isAutoPlay()) {
-                return;
-            }
-
-            //Refresh ListView
+        Log.i(TAG, "refreshData()");
+        //Refresh
+        List<ProVideo> listMedias = mAttachedActivity.getListMedias();
+        //Empty
+        if (EmptyUtil.isEmpty(listMedias)) {
+            mListMedias = new ArrayList<>();
+            mDataAdapter.refreshData(mListMedias, "");
+            //Not empty
+        } else {
+            showLoading(false);
+            mListMedias = new ArrayList<>(listMedias);
             String targetMediaPath = mAttachedActivity.getLastTargetMediaPath();
-            if (TextUtils.isEmpty(targetMediaPath)) {
-                ProVideo first = mListMedias.get(0);
-                mDataAdapter.refreshData(mListMedias, first.mediaUrl);
-            } else {
-                mDataAdapter.refreshData(mListMedias, targetMediaPath);
+            if (EmptyUtil.isEmpty(targetMediaPath)) {
+                ProVideo firstMedia = mListMedias.get(0);
+                targetMediaPath = firstMedia.mediaUrl;
             }
-
-            //Delay Play
-            mHandler.removeCallbacksAndMessages(null);
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    play();
-                }
-            }, 500);
-        }
-    }
-
-    @Override
-    public void play() {
-        if (!mAttachedActivity.isWarningShowing()) {
-            openVideoPlayerActivity(mAttachedActivity.getLastMediaPath(), mListMedias);
+            mDataAdapter.refreshData(mListMedias, targetMediaPath);
         }
     }
 
@@ -169,25 +173,6 @@ public class SclLc2010VdcVideoNamesFrag extends BaseVideoListFrag {
     public void onMediaScanningStart() {
         Log.i(TAG, "onMediaScanningStart()");
         showLoading(true);
-    }
-
-    @Override
-    public void onMediaScanningNew() {
-        Log.i(TAG, "onMediaScanningNew()");
-        if (EmptyUtil.isEmpty(mListMedias)) {
-            showLoading(true);
-        }
-    }
-
-    @Override
-    public void onMediaScanningEnd() {
-        Log.i(TAG, "onMediaScanningEnd()");
-    }
-
-    @Override
-    public void onMediaParseEnd() {
-        Log.i(TAG, "onMediaScanningEnd()");
-        showLoading(false);
     }
 
     @Override
@@ -226,9 +211,21 @@ public class SclLc2010VdcVideoNamesFrag extends BaseVideoListFrag {
         }
 
         @Override
-        public void onScroll(boolean isScrolling) {
-            Log.i(TAG, "LetterSideBarCallback - onScroll(" + isScrolling + ")");
-            mDataAdapter.setScrollState(isScrolling);
+        public void onTouchDown() {
+            Log.i(TAG, "LetterSideBarCallback - onTouchDown()");
+            mDataAdapter.setScrollState(true);
+        }
+
+        @Override
+        public void onTouchMove() {
+            Log.i(TAG, "LetterSideBarCallback - onTouchMove()");
+            mDataAdapter.setScrollState(true);
+        }
+
+        @Override
+        public void onTouchUp() {
+            Log.i(TAG, "LetterSideBarCallback - onTouchUp()");
+            mDataAdapter.setScrollState(false);
         }
     }
 
@@ -271,21 +268,11 @@ public class SclLc2010VdcVideoNamesFrag extends BaseVideoListFrag {
             //
             ProVideo item = (ProVideo) objItem;
             Logs.i(TAG, "LvItemClick -> onItemClick ----Just Play----");
-            openVideoPlayerActivity(item.mediaUrl, mListMedias);
+            mAttachedActivity.openVideoPlayerActivity(item.mediaUrl, mListMedias);
         }
-    }
 
-    protected void openVideoPlayerActivity(String mediaUrl, List<ProVideo> listPrograms) {
-        try {
-            if (EmptyUtil.isEmpty(listPrograms)) {
-                return;
-            }
-            Intent playerIntent = new Intent(mAttachedActivity, SclLc2010VdcVideoPlayerActivity.class);
-            playerIntent.putExtra("SELECT_MEDIA_URL", mediaUrl);
-            playerIntent.putExtra("MEDIA_LIST", (Serializable) listPrograms);
-            startActivityForResult(playerIntent, M_REQ_PLAYING_MEDIA_URL);
-        } catch (Exception e) {
-            Logs.printStackTrace(TAG + "openVideoPlayerActivity()", e);
+        private void destroy() {
+            mmHandler.removeCallbacksAndMessages(null);
         }
     }
 
@@ -349,6 +336,8 @@ public class SclLc2010VdcVideoNamesFrag extends BaseVideoListFrag {
     @Override
     public void onDestroy() {
         mHandler.removeCallbacksAndMessages(null);
+        mGvItemClick.destroy();
+        showLoading(false);
         super.onDestroy();
     }
 
@@ -362,26 +351,39 @@ public class SclLc2010VdcVideoNamesFrag extends BaseVideoListFrag {
         Log.i(TAG, "updateThemeToIos()");
     }
 
+    /**
+     * GridView scroll event implement
+     */
     private class GvOnScroll implements AbsListView.OnScrollListener {
 
         @Override
         public void onScrollStateChanged(AbsListView view, int scrollState) {
             Log.i(TAG, "GvOnScroll - onScrollStateChanged(AbsListView," + scrollState + ")");
             switch (scrollState) {
-                //停止滚动
+                //滚动事件开始的时候调用，调用一次
+                case AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL:
+                    mDataAdapter.setScrollState(true);
+                    break;
+                //滚动事件结束的时候调用，调用一次
                 case AbsListView.OnScrollListener.SCROLL_STATE_IDLE:
                     mDataAdapter.setScrollState(false);
                     break;
-                //滚动做出了抛的动作
+                //当手指离开屏幕，并且产生惯性滑动的时候调用，可能会调用<=1次
                 case AbsListView.OnScrollListener.SCROLL_STATE_FLING:
-                    mDataAdapter.setScrollState(true);
-                    break;
-                case AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL:
                     mDataAdapter.setScrollState(true);
                     break;
             }
         }
 
+        /**
+         * (1)在滑动屏幕的过程中，onScroll方法会一直调用
+         * (2)在ListView的item发生变化的时候
+         *
+         * @param view             ListView or GridView which is scrolling.
+         * @param firstVisibleItem 当前屏幕显示的第一个item的位置（下标从0开始）
+         * @param visibleItemCount 当前屏幕可以见到的item总数，包括没有完整显示的item
+         * @param totalItemCount   包括通过addFooterView添加的那个item
+         */
         @Override
         public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
         }

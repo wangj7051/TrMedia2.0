@@ -14,28 +14,17 @@ public class Logs {
     /**
      * IS Log Print Enable
      */
-    private static boolean mIsPrintLog = true;
-
-    /**
-     * Open LOGS
-     */
-    public static void init(String logTag) {
-        mIsPrintLog = PreferenceHelper.isOpenLogs(false, false);
-    }
+    private static boolean mIsPrintLog = false;
 
     /**
      * Set Print Log Flag
      */
-    public static void setPrintLog(boolean isPrint) {
-        mIsPrintLog = isPrint;
-        PreferenceHelper.isOpenLogs(true, isPrint);
-    }
-
-    /**
-     * Is Print LOGS
-     */
-    public static boolean isPrintLog() {
-        return mIsPrintLog;
+    public static void switchEnable(boolean isBootCompleted) {
+        mIsPrintLog = PreferenceHelper.isOpenLogs(false, false);
+        if (!isBootCompleted) {
+            mIsPrintLog = !mIsPrintLog;
+            PreferenceHelper.isOpenLogs(true, mIsPrintLog);
+        }
     }
 
     /**

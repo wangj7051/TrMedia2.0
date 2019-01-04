@@ -4,6 +4,9 @@ import android.content.Context;
 import android.provider.Settings;
 import android.util.Log;
 
+import com.tri.lib.engine.MediaPageState;
+import com.tri.lib.engine.MediaTypeEnum;
+
 /**
  * {@link Settings} util
  */
@@ -55,19 +58,48 @@ public class SettingsSysUtil {
     }
 
     /**
-     * Set player remember flag.
+     * 设置记忆播放器标记
+     * <p>1. ACC_ON 根据此标记打开播放器</p>
+     * <p>2. B+ 根据此标记打开播放器</p>
      */
-    public static void setRememberFlag(Context context, boolean isRemember) {
+    public static void setRememberPlayFlag(Context context, boolean isRemember) {
         try {
-            Log.i(TAG, "setRememberFlag(Context," + isRemember + ")");
+            Log.i(TAG, "setRememberPlayFlag(Context," + isRemember + ")");
             String flag = isRemember ? "music" : "";
             Settings.System.putString(context.getContentResolver(), "remembered_application", flag);
-
-            //
-            String storedFlag = Settings.System.getString(context.getContentResolver(), "remembered_application");
-            Log.i(TAG, "RememberFlag: " + storedFlag);
         } catch (Exception e) {
-            Log.i(TAG, e.getMessage());
+            Log.i(TAG, "setRememberPlayFlag :: ERROR- " + e.getMessage());
+        }
+    }
+
+    /**
+     * 设置上一次播放的媒体类型
+     * <p>1. 实体Media按键，据此切换媒体源</p>
+     * <p>2. 方控Source按键，据此切换媒体源</p>
+     *
+     * @param mediaTypeEnum {@link MediaTypeEnum}
+     */
+    public static void setLastMediaType(Context context, MediaTypeEnum mediaTypeEnum) {
+        try {
+            Log.i(TAG, "setLastMediaType(context," + mediaTypeEnum);
+            final String PREFER_KEY = "LAST_PLAYED_MEDIA_TYPE";
+            Settings.System.putInt(context.getContentResolver(), PREFER_KEY, mediaTypeEnum.getType());
+        } catch (Exception e) {
+            Log.i(TAG, "setLastMediaType :: ERROR- " + e.getMessage());
+        }
+    }
+
+    /**
+     * @param context   {@link Context}
+     * @param pageState MediaPageState
+     */
+    public static void setMediaPageState(Context context, MediaPageState pageState) {
+        try {
+            Log.i(TAG, "setMediaPageState(context," + pageState);
+            final String PREFER_KEY = "CURRENT_MEDIA_PAGE_STATE";
+            Settings.System.putInt(context.getContentResolver(), PREFER_KEY, pageState.getType());
+        } catch (Exception e) {
+            Log.i(TAG, "setMediaPageState :: ERROR- " + e.getMessage());
         }
     }
 }

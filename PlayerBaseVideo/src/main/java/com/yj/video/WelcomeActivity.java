@@ -6,7 +6,6 @@ import android.util.Log;
 import com.tri.lib.engine.BtCallStateController;
 import com.tri.lib.utils.SettingsGlobalUtil;
 import com.tri.lib.utils.TrVideoPreferUtils;
-import com.yj.video.engine.PlayerAppManager;
 import com.yj.video.utils.PlayerFileUtils;
 import com.yj.video.version.base.activity.BaseUsbLogicActivity;
 
@@ -31,8 +30,15 @@ public class WelcomeActivity extends BaseUsbLogicActivity {
 
     private void init() {
         Logs.i(TAG, "^^ init() ^^");
-        Log.i(TAG, "isHave: " + PlayerFileUtils.isHasSupportStorage());
-        if (isTest() || PlayerFileUtils.isHasSupportStorage()) {
+//        //TODO Test Play use android.widget.VideoView
+//        startActivity(new Intent(this, TestVobPlayActivity.class));
+//        finish();
+//        //TODO Test Play use org.videolan.libvlc.MediaPlayer
+//        startActivity(new Intent(this, TestVVPlayActivity.class));
+//        finish();
+
+        //
+        if (isTest() || isHasStorage()) {
             //Open player
             openPlayer();
         } else {
@@ -42,18 +48,17 @@ public class WelcomeActivity extends BaseUsbLogicActivity {
 
     private boolean isTest() {
         int flag = TrVideoPreferUtils.getNoUDiskToastFlag(false);
+        Log.i(TAG, "isTest() - flag:" + flag);
         return (flag == 0);
     }
 
-    private void openPlayer() {
-        switch (PlayerAppManager.getCurrPlayerFlag()) {
-            case PlayerAppManager.PlayerCxtFlag.MUSIC_LIST:
-            case PlayerAppManager.PlayerCxtFlag.MUSIC_PLAYER:
-                PlayEnableController.pauseByUser(false);
-                PlayerAppManager.exitCurrPlayer();
-                break;
-        }
+    private boolean isHasStorage() {
+        boolean isHasSD = PlayerFileUtils.isHasSupportStorage();
+        Log.i(TAG, "isHasStorage() - isHasSD:" + isHasSD);
+        return isHasSD;
+    }
 
+    private void openPlayer() {
         //Check play enable
         Log.i(TAG, "*** Print status ***");
         Log.i(TAG, PlayEnableController.getStateDesc());

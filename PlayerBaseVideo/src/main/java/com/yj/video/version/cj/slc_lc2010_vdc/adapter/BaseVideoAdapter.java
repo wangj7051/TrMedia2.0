@@ -19,4 +19,12 @@ public class BaseVideoAdapter<T> extends BaseArrayAdapter<T> {
         }
         return 0;
     }
+
+    protected int getColorResId(String imgResName) {
+        if (mContext instanceof BaseVideoUIActivity) {
+            BaseVideoUIActivity activity = (BaseVideoUIActivity) mContext;
+            return activity.getColorResId(imgResName);
+        }
+        return 0;
+    }
 }

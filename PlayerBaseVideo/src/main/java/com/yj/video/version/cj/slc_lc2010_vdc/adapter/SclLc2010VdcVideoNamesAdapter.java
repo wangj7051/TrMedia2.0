@@ -17,12 +17,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import js.lib.android.adapter.BaseArrayAdapter;
 import js.lib.android.media.bean.ProVideo;
-import js.lib.android_media_scan.parse_controller.ParseAudioController;
 import js.lib.android.utils.Logs;
+import js.lib.android_media.scan.video.controller.VideoScanController;
 
-public class SclLc2010VdcVideoNamesAdapter extends BaseArrayAdapter<ProVideo> implements SectionIndexer {
+public class SclLc2010VdcVideoNamesAdapter extends BaseVideoAdapter<ProVideo> implements SectionIndexer {
     // TAG
     private final String TAG = "VideoNamesAdapter";
 
@@ -125,7 +124,7 @@ public class SclLc2010VdcVideoNamesAdapter extends BaseArrayAdapter<ProVideo> im
             //Cover
             if (!mIsScrolling) {
                 try {
-                    String coverPicFilePath = ParseAudioController.getCoverBitmapPath(item, 1);
+                    String coverPicFilePath = VideoScanController.getCoverBitmapPath(item);
                     Log.i("coverAdapter", "coverPicFile: " + coverPicFilePath);
                     File coverPicFile = new File(coverPicFilePath);
                     if (coverPicFile.exists()) {
@@ -140,7 +139,7 @@ public class SclLc2010VdcVideoNamesAdapter extends BaseArrayAdapter<ProVideo> im
 
             //Selected
             if (TextUtils.equals(mSelectedMediaUrl, item.mediaUrl)) {
-                convertView.setBackgroundResource(R.color.video_item_bg);
+                convertView.setBackgroundResource(getColorResId("video_item_bg"));
                 //Not selected
             } else {
                 convertView.setBackgroundResource(0);

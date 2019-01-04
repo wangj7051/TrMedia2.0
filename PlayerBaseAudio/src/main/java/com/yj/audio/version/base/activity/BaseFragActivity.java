@@ -11,10 +11,6 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.yj.audio.utils.PlayerFileUtils;
-
-import js.lib.android.utils.ImageLoaderUtils;
 import js.lib.android.utils.Logs;
 
 /**
@@ -29,21 +25,6 @@ public abstract class BaseFragActivity extends FragmentActivity {
     //==========Variable in this Activity==========
     // Flag :: is activity in foreground.
     private boolean mIsActForeground = false;
-
-    /**
-     * Context
-     */
-    protected Context mContext;
-
-    /**
-     * Activity UI Load End Flag
-     */
-    private boolean mIsActUILoadEnd = false;
-
-    /**
-     * 图片加载器
-     */
-    private ImageLoader mImageLoader;
 
     /**
      * Is Click Home Key , And Application is Running Background
@@ -78,12 +59,6 @@ public abstract class BaseFragActivity extends FragmentActivity {
     @Override
     protected void onCreate(@Nullable Bundle bundle) {
         super.onCreate(bundle);
-        init();
-    }
-
-    private void init() {
-        this.mContext = this;
-        this.mImageLoader = ImageLoaderUtils.getImageLoader(PlayerFileUtils.getMusicPicPath(""));
     }
 
     @Override
@@ -93,44 +68,11 @@ public abstract class BaseFragActivity extends FragmentActivity {
         mIsHomeClicked = false;
     }
 
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        if (!mIsActUILoadEnd && hasFocus) {
-            mIsActUILoadEnd = true;
-            onUILoadEnd();
-        }
-    }
-
-    /**
-     * On UI Load END
-     */
-    protected void onUILoadEnd() {
-        Logs.i(TAG, "onUILoadEnd() -> \n****" + this.toString() + "****");
-    }
-
-    /**
-     * Is UiLoaded
-     */
-    protected boolean isUILoaded() {
-        return mIsActUILoadEnd;
-    }
-
     /**
      * Is Activity at background on Home Clicked
      */
     protected boolean isHomeClicked() {
         return mIsHomeClicked;
-    }
-
-    /**
-     * Get ImageLoader
-     */
-    public ImageLoader getImageLoader() {
-        if (mImageLoader == null || !mImageLoader.isInited()) {
-            mImageLoader = ImageLoaderUtils.getImageLoader(PlayerFileUtils.getMusicPicPath(""));
-        }
-        return mImageLoader;
     }
 
     /**
@@ -194,11 +136,6 @@ public abstract class BaseFragActivity extends FragmentActivity {
         super.onTrimMemory(level);
     }
 
-    @SuppressWarnings("unchecked")
-    public <T> T findView(int vResID) {
-        return (T) findViewById(vResID);
-    }
-
     public View findRootView() {
         View rootV = findViewById(android.R.id.content);
         if (rootV != null) {
@@ -218,6 +155,10 @@ public abstract class BaseFragActivity extends FragmentActivity {
      */
     protected boolean isForeground() {
         return mIsActForeground;
+    }
+
+    protected boolean isActActive() {
+        return !isFinishing() && !isDestroyed();
     }
 
     @Override

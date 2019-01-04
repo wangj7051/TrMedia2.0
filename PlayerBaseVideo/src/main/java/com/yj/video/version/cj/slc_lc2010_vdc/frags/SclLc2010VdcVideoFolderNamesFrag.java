@@ -95,6 +95,13 @@ public class SclLc2010VdcVideoFolderNamesFrag extends BaseVideoFolderGroupsFrag 
         init();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.i(TAG, "onResume()");
+        refreshPlaying(mAttachedActivity.getLastMediaPath());
+    }
+
     private void init() {
         // Data
         mDataAdapter = new SclLc2010VdcVideoNamesAdapter(mAttachedActivity);
@@ -229,18 +236,22 @@ public class SclLc2010VdcVideoFolderNamesFrag extends BaseVideoFolderGroupsFrag 
 
             //
             ProVideo media = (ProVideo) objItem;
-            openVideoPlayerActivity(media.mediaUrl, mListData);
+            mAttachedActivity.openVideoPlayerActivity(media.mediaUrl, mListData);
         }
     }
 
-    protected void openVideoPlayerActivity(String mediaUrl, List<ProVideo> listPrograms) {
-        try {
-            Intent playerIntent = new Intent(mAttachedActivity, SclLc2010VdcVideoPlayerActivity.class);
-            playerIntent.putExtra("SELECT_MEDIA_URL", mediaUrl);
-            playerIntent.putExtra("MEDIA_LIST", (Serializable) listPrograms);
-            startActivityForResult(playerIntent, 1);
-        } catch (Exception e) {
-            Logs.printStackTrace(TAG + "openVideoPlayerActivity()", e);
-        }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    public void updateThemeToDefault() {
+        Log.i(TAG, "updateThemeToDefault()");
+    }
+
+    @Override
+    public void updateThemeToIos() {
+        Log.i(TAG, "updateThemeToIos()");
     }
 }

@@ -80,6 +80,11 @@ public abstract class BasePlayerActivity extends BaseFragActivity implements Pla
     public void setPlayMode(PlayMode mode) {
     }
 
+    @Override
+    public PlayMode getPlayMode() {
+        return null;
+    }
+
     // {@link PlayerActionsListener} Implements Method
     @Override
     public void onPlayModeChange() {
@@ -102,7 +107,7 @@ public abstract class BasePlayerActivity extends BaseFragActivity implements Pla
 
     // {@link PlayerActionsListener} Implements Method
     @Override
-    public void setPlayList(List<? extends MediaBase> listMedias) {
+    public void setPlayList(List<? extends MediaBase> mediasToPlay) {
     }
 
     // {@link PlayerActionsListener} Implements Method
@@ -177,13 +182,13 @@ public abstract class BasePlayerActivity extends BaseFragActivity implements Pla
 
     // {@link PlayerActionsListener} Implements Method
     @Override
-    public int getProgress() {
+    public long getProgress() {
         return 0;
     }
 
     // {@link PlayerActionsListener} Implements Method
     @Override
-    public int getDuration() {
+    public long getDuration() {
         return 0;
     }
 
@@ -212,18 +217,18 @@ public abstract class BasePlayerActivity extends BaseFragActivity implements Pla
 
     // {@link PlayerActionsListener} Implements Method
     @Override
-    public String[] getPlayedMediaInfos() {
+    public String[] getPlayedMediaInfo() {
         return null;
     }
 
     // {@link PlayerActionsListener} Implements Method
     @Override
-    public void savePlayMediaInfos(String mediaUrl, int progress) {
+    public void savePlayMediaInfo(String mediaUrl, int progress) {
     }
 
     // {@link PlayerActionsListener} Implements Method
     @Override
-    public void clearPlayedMediaInfos() {
+    public void clearPlayedMediaInfo() {
     }
 
     // {@link PlayerActionsListener} Implements Method
@@ -234,5 +239,9 @@ public abstract class BasePlayerActivity extends BaseFragActivity implements Pla
     // {@link PlayerActionsListener} Implements Method
     @Override
     public void removePlayListener(PlayDelegate l) {
+    }
+
+    @Override
+    public void setVolume(float leftVolume, float rightVolume) {
     }
 }

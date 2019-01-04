@@ -10,7 +10,7 @@ import android.view.WindowManager;
 import js.lib.android.utils.Logs;
 
 public class PowerManagerUtil {
-    private final String TAG = "PlayerPowerManager";
+    private static final String TAG = "PlayerPowerManager";
 
     private PowerManager mPowerManager;
     private PowerManager.WakeLock mWakeLock;
@@ -47,7 +47,7 @@ public class PowerManagerUtil {
     /**
      * 保持亮屏
      */
-    public void keepScreenOn(Activity act, boolean keep) {
+    public static void keepScreenOn(Activity act, boolean keep) {
         Logs.v(TAG, "keepScreenOn " + keep);
         try {
             if (act == null) {

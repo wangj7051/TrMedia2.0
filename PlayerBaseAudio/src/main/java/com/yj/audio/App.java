@@ -5,20 +5,14 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.tri.lib.utils.TrAudioPreferUtils;
-import com.tri.lib.utils.TrVideoPreferUtils;
 import com.yj.audio.engine.PlayerConsts.PlayerOpenMethod;
 import com.yj.audio.engine.VersionController;
-import com.yj.audio.receiver.PlayerReceiver;
 import com.yj.audio.utils.PlayerFileUtils;
 
 import java.util.List;
 
 import js.lib.android.media.engine.audio.db.AudioDBManager;
-import js.lib.android.media.engine.audio.utils.AudioInfo;
 import js.lib.android.media.engine.audio.utils.AudioUtils;
-import js.lib.android.media.engine.video.db.VideoDBManager;
-import js.lib.android.media.engine.video.utils.VideoInfo;
-import js.lib.android.media.engine.video.utils.VideoUtils;
 import js.lib.android.utils.AppCrashHandler;
 import js.lib.android.utils.AppUtil;
 import js.lib.android.utils.ImageLoaderUtils;
@@ -41,14 +35,8 @@ public class App extends Application {
         // 初始化版本控制
         VersionController.init();
 
-        //Initialize PlayerReceiver
-        PlayerReceiver.init(this);
-
         // 初始化Preference操作类
         TrAudioPreferUtils.init(this);
-        TrVideoPreferUtils.init(this);
-        // 初始化日志类
-        Logs.init("-Player");
         // 初始化文件管理类
         PlayerFileUtils.init(this);
         // 初始化图片管理类
@@ -57,7 +45,6 @@ public class App extends Application {
         AppCrashHandler.instance().init(this);
         // 初始化数据库操作类
         AudioDBManager.instance().init(this, PlayerFileUtils.getDBPath() + "/PlayerAudio.sqlite");
-        VideoDBManager.instance().init(this, PlayerFileUtils.getDBPath() + "/PlayerVideo.sqlite");
 
         // 初始化屏信息
         ScreenInfoUtil.init(this);
@@ -71,7 +58,7 @@ public class App extends Application {
 
         // 初始化应用信息
         AppUtil.init(this);
-        Logs.i(TAG, " ^^^ Application Informations ^^^");
+        Logs.i(TAG, " ^^^ Application Information ^^^");
         Logs.i(TAG, "[appName:" + AppUtil.pkgName + "]");
         Logs.i(TAG, "[appVName:" + AppUtil.versionName + "]");
         Logs.i(TAG, "[appVCode:" + AppUtil.versionCode + "]");
@@ -80,11 +67,7 @@ public class App extends Application {
         List<String> listBlacklistPaths = PlayerFileUtils.getBlacklistPaths();
         List<String> listSupportPaths = PlayerFileUtils.getListSuppportPaths();
         // 初始化媒体信息 - 音乐
-        AudioInfo.setSupportMedias(VersionController.isSupportAllMedias());
         AudioUtils.init(this, listSupportPaths, listBlacklistPaths);
-        // 初始化媒体信息 - 视频
-        VideoInfo.setSupportMedias(VersionController.isSupportAllMedias());
-        VideoUtils.init(this, listSupportPaths, listBlacklistPaths);
     }
 
     /**

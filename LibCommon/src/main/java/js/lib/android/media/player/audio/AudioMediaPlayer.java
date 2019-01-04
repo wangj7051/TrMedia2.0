@@ -5,14 +5,11 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
-
-import java.util.Timer;
-import java.util.TimerTask;
+import android.util.Log;
 
 import js.lib.android.media.engine.MediaUtils;
 import js.lib.android.media.player.PlayDelegate;
 import js.lib.android.media.player.PlayState;
-import js.lib.android.utils.CommonUtil;
 import js.lib.android.utils.Logs;
 
 /**
@@ -49,12 +46,6 @@ public class AudioMediaPlayer implements IAudioPlayer {
      * prepareAsync，在加载过程中有可能会提前调用onCompletion/onError,这个标记就是用来区分是否已经prepare结束了
      */
     private boolean mIsPreparing = false;
-
-    /**
-     * Progress
-     */
-    private Timer mProgressTimer;
-    private static final int M_REFRESH_PERIOD = 200;
 
     /**
      * Player Listener
@@ -97,6 +88,51 @@ public class AudioMediaPlayer implements IAudioPlayer {
                     if (!mIsPreparing) {
                         notifyPlayState(PlayState.COMPLETE);
                     }
+                }
+            });
+            mMediaPlayer.setOnInfoListener(new MediaPlayer.OnInfoListener() {
+                @Override
+                public boolean onInfo(MediaPlayer mp, int what, int extra) {
+//                            MediaPlayer.MEDIA_INFO_UNKNOWN(未知的信息),
+//                            MEDIA_INFO_VEDIO_TRACK_LAGGING(视频过于复杂解码太慢),
+//                            MEDIA_INFO_VEDIO_RENDERING_START(开始渲染第一帧),
+//                            MEDIA_INFO_BUFFRING_START(暂停播放开始缓冲更多数据),
+//                            MEDIA_INFO_BUFFERING_END(缓冲了足够的数据重新开始播放),
+//                            MEDIA_INFO_BAD_INTERLEAVING(错误交叉),
+//                            MEDIA_INFO_NOT_SEEKABLE(媒体不能够搜索),
+//                            MEDIA_INFO_METADATA_UPDATE(一组新的元数据用),
+//                            MEDIA_INFO_UNSUPPORTED_SUBTITLE(不支持字幕),
+//                            MEDIA_INFO_SUBTITLE_TIMED_OUT(读取字幕使用时间过长);
+                    switch (what) {
+                        case MediaPlayer.MEDIA_INFO_UNKNOWN:
+                            Log.i(TAG, "onInfo - 未知的信息");
+                            break;
+                        case MediaPlayer.MEDIA_INFO_VIDEO_TRACK_LAGGING:
+                            Log.i(TAG, "onInfo - 视频过于复杂解码太慢");
+                            break;
+                        case MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START:
+                            Log.i(TAG, "onInfo - 开始渲染第一帧");
+                            break;
+                        case MediaPlayer.MEDIA_INFO_BUFFERING_START:
+                            Log.i(TAG, "onInfo - 暂停播放开始缓冲更多数据");
+                            break;
+                        case MediaPlayer.MEDIA_INFO_BUFFERING_END:
+                            Log.i(TAG, "onInfo - 缓冲了足够的数据重新开始播放");
+                            break;
+                        case MediaPlayer.MEDIA_INFO_BAD_INTERLEAVING:
+                            Log.i(TAG, "onInfo - 错误交叉");
+                            break;
+                        case MediaPlayer.MEDIA_INFO_NOT_SEEKABLE:
+                            Log.i(TAG, "onInfo - 媒体不能够搜索");
+                            break;
+                        case MediaPlayer.MEDIA_INFO_METADATA_UPDATE:
+                            Log.i(TAG, "onInfo - 一组新的元数据用");
+                            break;
+                        case MediaPlayer.MEDIA_INFO_UNSUPPORTED_SUBTITLE:
+                            Log.i(TAG, "onInfo - 读取字幕使用时间过长");
+                            break;
+                    }
+                    return false;
                 }
             });
             mMediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
@@ -145,7 +181,7 @@ public class AudioMediaPlayer implements IAudioPlayer {
     public void playMedia(String mediaUrl) {
         Logs.i(TAG, "^^ play(" + mediaUrl + ") ^^");
         try {
-            CommonUtil.cancelTimer(mProgressTimer);
+            startProgressTimer(false);
             this.mIsPrepareAsync = true;
             this.mIsPreparing = true;
             this.mMediaPath = mediaUrl;
@@ -167,7 +203,7 @@ public class AudioMediaPlayer implements IAudioPlayer {
     public void playMedia() {
         if (mMediaPlayer != null) {
             mMediaPlayer.start();
-            startProgressTimer();
+            startProgressTimer(true);
             notifyPlayState(PlayState.PLAY);
         }
     }
@@ -176,7 +212,7 @@ public class AudioMediaPlayer implements IAudioPlayer {
     public void pauseMedia() {
         if (mMediaPlayer != null) {
             mMediaPlayer.pause();
-            CommonUtil.cancelTimer(mProgressTimer);
+            startProgressTimer(false);
             notifyPlayState(PlayState.PAUSE);
         }
     }
@@ -195,7 +231,7 @@ public class AudioMediaPlayer implements IAudioPlayer {
     public void resetMedia() {
         if (mMediaPlayer != null) {
             mMediaPlayer.reset();
-            CommonUtil.cancelTimer(mProgressTimer);
+            startProgressTimer(false);
             notifyPlayState(PlayState.RESET);
         }
     }
@@ -204,7 +240,7 @@ public class AudioMediaPlayer implements IAudioPlayer {
     public void stopMedia() {
         if (mMediaPlayer != null) {
             mMediaPlayer.stop();
-            CommonUtil.cancelTimer(mProgressTimer);
+            startProgressTimer(false);
             notifyPlayState(PlayState.STOP);
         }
     }
@@ -214,7 +250,7 @@ public class AudioMediaPlayer implements IAudioPlayer {
         if (mMediaPlayer != null) {
             mMediaPlayer.release();
             mMediaPlayer = null;
-            CommonUtil.cancelTimer(mProgressTimer);
+            startProgressTimer(false);
             notifyPlayState(PlayState.RELEASE);
         }
     }
@@ -278,31 +314,29 @@ public class AudioMediaPlayer implements IAudioPlayer {
         this.mPlayDelegate = l;
     }
 
+    @Override
+    public void setVolume(float leftVolume, float rightVolume) {
+        if (mMediaPlayer != null) {
+            mMediaPlayer.setVolume(leftVolume, rightVolume);
+        }
+    }
+
     /**
      * EXEC Start or Cancel Progress Timer
      */
-    private void startProgressTimer() {
-        // Reset
-        CommonUtil.cancelTimer(mProgressTimer);
-        // Start
-        mProgressTimer = new Timer();
-        mProgressTimer.schedule(new TimerTask() {
-
-            @Override
-            public void run() {
-                if (isMediaPlaying()) {
-                    mHandler.post(mmRefreshProgressRunnable);
-                }
-            }
-
-            private Runnable mmRefreshProgressRunnable = new Runnable() {
-
+    private void startProgressTimer(boolean isStart) {
+        if (isStart) {
+            notifyProgress(getMediaPath(), getMediaTime(), getMediaDuration());
+            mHandler.removeCallbacksAndMessages(null);
+            mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    notifyProgress(getMediaPath(), getMediaTime(), getMediaDuration());
+                    startProgressTimer(true);
                 }
-            };
-        }, 0, M_REFRESH_PERIOD);
+            }, 1000);
+        } else {
+            mHandler.removeCallbacksAndMessages(null);
+        }
     }
 
     /**

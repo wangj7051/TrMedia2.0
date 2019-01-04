@@ -56,9 +56,21 @@ public abstract class BaseVideoUIActivity extends BaseVideoKeyEventActivity impl
         return 0;
     }
 
-    protected void updateImgRes(ImageView iv, String resName) {
-        iv.setTag(resName);
-        iv.setImageResource(getImgResId(resName));
+    public int getColorResId(String imgResName) {
+        if (mThemeController != null) {
+            return mThemeController.getColorResId(imgResName);
+        }
+        return 0;
+    }
+
+    protected void updateImgRes(final ImageView iv, final String resName) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                iv.setTag(resName);
+                iv.setImageResource(getImgResId(resName));
+            }
+        });
     }
 
     @Override

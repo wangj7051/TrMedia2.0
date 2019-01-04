@@ -12,6 +12,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -120,7 +121,7 @@ public class IVideoPlayer extends SurfaceView {
 
             @Override
             public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-                Logs.i(TAG, "init(context) -> surfaceChanged(holder,format,width,height)");
+                Logs.i(TAG, "init(context) -> surfaceChanged(holder," + format + "," + width + "," + height + ")");
             }
 
             @Override
@@ -142,7 +143,14 @@ public class IVideoPlayer extends SurfaceView {
         try {
             // create new
             if (mMediaPlayer == null) {
+                //Check null
                 if (TextUtils.isEmpty(mMediaPath) || TextUtils.isEmpty(mMediaPath.trim())) {
+                    return false;
+                }
+
+                //Check exist
+                File mediaF = new File(mMediaPath);
+                if (!mediaF.isFile() || !mediaF.exists()) {
                     return false;
                 }
 
@@ -150,7 +158,7 @@ public class IVideoPlayer extends SurfaceView {
                 mMediaPlayer = MediaPlayer.create(mContext, Uri.parse(mMediaPath));
                 if (mMediaPlayer == null) {
                     if (mErrorListener != null) {
-                        mErrorListener.onError(mMediaPlayer, MediaPlayer.MEDIA_ERROR_UNKNOWN, -1);
+                        mErrorListener.onError(null, MediaPlayer.MEDIA_ERROR_UNKNOWN, -1);
                     }
                     return false;
                 } else {
@@ -385,6 +393,7 @@ public class IVideoPlayer extends SurfaceView {
      */
     public void setMediaPath(String path) {
         mMediaPath = path;
+        Log.i(TAG, "mMediaPath : " + mMediaPath);
     }
 
     public String getMediaPath() {
@@ -514,18 +523,6 @@ public class IVideoPlayer extends SurfaceView {
         return isPlaying();
     }
 
-    public void setVolume(float leftVolume, float rightVolume) {
-        if (mMediaPlayer != null) {
-            try {
-                Logs.i(TAG, "setVolume(leftVolume,rightVolume) -> [leftVolume:" + leftVolume + "; rightVolume:" + rightVolume
-                        + "]");
-                mMediaPlayer.setVolume(leftVolume, rightVolume);
-            } catch (Throwable e) {
-                Logs.printStackTrace(TAG + "setVolume()", e);
-            }
-        }
-    }
-
     public void setPlayStateListener(PlayDelegate l) {
         this.mPlayDelegate = l;
         setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -570,6 +567,18 @@ public class IVideoPlayer extends SurfaceView {
                 }
             }
         });
+    }
+
+    public void setVolume(float leftVolume, float rightVolume) {
+        if (mMediaPlayer != null) {
+            try {
+                Logs.i(TAG, "setVolume(leftVolume,rightVolume) -> [leftVolume:" + leftVolume + "; rightVolume:" + rightVolume
+                        + "]");
+                mMediaPlayer.setVolume(leftVolume, rightVolume);
+            } catch (Throwable e) {
+                Logs.printStackTrace(TAG + "setVolume()", e);
+            }
+        }
     }
 
     /**

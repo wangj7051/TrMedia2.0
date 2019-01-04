@@ -12,6 +12,11 @@ import com.tri.lib.utils.SettingsSysUtil;
 
 import js.lib.android.utils.ResourceUtils;
 
+/**
+ * Theme controller.
+ *
+ * @author Jun.Wang
+ */
 public class ThemeController {
     //TAG
     private static final String TAG = "ThemeController";
@@ -78,19 +83,7 @@ public class ThemeController {
         }
     }
 
-    public void destroy() {
-        try {
-            mThemeChangeDelegate = null;
-            mContext.getContentResolver().unregisterContentObserver(mThemeObserver);
-            mThemeObserver = null;
-            mContext = null;
-            mCurrThemeStr = "";
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void checkAndUpdateTheme() {
+    private void checkAndUpdateTheme() {
         String newThemeStr = getThemeStr();
         if (!TextUtils.equals(mCurrThemeStr, newThemeStr)) {
             mCurrThemeStr = newThemeStr;
@@ -118,12 +111,29 @@ public class ThemeController {
         }
     }
 
+    public int getImgResId(String imgResName) {
+        String targetImgResName = mCurrThemeStr + imgResName;
+        return ResourceUtils.getDrawableId(mContext, targetImgResName);
+    }
+
     public void addCallback(ThemeChangeDelegate delegate) {
         mThemeChangeDelegate = delegate;
     }
 
-    public int getImgResId(String imgResName) {
-        String targetImgResName = mCurrThemeStr + imgResName;
-        return ResourceUtils.getDrawableId(mContext, targetImgResName);
+    public void onResume() {
+        Log.i(TAG, "onResume()");
+        checkAndUpdateTheme();
+    }
+
+    public void onDestroy() {
+        try {
+            mThemeChangeDelegate = null;
+            mContext.getContentResolver().unregisterContentObserver(mThemeObserver);
+            mThemeObserver = null;
+            mContext = null;
+            mCurrThemeStr = "";
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

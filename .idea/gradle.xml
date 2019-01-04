@@ -15,6 +15,7 @@
             <option value="$PROJECT_DIR$/PlayerBaseAudio" />
             <option value="$PROJECT_DIR$/PlayerBaseVideo" />
             <option value="$PROJECT_DIR$/RadioBase" />
+            <option value="$PROJECT_DIR$/TestScanMedias" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

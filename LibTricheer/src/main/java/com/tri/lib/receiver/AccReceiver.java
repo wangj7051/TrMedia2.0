@@ -10,8 +10,6 @@ import com.tri.lib.utils.TrVideoPreferUtils;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import js.lib.android.media.player.PlayEnableController;
-
 /**
  * ACC Logic Receiver
  *
@@ -47,7 +45,6 @@ public class AccReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
         Log.i(TAG, "action : " + action);
-
         ActionEnum ae = ActionEnum.getByAction(action);
         switch (ae) {
             case ACC_ON:
@@ -77,7 +74,7 @@ public class AccReceiver extends BroadcastReceiver {
     }
 
     void notifyTrue() {
-        PlayEnableController.onAccStateChanged(-1);
+//        PlayEnableController.onAccStateChanged(-1);
         TrVideoPreferUtils.getVideoWarningFlag(true, 1);
         for (AccDelegate delegate : mSetDelegates) {
             delegate.onAccOffTrue();

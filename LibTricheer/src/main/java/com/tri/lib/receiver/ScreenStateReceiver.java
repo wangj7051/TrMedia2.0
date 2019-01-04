@@ -8,8 +8,6 @@ import android.util.Log;
 import java.util.HashSet;
 import java.util.Set;
 
-import js.lib.android.media.player.PlayEnableController;
-
 /**
  * Screen state receiver
  *
@@ -58,7 +56,7 @@ public class ScreenStateReceiver extends BroadcastReceiver {
     }
 
     void notifyOn() {
-        PlayEnableController.onScreenStateChanged(false);
+//        PlayEnableController.onScreenStateChanged(false);
         for (ScreenSateDelegate delegate : mSetDelegates) {
             if (delegate != null) {
                 delegate.onScreenOn();
@@ -67,7 +65,7 @@ public class ScreenStateReceiver extends BroadcastReceiver {
     }
 
     void notifyOff() {
-        PlayEnableController.onScreenStateChanged(true);
+//        PlayEnableController.onScreenStateChanged(true);
         for (ScreenSateDelegate delegate : mSetDelegates) {
             if (delegate != null) {
                 delegate.onScreenOff();

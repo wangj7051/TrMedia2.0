@@ -4,14 +4,11 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 
-import com.tri.lib.utils.SettingsSysUtil;
-
 import java.util.List;
 
 import js.lib.android.media.bean.MediaBase;
 import js.lib.android.media.player.PlayMode;
 import js.lib.android.media.player.PlayState;
-import js.lib.android.media.player.audio.MusicPlayerFactory;
 import js.lib.android.media.player.audio.service.AudioPlayService;
 import js.lib.android.utils.Logs;
 
@@ -22,7 +19,7 @@ import js.lib.android.utils.Logs;
  */
 public class TrPlayService extends AudioPlayService {
     // TAG
-    private final String TAG = "MusicPlayService";
+    private final String TAG = "TrPlayService";
 
     /**
      * {@link LocalBinder} Object
@@ -38,7 +35,6 @@ public class TrPlayService extends AudioPlayService {
     @Override
     public void onCreate() {
         super.onCreate();
-        MusicPlayerFactory.instance().init(MusicPlayerFactory.PlayerType.VLC_PLAYER);
         Logs.i(TAG, "^^ onCreate() ^^");
     }
 
@@ -56,8 +52,8 @@ public class TrPlayService extends AudioPlayService {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void setPlayList(List<? extends MediaBase> listPros) {
-        super.setPlayList(listPros);
+    public void setPlayList(List<? extends MediaBase> mediasToPlay) {
+        super.setPlayList(mediasToPlay);
     }
 
     @Override
@@ -91,12 +87,12 @@ public class TrPlayService extends AudioPlayService {
     }
 
     @Override
-    public int getProgress() {
+    public long getProgress() {
         return super.getProgress();
     }
 
     @Override
-    public int getDuration() {
+    public long getDuration() {
         return super.getDuration();
     }
 
@@ -123,6 +119,16 @@ public class TrPlayService extends AudioPlayService {
     @Override
     public void playNext() {
         super.playNext();
+    }
+
+    @Override
+    public void playRandom() {
+        super.playRandom();
+    }
+
+    @Override
+    public void playAuto() {
+        super.playAuto();
     }
 
     @Override
@@ -171,18 +177,18 @@ public class TrPlayService extends AudioPlayService {
     }
 
     @Override
-    public void savePlayMediaInfos(String mediaPath, int progress) {
-        super.savePlayMediaInfos(mediaPath, progress);
+    public void savePlayMediaInfo(String mediaPath, int progress) {
+        super.savePlayMediaInfo(mediaPath, progress);
     }
 
     @Override
-    public String[] getPlayedMediaInfos() {
-        return super.getPlayedMediaInfos();
+    public String[] getPlayedMediaInfo() {
+        return super.getPlayedMediaInfo();
     }
 
     @Override
-    public void clearPlayedMediaInfos() {
-        super.clearPlayedMediaInfos();
+    public void clearPlayedMediaInfo() {
+        super.clearPlayedMediaInfo();
     }
 
     @Override
@@ -203,8 +209,6 @@ public class TrPlayService extends AudioPlayService {
     @Override
     public void onPlayStateChanged(PlayState playState) {
         super.onPlayStateChanged(playState);
-        // Cache Play State
-        cachePlayState(playState);
     }
 
     @Override
@@ -245,27 +249,6 @@ public class TrPlayService extends AudioPlayService {
         Logs.i(TAG, "^^ onDestroy() ^^");
         registerAudioFocus(2);
         release();
-        cachePlayState(PlayState.NONE);
         super.onDestroy();
-    }
-
-    /**
-     * Cache Program Information
-     * <p>
-     * This method used to set playing status for Screen/Launcher
-     */
-    public void cachePlayState(PlayState playState) {
-        //0-未打开
-        //1-打开
-        //2-播放
-        int flag = 0;
-        switch (playState) {
-            case NONE:
-                break;
-            default:
-                flag = (playState == PlayState.PLAY || playState == PlayState.PREPARED) ? 2 : 1;
-                break;
-        }
-        SettingsSysUtil.setAudioState(this, flag);
     }
 }

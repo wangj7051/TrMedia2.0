@@ -52,7 +52,7 @@ public class VersionController {
     /**
      * Player Customized Version
      */
-    private static final int version = PlayerVersions.HAR_LC3110_BAS;
+    private static final int version = PlayerVersions.SLC_LC2010_VDC;
 
     private interface PlayerVersions {
         // >>>----CheJi----<<<

@@ -1,5 +1,5 @@
 //Libs
-include ':LibCommon', ':LibRadio'
+include ':LibCommon', ':LibRadio', ':TestScanMedias'
 include ':LibTricheer'
 include ':LetterSideBar'
 

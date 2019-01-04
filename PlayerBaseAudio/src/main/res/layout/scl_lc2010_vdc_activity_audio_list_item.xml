@@ -19,8 +19,8 @@
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:focusable="false"
-        android:paddingStart="@dimen/audio_lv_com_icon_w"
-        android:paddingEnd="@dimen/audio_lv_com_icon_w">
+        android:paddingStart="@dimen/audio_lv_com_ui_space"
+        android:paddingEnd="@dimen/audio_lv_com_ui_space">
 
         <ImageView
             android:id="@+id/iv_end"

@@ -24,6 +24,7 @@ import com.tri.lib.utils.TrVideoPreferUtils;
 import com.yj.video.R;
 import com.yj.video.engine.PlayerAppManager;
 import com.yj.video.engine.PlayerConsts;
+import com.yj.video.receiver.TestReceiver;
 import com.yj.video.version.base.activity.video.BaseVideoPlayerActivity;
 
 import java.io.File;
@@ -31,6 +32,7 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import js.lib.android.media.bean.ProVideo;
 import js.lib.android.media.engine.video.MediaLightModeController;
@@ -38,7 +40,6 @@ import js.lib.android.media.player.PlayEnableController;
 import js.lib.android.media.player.PlayMode;
 import js.lib.android.utils.CommonUtil;
 import js.lib.android.utils.EmptyUtil;
-import js.lib.android.utils.KillTouch;
 import js.lib.android.utils.Logs;
 import js.lib.android.utils.gps.GpsImpl;
 import js.lib.utils.date.DateFormatUtil;
@@ -52,10 +53,11 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
         implements AccReceiver.AccDelegate,
         ReverseReceiver.ReverseDelegate,
         BtCallStateController.BtCallSateDelegate,
-        VoiceAssistantReceiver.VoiceAssistantDelegate {
+        VoiceAssistantReceiver.VoiceAssistantDelegate,
+        TestReceiver.TestSendGpsListener {
 
     //TAG
-    private static final String TAG = "VdcVideoPlayerActivity";
+    private static final String TAG = "video_player";
 
     //==========Widget in this Activity==========
     private View layoutRoot;
@@ -73,10 +75,23 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
     private View layoutWarning;
 
     //==========Variables in this Activity==========
+    //Handlers
+    private Handler mDelaySetStatusBar = new Handler();
+    private Handler mTestSendGpsHandler = new Handler();
+
+    /**
+     * 播放器是否已经打开了
+     */
+    private static boolean mIsPlayerOpened = false;
+
+    //
     private PanelTouchResp mPanelTouchResp;
 
     private SeekBarOnChange mSeekBarOnChange;
+
+    //Gps listener
     private GpsImpl mGpsImpl;
+    private GpsOnChange mGpsOnChange;
 
     //Media light mode controller
     private MediaLightModeController mLightModeController;
@@ -93,10 +108,12 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.scl_lc2010_vdc_activity_video_player);
-        setCurrPlayer(true, this);
+        mIsPlayerOpened = true;
+        PlayerAppManager.addContext(this);
         AccReceiver.register(this);
         ReverseReceiver.register(this);
         VoiceAssistantReceiver.register(this);
+        TestReceiver.setTestSendGpsListener(this);
         init();
     }
 
@@ -169,23 +186,12 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
         ivList.setOnClickListener(mViewOnClick);
 
         //Warning
+        mGpsImpl = new GpsImpl(this);//Register GPS
+        mGpsImpl.setGpsImplListener((mGpsOnChange = new GpsOnChange()));
+
         layoutWarning = findViewById(R.id.layout_warning);
         layoutWarning.setVisibility(View.GONE);
-        layoutWarning.setOnTouchListener(new KillTouch());
-
-        //Register GPS
-        mGpsImpl = new GpsImpl(this);
-        mGpsImpl.setGpsImplListener(new GpsImpl.GpsImplListener() {
-            @Override
-            public void onGotSpeed(double speed_mPerS, double speed_kmPerH) {
-                Log.i(TAG, "onGotSpeed(" + speed_mPerS + "," + speed_kmPerH + ")");
-                if (speed_kmPerH >= 10) {
-                    layoutWarning.setVisibility(View.VISIBLE);
-                } else {
-                    layoutWarning.setVisibility(View.GONE);
-                }
-            }
-        });
+        layoutWarning.setOnTouchListener(new WarningPageOnTouch());
 
         // Load Data
         checkingData();
@@ -194,13 +200,10 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
     @Override
     protected void onResume() {
         super.onResume();
-        //Resume
-        resume();
-
-        // UI Loaded
-        if (isUILoaded()) {
-            // Resume Light MODE
-            mLightModeController.resetLightMode();
+        Log.i(TAG, "onResume()");
+        //Resume play
+        if (!isPlaying()) {
+            resume();
         }
     }
 
@@ -216,10 +219,6 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
         } else {
             loadLocalMedias();
         }
-    }
-
-    @Override
-    public void onPlayFromFolder(int playPos, List<String> listPlayPaths) {
     }
 
     @Override
@@ -261,9 +260,7 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
     protected void onScanServiceConnected() {
     }
 
-    @Override
-    protected void loadLocalMedias() {
-        super.loadLocalMedias();
+    private void loadLocalMedias() {
         // Resume Light MODE
         mLightModeController.resetLightMode();
         // Play
@@ -285,6 +282,7 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
 
     @Override
     public void onProgressChanged(String mediaUrl, int progress, int duration) {
+        Logs.debugI(TAG, "onProgressChanged(" + mediaUrl + "," + progress + "," + duration + ")");
 //        final String targetMediaUrl = mediaUrl;
         final int targetProgress = progress;
         final int targetDuration = duration;
@@ -298,7 +296,7 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
                     return;
                 }
 
-                // 不否允许播放
+                // 不允许播放
                 if (!PlayEnableController.isPlayEnable()) {
                     removePlayRunnable();
                     pause();
@@ -306,11 +304,15 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
                 }
 
                 // 视频播放 - {正常模式}
-                seekBar.setProgress(targetProgress);
-                updateSeekTime(targetProgress, targetDuration);
-
-                // 每秒钟保存一次播放信息
-                savePlayInfo();
+                if (targetProgress > targetDuration) {
+                    Log.i(TAG, "onProgressChanged :: error progress-playNext()");
+                    clearPlayedMediaInfo();
+                    playNext();
+                } else {
+                    seekBar.setProgress(targetProgress);//跟新进度条
+                    updateSeekTime(targetProgress, targetDuration);//更新时间
+                    savePlayInfo();// 每秒钟保存一次播放信息
+                }
             }
         });
     }
@@ -388,11 +390,11 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
                     vArrowRight.setVisibility(View.VISIBLE);
                     vArrowRight.invalidate();
                     //
-                    int targetProgress = getProgress() + 15 * 1000;
+                    long targetProgress = getProgress() + 15 * 1000;
                     if (targetProgress > getDuration()) {
                         targetProgress = getDuration();
                     }
-                    seekTo(targetProgress);
+                    seekTo((int) targetProgress);
                     break;
                 case 1:
                     //
@@ -404,7 +406,7 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
                     if (targetProgress < 0) {
                         targetProgress = 0;
                     }
-                    seekTo(targetProgress);
+                    seekTo((int) targetProgress);
                     break;
             }
             mIsSeekRunning = true;
@@ -439,6 +441,7 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
 
         @Override
         public void onClick(View v) {
+            mLightModeController.resetLightMode();
             if (v == ivPlayPre) {
                 execPlayPrevByUser();
             } else if (v == ivPlay) {
@@ -532,10 +535,10 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
         }
 
         //Parse scale information
-        scaleScree(media);
+        scaleScreen(media);
     }
 
-    private void scaleScree(final ProVideo media) {
+    private void scaleScreen(final ProVideo media) {
         if (media == null) {
             return;
         }
@@ -593,25 +596,6 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
         }
     }
 
-//    @Override
-//    public void onAccOn() {
-//        Log.i(TAG, "onAccOn()");
-//        if (!isPlaying()
-//                && isForeground()
-//                && isAudioFocusRegistered()) {
-//            Log.i(TAG, "onAccOffTrue -> resume()");
-//            resume();
-//        }
-//    }
-
-//    @Override
-//    public void onAccOff() {
-//        Log.i(TAG, "onAccOff()");
-//        if (isPlaying()) {
-//            pause();
-//        }
-//    }
-
     @Override
     public void onAccOffTrue() {
         Log.i(TAG, "onAccOffTrue()");
@@ -632,31 +616,50 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
         Log.i(TAG, "onReverseOff()");
         if (!isPlaying()
                 && isForeground()
-                && isAudioFocusRegistered()) {
+                && isAudioFocusGained()) {
             Log.i(TAG, "onReverseOff -> resume()");
             resume();
         }
     }
 
     @Override
-    public void onBtCallStateChanged(boolean isBtRunning) {
+    public void onBtCallStateChanged(final boolean isBtRunning) {
         Log.i(TAG, "onBtCallStateChanged(" + isBtRunning + ")");
-        if (isBtRunning && isPlaying()) {
-            Log.i(TAG, "onBtCallStateChanged -> pause()");
-            pause();
-        } else if (!isPlaying()
-                && isForeground()
-                && isAudioFocusRegistered()) {
-            Log.i(TAG, "onBtCallStateChanged -> resume()");
-            resume();
-        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (isBtRunning) {
+                    Log.i(TAG, "onBtCallStateChanged -> pause()");
+                    setStatusBar(1);
+                    if (isPlaying()) {
+                        pause();
+                    }
+                } else {
+                    Log.i(TAG, "onBtCallStateChanged -> resume()");
+                    //TODO 恢复播放由onResume时执行
+                    mDelaySetStatusBar.removeCallbacksAndMessages(null);
+                    mDelaySetStatusBar.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            setStatusBar(0);
+                        }
+                    }, 1500);
+//            if (!isPlaying()
+//                    && isForeground()
+//                    && isAudioFocusGained()) {
+//                Log.i(TAG, "onReverseOff -> resume()");
+//                resume();
+//            }
+                }
+            }
+        });
     }
 
     @Override
     public void onVoiceCommand(ActionEnum ae) {
         Log.i(TAG, "onVoiceCommand(" + ae + ")");
         mVoiceCommand = ae;
-        if (isAudioFocusRegistered()) {
+        if (isAudioFocusGained()) {
             processVoiceCommand();
         }
     }
@@ -693,6 +696,22 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
     @Override
     public void onAudioFocusTransient() {
         super.onAudioFocusTransient();
+        Log.i(TAG, "onAudioFocusTransient()");
+        if (isPlaying()) {
+            pause();
+        }
+    }
+
+    @Override
+    public void onAudioFocusDuck() {
+        super.onAudioFocusDuck();
+        Log.i(TAG, "onAudioFocusDuck()");
+    }
+
+    @Override
+    public void onAudioFocusLoss() {
+        super.onAudioFocusLoss();
+        Log.i(TAG, "onAudioFocusLoss()");
         if (isPlaying()) {
             pause();
         }
@@ -701,6 +720,7 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
     @Override
     public void onAudioFocusGain() {
         super.onAudioFocusGain();
+        Log.i(TAG, "onAudioFocusGain()");
         if (mVoiceCommand == null) {
             if (isForeground()) {
                 resume();
@@ -711,32 +731,63 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
     }
 
     @Override
-    public void onAudioFocusLoss() {
-        super.onAudioFocusLoss();
-        if (isPlaying()) {
-            pause();
-        }
+    public void onAudioFocus(int flag) {
+        super.onAudioFocus(flag);
+        Log.i(TAG, "onAudioFocus(" + flag + ")");
     }
 
     @Override
-    public void onAudioFocus(int flag) {
+    public void onBackPressed() {
+//        super.onBackPressed();
+        Log.i(TAG, "onBackPressed()");
+        finish();
+    }
+
+    @Override
+    protected void onPause() {
+        Log.i(TAG, "onPause()");
+        overridePendingTransition(0, 0);
+        super.onPause();
+    }
+
+    @Override
+    public void finish() {
+        Log.i(TAG, "finish()");
+        clearActivity();
+        super.finish();
     }
 
     @Override
     protected void onDestroy() {
+        Log.i(TAG, "onDestroy()");
+//        clearActivity();
+        super.onDestroy();
+    }
+
+    public void clearActivity() {
         AccReceiver.unregister(this);
         ReverseReceiver.unregister(this);
         VoiceAssistantReceiver.unregister(this);
+        TestReceiver.setTestSendGpsListener(null);
+
+        //Remove handler runnable
+        if (mDelaySetStatusBar != null) {
+            mDelaySetStatusBar.removeCallbacksAndMessages(null);
+            mDelaySetStatusBar = null;
+        }
+        if (mTestSendGpsHandler != null) {
+            mTestSendGpsHandler.removeCallbacksAndMessages(null);
+            mTestSendGpsHandler = null;
+        }
+
+        // 释放播放器
+        execRelease();
 
         //
         if (mBtCallStateController != null) {
             mBtCallStateController.unregister();
             mBtCallStateController = null;
         }
-
-        // 释放播放器
-        execRelease();
-        setCurrPlayer(false, this);
 
         //
         if (mLightModeController != null) {
@@ -757,7 +808,16 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
             mPanelTouchResp = null;
         }
 
-        super.onDestroy();
+        //
+        mIsPlayerOpened = false;
+        PlayerAppManager.removeContext(this);
+    }
+
+    /**
+     * 播放器是否已经打开了
+     */
+    public static boolean isPlayerOpened() {
+        return mIsPlayerOpened;
     }
 
     /**
@@ -825,17 +885,132 @@ public class SclLc2010VdcVideoPlayerActivity extends BaseVideoPlayerActivity
         @Override
         public void onLightOn() {
             Log.i(TAG, "onLightOn()");
-            CommonUtil.setNavigationBar(SclLc2010VdcVideoPlayerActivity.this, 1);
             vControlPanel.setVisibility(View.VISIBLE);
-            scaleScree(getCurrProgram());
+            setStatusBar(1);
         }
 
         @Override
         public void onLightOff() {
             Log.i(TAG, "onLightOff()");
-            CommonUtil.setNavigationBar(SclLc2010VdcVideoPlayerActivity.this, 0);
             vControlPanel.setVisibility(View.GONE);
-            scaleScree(getCurrProgram());
+            setStatusBar(0);
+        }
+    }
+
+    private void setStatusBar(int flag) {
+        CommonUtil.setNavigationBar(SclLc2010VdcVideoPlayerActivity.this, flag);
+        scaleScreen(getCurrProgram());
+    }
+
+    /**
+     * Warning page touch event.
+     */
+    private class WarningPageOnTouch implements View.OnTouchListener {
+
+        @SuppressLint("ClickableViewAccessibility")
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_UP:
+                    testSendGps(0);
+                    Log.i(TAG, "WarningPageOnTouch -MotionEvent.ACTION_UP-");
+                    if (mGpsOnChange != null) {
+                        mGpsOnChange.hideWarning();
+                    }
+                    break;
+            }
+            return true;
+        }
+    }
+
+    /**
+     * GPS position change event.
+     */
+    private class GpsOnChange implements js.lib.android.utils.gps.GpsImpl.GpsImplListener {
+
+        //上一次分组
+        private List<Double> mListGroup = new ArrayList<>();
+        private final int GROUP_LIMIT = 3;
+
+        //Speed km/h
+        private final int WANING_SHOW_SPEED = 10;
+        private final int WANING_HIDE_SPEED = 5;
+
+        @Override
+        public void onGotSpeed(double speed_mPerS, double speed_kmPerH) {
+            Log.i(TAG, "onGotSpeed(" + speed_mPerS + "," + speed_kmPerH + ")");
+            showWarning(speed_kmPerH);
+        }
+
+        void showWarning(double speed_kmPerH) {
+            Log.i(TAG, "showWarning(" + speed_kmPerH + ")");
+            //判断是否已经取到了 GROUP_LIMIT 次值
+            //并添加新采样
+            int groupSize = mListGroup.size();
+            if (groupSize >= GROUP_LIMIT) {
+                mListGroup.remove(0);
+            }
+            mListGroup.add(speed_kmPerH);
+
+            //判断警告页是否已经打开了
+            boolean isWarningPageVisible = (layoutWarning.getVisibility() == View.VISIBLE);
+            Log.i(TAG, "isWarningPageVisible : " + isWarningPageVisible);
+            if (!isWarningPageVisible) {
+                //如果采样数大于等于 GROUP_LIMIT ,则判断末次 GROUP_LIMIT 个采样是否都大于临界值
+                groupSize = mListGroup.size();
+                if (groupSize >= GROUP_LIMIT) {
+                    for (int idx = GROUP_LIMIT - 1; idx >= 0; idx--) {
+                        Double tmpSpeed_kmPerH = mListGroup.get(idx);
+                        Log.i(TAG, "tmpSpeed_kmPerH(" + idx + ") : " + tmpSpeed_kmPerH);
+                        if (tmpSpeed_kmPerH < WANING_SHOW_SPEED) {
+                            return;
+                        }
+                    }
+                    //运行到这里,说明 GROUP_LIMIT 次采样值都大于临界值
+                    layoutWarning.setVisibility(View.VISIBLE);
+                }
+            }
+        }
+
+        void hideWarning() {
+            int groupSize = mListGroup.size();
+            if (groupSize < GROUP_LIMIT) {
+                layoutWarning.setVisibility(View.GONE);
+            } else {
+                //如果采样数大于等于 GROUP_LIMIT ,则判断末次 GROUP_LIMIT 个采样是否都小于临界值
+                for (int idx = GROUP_LIMIT - 1; idx >= 0; idx--) {
+                    Double tmpSpeed_kmPerH = mListGroup.get(idx);
+                    Log.i(TAG, "tmpSpeed_kmPerH(" + idx + ") : " + tmpSpeed_kmPerH);
+                    if (tmpSpeed_kmPerH > WANING_HIDE_SPEED) {
+                        Log.i(TAG, "hideWarning() -NO-");
+                        return;
+                    }
+                }
+                //运行到这里,说明 GROUP_LIMIT 次采样值都小于临界值
+                Log.i(TAG, "hideWarning() -Yes-");
+                layoutWarning.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    @Override
+    public void testSendGps(final int flag) {
+        switch (flag) {
+            case 0:
+                mTestSendGpsHandler.removeCallbacksAndMessages(null);
+                break;
+            case 1:
+                mTestSendGpsHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Random random = new Random(System.currentTimeMillis());
+                        if (mGpsOnChange != null) {
+                            mGpsOnChange.showWarning(random.nextDouble() * 30);
+                            testSendGps(flag);
+                        }
+                    }
+                }, 1000);
+                break;
         }
     }
 

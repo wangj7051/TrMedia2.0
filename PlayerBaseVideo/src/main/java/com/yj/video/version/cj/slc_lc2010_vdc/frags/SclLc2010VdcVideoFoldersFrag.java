@@ -2,7 +2,6 @@ package com.yj.video.version.cj.slc_lc2010_vdc.frags;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -43,6 +42,11 @@ public class SclLc2010VdcVideoFoldersFrag extends BaseVideoListFrag {
     private ImageView ivLoading;
     private LetterSideBar lsb;
 
+    /**
+     * Child fragment- [Folders or Names]
+     */
+    private BaseVideoFolderGroupsFrag fragChild;
+
     //==========Variables in this Fragment==========
     private SclLc2010VdcVideoListActivity mAttachedActivity;
 
@@ -59,11 +63,6 @@ public class SclLc2010VdcVideoFoldersFrag extends BaseVideoListFrag {
 
     // ImageView frame animation control
     private FrameAnimationController mFrameAnimController;
-
-    /**
-     * Child fragment- [Folders or Names]
-     */
-    private BaseVideoFolderGroupsFrag mFragChild;
 
     @Override
     public void onAttach(Activity activity) {
@@ -99,70 +98,66 @@ public class SclLc2010VdcVideoFoldersFrag extends BaseVideoListFrag {
         mFrameAnimController.setFrameImgResArr(LOADING_RES_ID_ARR);
         showLoading(mAttachedActivity.isMediaScanning());
 
-        // Data
-        refreshData(mAttachedActivity.getListMedias(), mAttachedActivity.getLastMediaPath());
+        //Loading page
+        Log.i(TAG, "init() -loadLocalMedias-");
+        loadLocalMedias();
+    }
+
+    @Override
+    public void loadLocalMedias() {
+        Log.i(TAG, "loadLocalMedias()");
+        refreshData();
     }
 
     @Override
     public void refreshData() {
-        if (isAdded()) {
-            if (mFragChild != null) {
-                mFragChild.refreshData();
-            }
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public void refreshData(List<ProVideo> listMedias, String targetMediaUrl) {
-        if (!isAdded() || EmptyUtil.isEmpty(listMedias)) {
+        if (!isAdded()) {
             return;
         }
 
-        //
-        mListData = listMedias;
+        Log.i(TAG, "refreshData()");
+        //设置媒体源数据
+        List<ProVideo> listMedias = mAttachedActivity.getListMedias();
+        if (EmptyUtil.isEmpty(listMedias)) {
+            mListData = new ArrayList<>();
+        } else {
+            mListData = new ArrayList<>(listMedias);
+            String targetMediaUrl = mAttachedActivity.getLastTargetMediaPath();
 
-        //Check if second priority page
-        if (mFragChild instanceof SclLc2010VdcVideoFolderNamesFrag) {
-            Log.i(TAG, "### Current page is folders-2222 list page ####");
-            return;
-        }
-        Log.i(TAG, "### Current page is folders-1111 list page ####");
+            //Filter
+            showLoading(false);
+            Map<String, VideoFilter> mapFilters = new HashMap<>();
+            for (ProVideo media : listMedias) {
+                //Folder
+                String folderPath = "";
+                File file = new File(media.mediaUrl);
+                if (file.exists()) {
+                    File parentFile = file.getParentFile();
+                    if (parentFile != null) {
+                        folderPath = parentFile.getPath();
+                    }
+                }
 
-        //Filter collected
-        Map<String, VideoFilter> mapData = new HashMap<>();
-        for (ProVideo media : listMedias) {
-            //Folder
-            String folderPath = "";
-            File file = new File(media.mediaUrl);
-            if (file.exists()) {
-                File parentFile = file.getParentFile();
-                if (parentFile != null) {
-                    folderPath = parentFile.getPath();
+                //
+                VideoFilter videoFilter = mapFilters.get(folderPath);
+                if (videoFilter == null) {
+                    videoFilter = new VideoFilter();
+                    videoFilter.folderPath = folderPath;
+                    videoFilter.folderPathPinYin = media.mediaDirectoryPinYin;
+                    videoFilter.listMedias = new ArrayList<>();
+                    videoFilter.listMedias.add(media);
+                    mapFilters.put(videoFilter.folderPath, videoFilter);
+                } else {
+                    videoFilter.listMedias.add(media);
+                }
+
+                //
+                if (!videoFilter.isSelected) {
+                    videoFilter.isSelected = TextUtils.equals(targetMediaUrl, media.mediaUrl);
                 }
             }
-
-            //
-            VideoFilter videoFilter = mapData.get(folderPath);
-            if (videoFilter == null) {
-                videoFilter = new VideoFilter();
-                videoFilter.folderPath = folderPath;
-                videoFilter.folderPathPinYin = media.mediaDirectoryPinYin;
-                videoFilter.listMedias = new ArrayList<>();
-                videoFilter.listMedias.add(media);
-                mapData.put(videoFilter.folderPath, videoFilter);
-            } else {
-                videoFilter.listMedias.add(media);
-            }
-
-            //
-            if (!videoFilter.isSelected) {
-                videoFilter.isSelected = TextUtils.equals(targetMediaUrl, media.mediaUrl);
-            }
+            refreshFilters((mListFilters = new ArrayList<>(mapFilters.values())));
         }
-
-        //Refresh UI
-        refreshFilters((mListFilters = new ArrayList<>(mapData.values())));
     }
 
     @SuppressWarnings("unchecked")
@@ -175,57 +170,34 @@ public class SclLc2010VdcVideoFoldersFrag extends BaseVideoListFrag {
 
     private void loadFragFolders(List<VideoFilter> listFilters) {
         //Remove
-        if (mFragChild != null) {
-            FragUtil.removeV4Fragment(mFragChild, getChildFragmentManager());
+        if (fragChild != null) {
+            FragUtil.removeV4Fragment(fragChild, getChildFragmentManager());
         }
 
         //Load
-        mFragChild = new SclLc2010VdcVideoFolderFoldersFrag();
-        mFragChild.setListData(listFilters);
-        mFragChild.setListener(this);
-        FragUtil.loadV4ChildFragment(R.id.rl_frag, mFragChild, getChildFragmentManager());
+        fragChild = new SclLc2010VdcVideoFolderFoldersFrag();
+        fragChild.setListData(listFilters);
+        fragChild.setListener(this);
+        FragUtil.loadV4ChildFragment(R.id.rl_frag, fragChild, getChildFragmentManager());
     }
 
     public void loadFragNames(List<ProVideo> listMedias) {
         //Remove
-        if (mFragChild != null) {
-            FragUtil.removeV4Fragment(mFragChild, getChildFragmentManager());
+        if (fragChild != null) {
+            FragUtil.removeV4Fragment(fragChild, getChildFragmentManager());
         }
 
         //Load
-        mFragChild = new SclLc2010VdcVideoFolderNamesFrag();
-        mFragChild.setListData(listMedias);
-        mFragChild.setListener(this);
-        FragUtil.loadV4ChildFragment(R.id.rl_frag, mFragChild, getChildFragmentManager());
-    }
-
-    @Override
-    public void play() {
+        fragChild = new SclLc2010VdcVideoFolderNamesFrag();
+        fragChild.setListData(listMedias);
+        fragChild.setListener(this);
+        FragUtil.loadV4ChildFragment(R.id.rl_frag, fragChild, getChildFragmentManager());
     }
 
     @Override
     public void onMediaScanningStart() {
         Log.i(TAG, "onMediaScanningStart()");
         showLoading(true);
-    }
-
-    @Override
-    public void onMediaScanningNew() {
-        Log.i(TAG, "onMediaScanningNew()");
-        if (EmptyUtil.isEmpty(mListData)) {
-            showLoading(true);
-        }
-    }
-
-    @Override
-    public void onMediaScanningEnd() {
-        Log.i(TAG, "onMediaScanningEnd()");
-    }
-
-    @Override
-    public void onMediaParseEnd() {
-        Log.i(TAG, "onMediaScanningEnd()");
-        showLoading(false);
     }
 
     @Override
@@ -256,33 +228,29 @@ public class SclLc2010VdcVideoFoldersFrag extends BaseVideoListFrag {
         @Override
         public void callback(int pos, String letter) {
             Logs.i(TAG, "LetterSideBarCallback -> callback(" + pos + "," + letter + ")");
-            if (mFragChild != null) {
-                mFragChild.onSidebarCallback(pos, letter);
+            if (fragChild != null) {
+                fragChild.onSidebarCallback(pos, letter);
             }
         }
 
         @Override
-        public void onScroll(boolean isScrolling) {
+        public void onTouchDown() {
         }
-    }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case M_REQ_PLAYING_MEDIA_URL:
-                if (mFragChild != null) {
-                    mFragChild.refreshPlaying(mAttachedActivity.getLastMediaPath());
-                }
-                break;
+        @Override
+        public void onTouchMove() {
+        }
+
+        @Override
+        public void onTouchUp() {
         }
     }
 
     @Override
     public void selectNext() {
         if (isAdded()) {
-            if (mFragChild != null) {
-                mFragChild.selectNext();
+            if (fragChild != null) {
+                fragChild.selectNext();
             }
         }
     }
@@ -290,8 +258,8 @@ public class SclLc2010VdcVideoFoldersFrag extends BaseVideoListFrag {
     @Override
     public void selectPrev() {
         if (isAdded()) {
-            if (mFragChild != null) {
-                mFragChild.selectPrev();
+            if (fragChild != null) {
+                fragChild.selectPrev();
             }
         }
     }
@@ -299,8 +267,8 @@ public class SclLc2010VdcVideoFoldersFrag extends BaseVideoListFrag {
     @Override
     public void playSelected() {
         if (isAdded()) {
-            if (mFragChild != null) {
-                mFragChild.playSelected();
+            if (fragChild != null) {
+                fragChild.playSelected();
             }
         }
     }
@@ -311,7 +279,7 @@ public class SclLc2010VdcVideoFoldersFrag extends BaseVideoListFrag {
             return 0;
         }
 
-        if (mFragChild instanceof SclLc2010VdcVideoFolderNamesFrag) {
+        if (fragChild instanceof SclLc2010VdcVideoFolderNamesFrag) {
             refreshFilters(mListFilters);
             return 1;
         } else {
@@ -327,10 +295,16 @@ public class SclLc2010VdcVideoFoldersFrag extends BaseVideoListFrag {
     @Override
     public void updateThemeToDefault() {
         Log.i(TAG, "updateThemeToDefault()");
+        if (fragChild != null) {
+            fragChild.updateThemeToDefault();
+        }
     }
 
     @Override
     public void updateThemeToIos() {
         Log.i(TAG, "updateThemeToIos()");
+        if (fragChild != null) {
+            fragChild.updateThemeToIos();
+        }
     }
 }

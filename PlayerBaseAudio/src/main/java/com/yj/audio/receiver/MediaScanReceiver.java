@@ -3,13 +3,11 @@ package com.yj.audio.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.hardware.usb.UsbManager;
 import android.util.Log;
 
 import com.yj.audio.engine.PlayerAppManager;
-import com.yj.audio.utils.PlayerFileUtils;
 
-import js.lib.android_media_scan.MediaScanService;
+import js.lib.android_media.scan.audio.AudioScanService;
 
 /**
  * Media Scan Receiver
@@ -18,7 +16,12 @@ import js.lib.android_media_scan.MediaScanService;
  */
 public class MediaScanReceiver extends BroadcastReceiver {
     //TAG
-    private static String TAG = "MediaScanReceiver";
+    private static String TAG = "AudioScanReceiver";
+
+    /**
+     * U盘是否已经挂载
+     */
+    private static boolean mIsSdMounted = false;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -27,23 +30,20 @@ public class MediaScanReceiver extends BroadcastReceiver {
         Log.i(TAG, "onReceive() -> [action: " + action + "]");
 //        Toast.makeText(context, action, Toast.LENGTH_LONG).show();
 
-        if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
-            if (!PlayerFileUtils.isHasSupportStorage()) {
+        if (Intent.ACTION_MEDIA_UNMOUNTED.equals(action)
+                || Intent.ACTION_MEDIA_EJECT.equals(action)) {
+            if (mIsSdMounted) {
                 Log.i(TAG, "### Exit Audio Player ###");
-                PlayerAppManager.exitCurrPlayer();
+                notifyScanService(context, AudioScanService.PARAM_SCAN_VAL_CANCEL);
+                PlayerAppManager.exitCurrPlayer(true);
             }
+            mIsSdMounted = false;
 
             // SDCard Mounted
-        } else if (Intent.ACTION_MEDIA_MOUNTED.equals(action)) {
-            notifyScanService(context, MediaScanService.PARAM_SCAN_VAL_START);
-
-            // SDCard UnMounted
-        } else if (Intent.ACTION_MEDIA_UNMOUNTED.equals(action)) {
-            notifyScanService(context, MediaScanService.PARAM_SCAN_VAL_CANCEL);
-
-            //Test
-        } else if ("com.tricheer.player.START.LIST.ALL_MEDIAS".equals(action)) {
-            notifyScanService(context, MediaScanService.PARAM_SCAN_VAL_START);
+        } else if (Intent.ACTION_MEDIA_MOUNTED.equals(action)
+                || "com.yj.test.scan_audios".equals(action)) {
+            mIsSdMounted = true;
+            notifyScanService(context, AudioScanService.PARAM_SCAN_VAL_START);
         }
     }
 
@@ -51,11 +51,11 @@ public class MediaScanReceiver extends BroadcastReceiver {
      * Notify scan service operate.
      *
      * @param context   {@link Context}
-     * @param scanParam {@link MediaScanService#PARAM_SCAN_VAL_START} or {@link MediaScanService#PARAM_SCAN_VAL_CANCEL}
+     * @param scanParam {@link AudioScanService#PARAM_SCAN_VAL_START} or {@link AudioScanService#PARAM_SCAN_VAL_CANCEL}
      */
     private void notifyScanService(Context context, String scanParam) {
-        Intent intentScan = new Intent(context, MediaScanService.class);
-        intentScan.putExtra(MediaScanService.PARAM_SCAN, scanParam);
+        Intent intentScan = new Intent(context, AudioScanService.class);
+        intentScan.putExtra(AudioScanService.PARAM_SCAN, scanParam);
         context.startService(intentScan);
     }
 }

@@ -7,6 +7,8 @@ import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
 
+import java.util.ArrayList;
+
 import js.lib.android.media.player.PlayDelegate;
 import js.lib.android.media.player.PlayState;
 import js.lib.android.utils.Logs;
@@ -56,7 +58,9 @@ public class AudioVlcPlayer implements IAudioPlayer {
     private void createMediaPlayer(Context cxt, String mediaPath) {
         Log.i(TAG, "createMediaPlayer(cxt," + mediaPath + ")");
         try {
-            mLibVLC = new LibVLC(cxt);
+            final ArrayList<String> args = new ArrayList<>();
+            args.add("-vvv");
+            mLibVLC = new LibVLC(cxt, args);
             mMediaPlayer = new MediaPlayer(new Media(mLibVLC, mediaPath));
             mMediaPlayer.setEventListener(new PlayerEventImpl());
         } catch (Exception e) {
@@ -196,32 +200,41 @@ public class AudioVlcPlayer implements IAudioPlayer {
 
     @Override
     public void stopMedia() {
-        Log.i(TAG, "stopMedia()");
-        if (mMediaPlayer != null) {
-            mMediaPlayer.stop();
-        }
+//        Log.i(TAG, "stopMedia()");
+//        if (mMediaPlayer != null) {
+//            mMediaPlayer.stop();
+//        }
     }
 
     @Override
     public void releaseMedia() {
         Log.i(TAG, "release()");
-        if (mMediaPlayer != null) {
-            //Release Media
-            final Media media = mMediaPlayer.getMedia();
-            if (media != null) {
-                media.setEventListener(null);
+        try {
+            if (mMediaPlayer != null) {
+                //Release Media
+//                final Media media = mMediaPlayer.getMedia();
+//                if (media != null) {
+//                    media.setEventListener(null);
+//                }
+
+                //Release MediaPlayer
+                //Stop
+//                mMediaPlayer.setEventListener(null);
+//                mMediaPlayer.stop();
+//                mMediaPlayer.setMedia(null);
+
+                //Release LibVLC
+                mLibVLC.release();
+                mLibVLC = null;
+
+                //
+                mMediaPlayer.setEventListener(null);
+                mMediaPlayer.release();
+                mMediaPlayer = null;
             }
-
-            //Release MediaPlayer
-            mMediaPlayer.setEventListener(null);
-            mMediaPlayer.stop();
-            mMediaPlayer.setMedia(null);
-            mMediaPlayer.release();
-            mMediaPlayer = null;
-
-            //Release LibVLC
-            mLibVLC.release();
-            mLibVLC = null;
+        } catch (Exception e) {
+            Log.i(TAG, "releaseMedia() :: Exception-" + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -267,6 +280,10 @@ public class AudioVlcPlayer implements IAudioPlayer {
     @Override
     public void setPlayerDelegate(PlayDelegate l) {
         this.mPlayDelegate = l;
+    }
+
+    @Override
+    public void setVolume(float leftVolume, float rightVolume) {
     }
 
     /**

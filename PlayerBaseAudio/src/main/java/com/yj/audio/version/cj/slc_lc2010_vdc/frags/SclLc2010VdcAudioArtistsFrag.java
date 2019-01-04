@@ -32,15 +32,19 @@ public class SclLc2010VdcAudioArtistsFrag extends BaseAudioGroupsFrag {
 
     @Override
     public void loadLocalMedias() {
-        loadDataList();
+        super.loadLocalMedias();
+        Log.i(TAG, "loadLocalMedias()");
+        refreshData();
     }
 
     @Override
-    public void loadDataList() {
+    public void refreshData() {
+        super.refreshData();
         if (!isAdded()) {
             return;
         }
 
+        Log.i(TAG, "refreshData()");
         //Check if second priority page
         if (isAudioList(mListData)) {
             Log.i(TAG, "### Current page is Artists-2222 list page ####");
@@ -48,64 +52,76 @@ public class SclLc2010VdcAudioArtistsFrag extends BaseAudioGroupsFrag {
         }
         Log.i(TAG, "### Current page is Artists-1111 list page ####");
 
-        //Check NULL
+        //Get source information
         String targetMediaUrl = mAttachedActivity.getLastMediaPath();
         List<ProAudio> listSrcMedias = mAttachedActivity.getListSrcMedias();
         if (listSrcMedias == null) {
-            return;
+            listSrcMedias = new ArrayList<>();
         }
 
-        //根据传入的参数，加载指定分组
-        String targetArtist = null;
-        AudioFilter targetAudioFilter = null;
-        if (mParams != null && mParams.length > 0) {
-            targetArtist = mParams[0];
-            mParams = null;//参数只用一次
-        }
+        //Filter
+        if (!EmptyUtil.isEmpty(listSrcMedias)) {
+            showLoading(false);
 
-        //Filter collected
-        Map<String, AudioFilter> mapData = new HashMap<>();
-        for (ProAudio media : listSrcMedias) {
-            //Folder
-            String folderPath = "";
-            File file = new File(media.mediaUrl);
-            if (file.exists()) {
-                File parentFile = file.getParentFile();
-                if (parentFile != null) {
-                    folderPath = parentFile.getPath();
+            //根据传入的参数，加载指定分组
+            String targetArtist = null;
+            AudioFilter targetAudioFilter = null;
+            if (mParams != null && mParams.length > 0) {
+                targetArtist = mParams[0];
+                mParams = null;//参数只用一次
+            }
+
+            //Filter collected
+            Map<String, AudioFilter> mapData = new HashMap<>();
+
+            //Loop and filter
+            try {
+                for (ProAudio media : listSrcMedias) {
+                    //Folder
+                    String folderPath = "";
+                    File file = new File(media.mediaUrl);
+                    if (file.exists()) {
+                        File parentFile = file.getParentFile();
+                        if (parentFile != null) {
+                            folderPath = parentFile.getPath();
+                        }
+                    }
+
+                    //
+                    AudioFilter audioFilter = mapData.get(media.artist);
+                    if (audioFilter == null) {
+                        audioFilter = new AudioFilter();
+                        audioFilter.folderPath = folderPath;
+                        audioFilter.artist = media.artist;
+                        audioFilter.artistPinYin = media.artistPinYin;
+                        audioFilter.listMedias = new ArrayList<>();
+                        audioFilter.listMedias.add(media);
+                        mapData.put(media.artist, audioFilter);
+                    } else {
+                        audioFilter.listMedias.add(media);
+                    }
+
+                    //
+                    if (!audioFilter.isSelected) {
+                        audioFilter.isSelected = TextUtils.equals(targetMediaUrl, media.mediaUrl);
+                    }
+
+                    //Set target
+                    if (targetArtist != null && TextUtils.equals(targetArtist, audioFilter.artist)) {
+                        targetAudioFilter = audioFilter;
+                    }
                 }
+            } catch (Exception e) {
+                Log.i(TAG, "refreshData() - ERROR:" + e.getMessage());
+                e.printStackTrace();
             }
 
-            //
-            AudioFilter audioFilter = mapData.get(media.artist);
-            if (audioFilter == null) {
-                audioFilter = new AudioFilter();
-                audioFilter.folderPath = folderPath;
-                audioFilter.artist = media.artist;
-                audioFilter.artistPinYin = media.artistPinYin;
-                audioFilter.listMedias = new ArrayList<>();
-                audioFilter.listMedias.add(media);
-                mapData.put(media.artist, audioFilter);
+            //Refresh UI
+            if (targetAudioFilter != null) {
+                refreshMedias(targetAudioFilter);
             } else {
-                audioFilter.listMedias.add(media);
+                refreshFilters((mListFilters = new ArrayList<>(mapData.values())));
             }
-
-            //
-            if (!audioFilter.isSelected) {
-                audioFilter.isSelected = TextUtils.equals(targetMediaUrl, media.mediaUrl);
-            }
-
-            //Set target
-            if (targetArtist != null && TextUtils.equals(targetArtist, audioFilter.artist)) {
-                targetAudioFilter = audioFilter;
-            }
-        }
-
-        //Refresh UI
-        if (targetAudioFilter != null) {
-            refreshMedias(targetAudioFilter);
-        } else {
-            refreshFilters((mListFilters = new ArrayList<>(mapData.values())));
         }
     }
 
@@ -128,12 +144,5 @@ public class SclLc2010VdcAudioArtistsFrag extends BaseAudioGroupsFrag {
             AudioFilter.sortByArtist((List<AudioFilter>) mListData);
         }
         mDataAdapter.refreshData(mListData, mAttachedActivity.getLastMediaPath());
-    }
-
-    @Override
-    public void refreshDataList() {
-        if (isAdded()) {
-            mDataAdapter.refreshData();
-        }
     }
 }

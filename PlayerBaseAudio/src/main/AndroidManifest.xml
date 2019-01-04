@@ -27,6 +27,7 @@
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
 
     <!-- ??? -->
+    <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.GET_TASKS" />
@@ -79,14 +80,10 @@
             android:theme="@android:style/Theme.Black.NoTitleBar" />
 
         <!-- Music Play Service -->
-        <service
-            android:name=".service.TrPlayService"
-            android:enabled="true"
-            android:exported="true"
-            tools:ignore="ExportedService" />
+        <service android:name=".service.TrPlayService" />
 
         <!--Media scan service-->
-        <service android:name="js.lib.android_media_scan.MediaScanService" />
+        <service android:name="js.lib.android_media.scan.audio.AudioScanService" />
 
         <!-- Media Scanner Receiver -->
         <receiver
@@ -97,17 +94,13 @@
                 <action android:name="android.intent.action.MEDIA_UNMOUNTED" />
                 <action android:name="android.intent.action.MEDIA_MOUNTED" />
                 <!--<action android:name="android.intent.action.MEDIA_CHECKING" />-->
-                <!--<action android:name="android.intent.action.MEDIA_EJECT" />-->
+                <action android:name="android.intent.action.MEDIA_EJECT" />
                 <!--<action android:name="android.intent.action.MEDIA_REMOVED" />-->
 
                 <data android:scheme="file" />
             </intent-filter>
             <intent-filter>
-                <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
-                <!--<action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />-->
-            </intent-filter>
-            <intent-filter>
-                <action android:name="com.tricheer.player.START.LIST.ALL_MEDIAS" />
+                <action android:name="com.yj.test.scan_audios" />
             </intent-filter>
         </receiver>
         <!-- Player Receiver -->
@@ -122,24 +115,21 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
 
-            <!-- Music / Video -->
+            <!-- Music -->
             <intent-filter>
                 <action android:name="com.tricheer.audio.EXIT" />
-                <action android:name="com.tricheer.video.EXIT" />
                 <action android:name="com.tricheer.music.PLAY_FROM_FILEMANAGER" />
-                <action android:name="com.tricheer.video.PLAY_FROM_FILEMANAGER" />
             </intent-filter>
 
             <!-- Open Player Logs -->
             <intent-filter>
-                <action android:name="com.tricheer.app.OPEN_LOGS" />
+                <action android:name="com.yj.app.OPEN_LOGS" />
             </intent-filter>
 
             <!--Test Broadcast-->
             <intent-filter>
                 <action android:name="com.tri.test.OPEN_AUDIO" />
-                <action android:name="com.tri.test.OPEN_VIDEO" />
-                <action android:name="com.tri.test.OPEN_SELECTED_VIDEOLIST" />
+                <action android:name="com.tri.test.OPEN_AUDIO_FROM_VOICE" />
                 <action android:name="com.tri.test.EXIT_PLAYER" />
             </intent-filter>
         </receiver>
@@ -158,15 +148,7 @@
                 <action android:name="tricheer.intent.action.SLEEP" />
             </intent-filter>
         </receiver>
-        <!-- Reverse -->
-        <receiver
-            android:name="com.tri.lib.receiver.ReverseReceiver"
-            tools:ignore="ExportedReceiver">
-            <intent-filter>
-                <action android:name="com.tricheer.carback.on" />
-                <action android:name="com.tricheer.carback.off" />
-            </intent-filter>
-        </receiver>
+        <!-- Voice assistant -->
         <receiver
             android:name="com.tri.lib.receiver.VoiceAssistantReceiver"
             tools:ignore="ExportedReceiver">
@@ -176,6 +158,17 @@
                 <action android:name="com.tricheer.MEDIA_NEXT" />
                 <action android:name="com.tricheer.MEDIA_PLAY" />
                 <action android:name="com.tricheer.MEDIA_STOP" />
+            </intent-filter>
+        </receiver>
+
+        <!--Test receiver - used to test case.-->
+        <receiver
+            android:name=".receiver.TestReceiver"
+            tools:ignore="ExportedReceiver">
+            <intent-filter>
+                <action android:name="com.tri.test.EXIT_PLAYER" />
+                <action android:name="com.tri.test.OPEN_AUDIO" />
+                <action android:name="com.tri.test.OPEN_AUDIO_FROM_VOICE" />
             </intent-filter>
         </receiver>
     </application>

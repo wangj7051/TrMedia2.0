@@ -31,6 +31,7 @@ public class AppCrashHandler implements Thread.UncaughtExceptionHandler {
 
     @Override
     public void uncaughtException(Thread thread, Throwable ex) {
+        Log.i(TAG, "uncaughtException(Thread,Throwable)");
         ex.printStackTrace();
         if (!handleException(ex) && mDefaultHandler != null) {
             Log.i(TAG, "...PROCESS By system....");

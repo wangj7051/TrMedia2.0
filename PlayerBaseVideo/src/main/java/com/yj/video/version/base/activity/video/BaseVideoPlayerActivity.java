@@ -88,14 +88,16 @@ public abstract class BaseVideoPlayerActivity extends BaseVideoUIActivity {
     public void registerAudioFocus(int flag) {
         switch (flag) {
             case 1:
-                int result = AudioManagerUtil.requestMusicGain(this, mAfChangeListener);
-                Logs.i(TAG, "registerAudioFocus(" + flag + ") *request AUDIOFOCUS_GAIN* >> [result:" + result);
-                if (result == 1) {
-                    mAudioFocusFlag = AudioManager.AUDIOFOCUS_GAIN;
+                if (!isAudioFocusGained()) {
+                    int result = AudioManagerUtil.requestMusicGain(this, mAfChangeListener);
+                    Logs.i(TAG, "registerAudioFocus(" + flag + ") *request AUDIOFOCUS_GAIN* >> [result:" + result);
+                    if (result == 1) {
+                        mAudioFocusFlag = AudioManager.AUDIOFOCUS_GAIN;
+                    }
                 }
                 break;
             case 2:
-                result = AudioManagerUtil.abandon(this, mAfChangeListener);
+                int result = AudioManagerUtil.abandon(this, mAfChangeListener);
                 mAudioFocusFlag = AudioManager.AUDIOFOCUS_LOSS;
                 Logs.i(TAG, "registerAudioFocus(" + flag + ") *abandon AudioFocus* >> [result:" + result);
                 break;
@@ -158,7 +160,7 @@ public abstract class BaseVideoPlayerActivity extends BaseVideoUIActivity {
                 onNotifyPlayState$Error();
                 break;
             case SEEK_COMPLETED:
-                updateSeekTime(getProgress(), getDuration());
+                updateSeekTime((int) getProgress(), (int) getDuration());
                 break;
             default:
                 updatePlayStatus(2);
@@ -171,7 +173,7 @@ public abstract class BaseVideoPlayerActivity extends BaseVideoUIActivity {
     protected abstract void updateSeekTime(int progress, int duration);
 
     protected void onNotifyPlayState$Prepared() {
-        seekBar.setMax(getDuration());
+        seekBar.setMax((int) getDuration());
         if (mTargetAutoSeekProgress > 0 && mTargetAutoSeekProgress < seekBar.getMax()) {
             seekTo((int) mTargetAutoSeekProgress);
             mTargetAutoSeekProgress = -1;
@@ -193,7 +195,7 @@ public abstract class BaseVideoPlayerActivity extends BaseVideoUIActivity {
         if (storePlayMode == PlayMode.LOOP) {
             playNext();
         } else {
-            clearPlayedMediaInfos();
+            clearPlayedMediaInfo();
             execPlay(mPlayPos);
         }
     }
@@ -254,17 +256,6 @@ public abstract class BaseVideoPlayerActivity extends BaseVideoUIActivity {
         }
     }
 
-    /**
-     * Set Player Flag
-     */
-    protected void setCurrPlayer(boolean isInit, Context cxt) {
-        if (isInit) {
-            PlayerAppManager.putCxt(PlayerAppManager.PlayerCxtFlag.VIDEO_PLAYER, cxt);
-        } else {
-            PlayerAppManager.removeCxt(PlayerAppManager.PlayerCxtFlag.VIDEO_PLAYER);
-        }
-    }
-
     @Override
     public void onAudioFocusGain() {
     }
@@ -288,8 +279,8 @@ public abstract class BaseVideoPlayerActivity extends BaseVideoUIActivity {
 
     @Override
     public void play() {
-        super.play();
         registerAudioFocus(1);
+        super.play();
     }
 
     /**
@@ -297,7 +288,7 @@ public abstract class BaseVideoPlayerActivity extends BaseVideoUIActivity {
      *
      * @return true-registered; false-unregistered or loss.
      */
-    public boolean isAudioFocusRegistered() {
+    public boolean isAudioFocusGained() {
         return (mAudioFocusFlag == AudioManager.AUDIOFOCUS_GAIN);
     }
 
